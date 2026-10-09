@@ -1,0 +1,4 @@
+import assert from 'node:assert/strict';
+import {setupMaster} from './req5-master-fixture.mjs';
+import {ensureExpenseDemoSettings,demoAccounting,fictionalInvoice} from '../scripts/seed-expense-support.mjs';
+export async function setupExpense({t}={}){const f=await setupMaster({t});const post=async(p,b)=>{const r=await f.call(p,b);assert.equal(r.status,201,JSON.stringify(r));return r.data;};const settings=await ensureExpenseDemoSettings(f.db,1,post);let n=0;const payload=(extra={})=>({project_id:1,work_id:1,partner_id:settings.payee,incurred_on:'2026-09-14',accounting_month:'2026-09',category:'事務費',description:'確認用経費（架空）',actual_ex_tax:12000,tax_amount:1200,actual_inc_tax:13200,reason:'確認（架空）',invoice:fictionalInvoice('DEMO-TEST-'+(++n),'2026-09-14'),accounting:demoAccounting(settings,'事務費',1200),...extra});return {...f,post,settings,payload};}

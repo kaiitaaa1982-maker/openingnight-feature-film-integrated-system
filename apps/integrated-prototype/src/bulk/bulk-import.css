@@ -1,0 +1,50 @@
+/* Excel一括登録。UI指針: ../../../../docs/design/ui-guidelines.md（§8 のトークンだけを使う） */
+.bk-panel{display:grid;gap:12px}
+.bk-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:12px}
+.bk-head h2{margin:0 0 4px;font-size:18px}
+.bk-body{display:grid;gap:14px}
+.bk-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.bk-steps>li{display:grid;gap:8px;align-content:start;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.bk-actions{display:flex;flex-wrap:wrap;gap:8px}
+.bk-drop{position:relative;display:grid;place-items:center;min-height:76px;padding:12px;border:2px dashed var(--line-3);border-radius:var(--radius);background:var(--panel);color:var(--ink-2);font-weight:650;text-align:center;cursor:pointer}
+.bk-drop:hover,.bk-drop:focus-within{border-color:var(--accent);color:var(--accent)}
+.bk-drop.is-busy{opacity:.7}
+.bk-drop input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.bk-preview{display:grid;gap:10px}
+.bk-file{margin:0;color:var(--ink-2);font-size:13px}
+.bk-warn{color:var(--warn);font-weight:700}
+.bk-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.bk-count{display:grid;gap:2px;min-height:0;padding:10px 12px;border:1px solid var(--line);border-left-width:4px;border-radius:var(--radius);background:var(--panel-2);color:var(--ink);text-align:left;font-weight:400}
+.bk-count span{color:var(--ink-3);font-size:12px}
+.bk-count strong{font-size:20px;font-variant-numeric:tabular-nums}
+.bk-count small{color:var(--ink-3);font-size:11px}
+.bk-count.is-insert{border-left-color:var(--ok)}
+.bk-count.is-update{border-left-color:var(--accent)}
+.bk-count.is-approval{border-left-color:var(--warn)}
+.bk-count.is-error{border-left-color:var(--bad)}
+.bk-count.is-active{background:var(--accent-soft)}
+.bk-filter{display:flex;flex-wrap:wrap;gap:4px}
+.bk-filter button{min-height:32px}
+.bk-filter button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.bk-table-wrap{max-height:60vh;overflow:auto;border:1px solid var(--line);border-radius:var(--radius)}
+.bk-table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+.bk-table th,.bk-table td{padding:6px 9px;border-bottom:1px solid var(--line-2);text-align:left;vertical-align:top;white-space:nowrap}
+.bk-table thead th{position:sticky;top:0;z-index:1;background:var(--panel-3);color:var(--ink-2)}
+.bk-num{text-align:right;font-variant-numeric:tabular-nums}
+.bk-req{margin-left:2px;color:var(--warn)}
+.bk-badge{display:inline-block;padding:1px 7px;border-radius:6px;font-size:11.5px;font-weight:800;border:1px solid var(--line-3);background:var(--panel)}
+.bk-badge.is-insert{color:var(--ok);border-color:var(--ok)}
+.bk-badge.is-update{color:var(--accent);border-color:var(--accent)}
+.bk-badge.is-approval,.bk-badge.is-blocked{color:var(--warn);border-color:var(--warn)}
+.bk-badge.is-error{color:var(--bad);border-color:var(--bad)}
+.bk-badge.is-unchanged{color:var(--ink-3)}
+.bk-row.is-unchanged td{color:var(--ink-3)}
+.bk-cell-error{background:var(--bad-soft);color:var(--ink);white-space:normal}
+.bk-cell-reason{display:block;margin-top:2px;color:var(--bad);font-size:11.5px;font-weight:650;white-space:normal}
+.bk-cell-changed{background:var(--hi)}
+.bk-cell-changed del{color:var(--ink-3)}
+.bk-row-note td{padding-top:2px;color:var(--warn);font-size:12px;white-space:normal}
+.bk-error-text{display:block;color:var(--bad);font-weight:650}
+.bk-commit{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.bk-history summary{cursor:pointer;color:var(--ink-2);font-size:13px;font-weight:650}
+.bk-history table{margin-top:8px}

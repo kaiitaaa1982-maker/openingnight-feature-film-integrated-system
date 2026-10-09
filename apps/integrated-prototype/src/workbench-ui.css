@@ -1,0 +1,112 @@
+/* 表編集（Workbench）の配置・パネル。色はトークンだけを使う（ライト・ダーク両方で読める）。 */
+.workbench{display:grid;gap:12px;padding:14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);color:var(--ink);min-width:0}
+.workbench h3{margin:0 0 8px;font-size:.84rem;color:var(--ink)}
+.workbench button:disabled{opacity:.5}
+.workbench .wb-small{min-height:32px;padding:0 10px;font-size:.8rem}
+.workbench .wb-muted{margin:4px 0;color:var(--ink-3);font-size:.8rem}
+.workbench .wb-bad{color:var(--bad);font-weight:700}
+.workbench .wb-warn-text{color:var(--ink);font-weight:700}
+.workbench .wb-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.wb-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.wb-head h2{margin:0;font-size:1.3rem}
+.wb-head .wb-sub{margin:4px 0 0;color:var(--ink-2);font-size:.86rem}
+.wb-notices{display:grid;gap:8px}
+.wb-notices:empty{display:none}
+
+.wb-layout{display:grid;grid-template-columns:200px minmax(0,1fr);border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);min-width:0;overflow:hidden}
+.wb-layout.has-steps{grid-template-columns:200px minmax(0,1fr) 290px}
+.wb-left,.wb-right{background:var(--panel-2);padding:12px;min-width:0}
+/* 外枠の aside（固定・画面の高さ）の規則を打ち消す */
+.workbench .wb-left,.workbench .wb-right{position:static;top:auto;height:auto;overflow:visible;border-bottom:0}
+.workbench .wb-left{border-right:1px solid var(--line);display:grid;align-content:start;gap:8px}
+.workbench .wb-right{border-right:0;border-left:1px solid var(--line);max-height:760px;overflow:auto}
+.wb-center{min-width:0;background:var(--panel);display:grid;align-content:start;gap:8px;padding:0 0 10px}
+.wb-left h3{margin-top:6px}
+.wb-left label{display:grid;gap:3px;font-size:.8rem;color:var(--ink-2)}
+.wb-left input,.wb-left select,.recipe input,.recipe select{box-sizing:border-box;width:100%;padding:6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font:inherit;font-size:.82rem}
+.wb-left small{display:block}
+
+.wb-datasets{display:grid;gap:2px}
+.wb-datasets button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;min-height:36px;padding:6px 8px;border:0;border-radius:6px;background:transparent;color:var(--ink);font-weight:600;font-size:.84rem;text-align:left}
+.wb-datasets button:hover{background:var(--panel-3)}
+.wb-datasets button.selected{background:var(--accent-soft);color:var(--ink);box-shadow:inset 3px 0 0 var(--accent)}
+.wb-lock{color:var(--ink-3);font-size:.72rem;font-weight:600}
+.wb-waiting{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.wb-waiting li{display:grid;gap:3px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);font-size:.8rem}
+.wb-waiting small{color:var(--ink-3)}
+.wb-ops{border-top:1px solid var(--line);padding-top:8px}
+.wb-ops summary{cursor:pointer;font-weight:700;font-size:.82rem}
+.wb-ops select{margin:6px 0}
+.wb-ops button{display:block;width:100%;min-height:30px;margin-top:2px;padding:4px 8px;border:0;border-radius:6px;background:transparent;color:var(--ink);font-weight:500;font-size:.8rem;text-align:left}
+.wb-ops button:hover{background:var(--panel-3)}
+
+.wb-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px;border-bottom:1px solid var(--line);font-size:.84rem}
+.wb-toolbar label{display:flex;align-items:center;gap:6px;color:var(--ink-2)}
+.wb-toolbar input{width:180px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font:inherit}
+.wb-toolbar .wb-count{color:var(--ink-2);font-variant-numeric:tabular-nums}
+.wb-pager,.wb-tool-group{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px}
+.wb-column-picker{display:flex;align-items:center;gap:8px;margin:0 12px;color:var(--ink-2);font-size:.84rem;font-weight:650}
+.wb-column-picker select{width:min(270px,100%);padding:6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}
+.wb-hint{margin:0 12px;color:var(--ink-3);font-size:.78rem}
+.wb-center>.on-notice{margin:0 12px}
+.wb-empty{display:grid;justify-items:start;gap:8px;margin:0 12px;padding:24px 16px;border:1px dashed var(--line-3);border-radius:var(--radius);color:var(--ink-2);font-size:.86rem}
+.wb-summary{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 12px;padding:8px 10px;border-radius:6px;background:var(--panel-2);font-size:.82rem;color:var(--ink-2)}
+.wb-locked{display:grid;justify-items:start;gap:8px;margin:16px 12px;padding:18px;border:1px solid var(--line);border-left:4px solid var(--ink-3);border-radius:var(--radius);background:var(--panel-2)}
+.wb-locked strong{font-size:1rem}
+.wb-locked p{margin:0;color:var(--ink-2)}
+
+.wb-right>header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.recipe{display:grid;gap:6px;padding:8px;border-radius:6px;background:var(--panel-3)}
+.transform-step{border:1px solid var(--line);background:var(--panel);padding:8px;margin:8px 0;border-radius:6px}
+.transform-step footer{display:flex;gap:6px;flex-wrap:wrap}
+.step-title{min-height:0;border:0;background:transparent;color:var(--ink);font-weight:700;padding:0;text-align:left}
+.step-title:hover{background:transparent;color:var(--accent)}
+.step-form{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
+.step-form label{font-size:.72rem;color:var(--ink-2)}
+.step-form input,.step-form select{box-sizing:border-box;width:100%;display:block;margin-top:3px;padding:5px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:.8rem}
+
+.wb-approval{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;padding:12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.wb-approval p{margin:3px 0;color:var(--ink-2);font-size:.84rem}
+.wb-approval-actions{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px}
+.wb-approval-actions label{display:grid;gap:3px;font-size:.78rem;color:var(--ink-2)}
+.wb-approval-actions input{width:230px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font:inherit}
+
+.wb-import-preflight{padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2);color:var(--ink)}
+.wb-import-preflight p{margin:5px 0;color:var(--ink-2)}
+.wb-import-preflight small{display:inline-block;margin:3px 12px 3px 0;color:var(--ink-2)}
+.wb-import-preflight .wb-confirm{display:flex;align-items:center;gap:8px;margin-top:10px;font-weight:650}
+.wb-import-preflight .wb-confirm input{width:auto;margin:0}
+.wb-import-preflight details{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}
+.wb-import-preflight summary{cursor:pointer;font-weight:650}
+.wb-import-preflight h4{margin:10px 0 6px;font-size:.84rem}
+.wb-import-preflight .wb-control-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.wb-import-preflight label{display:block;font-size:.84rem}
+.wb-import-preflight label input{display:block;width:100%;box-sizing:border-box;margin-top:4px;padding:7px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}
+.wb-inline-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+.wb-tech{font-size:.78rem;color:var(--ink-3)}
+.wb-tech summary{cursor:pointer}
+.wb-tech dl{display:grid;grid-template-columns:max-content 1fr;gap:3px 12px;margin:8px 0}
+.wb-tech dt{color:var(--ink-2)}
+.wb-tech dd{margin:0;font-family:var(--mono);overflow-wrap:anywhere}
+.wb-tech pre{max-height:240px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;padding:8px;border-radius:6px;background:var(--panel-2);font-family:var(--mono)}
+
+@media(max-width:1100px){
+  .wb-layout,.wb-layout.has-steps{grid-template-columns:180px minmax(0,1fr)}
+  .workbench .wb-right{grid-column:1/-1;border-left:0;border-top:1px solid var(--line);max-height:none}
+  .transform-step{display:inline-block;vertical-align:top;width:280px;margin-right:8px}
+}
+@media(max-width:700px){
+  .workbench{padding:10px}
+  .wb-layout{display:block}
+  .workbench .wb-left{border-right:0;border-bottom:1px solid var(--line)}
+  .wb-datasets{grid-template-columns:1fr 1fr}
+  .wb-import-preflight .wb-control-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .wb-toolbar input{width:100%}
+  .wb-toolbar label{flex:1 1 100%}
+  .wb-approval-actions input{width:100%}
+  .wb-approval-actions label{flex:1 1 100%}
+  .transform-step{display:block;width:auto;margin-right:0}
+}
+.wb-left .on-notice-actions button{min-height:32px;padding:0 10px;font-size:.8rem}

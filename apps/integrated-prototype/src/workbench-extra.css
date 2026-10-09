@@ -1,0 +1,60 @@
+/* 表編集（Workbench）の表・段階表示・エラー一覧。色はトークンだけを使う。
+   状態は色だけで示さない: エラーは「!」、計算・読取の列は見出しの注記、段階は「済・現在・未」の文字を添える。 */
+
+/* 段階表示（読込→加工→検証→承認申請→承認→反映）と次の操作 */
+.wb-stagebar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.wb-stages{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none;counter-reset:wb-stage}
+.wb-stages li{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink-3);font-size:.8rem;counter-increment:wb-stage}
+.wb-stages li::before{content:counter(wb-stage);font-variant-numeric:tabular-nums;font-weight:700}
+.wb-stages li.is-done{background:var(--ok-soft);color:var(--ink)}
+.wb-stages li.is-current{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);font-weight:700}
+.wb-stage-state{font-size:.7rem;font-weight:700;color:var(--ink-2)}
+.wb-next{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.wb-next-title{font-size:.78rem;color:var(--ink-2);font-weight:700}
+.wb-next-wait{font-size:.9rem}
+.wb-next small{flex-basis:100%;color:var(--ink-2);font-size:.78rem}
+
+/* 表 */
+.wb-grid-wrap{--wb-rowhead:58px;margin:0 12px;overflow:auto;max-height:68vh;border:1px solid var(--line);border-radius:6px;background:var(--panel);outline:none}
+.wb-grid{border-collapse:separate;border-spacing:0;min-width:100%;width:max-content;font-size:.84rem}
+.wb-grid th,.wb-grid td{border-right:1px solid var(--line-2);border-bottom:1px solid var(--line-2)}
+.wb-grid thead th{position:sticky;top:0;z-index:2;padding:7px 8px;background:var(--panel-3);color:var(--ink-2);font-weight:700;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
+.wb-grid thead th.num{text-align:right}
+.wb-col-note{margin-left:6px;padding:0 5px;border:1px solid var(--line);border-radius:4px;font-size:.68rem;font-weight:600;color:var(--ink-3)}
+.wb-grid .wb-rowhead{position:sticky;left:0;z-index:1;width:var(--wb-rowhead);min-width:var(--wb-rowhead);padding:6px 8px;background:var(--panel-3);color:var(--ink-2);font-weight:600;text-align:right;font-variant-numeric:tabular-nums;cursor:pointer;user-select:none}
+.wb-grid thead .wb-rowhead{z-index:3;cursor:default}
+.wb-grid .is-first{position:sticky;left:var(--wb-rowhead);z-index:1}
+.wb-grid thead .is-first{z-index:3}
+.wb-grid tr.has-error .wb-rowhead{color:var(--bad)}
+.wb-row-flag{margin-left:4px;font-weight:800;color:var(--bad)}
+.wb-grid td{position:relative;padding:0;background:var(--panel);color:var(--ink);cursor:cell}
+.wb-grid td:focus{outline:2px solid var(--accent);outline-offset:-2px}
+.wb-grid td.is-readonly{color:var(--ink-2);background:var(--panel-2)}
+.wb-grid td.is-issue{background:var(--warn-soft)}
+.wb-grid td.is-error{background:var(--bad-soft)}
+.wb-grid td.is-selected{background:var(--accent-soft)}
+.wb-grid td.is-selected.is-error{background:var(--bad-soft)}
+.wb-grid td.is-active{outline:2px solid var(--accent);outline-offset:-2px}
+.wb-cell-text{display:block;min-height:32px;max-width:340px;padding:6px 8px;box-sizing:border-box;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.wb-grid td.num .wb-cell-text{text-align:right;font-variant-numeric:tabular-nums}
+.wb-cell-flag{position:absolute;top:2px;right:3px;font-size:.72rem;font-weight:800;line-height:1;color:var(--bad)}
+.wb-grid td.num .wb-cell-flag{right:auto;left:3px}
+.wb-editor{display:block;width:100%;min-width:100%;min-height:32px;margin:0;padding:5px 7px;box-sizing:border-box;border:0;border-radius:0;background:var(--panel);color:var(--ink);font:inherit;outline:2px solid var(--accent);outline-offset:-2px}
+.wb-grid td.num .wb-editor{text-align:right}
+
+/* 検証エラーの一覧・変更の内容 */
+.wb-errors,.wb-diff{margin:0 12px;max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.wb-diff summary{padding:8px 10px;cursor:pointer;font-weight:650;font-size:.84rem}
+.wb-errors table,.wb-diff table{width:100%;border-collapse:collapse;font-size:.8rem}
+.wb-errors th,.wb-errors td,.wb-diff th,.wb-diff td{padding:6px 8px;border-bottom:1px solid var(--line-2);text-align:left;vertical-align:top}
+.wb-errors thead th,.wb-diff thead th{position:sticky;top:0;background:var(--panel-3);color:var(--ink-2);z-index:1}
+.wb-errors td.num,.wb-diff td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.wb-errors td:nth-child(4){color:var(--ink)}
+.wb-errors p,.wb-diff p{margin:6px 10px}
+
+@media(max-width:700px){
+  .wb-stagebar{padding:8px}
+  .wb-grid-wrap{margin:0 8px;max-height:60vh;--wb-rowhead:48px}
+  .wb-cell-text{max-width:220px}
+  .wb-errors,.wb-diff{margin:0 8px}
+}

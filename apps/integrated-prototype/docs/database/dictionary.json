@@ -1,0 +1,3964 @@
+{
+  "revisions": [
+    {
+      "version": "1.0",
+      "date": "2026-09-30",
+      "author": "Claude（代表の依頼）",
+      "note": "初版。全表の領域・論理名・説明と全列の説明を、コードの読み取りから下書きし、別の確かめ役が直した"
+    },
+    {
+      "version": "1.1",
+      "date": "2026-10-01",
+      "author": "Claude（代表の依頼）",
+      "note": "D-026・D-028 に合わせて領域を直した。作品・権利の調達の4表・支払MGの契約と仕入先を企画へ移し、案件・作品・調達・請求書の領域の要確認を外した。受取MGと共有するMGの表は、D-026 で分けるまで精算に置く"
+    },
+    {
+      "version": "1.2",
+      "date": "2026-10-04",
+      "author": "Codex（代表の依頼）",
+      "note": "移行0011で集約した分析の状態・ジョブの2表を追加した（PG移行計画 #28）"
+    }
+  ],
+  "common": {
+    "id": "行のID",
+    "org_id": "組織（organizations）。データの持ち主",
+    "created_at": "作成日時",
+    "created_by": "作成した利用者（users）"
+  },
+  "tables": {
+    "ai_usage": {
+      "domain": "admin",
+      "name": "AIの利用回数",
+      "description": "組織ごとのAI接続の呼び出し回数の累計を表す。AIに追加項目の候補を作らせる前に上限と比べ、呼ぶたびに1足す。",
+      "domain_reason": "要確認: AI接続の利用枠を数える共通の仕組みとして共通基盤にしたが、いま数えるのは管理の追加項目のAI提案だけ。（確かめ役が直した: 書くのは src/app.mjs:1038-1046 の /api/proposals/ai だけで、呼ぶ画面は管理の拡張項目（src/admin/ExtensionsPage.jsx:117、src/shell/nav-model.mjs:93）。共通基盤（画面の枠・ログイン・組織・利用者・権限・監査）には当たらない）",
+      "columns": {
+        "org_id": "組織（organizations）。行のIDを兼ね、1組織1行",
+        "calls": "AIを呼んだ回数の累計（上限と比べる）"
+      }
+    },
+    "audit_log": {
+      "domain": "core",
+      "name": "操作の記録",
+      "description": "利用者が行った書き込みの操作1回を表す。各業務の手順が書き込みのたびに足し、多くは書き込みと同じまとまりで入れる。トリガーでは止めていないが、コードに変更・削除する処理は無い。",
+      "domain_reason": "どの業務の書き込みも同じ形で残す、共通基盤の監査の仕組みのため。",
+      "columns": {
+        "user_id": "操作した利用者（memberships）",
+        "action": "操作の種類（create・update・void・link など）",
+        "entity_type": "操作した対象の種類（shooting_day など）",
+        "entity_id": "対象のID（文字列。「作品:報告」の形もある）",
+        "version_hash": "対象の版の照合値（ある操作だけ）",
+        "detail_json": "詳細（変更前後の値や理由など）",
+        "at": "操作日時"
+      }
+    },
+    "billing_invoice_line_works": {
+      "domain": "revenue",
+      "name": "請求明細の作品配賦",
+      "description": "請求明細1行の金額を作品へ分ける割合を、請求時の商品の配賦のまま写したものを表す。明細ごとに合計1万（100%）で、変更・削除できない。",
+      "domain_reason": "請求書（billing_invoices）を作る手順で同時に作るため、領域は請求書に合わせる。",
+      "columns": {
+        "invoice_id": "請求書（billing_invoices）",
+        "sale_id": "売上明細（sale_lines）",
+        "work_id": "作品（works）",
+        "allocation_bps": "作品への配賦率（bps。1万で100%）"
+      }
+    },
+    "billing_invoice_lines": {
+      "domain": "revenue",
+      "name": "請求明細",
+      "description": "請求書に含めた売上明細1行を、請求時の値のまま写したものを表す。元の売上明細と完全に一致するときだけ作れ、変更・削除できない。",
+      "domain_reason": "請求書（billing_invoices）を作る手順で同時に作るため、領域は請求書に合わせる。",
+      "columns": {
+        "invoice_id": "請求書（billing_invoices）",
+        "sale_id": "売上明細（sale_lines）",
+        "report_id": "売上報告（report_imports）",
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "product_id": "商品（products）",
+        "partner_id": "取引先（partners）",
+        "description": "明細の内容",
+        "accounting_month": "計上月（YYYY-MM）",
+        "source_row": "元の報告書の行番号",
+        "amount_ex_tax": "金額（円・税抜）",
+        "tax_amount": "税額（円。元の報告の値）",
+        "amount_inc_tax": "金額（円・税込）"
+      }
+    },
+    "billing_invoice_sequences": {
+      "domain": "revenue",
+      "name": "請求番号の採番",
+      "description": "組織ごと・請求日の年月ごとに、最後に出した請求番号の連番を表す。請求書を作るたびに1進める。",
+      "domain_reason": "請求書（billing_invoices）を作る手順で番号を進めるため、領域は請求書に合わせる。",
+      "columns": {
+        "year_month": "請求日の年月（YYYYMM）",
+        "last_number": "最後に使った連番"
+      }
+    },
+    "billing_invoice_voids": {
+      "domain": "revenue",
+      "name": "請求の取消",
+      "description": "請求書1通を取り消した記録（日付と理由）を表す。有効な入金をすべて取り消してからでないと作れず、変更・削除できない。",
+      "domain_reason": "請求書（billing_invoices）を取り消す手順で作るため、領域は請求書に合わせる。",
+      "columns": {
+        "invoice_id": "取り消した請求書（billing_invoices）",
+        "voided_on": "取消日（請求日以後）",
+        "reason": "取消の理由"
+      }
+    },
+    "billing_invoices": {
+      "domain": "revenue",
+      "name": "請求書",
+      "description": "取引先1社へ出した請求書1通を表す。同じ取引先の有効な売上報告を選んで作り、そのときの明細・配賦・税計算を写して固定し、変えられるのは取消（void）への1回だけ。",
+      "domain_reason": "請求・入金は売上と決めたため（D-028）。請求明細・入金などの表は、この請求書に合わせる。",
+      "columns": {
+        "invoice_number": "請求番号（ON-INV-年月-連番。組織内で一意）",
+        "partner_id": "請求先の取引先（partners）",
+        "invoice_date": "請求日",
+        "due_date": "契約上の支払期日",
+        "source_amount_basis": "元の報告額の基準。platform_net（PF控除後）だけ",
+        "amount_ex_tax": "請求額（円・税抜）",
+        "tax_amount": "税額（円）",
+        "amount_inc_tax": "請求額（円・税込）",
+        "status": "状態（issued=発行済み、void=取消済み）",
+        "note": "備考",
+        "snapshot_json": "請求時の報告・明細・配賦・税計算の写し",
+        "snapshot_hash": "写しの照合値（組織内で一意）",
+        "version": "取消で1増える番号（同時更新の検出用）"
+      }
+    },
+    "billing_receipt_allocations": {
+      "domain": "revenue",
+      "name": "入金の消込",
+      "description": "入金1回のうち、請求書1通に充てた額を表す。入金ごとの合計は入金額と一致し、請求の税込額を超えられず、変更・削除できない。",
+      "domain_reason": "入金（billing_receipts）を記録する手順で同時に作るため、領域は入金に合わせる。",
+      "columns": {
+        "receipt_id": "入金（billing_receipts）",
+        "invoice_id": "請求書（billing_invoices）",
+        "amount_yen": "充てた額（円。請求の税込額に対して）"
+      }
+    },
+    "billing_receipt_reversals": {
+      "domain": "revenue",
+      "name": "入金の取消",
+      "description": "入金1回を取り消した記録（逆仕訳の日と理由）を表す。取消日以後はその入金の消込を無いものとして残高を出し、変更・削除できない。",
+      "domain_reason": "入金（billing_receipts）を取り消す手順で作るため、領域は入金に合わせる。",
+      "columns": {
+        "receipt_id": "取り消した入金（billing_receipts）",
+        "reversed_on": "取消日（入金日以後）",
+        "reason": "取消の理由"
+      }
+    },
+    "billing_receipts": {
+      "domain": "revenue",
+      "name": "入金",
+      "description": "取引先からの入金1回を表す。請求書への消込（billing_receipt_allocations）と同時に作って変更・削除できず、直すときは入金の取消を足す。",
+      "domain_reason": "請求への入金を記録する手順で作り、領域は請求書（billing_invoices）に合わせる。",
+      "columns": {
+        "partner_id": "入金した取引先（partners）",
+        "reference": "入金の参照番号（取引先ごとに一意）",
+        "received_on": "入金日",
+        "amount_yen": "入金額（円。請求の税込額に充てる）",
+        "allocation_count": "消し込む請求書の件数（1〜10）",
+        "note": "備考",
+        "recorded_at": "記録した日時"
+      }
+    },
+    "billing_sale_claims": {
+      "domain": "revenue",
+      "name": "請求済みの売上",
+      "description": "売上明細1行がどの請求書で請求済みかを表す。1つの売上は1つの請求書でしか請求できず、請求を取り消すとこの行を消す。",
+      "domain_reason": "請求書（billing_invoices）を作る手順で同時に作るため、領域は請求書に合わせる。",
+      "columns": {
+        "sale_id": "売上明細（sale_lines）",
+        "invoice_id": "請求書（billing_invoices）",
+        "claimed_at": "請求に使った日時"
+      }
+    },
+    "broadcast_airings": {
+      "domain": "sales",
+      "name": "放送実績",
+      "description": "放送枠で実際に放送した日と回数を1行ずつ持つ。予定回数を超えては足せず、変更も削除もできない。",
+      "domain_reason": "営業の番販・放送で放送の実績を記録する手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "slot_id": "放送枠（broadcast_slots）",
+        "aired_on": "放送日",
+        "run_count": "放送した回数",
+        "source_reference": "根拠（必須）",
+        "note": "備考"
+      }
+    },
+    "broadcast_availability_previews": {
+      "domain": "sales",
+      "name": "販売条件の取込の確認",
+      "description": "流通別の販売条件（sales_availability_versions）への Excel 取込を登録する前の確認を1行で持つ。本人だけが15分のうちに1回だけ使え、使うと consumed を1にする。",
+      "domain_reason": "営業の番販・放送で販売条件を Excel から取り込む手順が作る行のため。",
+      "columns": {
+        "token": "確認の識別子（登録のときに送る）",
+        "user_id": "確かめた利用者（users）",
+        "payload_json": "登録する販売条件の行の一覧のJSON",
+        "expires_at": "使える期限の日時",
+        "consumed": "0＝未使用、1＝登録に使った"
+      }
+    },
+    "broadcast_availability_rates": {
+      "domain": "sales",
+      "name": "販売条件の料率",
+      "description": "流通別の販売条件の版1つに、料率を1行で足す。販売条件を1件ずつ保存する受け口で書き、変更も削除もできない。",
+      "domain_reason": "営業の番販・放送で販売条件を保存する手順が作る行のため。",
+      "columns": {
+        "availability_version_id": "販売条件の版（sales_availability_versions）",
+        "rate_bps": "料率（bps。10000＝100%）。空欄は未入力"
+      }
+    },
+    "broadcast_entry_term_versions": {
+      "domain": "sales",
+      "name": "明細ごとの放送条件（版）",
+      "description": "取引先別リストの放送の明細ごとに、許諾放送回数とホールドバックを版で1行に持つ。流通が放送の明細にだけ付けられ、変更も削除もできない。",
+      "domain_reason": "番販の放送ウィンドウ提案で明細ごとの放送の条件を登録する手順が作る行のため。",
+      "columns": {
+        "entry_id": "取引先リストの明細（partner_list_entries）",
+        "version_no": "明細ごとの版の番号",
+        "licensed_runs": "許諾放送回数。空欄＝未確認",
+        "holdback_months": "放送期間の後、他局へ提案しない月数。空欄＝未確認",
+        "reason": "版を作った理由"
+      }
+    },
+    "broadcast_import_previews": {
+      "domain": "sales",
+      "name": "放送枠の取込の確認",
+      "description": "作品の放送枠への Excel 取込を登録する前の確認を1行で持つ。本人だけが15分のうちに1回だけ登録に使え、使うと consumed を1にする。",
+      "domain_reason": "営業の番販・放送で放送枠を Excel から取り込む手順が作る行のため。",
+      "columns": {
+        "token": "確認の識別子（登録のときに送る）",
+        "user_id": "確かめた利用者（users）",
+        "work_id": "作品（works）",
+        "payload_json": "登録する行の一覧のJSON",
+        "expires_at": "使える期限の日時",
+        "consumed": "0＝未使用、1＝登録に使った"
+      }
+    },
+    "broadcast_proposal_draft_deletions": {
+      "domain": "sales",
+      "name": "提案の下書きの削除",
+      "description": "提案から作った下書きのうち、合意に至らず削除にした放送枠を1行で持つ。同時に中止の版を積み、この行がある枠は一覧と Excel から外す。",
+      "domain_reason": "番販の放送ウィンドウ提案で下書きを削除する手順が作る行のため。",
+      "columns": {
+        "slot_id": "削除した下書き（broadcast_proposal_drafts）",
+        "revision": "削除で積んだ中止の版の番号（broadcast_slot_versions）",
+        "reason": "削除の理由",
+        "deleted_by": "削除した利用者（users）",
+        "deleted_at": "削除した日時"
+      }
+    },
+    "broadcast_proposal_drafts": {
+      "domain": "sales",
+      "name": "提案から作った下書き",
+      "description": "放送ウィンドウ提案から作った放送枠の下書き1つにつき、提案の内容を1行で持つ。放送枠そのものは放送枠の表に作り、この行は変更も削除もできない。",
+      "domain_reason": "番販の放送ウィンドウ提案から放送枠の下書きを作る手順が作る行のため。",
+      "columns": {
+        "slot_id": "作った放送枠（broadcast_slots）",
+        "work_id": "作品（works）",
+        "proposal_key": "1回の提案の操作で作った下書きに共通の目印",
+        "product_id": "放送用の商品（products）。空欄＝作品全体",
+        "station_partner_id": "放送局の取引先（partners）",
+        "broadcast_month": "放送月（YYYY-MM）",
+        "run_kind": "first＝初回、rerun＝再放送",
+        "as_of": "提案の基準日",
+        "proposal_from": "提案する期間の開始日",
+        "proposal_to": "提案する期間の終了日",
+        "basis_text": "提案の根拠の文",
+        "memo": "メモ"
+      }
+    },
+    "broadcast_sale_links": {
+      "domain": "sales",
+      "name": "放送枠と売上の対応",
+      "description": "放送枠と売上明細の結びつきを1行ずつ持つ。1つの売上は1つの放送枠にだけ結べ、変更はできない。",
+      "domain_reason": "番販・放送の画面で売上を放送枠に結ぶ手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "slot_id": "放送枠（broadcast_slots）",
+        "sale_id": "売上明細（sale_lines）。1つの売上は1枠だけ",
+        "note": "備考"
+      }
+    },
+    "broadcast_slot_versions": {
+      "domain": "sales",
+      "name": "放送枠の版",
+      "description": "放送枠の中身（放送月・局・期間・状態）を版ごとに1行で持つ。修正・申請・承認・中止のたびに次の版を足し、変更も削除もできない。",
+      "domain_reason": "営業の番販・放送で放送枠を登録・申請・承認する手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "slot_id": "放送枠（broadcast_slots）",
+        "revision": "放送枠ごとの版の番号",
+        "broadcast_month": "放送月（YYYY-MM）",
+        "station_name": "放送局の名前（一覧にない局名も入れられる）",
+        "customer_partner_id": "売上の相手の取引先（partners）。提案から作った枠では放送局",
+        "agency_partner_id": "代理店（partners）",
+        "agreement_id": "放送の販売契約（sales_agreements）",
+        "period_from": "放送期間の開始日（放送月の中）",
+        "period_to": "放送期間の終了日（放送月の中）",
+        "planned_on": "放送予定日（期間の中。未定は空欄）",
+        "planned_runs": "予定の放送回数",
+        "status": "draft＝下書き、pending_first＝一次承認の申請中、tentative＝仮押さえ、pending_final＝最終承認の申請中、confirmed＝確定、rejected＝差戻し、cancelled＝中止",
+        "reason": "版を作った理由（差し戻し・中止のときなど）",
+        "source_reference": "根拠（編成表・メールなど）",
+        "changed_by": "この版を作った利用者（users）"
+      }
+    },
+    "broadcast_slots": {
+      "domain": "sales",
+      "name": "放送枠",
+      "description": "作品の放送枠1つを1行で持つ（放送月・局などの中身は版の表に積む）。番販・放送の画面、Excel 取込、放送ウィンドウ提案から作る。",
+      "domain_reason": "営業の番販・放送で放送枠を作る手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）"
+      }
+    },
+    "broadcast_station_type_versions": {
+      "domain": "sales",
+      "name": "放送局の種別（版）",
+      "description": "放送局である取引先ごとに、局の種別（地上波・BS など）を版で1行に持つ。直すたびに次の版を足し、変更も削除もできない。",
+      "domain_reason": "番販の放送ウィンドウ提案で放送局の種別を登録する手順が作る行のため。",
+      "columns": {
+        "partner_id": "放送局の取引先（partners）",
+        "version_no": "取引先ごとの版の番号",
+        "station_type": "局の種別（terrestrial＝地上波、streaming＝配信など）",
+        "reason": "版を作った理由"
+      }
+    },
+    "bulk_import_batches": {
+      "domain": "admin",
+      "name": "一括登録の記録",
+      "description": "Excel 一括登録を1回行った記録（件数つき）。登録と同時に足し、変更も削除もできない。",
+      "domain_reason": "Excel の一括入出力は管理が受け持つため。",
+      "columns": {
+        "entity": "登録の種類（取引先・案件・作品・商品・経費）",
+        "file_name": "登録したファイル名",
+        "content_hash": "登録した内容の SHA-256。同じ内容の再登録に気づくのに使う",
+        "inserted_count": "追加した行の数",
+        "updated_count": "更新した行の数",
+        "unchanged_count": "変更がなかった行の数",
+        "approval_count": "この画面では反映しなかった既存行の修正の数（表編集の承認で直す行と、案件のように直せない行を合わせた数）。承認の申請は自動では作らない"
+      }
+    },
+    "bulk_import_previews": {
+      "domain": "admin",
+      "name": "一括登録のプレビュー",
+      "description": "Excel 一括登録で読み込んだ内容のプレビュー1件。登録の時に予定を作り直して照合し、一度使ったら used_at を入れる。期限は30分。",
+      "domain_reason": "Excel の一括入出力は管理が受け持つため。",
+      "columns": {
+        "token": "プレビューの鍵（ランダムな文字列）",
+        "user_id": "読み込んだ利用者（users）",
+        "entity": "登録の種類（取引先・案件・作品・商品・経費）",
+        "file_name": "読み込んだファイル名",
+        "content_hash": "読み込んだ内容（種類・見出し・行）の SHA-256",
+        "rows_json": "読み込んだ見出しと行",
+        "fingerprint": "登録予定（追加・更新・変更なしと変更点）の要約。登録時に照合",
+        "expires_at": "期限（作ってから30分）",
+        "used_at": "登録に使った日時。空なら未使用"
+      }
+    },
+    "campaigns": {
+      "domain": "publicity",
+      "name": "宣伝施策",
+      "description": "作品ごとの宣伝の施策1件（目的・期間・対象）を表す。宣伝の画面で登録し、version をそろえて変更できる。",
+      "domain_reason": "宣伝の施策を記録する宣伝の手順で作るため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "name": "施策の名前",
+        "objective": "施策の目的",
+        "audience_hypothesis": "対象とする人の仮説",
+        "starts_on": "開始日",
+        "ends_on": "終了日",
+        "target_region": "対象地域",
+        "target_channel": "対象の流通",
+        "version": "更新のたびに1増える番号（同時更新の検出用）"
+      }
+    },
+    "catalog_credits": {
+      "domain": "ledger",
+      "name": "作品のクレジット",
+      "description": "カタログ情報の版ごとの、監督・脚本・出演者・スタッフ1名分。版と一緒に書き、書き換えない。",
+      "domain_reason": "作品のカタログ情報の版と一緒に、作品・商品マスタから入れる。",
+      "columns": {
+        "work_id": "作品（works）",
+        "revision": "カタログ情報の版（catalog_profiles）",
+        "position": "表示順",
+        "role": "役割（監督・脚本・出演者・スタッフ）",
+        "name": "名前",
+        "detail": "担当・役名"
+      }
+    },
+    "catalog_edition_tags": {
+      "domain": "ledger",
+      "name": "映像版の制作国・言語など",
+      "description": "映像版ごとの制作国・言語・音楽著作権管理団体を、1つの値ごとに1行で持つ。版と一緒に書き、書き換えない。",
+      "domain_reason": "作品のカタログ情報の版と一緒に、作品・商品マスタから入れる。",
+      "columns": {
+        "work_id": "作品（works）",
+        "revision": "カタログ情報の版（catalog_profiles）",
+        "edition_key": "映像版（catalog_editions）",
+        "kind": "種類（制作国・言語・音楽著作権管理団体）",
+        "value": "値（1行に1つ）"
+      }
+    },
+    "catalog_editions": {
+      "domain": "ledger",
+      "name": "映像版",
+      "description": "カタログ情報の版ごとの映像版1つ（尺・画角・審査区分など）。版と一緒に書き、書き換えない。",
+      "domain_reason": "作品のカタログ情報の版と一緒に、作品・商品マスタから入れる。",
+      "columns": {
+        "work_id": "作品（works）",
+        "revision": "カタログ情報の版（catalog_profiles）",
+        "edition_key": "映像版の識別名（英数字）",
+        "name": "映像版名",
+        "runtime_seconds": "尺（秒）",
+        "aspect_ratio": "画角",
+        "rating_authority": "審査機関・地域",
+        "rating_code": "審査区分"
+      }
+    },
+    "catalog_product_editions": {
+      "domain": "ledger",
+      "name": "商品と映像版の対応",
+      "description": "カタログ情報の版ごとに、商品がどの映像版を収めるかの対応。版と一緒に書き、書き換えない。",
+      "domain_reason": "作品のカタログ情報の版と一緒に、作品・商品マスタから入れる。",
+      "columns": {
+        "work_id": "作品（works）",
+        "revision": "カタログ情報の版（catalog_profiles）",
+        "product_id": "商品（products。作品との対応は product_works）",
+        "edition_key": "収める映像版（catalog_editions）"
+      }
+    },
+    "catalog_product_windows": {
+      "domain": "ledger",
+      "name": "商品別の販売ウィンドウ（版）",
+      "description": "商品×流通×地域×枠ごとの解禁日・終了日・販売条件・状態の版。作品・商品マスタの「販売ウィンドウ」で編集の権限がある利用者が積み、書き換えない。",
+      "domain_reason": "要確認: 販売ウィンドウと条件は営業の受け持ちだが、いまは作品・商品マスタの画面から作り、移設計画では ledger に置く。（確かめ役が直した: 書くのは src/catalog.mjs:14（POST /api/work-catalog/windows。作品・商品マスタ WorkCatalog.jsx の販売ウィンドウ）だけで、broadcast/broadcast-windows-routes.mjs:92 は読むだけ。plans/2026-09-29-integrated-src-restructure.md:56 で catalog.mjs・WorkCatalog.jsx は ledger）",
+      "columns": {
+        "work_id": "作品（works）",
+        "product_id": "商品（products。作品との対応は product_works）",
+        "distribution_code": "流通（distribution_types）",
+        "territory": "地域",
+        "window_key": "枠（既定は「標準」）",
+        "revision": "商品×流通×地域×枠ごとの版の連番",
+        "release_on": "解禁日",
+        "sales_end_on": "販売の終了日",
+        "terms_text": "販売条件（確定のときは必須）",
+        "status": "状態（下書き・確定・取り下げ）",
+        "source_reference": "根拠"
+      }
+    },
+    "catalog_profiles": {
+      "domain": "ledger",
+      "name": "作品のカタログ情報（版）",
+      "description": "作品ごとのあらすじ・キャッチコピー・製作年などの版。作品・商品マスタの作品情報で保存するたびに、クレジット・映像版・商品との対応と一緒に積み、書き換えない。",
+      "domain_reason": "作品・商品マスタ（業務基幹）の作品情報で入れる、作品のカタログ情報の台帳。",
+      "columns": {
+        "work_id": "作品（works）",
+        "revision": "作品ごとの版の連番",
+        "synopsis_long": "あらすじ（ロング）",
+        "synopsis_short": "あらすじ（ショート）",
+        "catch_long": "キャッチコピー（ロング）",
+        "catch_short": "キャッチコピー（ショート）",
+        "production_year": "製作年",
+        "creation_year": "制作年",
+        "source_reference": "出所・改訂理由"
+      }
+    },
+    "change_proposals": {
+      "domain": "admin",
+      "name": "追加項目の提案",
+      "description": "宣伝の指標などを追加したいという提案1件と、その採否を表す。依頼文から規則かAIで候補を作って保存し、管理者が採用すると指標の定義（metric_definitions）に足す。",
+      "domain_reason": "要確認: 管理の追加項目画面で提案と採否を行うため管理にしたが、設計の分類（design-model）では宣伝に入れている。",
+      "columns": {
+        "requested_by": "提案した利用者（users）",
+        "request_text": "提案のもとになった依頼文（JSONを貼り付けたときは「AI JSON貼付」が入る）",
+        "field_key": "追加する項目キー",
+        "label": "追加する項目名",
+        "value_type": "値の型（整数・小数・文字・はい/いいえ）",
+        "unit": "単位",
+        "aggregation": "集計方法（合計・平均・最新・集計しない）",
+        "sample_header": "報告書での見出しの例",
+        "meaning_reason": "項目の意味と追加の理由",
+        "affected_apps_json": "使う先（宣伝の入力・CSV取込・分析）",
+        "base_schema_version": "提案時の項目定義の版（schema_meta）",
+        "proposal_hash": "提案の内容の照合値（組織内で一意）",
+        "source": "候補の出どころ（offline-rule=規則、ai-json=AIのJSONを貼り付け、workers-ai=AI、service=外部サービス）",
+        "status": "採否（pending=確認待ち、adopted、rejected）",
+        "decided_at": "採否を決めた日時",
+        "decided_by": "採否を決めた管理者（users）"
+      }
+    },
+    "committee_contracts": {
+      "domain": "settlement",
+      "name": "製作委員会契約",
+      "description": "製作委員会の契約1件。製作委員会の調達ケースと契約書の参照から作り、書き換えない。条件は条件版に持つ。",
+      "domain_reason": "製作委員会の分配の計算は精算が受け持つため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "intake_case_id": "製作委員会の調達ケース（rights_intake_cases）",
+        "document_id": "元の契約書の参照（rights_intake_documents）",
+        "contract_code": "契約コード（組織内で一意）",
+        "title": "契約名"
+      }
+    },
+    "committee_investment_payments": {
+      "domain": "accounting",
+      "name": "委員会への出資の払込",
+      "description": "1行は、製作委員会の参加者が出資額（committee_term_investments）を払い込んだ1回。最新の条件版に記録し、合計は出資額まで。取消は負の額の行を足す。",
+      "domain_reason": "要確認: PL・BS の「作品別の残高」から記録し現預金と未払込を出すので会計に置いたが、製作委員会の記録として精算とも読める。",
+      "columns": {
+        "term_version_id": "製作委員会の条件版（committee_term_versions）",
+        "partner_id": "払い込んだ参加者（partners）",
+        "paid_on": "払込日。取消の行は取消日",
+        "amount_yen": "払込額（円）。取消の行は負。税込か税抜かは未確認",
+        "method": "方法（振込・現金・カード・相殺・その他）",
+        "note": "備考。取消の行は理由",
+        "reverses_id": "取り消す払込（committee_investment_payments）"
+      }
+    },
+    "committee_report_previews": {
+      "domain": "settlement",
+      "name": "委員会報告の保存前確認",
+      "description": "委員会報告を保存する前の確認1回分を表す。確認画面で計算したときに作り、15分で期限が切れ、保存に使うと consumed を1にする。期限切れの行は、次に確認を作るときに消す。",
+      "domain_reason": "委員会報告を保存する前の確認で使い、精算の手順の途中の状態のため。",
+      "columns": {
+        "token": "確認の鍵（行のID。保存のときに照合する）",
+        "user_id": "確認を作った利用者（memberships）",
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "payload_json": "確認時の入力・計算結果と照合値",
+        "expires_at": "期限（作成から15分）",
+        "consumed": "保存に使ったか（1=使用済み）"
+      }
+    },
+    "committee_report_snapshots": {
+      "domain": "settlement",
+      "name": "委員会報告の下書き",
+      "description": "製作委員会の1つの締め期間の報告の下書き1件を表す。確認画面の計算を保存したときに作り、入力と計算結果を入力の照合値とともに固定して変えられない。",
+      "domain_reason": "製作委員会の締め期間ごとの分配を計算して残す精算の手順で作るため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "contract_id": "製作委員会の契約（committee_contracts）",
+        "term_version_id": "使った条件版（committee_term_versions）",
+        "period_index": "何期目か（日程から数えた締め期間の番号）",
+        "period_from": "締め期間の開始日",
+        "period_to": "締め期間の終了日",
+        "close_on": "締め日",
+        "report_on": "報告予定日",
+        "payment_on": "支払予定日",
+        "period_date_basis": "報告を期間に入れる基準（販売期間か報告受領日）",
+        "stub": "端数期間か（1=フェーズの終わりで切れた期間）",
+        "allow_stub": "端数期間の採用を明示したか（1=明示）",
+        "status": "状態。いまは draft（下書き）だけ",
+        "verification": "確認の状態。いまは unverified（未確認）だけ",
+        "calculation_version": "計算方式の版",
+        "input_json": "計算に使った入力（報告・経費・控除の選択）",
+        "input_hash": "入力の照合値",
+        "calculation_json": "計算結果（窓口ごとの手数料・分配など）"
+      }
+    },
+    "committee_schedule_phases": {
+      "domain": "settlement",
+      "name": "委員会の報告・支払日程",
+      "description": "委員会の条件版ごとに、締め・報告・支払の日程の区切り（フェーズ）1つを表す。フェーズは隙間なく続き、ここから締め期間を数える。",
+      "domain_reason": "製作委員会の条件版を登録する精算の手順で作り、締め期間の計算に使うため。",
+      "columns": {
+        "term_version_id": "委員会の条件版（committee_term_versions）",
+        "phase_order": "フェーズの順番（1から）",
+        "label": "フェーズの名前",
+        "starts_on": "フェーズの開始日",
+        "ends_on": "フェーズの終了日",
+        "first_close_on": "最初の締め日",
+        "interval_months": "締めの間隔（1〜12か月）",
+        "close_day": "締めの日（1〜31。eom=月末）",
+        "report_offset_months": "締めから報告までの月数",
+        "report_day": "報告の日（1〜31。eom=月末）",
+        "payment_offset_months": "締めから支払までの月数",
+        "payment_day": "支払の日（1〜31。eom=月末）",
+        "reference_type": "日程の基準（公開日・初回売上・初回報告・契約個別）",
+        "reference_date": "基準の日付"
+      }
+    },
+    "committee_snapshot_deductions": {
+      "domain": "settlement",
+      "name": "委員会報告の追加控除",
+      "description": "1行は、委員会報告を保存するとき、手数料と経費を引いた後で差し引く追加の控除1件（権利処理費か製作費回収）。変更・削除はできない。",
+      "domain_reason": "委員会報告を保存するときに一緒に書く控除で、精算の手順で作るため。",
+      "columns": {
+        "snapshot_id": "委員会報告の保存版（committee_report_snapshots）",
+        "work_id": "作品（works）",
+        "report_id": "元の売上報告。保存版に含めた報告（committee_snapshot_reports）に限り、窓口も一致させる",
+        "window_id": "販路の窓口（committee_term_windows）",
+        "category": "区分（権利処理費・製作費回収）",
+        "recipient_partner_id": "受取先（partners）。製作費回収は委員会の参加者",
+        "amount_yen": "控除額（円・正の数）。税抜の売上から出した分配原資から差し引く",
+        "source_reference": "根拠の識別番号（作品の中で一意）"
+      }
+    },
+    "committee_snapshot_expenses": {
+      "domain": "settlement",
+      "name": "委員会報告の経費",
+      "description": "委員会報告の下書きで控除した経費1件を表す。1つの経費は1度しか使えず、保存時に作って変えられない。",
+      "domain_reason": "委員会報告の下書きを保存する精算の手順で同時に作るため。",
+      "columns": {
+        "snapshot_id": "委員会報告の下書き（committee_report_snapshots）",
+        "work_id": "作品（works）",
+        "expense_id": "経費（expenses）",
+        "window_id": "経費を控除した窓口（committee_term_windows）",
+        "amount_ex_tax": "控除した額（円・税抜。保存時の経費の実額）"
+      }
+    },
+    "committee_snapshot_lines": {
+      "domain": "settlement",
+      "name": "委員会報告の明細",
+      "description": "委員会報告の下書きに入れた売上明細1行を、作品への配賦後の額で表す。保存時に作り、変えられない。",
+      "domain_reason": "委員会報告の下書きを保存する精算の手順で同時に作るため。",
+      "columns": {
+        "snapshot_id": "委員会報告の下書き（committee_report_snapshots）",
+        "work_id": "作品（works）",
+        "report_id": "売上報告（report_imports）",
+        "sale_id": "売上明細（sale_lines）",
+        "window_id": "当てはめた窓口（committee_term_windows）",
+        "source_row": "元の報告書の行番号",
+        "allocation_bps": "作品への配賦率（bps。1万で100%）",
+        "allocated_amount_ex_tax": "作品へ配賦した額（円・税抜）",
+        "sales_period_from": "販売期間の開始日",
+        "sales_period_to": "販売期間の終了日",
+        "accounting_month": "計上月（YYYY-MM）"
+      }
+    },
+    "committee_snapshot_member_amounts": {
+      "domain": "settlement",
+      "name": "委員会報告の分配額",
+      "description": "委員会報告の下書きで、窓口ごと・参加者ごとに計算した分配額を表す。保存時に作り、変えられない。",
+      "domain_reason": "委員会の参加者への分配額を計算して残す精算の手順で作るため。",
+      "columns": {
+        "snapshot_id": "委員会報告の下書き（committee_report_snapshots）",
+        "window_id": "窓口（committee_term_windows）",
+        "partner_id": "参加者の取引先（partners）",
+        "share_bps": "持分（bps。条件版の持分の写し）",
+        "amount_yen": "分配額（円。税抜の売上・経費から計算）",
+        "route": "支払経路（direct=直接、via_manager=幹事経由）",
+        "window_fee_recipient": "窓口手数料の受取人か（1=はい）",
+        "manager_fee_recipient": "幹事手数料の受取人か（1=はい）"
+      }
+    },
+    "committee_snapshot_reports": {
+      "domain": "settlement",
+      "name": "委員会報告に含めた売上報告",
+      "description": "委員会報告の下書きに含めた売上報告1件と、当てはめた窓口を表す。1つの報告は作品ごとに1度しか使えず、個別精算（settlement_report_links）にも使えない。",
+      "domain_reason": "委員会報告の下書きを保存する精算の手順で同時に作るため。",
+      "columns": {
+        "snapshot_id": "委員会報告の下書き（committee_report_snapshots）",
+        "work_id": "作品（works）",
+        "report_id": "売上報告（report_imports）",
+        "window_id": "当てはめた窓口（committee_term_windows）",
+        "report_basis": "報告額の基準（gross=PF控除前、net=控除後）"
+      }
+    },
+    "committee_term_funding": {
+      "domain": "settlement",
+      "name": "委員会の製作費総額",
+      "description": "1行は、製作委員会の条件版に付ける製作費の総額。契約で確定したときだけ条件版と一緒に入れ、製作費回収の上限に使う。変更・削除はできない。",
+      "domain_reason": "製作委員会の条件版と一緒に登録し、製作費回収の上限として精算の計算に使うため。",
+      "columns": {
+        "term_version_id": "製作委員会の条件版（committee_term_versions）",
+        "production_cost_yen": "製作費の総額（円。税込か税抜かは未確認）"
+      }
+    },
+    "committee_term_investments": {
+      "domain": "settlement",
+      "name": "委員会の出資額",
+      "description": "1行は、製作委員会の条件版の参加者1社の出資額。製作費の総額と一緒に入れ、合計は製作費の総額と一致させる。変更・削除はできない。",
+      "domain_reason": "製作委員会の条件版と一緒に登録する参加者の出資額で、精算の手順で作るため。",
+      "columns": {
+        "term_version_id": "製作委員会の条件版（committee_term_versions）",
+        "partner_id": "出資する参加者（partners。committee_term_members）",
+        "amount_yen": "出資額（円。税込か税抜かは未確認）"
+      }
+    },
+    "committee_term_members": {
+      "domain": "settlement",
+      "name": "委員会の参加者（条件版）",
+      "description": "製作委員会の条件版ごとの参加者1者と持分を表す。条件版の登録時に調達案件の参加者から写して作り、あとから変えられない。",
+      "domain_reason": "製作委員会の条件版を登録する精算の手順で作り、分配の計算に使うため。",
+      "columns": {
+        "term_version_id": "委員会の条件版（committee_term_versions）",
+        "partner_id": "参加者の取引先（partners）",
+        "role": "参加者の役割。調達案件の参加者から写す",
+        "share_bps": "持分（bps。1万で100%、参加者の合計は1万）",
+        "member_order": "参加者の並び順（1から）"
+      }
+    },
+    "committee_term_version_effective": {
+      "domain": "settlement",
+      "name": "委員会条件版の適用開始月",
+      "description": "1行は、製作委員会の条件版の適用開始月。条件版の表に列を足せないため別の表に持つ。行の無い条件版は最初の月から効く。変更・削除はできない。",
+      "domain_reason": "製作委員会の条件版を登録するときに一緒に書き、精算の計算でどの版を使うかを決めるため。",
+      "columns": {
+        "term_version_id": "製作委員会の条件版（committee_term_versions）",
+        "effective_from": "適用開始の計上月（YYYY-MM）"
+      }
+    },
+    "committee_term_versions": {
+      "domain": "settlement",
+      "name": "委員会契約の条件版",
+      "description": "製作委員会契約の条件の版1件。改訂は新しい版を足し、書き換えない。メンバー・窓口・日程は版ごとに別の表に持つ。",
+      "domain_reason": "製作委員会の分配の計算は精算が受け持つため。",
+      "columns": {
+        "contract_id": "製作委員会契約（committee_contracts）",
+        "version_no": "契約の中の版番号（1から）",
+        "source_version_id": "コピー元の条件版（committee_term_versions）",
+        "manager_partner_id": "幹事会社の取引先（partners）",
+        "calculation_version": "計算方式の版の名前",
+        "note": "条件版のメモ（1000字まで）"
+      }
+    },
+    "committee_term_window_fee_shares": {
+      "domain": "settlement",
+      "name": "窓口手数料の取り分",
+      "description": "1行は、製作委員会の販路の窓口の窓口手数料を複数社で分けるときの1社の取り分。行が無い窓口は、窓口の受取先1社が全部を受け取る。変更・削除はできない。",
+      "domain_reason": "製作委員会の条件版の窓口ごとに登録し、精算の計算で窓口手数料を分けるため。",
+      "columns": {
+        "window_id": "販路の窓口（committee_term_windows）",
+        "partner_id": "取り分を受け取る会社（partners）",
+        "share_bps": "取り分（bps。1〜10000）。窓口ごとの合計は10000（100%）にする",
+        "reason": "取り分を決めた理由"
+      }
+    },
+    "committee_term_windows": {
+      "domain": "settlement",
+      "name": "委員会の販路窓口",
+      "description": "委員会の条件版ごと・販路の種類ごとに、窓口の取引先と手数料の条件を1行で表す。条件版の登録時に作り、変えられない。",
+      "domain_reason": "製作委員会の条件版を登録する精算の手順で作り、手数料と分配の計算に使うため。",
+      "columns": {
+        "term_version_id": "委員会の条件版（committee_term_versions）",
+        "kind": "販路の種類（theatrical=配給、digital=配信 など）",
+        "label": "窓口の表示名",
+        "window_partner_id": "窓口の取引先（partners。参加者から選ぶ）",
+        "route": "分配金の支払経路（direct=直接、via_manager=幹事経由）",
+        "platform_rate_bps": "PF手数料率（bps）。控除前の報告額にかける",
+        "window_fee_bps": "窓口手数料率（bps）",
+        "manager_fee_bps": "幹事手数料率（bps）",
+        "fee_order": "手数料を引く順（window_first=窓口が先）",
+        "window_fee_basis": "窓口手数料の基礎（PF控除後か幹事手数料控除後）",
+        "manager_fee_basis": "幹事手数料の基礎（PF控除後か窓口手数料控除後）"
+      }
+    },
+    "day_scene_assignments": {
+      "domain": "production",
+      "name": "撮影日ごとのシーン",
+      "description": "撮影日1日に割り当てたシーン1つと、その撮影順・予定・実績を表す。撮影日を更新すると、その日の割り当てを消して作り直す。",
+      "domain_reason": "撮影日にシーンを割り当てる制作の手順（香盤・日々スケ）で作るため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "shooting_day_id": "撮影日（shooting_days）",
+        "scene_id": "シーン（scenes）",
+        "sequence_order": "その日の撮影順（1から）",
+        "planned_start": "予定の開始日時（日本時間。撮影日か翌日）",
+        "planned_end": "予定の終了日時",
+        "actual_start": "実際の開始日時",
+        "actual_end": "実際の終了日時",
+        "outcome": "撮影結果（予定・一部撮影・撮影済み・未撮影）",
+        "notes": "備考"
+      }
+    },
+    "digital_sale_details": {
+      "domain": "revenue",
+      "name": "配信売上の詳細",
+      "description": "配信の売上報告の売上明細1行について、方式・サービス・販売数・視聴など報告にある値を表す。方式ごとに入れられる列が決まり、ここの額（小数も入る文字）は合算しない。",
+      "domain_reason": "売上報告の取込で売上明細と同時に作る売上の手順のため。",
+      "columns": {
+        "sale_id": "売上明細（sale_lines）",
+        "model": "方式（EST・TVOD・SVOD・AVOD・FLAT・MG）",
+        "service_code": "配信サービスのコード（必須）",
+        "sales_count": "販売数（EST・TVOD）",
+        "view_count": "視聴回数（SVOD・AVOD）",
+        "view_seconds": "視聴秒数（SVOD・AVOD）",
+        "unit_price_ex_tax": "販売単価（円・税抜。EST・TVOD）",
+        "holder_unit_price_ex_tax": "当社の単価（円・税抜）",
+        "contract_amount_ex_tax": "契約額（円・税抜。FLATだけ）",
+        "contract_period_from": "契約期間の開始日（FLATだけ）",
+        "contract_period_to": "契約期間の終了日（FLATだけ）",
+        "reported_actual_ex_tax": "報告にある実績額（円・税抜。合算しない）",
+        "reported_recognized_ex_tax": "報告にある計上額（円・税抜。合算しない）",
+        "calculated_actual_ex_tax": "実績額の計算照合値（円・税抜。合算しない）"
+      }
+    },
+    "distribution_master": {
+      "domain": "ledger",
+      "name": "流通区分マスタ",
+      "description": "支給された流通マスタ（CSV）の流通ID1つの名前・取引方法・販売種別を表す。表の定義の移行で入れて変更・削除できず、直すときは新しい移行ファイルで行う。",
+      "domain_reason": "要確認: 支給された流通IDの台帳で他の領域が参照するため台帳にしたが、移設計画の下書きは流通マスタを売上に置いている。",
+      "columns": {
+        "code": "流通ID（distribution_types）",
+        "distribution_name": "流通名（配給・セル・配信 など）",
+        "transaction_method": "取引方法（RS・FLAT・委託 など）",
+        "sales_type": "販売種別",
+        "notes": "備考",
+        "source_sha256": "元のCSVの照合値（SHA-256）",
+        "source_row": "元のCSVの行番号"
+      }
+    },
+    "distribution_types": {
+      "domain": "ledger",
+      "name": "流通の種類",
+      "description": "売上や販売条件を分ける流通の区分1つを表す。組織を問わず共通で、旧区分（theatrical など）と流通マスタの流通ID（H001 など）を表の定義の移行で入れる。",
+      "domain_reason": "要確認: 営業・売上・会計が共通で参照する流通IDの発番元なので台帳にしたが、移設計画の下書きは流通マスタを売上に置いている。",
+      "columns": {
+        "code": "流通ID（行のID）",
+        "family": "大分類（theatrical など。流通マスタ分は unverified）",
+        "label": "表示名（流通マスタ分は流通IDのまま）",
+        "utilization": "利用の形（rental・sell・EST・TVOD など）",
+        "sort_order": "並び順"
+      }
+    },
+    "expected_report_closures": {
+      "domain": "revenue",
+      "name": "届くはずの報告の終了",
+      "description": "届くはずの報告1件の終わり（最後の対象月と理由）を表す。1件に1行だけ足し、変更・削除できない。",
+      "domain_reason": "届くはずの報告（expected_reports）を終える売上の手順で作るため。",
+      "columns": {
+        "expected_report_id": "届くはずの報告（expected_reports）",
+        "last_month": "最後の対象月（YYYY-MM）",
+        "reason": "終了の理由"
+      }
+    },
+    "expected_reports": {
+      "domain": "revenue",
+      "name": "届くはずの報告",
+      "description": "取引先×報告の種類（×作品）ごとに、報告が届く頻度・期限・開始月を表し、受領進捗の母集合になる。変更・削除できず、やめるときは終了の記録を足す。",
+      "domain_reason": "売上報告の受領の進みを追う売上の手順で作るため。",
+      "columns": {
+        "partner_id": "報告を送る取引先（partners）",
+        "kind": "報告の種類（劇場・配信・ビデオグラム・放送・その他）",
+        "work_id": "作品（works）。空なら作品を問わない",
+        "frequency": "頻度（毎月・四半期・半年・毎年）",
+        "due_day": "期限の日。対象期間の最後の月の翌月のこの日（空は翌月末。月末を超える日はその月の末日）",
+        "active_from": "有効期間の開始月（YYYY-MM）",
+        "note": "備考"
+      }
+    },
+    "expense_accounting_versions": {
+      "domain": "expenses",
+      "name": "経費明細の会計確認（版）",
+      "description": "経費明細1件ごとの、費用区分・税区分・源泉区分と確かめた源泉額の版。案件の財務の権限がある利用者が、経費の登録・整備・取込や会計の確認のときに積む。支払済みの明細には次の版を積めない。",
+      "domain_reason": "経費明細の登録・取込のときに、費用区分・税区分・源泉を確かめる手順で作る。",
+      "columns": {
+        "reason": "この版を登録した理由",
+        "expense_id": "会計を確かめた経費明細（expenses）",
+        "version_no": "明細ごとの版の連番",
+        "active": "1＝有効、0＝この版で無効にした",
+        "category_version_id": "費用区分の版（expense_category_versions）",
+        "tax_category_version_id": "税区分の版（expense_tax_category_versions）",
+        "withholding_category_version_id": "源泉区分の版（expense_withholding_category_versions）",
+        "withholding_yen": "確かめた源泉の総額（円。未確認のときは空）",
+        "withholding_state": "unverified＝源泉が未確認、confirmed＝確認済み"
+      }
+    },
+    "expense_card_debits": {
+      "domain": "expenses",
+      "name": "カードの引落",
+      "description": "カード払いの代金が口座から引き落とされた1回の記録。全案件の財務の権限がある利用者が書き、取消は expense_card_debits_voids に追記する。",
+      "domain_reason": "経費のカード払いの代金の引落を記録する手順で、経費集計シートから作る。",
+      "columns": {
+        "reason": "記録した理由",
+        "code": "引落の組織内コード",
+        "card_id": "カード（expense_cards）",
+        "occurred_on": "引き落とされた日",
+        "amount_yen": "引き落とされた額（円）",
+        "cash_account_class_version_id": "引落口座の科目の分類版（gl_account_class_versions）"
+      }
+    },
+    "expense_card_debits_voids": {
+      "domain": "expenses",
+      "name": "カード引落の取消",
+      "description": "カードの引落1件を取り消した記録。取消日から効き、元の行は消さず書き換えない。",
+      "domain_reason": "カードの引落の記録を取り消す手順で作る。",
+      "columns": {
+        "reason": "取り消した理由",
+        "record_id": "取り消す引落（expense_card_debits）",
+        "voided_on": "取消日（この日から効く。引落日より前は不可）"
+      }
+    },
+    "expense_card_versions": {
+      "domain": "expenses",
+      "name": "経費カードの条件（版）",
+      "description": "カードごとの名前・引落口座の科目・締め日・引落日の版。管理者が経費集計シートで積み、書き換えない。",
+      "domain_reason": "経費のカード払いの締め・引落の条件で、経費集計シートから管理者が作る。",
+      "columns": {
+        "reason": "この版を登録した理由",
+        "card_id": "カード（expense_cards）",
+        "version_no": "カードごとの版の連番",
+        "name": "カードの名前",
+        "active": "1＝有効、0＝使うのをやめた版",
+        "effective_from": "この条件を使い始める日",
+        "cash_account_class_version_id": "引落口座の科目の分類版（gl_account_class_versions）",
+        "closing_rule": "締めの決め方（day＝指定日、month_end＝月末）",
+        "closing_day": "締めの日（1〜31。月末のときは空）",
+        "payment_rule": "引落日の決め方（day＝指定日、month_end＝月末）",
+        "payment_day": "引落の日（1〜31。月末のときは空）",
+        "payment_month_offset": "締めから引落までの月数（0〜24）"
+      }
+    },
+    "expense_cards": {
+      "domain": "expenses",
+      "name": "経費カード",
+      "description": "経費の支払に使うカード1枚を見分けるコード。管理者がカードを初めて設定するときに書き、書き換えない（条件は expense_card_versions）。",
+      "domain_reason": "経費のカード払いに使うカードの識別で、経費集計シートから管理者が作る。",
+      "columns": {
+        "reason": "登録した理由",
+        "code": "カードの組織内コード"
+      }
+    },
+    "expense_categories": {
+      "domain": "expenses",
+      "name": "費用区分",
+      "description": "費用区分を見分ける組織内のコード1件。管理者が会計設定で費用区分を初めて作るときに書き、書き換えない（中身は expense_category_versions）。",
+      "domain_reason": "経費を分ける費用区分の識別で、経費の会計設定から作る。",
+      "columns": {
+        "reason": "登録した理由",
+        "code": "費用区分の組織内コード（初期採用は R6-INITIAL-…）"
+      }
+    },
+    "expense_category_alias_versions": {
+      "domain": "expenses",
+      "name": "費用区分の別名（版）",
+      "description": "取込や旧データの費目の文字を、どの費用区分の版に当てるかの版。管理者が会計設定や費目の初期採用で積み、書き換えない。",
+      "domain_reason": "取込や旧データの費目を費用区分へ当てる設定で、経費の会計設定から作る。",
+      "columns": {
+        "reason": "この版を登録した理由",
+        "alias_text": "照合に使う費目の文字（全角半角と前後の空白をならす）",
+        "version_no": "別名ごとの版の連番",
+        "category_version_id": "当てる費用区分の版（expense_category_versions）",
+        "active": "1＝有効、0＝使うのをやめた版"
+      }
+    },
+    "expense_category_versions": {
+      "domain": "expenses",
+      "name": "費用区分の版",
+      "description": "費用区分ごとの名前・費用の科目・費用にする時期の版。管理者が経費の会計設定や費目の初期採用で積み、書き換えない。",
+      "domain_reason": "費用区分の中身の設定で、経費の会計設定と費目の初期採用から作る。",
+      "columns": {
+        "reason": "この版を登録した理由",
+        "category_id": "費用区分（expense_categories）",
+        "version_no": "費用区分ごとの版の連番",
+        "active": "1＝有効、0＝使うのをやめた版",
+        "name": "費用区分の名前",
+        "account_class_version_id": "費用の科目の分類版（gl_account_class_versions）",
+        "recognition_timing": "費用にする時期（incurred_month＝発生月、release_month_once＝作品の劇場公開月に一括）"
+      }
+    },
+    "expense_credit_links": {
+      "domain": "expenses",
+      "name": "減額と元の明細",
+      "description": "減額（負の額）の経費明細と、元の経費明細・元の請求書の対応。減額の証憑で経費を登録するときに作り、書き換えない。",
+      "domain_reason": "減額の証憑で経費を登録する手順で作る。",
+      "columns": {
+        "reason": "登録した理由",
+        "expense_id": "減額の経費明細（expenses。負の額）",
+        "original_expense_id": "減額のもとになった経費明細（expenses）",
+        "original_invoice_id": "元の明細が載る請求書（expense_invoices）"
+      }
+    },
+    "expense_details": {
+      "domain": "expenses",
+      "name": "経費明細の補足",
+      "description": "経費（expenses）1件に1行の補足。どの請求書に載るか・計上日・旧22列の品番や仕様・数量などを、経費の登録や取込のときに書き、書き換えない。",
+      "domain_reason": "経費の明細を請求書つきで登録・取込する手順で作る。",
+      "columns": {
+        "reason": "登録した理由",
+        "expense_id": "経費明細（expenses）。1明細に1行",
+        "invoice_id": "明細が載る請求書（expense_invoices）",
+        "recorded_on": "計上日",
+        "distribution_type_code": "流通区分（distribution_types）",
+        "product_id": "商品（products）",
+        "source_product_number": "受け取った表記のままの品番",
+        "source_product_name": "受け取った表記のままの商品名",
+        "source_client_name": "受け取った表記のままの取引先名",
+        "supplier_text": "受け取った表記のままの発注先",
+        "specification": "仕様",
+        "memo": "メモ",
+        "quantity_x10000": "数量（1万倍した整数）",
+        "unit_price_x10000": "単価（円を1万倍した整数。税抜か税込かは未確認）"
+      }
+    },
+    "expense_import_batches": {
+      "domain": "expenses",
+      "name": "経費取込の束",
+      "description": "経費の Excel・CSV を1ファイル取り込んだ単位。最初の下見のときに作り、同じ中身のファイルは同じ束になる。",
+      "domain_reason": "経費集計シートの「取込と保留」で、経費の明細を一括で登録する経費専用の手順の記録。",
+      "columns": {
+        "reason": "取り込んだ理由",
+        "file_id": "取り込んだ原本（expense_source_files）",
+        "layout": "雛形の形（legacy22＝旧22列、standard25＝旧22列に締め日・出金予定日・出金日を足した25列）",
+        "raw_sha256": "原本の照合値（同じファイルは同じ束になる）"
+      }
+    },
+    "expense_import_events": {
+      "domain": "expenses",
+      "name": "経費取込の登録と取消",
+      "description": "取込の束を登録した記録と、登録を取り消した記録。束ごとに登録と取消が1回ずつまでで、書き換えない。",
+      "domain_reason": "経費の取込を登録する・取り消す手順で作る。",
+      "columns": {
+        "reason": "登録・取消の理由",
+        "batch_id": "取込の束（expense_import_batches）",
+        "kind": "committed＝登録、cancelled＝取消",
+        "version_id": "使った下見の版（expense_import_versions）",
+        "occurred_on": "登録した日、または取消日"
+      }
+    },
+    "expense_import_row_commits": {
+      "domain": "expenses",
+      "name": "取込行と経費の対応",
+      "description": "取込の原行1行と、そこから作った経費明細の対応。登録のときと、保留を解消して後から登録したときに作り、書き換えない。",
+      "domain_reason": "経費の取込を登録する手順で、原行と作った明細を結ぶために作る。",
+      "columns": {
+        "reason": "登録した理由",
+        "row_id": "取込の原行（expense_import_rows）",
+        "version_id": "登録に使った下見の版（expense_import_versions）",
+        "expense_id": "作った経費明細（expenses）"
+      }
+    },
+    "expense_import_rows": {
+      "domain": "expenses",
+      "name": "経費取込の原行",
+      "description": "取り込んだファイルの1行を、受け取った値のまま保存したもの。最初の下見のときに作り、書き換えない。",
+      "domain_reason": "経費の取込の手順で、原本の行をそのまま残すために作る。",
+      "columns": {
+        "reason": "取り込んだ理由",
+        "batch_id": "取込の束（expense_import_batches）",
+        "row_no": "原本での行番号",
+        "raw_json": "原行の値（JSON。受け取ったまま）"
+      }
+    },
+    "expense_import_versions": {
+      "domain": "expenses",
+      "name": "経費取込の下見（版）",
+      "description": "取込の下見（登録できる行と保留の行の判定）を保存した版。補足を直して下見し直すたびに積み、登録は最新の版で行う。",
+      "domain_reason": "経費の取込の下見を保存する手順で作る。",
+      "columns": {
+        "reason": "下見した理由",
+        "batch_id": "取込の束（expense_import_batches）",
+        "version_no": "束ごとの下見の版の連番",
+        "hash": "下見の中身の照合値（登録時に一致を確かめる）",
+        "expires_at": "下見の有効期限（下見から30分）",
+        "payload_json": "行ごとの判定・登録する値・補足入力（JSON）"
+      }
+    },
+    "expense_invoice_file_links": {
+      "domain": "expenses",
+      "name": "請求書と原本の紐づけ",
+      "description": "請求書と原本ファイルを用途つきで結んだ記録。画面で結ぶほか、取込の登録のときに原本を補足資料として自動で結ぶ。",
+      "domain_reason": "経費の請求書に証憑の原本を結ぶ手順で作る。",
+      "columns": {
+        "reason": "紐づけた理由",
+        "invoice_id": "請求書（expense_invoices）",
+        "file_id": "原本（expense_source_files）",
+        "purpose": "用途（請求書・領収書・補足資料）"
+      }
+    },
+    "expense_invoice_file_unlinks": {
+      "domain": "expenses",
+      "name": "原本の紐づけの取消",
+      "description": "誤った紐づけを取り消した記録。原本も元の紐づけの行も消さず、書き換えない。",
+      "domain_reason": "請求書と原本の誤った紐づけを取り消す手順で作る。",
+      "columns": {
+        "reason": "紐づけを取り消した理由",
+        "link_id": "取り消す紐づけ（expense_invoice_file_links）"
+      }
+    },
+    "expense_invoice_versions": {
+      "domain": "expenses",
+      "name": "請求書の日付・番号（版）",
+      "description": "請求書ごとの請求日・締め日・出金予定日・番号・種類・支払方法の版。訂正や取消のたびに積み、支払条件を後で変えても過去の版の日付は変わらない。",
+      "domain_reason": "経費の請求書の日付・番号を記録し訂正する手順で作る。",
+      "columns": {
+        "reason": "この版を登録した理由",
+        "invoice_id": "請求書（expense_invoices）",
+        "version_no": "請求書ごとの版の連番",
+        "active": "1＝有効、0＝請求書を取り消した版",
+        "invoice_number": "先方の請求書番号",
+        "document_kind": "証憑の種類（請求書・領収書・減額の証憑・その他）",
+        "invoice_on": "請求日",
+        "closing_on": "締め日",
+        "due_on": "出金予定日",
+        "payment_term_version_id": "使った支払条件の版（partner_payment_term_versions）",
+        "closing_origin": "締め日の出どころ（支払条件・手入力・上書き）",
+        "due_origin": "出金予定日の出どころ（支払条件・手入力・上書き）",
+        "override_note": "条件の日付を上書きした根拠",
+        "payment_method": "支払方法（振込・現金・カード・相殺・その他）"
+      }
+    },
+    "expense_invoices": {
+      "domain": "expenses",
+      "name": "経費の請求書",
+      "description": "支払先から受け取った請求書・領収書など1通。経費の登録や取込で作り、支払先は書き換えない（日付や番号は expense_invoice_versions に版で持つ）。",
+      "domain_reason": "支払先から受け取った請求書を経費として記録する手順で作る。",
+      "columns": {
+        "reason": "登録した理由",
+        "code": "請求書の組織内コード（取込では IMP-束-まとまり）",
+        "partner_id": "請求書を出した支払先（partners）"
+      }
+    },
+    "expense_line_voids": {
+      "domain": "expenses",
+      "name": "経費明細の取消",
+      "description": "経費明細1件を消さずに無効にした記録。支払済みや精算に使った明細は取り消せず、訂正後の明細があればそれを指す。",
+      "domain_reason": "経費の明細を取り消す・訂正する手順で作る。",
+      "columns": {
+        "reason": "取り消した理由",
+        "expense_id": "取り消す経費明細（expenses）",
+        "voided_on": "取消日",
+        "replacement_expense_id": "訂正後の経費明細（expenses。無いときは空）"
+      }
+    },
+    "expense_payment_accounting": {
+      "domain": "expenses",
+      "name": "出金の源泉と現預金科目",
+      "description": "出金（expense_payments）1件ごとの、控除した源泉額と出金元の現預金の科目。出金を記録するときに作る（記録済みの出金に後から付ける口もある）。書き換えず、取消のときは符号を反転した行を足す。",
+      "domain_reason": "経費の出金を記録する手順で、出金と同時に作る。",
+      "columns": {
+        "reason": "記録した理由",
+        "payment_id": "出金（expense_payments）。1出金に1行",
+        "accounting_version_id": "出金時の明細の会計版（expense_accounting_versions）",
+        "withheld_yen": "この出金で控除した源泉額（円。取消の行は符号を反転）",
+        "cash_account_class_version_id": "出金元の現預金科目の分類版（gl_account_class_versions。カード・相殺では空のことがある）"
+      }
+    },
+    "expense_payment_settlements": {
+      "domain": "expenses",
+      "name": "カード・相殺の支払補足",
+      "description": "カード払いか相殺で出金したときの補足（カードの条件版、または相殺の相手の科目・摘要・売上請求書への入金）。出金を記録するときに作り、書き換えない。",
+      "domain_reason": "経費の出金をカード払いか相殺で記録する手順で作る。",
+      "columns": {
+        "reason": "記録した理由",
+        "payment_id": "出金（expense_payments）。1出金に1行",
+        "card_version_id": "カード払いのときのカードの条件版（expense_card_versions）",
+        "counter_account_class_version_id": "相殺した相手の科目の分類版（gl_account_class_versions）",
+        "billing_invoice_id": "相殺した売上の請求書（billing_invoices）",
+        "billing_receipt_id": "相殺で作った売上の入金（billing_receipts）",
+        "counter_description": "相殺した相手の債権の摘要"
+      }
+    },
+    "expense_payments": {
+      "domain": "expenses",
+      "name": "経費の出金",
+      "description": "1行は、経費1件の出金1回（出金日・金額・方法）。出金の合計は経費の税込額まで。取消は負の額の行を取消日に足す。変更・削除はできない。",
+      "domain_reason": "経費の画面で出金を記録し、経費の未払を出すため。",
+      "columns": {
+        "expense_id": "経費（expenses）",
+        "paid_on": "出金日。取消の行は取消日",
+        "amount_yen": "出金額（円・税込）。取消の行は負",
+        "method": "方法（振込・現金・カード・相殺・その他）",
+        "note": "備考。取消の行は理由",
+        "reverses_id": "取り消す出金（expense_payments）"
+      }
+    },
+    "expense_pending_resolutions": {
+      "domain": "expenses",
+      "name": "保留の解消",
+      "description": "保留1件を経費明細として登録して解消した記録。保留1件につき1回までで、書き換えない。",
+      "domain_reason": "保留した経費の入力を経費明細として登録する手順で作る。",
+      "columns": {
+        "pending_id": "解消した保留（expense_pending_rows）",
+        "expense_id": "登録した経費明細（expenses）",
+        "reason": "解消した理由"
+      }
+    },
+    "expense_pending_rows": {
+      "domain": "expenses",
+      "name": "経費の保留",
+      "description": "金額が未確認などで、まだ経費に登録できない入力を、そのまま保留した1件。空の金額を0円として登録しないために、財務の権限がある利用者が書く。",
+      "domain_reason": "金額未確認などの経費の入力を保留する手順で作る。",
+      "columns": {
+        "reason": "保留した理由",
+        "project_id": "案件（projects）",
+        "code": "保留の組織内コード",
+        "raw_payload_json": "入力したままの値（JSON）"
+      }
+    },
+    "expense_refund_receipts": {
+      "domain": "expenses",
+      "name": "返金の入金",
+      "description": "減額の明細について、支払先から返金を受けた1回の記録。全案件の財務の権限がある利用者が書き、取消は expense_refund_receipts_voids に追記する。",
+      "domain_reason": "減額の経費について支払先からの返金を記録する手順で、経費集計シートから作る。",
+      "columns": {
+        "reason": "記録した理由",
+        "code": "返金の組織内コード",
+        "credit_expense_id": "返金のもとの減額明細（expense_credit_links）",
+        "partner_id": "返金した支払先（partners）",
+        "occurred_on": "返金を受けた日",
+        "amount_yen": "返金を受けた額（円）",
+        "cash_account_class_version_id": "入金先の現預金科目の分類版（gl_account_class_versions）"
+      }
+    },
+    "expense_refund_receipts_voids": {
+      "domain": "expenses",
+      "name": "返金入金の取消",
+      "description": "返金の入金1件を取り消した記録。取消日から効き、元の行は消さず書き換えない。",
+      "domain_reason": "返金の入金の記録を取り消す手順で作る。",
+      "columns": {
+        "reason": "取り消した理由",
+        "record_id": "取り消す返金（expense_refund_receipts）",
+        "voided_on": "取消日（この日から効く。返金日より前は不可）"
+      }
+    },
+    "expense_source_files": {
+      "domain": "expenses",
+      "name": "経費証憑の原本",
+      "description": "受け取った請求書・領収書や取込ファイルの原本1件。アップロードや取込のときに書き、同じ中身のファイルは二重に登録しない。",
+      "domain_reason": "経費の証憑や取込ファイルを受け取って保存する手順で作る。",
+      "columns": {
+        "reason": "登録した理由",
+        "file_name": "原本のファイル名",
+        "media_type": "ファイルの種類（text/csv など）",
+        "byte_length": "原本の大きさ（バイト）",
+        "raw_sha256": "原本の照合値（SHA-256。同じ原本の二重登録を防ぐ）",
+        "original_base64": "原本の中身（base64 の文字）"
+      }
+    },
+    "expense_tax_categories": {
+      "domain": "expenses",
+      "name": "経費の税区分",
+      "description": "経費の税区分を見分ける組織内のコード1件。管理者が会計設定で初めて作るときに書き、書き換えない（中身は expense_tax_category_versions）。",
+      "domain_reason": "経費の明細に付ける税区分の識別で、経費の会計設定から作る。",
+      "columns": {
+        "reason": "登録した理由",
+        "code": "税区分の組織内コード"
+      }
+    },
+    "expense_tax_category_versions": {
+      "domain": "expenses",
+      "name": "経費の税区分（版）",
+      "description": "税区分ごとの課税の種類・税率・端数処理の版。管理者が経費の会計設定で積み、書き換えない。",
+      "domain_reason": "経費の税区分の中身の設定で、経費の会計設定から作る。",
+      "columns": {
+        "reason": "この版を登録した理由",
+        "tax_category_id": "税区分（expense_tax_categories）",
+        "version_no": "税区分ごとの版の連番",
+        "active": "1＝有効、0＝使うのをやめた版",
+        "name": "税区分の名前",
+        "tax_kind": "課税の種類（課税・非課税・不課税・対象外）",
+        "rate_bps": "税率（1万分率の整数。1000＝10%、800＝8%。課税のときだけ）",
+        "rounding": "税額の端数処理（切り捨て・四捨五入・切り上げ）"
+      }
+    },
+    "expense_withholding_allocations": {
+      "domain": "expenses",
+      "name": "源泉納付の対象月の内訳",
+      "description": "源泉の納付1回を、対象の支払月ごとに割り当てた内訳。納付を記録するときに未納付の月へ自動で作り、書き換えない。",
+      "domain_reason": "源泉の納付を記録する手順で、納付と同時に作る。",
+      "columns": {
+        "reason": "納付を記録した理由",
+        "remittance_id": "源泉の納付（expense_withholding_remittances）",
+        "payment_month": "充てた支払月（YYYY-MM）",
+        "amount_yen": "その月に充てた納付額（円）"
+      }
+    },
+    "expense_withholding_categories": {
+      "domain": "expenses",
+      "name": "源泉区分",
+      "description": "源泉区分を見分ける組織内のコード1件。管理者が会計設定で初めて作るときに書き、書き換えない（中身は expense_withholding_category_versions）。",
+      "domain_reason": "経費の明細に付ける源泉区分の識別で、経費の会計設定から作る。",
+      "columns": {
+        "reason": "登録した理由",
+        "code": "源泉区分の組織内コード"
+      }
+    },
+    "expense_withholding_category_versions": {
+      "domain": "expenses",
+      "name": "源泉区分（版）",
+      "description": "源泉区分ごとに、源泉の対象外か、根拠を確かめた手入力の控除かを決めた版。管理者が経費の会計設定で積み、税法による自動の判定はしない。",
+      "domain_reason": "経費の源泉区分の中身の設定で、経費の会計設定から作る。",
+      "columns": {
+        "reason": "この版を登録した理由",
+        "withholding_category_id": "源泉区分（expense_withholding_categories）",
+        "version_no": "源泉区分ごとの版の連番",
+        "active": "1＝有効、0＝使うのをやめた版",
+        "name": "源泉区分の名前",
+        "treatment": "源泉の扱い（対象外か、根拠を確かめた手入力の控除か）",
+        "basis": "扱いを決めた根拠"
+      }
+    },
+    "expense_withholding_remittances": {
+      "domain": "expenses",
+      "name": "源泉の納付",
+      "description": "預かった源泉を納めた1回の記録（納付日・額・対象の支払月・口座の科目）。全案件の財務の権限がある利用者が書き、取消は expense_withholding_remittances_voids に追記する。",
+      "domain_reason": "経費の支払で預かった源泉を納める手順で、経費集計シートから作る。",
+      "columns": {
+        "reason": "記録した理由",
+        "code": "納付の組織内コード",
+        "occurred_on": "納付した日",
+        "amount_yen": "納付した額（円）",
+        "month_from": "対象の支払月の始め（YYYY-MM）",
+        "month_to": "対象の支払月の終わり（YYYY-MM）",
+        "cash_account_class_version_id": "納付元の現預金科目の分類版（gl_account_class_versions）"
+      }
+    },
+    "expense_withholding_remittances_voids": {
+      "domain": "expenses",
+      "name": "源泉納付の取消",
+      "description": "源泉の納付1件を取り消した記録。取消日から効き、元の行は消さず書き換えない。",
+      "domain_reason": "源泉の納付の記録を取り消す手順で作る。",
+      "columns": {
+        "reason": "取り消した理由",
+        "record_id": "取り消す納付（expense_withholding_remittances）",
+        "voided_on": "取消日（この日から効く。納付日より前は不可）"
+      }
+    },
+    "expenses": {
+      "domain": "expenses",
+      "name": "経費",
+      "description": "案件や作品にかかった経費1件（予算と実績）。経費の入力（請求書つき）や経費集計シートの取込で作る。請求書につながった行（expense_details がある行）は書き換えも削除もできず、取消と新しい経費で直す。請求書につながっていない整備前の行だけ、版を確かめて書き換える",
+      "domain_reason": "外へ払うお金の予算と実績を記録する経費の手順で作るため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）。空なら案件共通の経費",
+        "partner_id": "取引先（partners）",
+        "incurred_on": "発生日",
+        "accounting_month": "計上月（YYYY-MM）",
+        "category": "費目（自由記述。例: 制作費・宣伝費）",
+        "description": "経費の内容",
+        "budget_yen": "予算（円・税抜）。税抜の実績と比べる",
+        "actual_ex_tax": "実績の税抜額（円）。マイナスも入る",
+        "tax_amount": "税額（円）",
+        "actual_inc_tax": "実績の税込額（円）。税抜額＋税額",
+        "version": "行の版。更新のたびに1つ進み、同時の更新を見つける"
+      }
+    },
+    "exposures": {
+      "domain": "publicity",
+      "name": "露出",
+      "description": "宣伝施策の中の露出1件（どの媒体に、いつ出したか）を表す。宣伝の画面で登録し、version をそろえて変更できる。",
+      "domain_reason": "宣伝の露出を記録する宣伝の手順で作るため。",
+      "columns": {
+        "campaign_id": "宣伝施策（campaigns）",
+        "medium": "媒体",
+        "asset_version": "使った素材の版",
+        "scheduled_at": "予定日時",
+        "happened_at": "実施日時",
+        "source_url": "出典のURL",
+        "region": "地域",
+        "version": "更新のたびに1増える番号（同時更新の検出用）"
+      }
+    },
+    "fiscal_settings": {
+      "domain": "accounting",
+      "name": "年度の設定",
+      "description": "組織の年度の設定（期首の月）。1組織1行で、行が無ければ期首5月とする。管理者が年度の設定で上書きする。",
+      "domain_reason": "年間の帳票（帳票センターの年間売上）が期首の月を使うため。",
+      "columns": {
+        "org_id": "組織（organizations）。1組織に1行",
+        "fiscal_start_month": "期首の月（1〜12）",
+        "confirmed": "期首の月の解釈（決算月との対応）を確かめたか。0＝未確認、1＝確認済み",
+        "updated_by": "最後に変えた利用者（users）",
+        "updated_at": "最後に変えた日時"
+      }
+    },
+    "gl_account_class_versions": {
+      "domain": "expenses",
+      "name": "勘定科目の分類（版）",
+      "description": "勘定科目（gl_accounts）ごとの、残高の借貸・流動か固定か・支払や消込での役割の版。管理者が経費の会計設定（初期の採用を含む）で積み、書き換えない。",
+      "domain_reason": "要確認: 勘定科目の借貸・流動区分・支払での役割を決める会計の設定だが、いまは経費の会計設定からだけ作る（移設計画では expenses）。（確かめ役が直した: 行を作るのは経費の会計設定だけ。src/expense-sheet/expense-routes.mjs:23（POST /api/expense-accounting/:kind、accounting-model.mjs:3 の 'account-classes'）・src/expense-accounting/settlement-routes.mjs:16（決済科目の初期採用）・src/expense-accounting/adoption.mjs（費目の初期採用）。plans/2026-09-29-integrated-src-restructure.md:53 で expense-accounting/ は expenses）",
+      "columns": {
+        "reason": "この版を登録した理由",
+        "account_id": "分類する勘定科目（gl_accounts）",
+        "version_no": "科目ごとの版の連番（1から順に積む）",
+        "active": "1＝有効、0＝使うのをやめた版",
+        "normal_side": "残高が通常立つ側（debit＝借方、credit＝貸方）",
+        "balance_class": "none＝損益の科目、current＝流動、noncurrent＝固定",
+        "settlement_role": "支払・消込での役割（cash＝現預金、payable＝未払金など）"
+      }
+    },
+    "gl_accounts": {
+      "domain": "accounting",
+      "name": "勘定科目",
+      "description": "1行は、PL・BS に使う組織の勘定科目1つ。管理者が初期値を入れるか1つずつ足す（経費の会計の採用でも足す）。変更・削除はできない。",
+      "domain_reason": "PL・BS の「会社の設定」で管理者が足す勘定科目で、会計の試算に使うため。",
+      "columns": {
+        "code": "科目コード（組織の中で一意）",
+        "name": "科目名",
+        "section": "区分（売上・売上原価・販管費・営業外・特別・法人税等・資産・負債・純資産）",
+        "source": "出どころ（system システムが計算・manual 手入力）",
+        "system_key": "システムが計算する行のキー（own_sales・royalty など）",
+        "cash_effect": "1＝手入力の額が現預金を動かす（減価償却費などは0）",
+        "sort_order": "表示の順",
+        "note": "メモ"
+      }
+    },
+    "gl_manual_amounts": {
+      "domain": "accounting",
+      "name": "勘定科目の手入力額",
+      "description": "1行は、システムに無い額（全社費用・借入金・期首残高など）を勘定科目×月で手入力した記録。直すときは符号を逆にした取消の行を足す。",
+      "domain_reason": "PL・BS の「手入力」タブで管理者が入れる額で、会計の試算に使うため。",
+      "columns": {
+        "account_id": "勘定科目（gl_accounts）",
+        "month": "月（YYYY-MM）",
+        "kind": "種類（flow PL の発生額・balance BS の月末の残高）",
+        "amount_yen": "金額（円）。発生額は税抜、残高は月末の額",
+        "tax_yen": "発生額の消費税額（円）。残高は0",
+        "work_id": "作品（works）。任意",
+        "basis": "根拠",
+        "status": "確認状態（unverified 未確認・reviewed 確認済み）",
+        "reverses_id": "取り消す元の行（gl_manual_amounts）"
+      }
+    },
+    "import_previews": {
+      "domain": "revenue",
+      "name": "報告取込のプレビュー",
+      "description": "売上報告や宣伝の指標の CSV を登録する前のプレビュー1件。登録の時に中身を照合し、一度使ったら consumed を1にする。期限は15分。",
+      "domain_reason": "売上報告の取込の途中で作るため（宣伝の指標の取込にも使う）。",
+      "columns": {
+        "token": "プレビューの鍵（ランダムな文字列）",
+        "user_id": "プレビューした利用者（users）",
+        "project_id": "案件（projects）",
+        "work_id": "取り込む先の作品（works）",
+        "payload_json": "プレビューの中身（原文・行・誤り・計上基準など）",
+        "expires_at": "期限（作ってから15分）",
+        "consumed": "登録に使ったか。1＝使用済み"
+      }
+    },
+    "intake_settlement_links": {
+      "domain": "settlement",
+      "name": "調達と分配契約の関連",
+      "description": "調達ケースと分配契約の関連1件。分配契約を作るときか調達の画面でつなぎ、書き換えない。1つの契約につながるケースは1つ。",
+      "domain_reason": "要確認: 分配契約（精算）の側の記録として精算に置いたが、調達の画面（POST /api/intakes/:id/settlement-links）でつなぐので、調達ケースに合わせて企画（D-026・D-028）とも読める。",
+      "columns": {
+        "intake_case_id": "調達ケース（rights_intake_cases）",
+        "work_id": "作品（works）。ケースと契約で同じ作品",
+        "settlement_contract_id": "分配契約（settlement_contracts）"
+      }
+    },
+    "invitations": {
+      "domain": "core",
+      "name": "チームへの招待",
+      "description": "管理者が準備したチームへの招待1件（案件と役割つき）。参加の確定や取消で状態を変える。メールは送らない。",
+      "domain_reason": "利用者を招いて案件の権限を与える手順で、共通基盤（利用者・権限）に属するため。",
+      "columns": {
+        "email": "招待するメール（小文字）。試作では .invalid だけ",
+        "project_id": "参加させる案件（projects）",
+        "role": "付ける役割。editor＝編集担当、production＝制作担当",
+        "expires_at": "招待の期限。参加後の所属と権限もこの日時で切れる",
+        "status": "招待の状態。pending＝招待中、accepted＝参加済み、revoked＝取消済み。expired＝期限切れはコードから入れる所が無く、期限を過ぎた招待中を画面で期限切れと出す"
+      }
+    },
+    "joint_business_holidays": {
+      "domain": "settlement",
+      "name": "共同製作の休日",
+      "description": "1行は、共同製作の契約で使う休日1日。窓口の送金予定日が休日にあたるとき、前の営業日にずらすのに使う。",
+      "domain_reason": "共同製作（入金基準）の委員会の分配を計算する表で、製作委員会の精算の手順で使うため。",
+      "columns": {
+        "contract_id": "共同製作の契約（joint_committee_contracts）",
+        "holiday_on": "休日",
+        "label": "休日の名前"
+      }
+    },
+    "joint_committee_contracts": {
+      "domain": "settlement",
+      "name": "共同製作の委員会契約",
+      "description": "1行は、共同製作（入金基準）の製作委員会の契約条件。いまは架空データの投入スクリプトだけが書き、画面からは作れない。変更・削除はできない。",
+      "domain_reason": "共同製作（入金基準）の委員会の分配を計算する表で、製作委員会の精算の手順で使うため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "code": "契約コード（組織の中で一意）",
+        "title": "契約名",
+        "calculation_version": "計算の版（joint_cash_v1）",
+        "demo_flag": "1＝架空のデモデータ",
+        "manager_partner_id": "幹事（partners）。出資者の1社",
+        "producer_partner_id": "受託制作会社（partners）。委員会の外",
+        "production_cost_inc_tax_yen": "直接製作費（円・税込）",
+        "pa_inc_tax_yen": "P&A の額（円・税込）。出資の合計＝製作費＋P&A",
+        "manager_fee_bps": "幹事料率（bps）。委員会収入−権利処理費にかける",
+        "income_threshold_yen": "委員会収入の繰越の閾値（円）。未満は翌期へ",
+        "transfer_threshold_yen": "窓口送金の繰越の閾値（円）。税込の総売上と比べる",
+        "investor_report_offset_months": "出資者への報告予定は実入金月の何か月後か",
+        "investor_report_day": "出資者への報告予定の日（eom は月末）",
+        "investor_payment_offset_months": "出資者への支払予定は実入金月の何か月後か",
+        "investor_payment_day": "出資者への支払予定の日（eom は月末）",
+        "terms_note": "条件のメモ"
+      }
+    },
+    "joint_committee_costs": {
+      "domain": "settlement",
+      "name": "共同製作の費用",
+      "description": "1行は、共同製作の委員会の費用1件（窓口の直接経費・音楽使用料・権利処理費・原盤管理費・立替返済）。承認済みの費用だけを入れる。変更・削除はできない。",
+      "domain_reason": "共同製作（入金基準）の委員会の分配を計算する表で、製作委員会の精算の手順で使うため。",
+      "columns": {
+        "contract_id": "共同製作の契約（joint_committee_contracts）",
+        "window_id": "窓口（joint_committee_windows）。直接経費と音楽使用料だけ",
+        "period_sequence": "分配期の番号（joint_committee_periods）",
+        "source_ref": "証憑の識別子（契約の中で一意）",
+        "kind": "費目（直接経費・音楽使用料・権利処理費・原盤管理費・立替返済）",
+        "amount_yen": "費用額（円。税込か税抜かは tax_basis）",
+        "tax_basis": "額の税の扱い（ex_tax 税抜・inc_tax 税込）。計算は税込だけ",
+        "approved": "承認済みの印。1 だけ入れられる"
+      }
+    },
+    "joint_committee_members": {
+      "domain": "settlement",
+      "name": "共同製作の出資者",
+      "description": "1行は、共同製作の委員会の出資者1社と、その持分・出資予定額。計算は出資者2社・持分の合計100%を前提にする。",
+      "domain_reason": "共同製作（入金基準）の委員会の分配を計算する表で、製作委員会の精算の手順で使うため。",
+      "columns": {
+        "contract_id": "共同製作の契約（joint_committee_contracts）",
+        "partner_id": "出資者（partners）",
+        "role": "役割。いまは investor（出資者）だけ",
+        "share_bps": "持分（bps。2社の合計が10000）",
+        "contribution_inc_tax_yen": "出資予定額（円・税込）"
+      }
+    },
+    "joint_committee_periods": {
+      "domain": "settlement",
+      "name": "共同製作の分配期",
+      "description": "1行は、共同製作の委員会の分配期（売上の対象期間）1つ。売上と費用はどれかの期に入れる。",
+      "domain_reason": "共同製作（入金基準）の委員会の分配を計算する表で、製作委員会の精算の手順で使うため。",
+      "columns": {
+        "contract_id": "共同製作の契約（joint_committee_contracts）",
+        "sequence": "期の番号（1から）",
+        "from_on": "期の開始日",
+        "to_on": "期の終了日"
+      }
+    },
+    "joint_committee_sales": {
+      "domain": "settlement",
+      "name": "共同製作の売上",
+      "description": "1行は、窓口から報告された共同製作の売上（収入）1件。証憑の識別子で契約の中の重複を防ぐ。変更・削除はできない。",
+      "domain_reason": "共同製作（入金基準）の委員会の分配を計算する表で、製作委員会の精算の手順で使うため。",
+      "columns": {
+        "contract_id": "共同製作の契約（joint_committee_contracts）",
+        "window_id": "窓口（joint_committee_windows）",
+        "period_sequence": "分配期の番号（joint_committee_periods）",
+        "source_ref": "証憑の識別子（契約の中で一意）",
+        "amount_contract_yen": "窓口の正味の収入（円・税込の契約額）",
+        "gross_inc_tax_yen": "税込の総売上（円）。送金の繰越の判定に使う",
+        "reported_on": "窓口が報告した日",
+        "manager_receipt_on": "幹事が実際に入金を受けた日"
+      }
+    },
+    "joint_committee_snapshots": {
+      "domain": "settlement",
+      "name": "共同製作の計算の保存版",
+      "description": "1行は、共同製作の分配計算を管理者が保存した版。入力が同じなら新しく作らず前の版を使う。変更・削除はできない。",
+      "domain_reason": "共同製作（入金基準）の委員会の分配を計算する表で、製作委員会の精算の手順で使うため。",
+      "columns": {
+        "contract_id": "共同製作の契約（joint_committee_contracts）",
+        "calculation_version": "計算の版（joint_cash_v1）",
+        "input_hash": "計算の入力（契約と明細すべて）の SHA-256",
+        "calculation_json": "入力と期ごとの計算結果（JSON）"
+      }
+    },
+    "joint_committee_windows": {
+      "domain": "settlement",
+      "name": "共同製作の窓口",
+      "description": "1行は、共同製作の委員会の販路の窓口1つ（劇場・配信など）と、その手数料率・報告と送金の予定。窓口担当は出資者から選ぶ。",
+      "domain_reason": "共同製作（入金基準）の委員会の分配を計算する表で、製作委員会の精算の手順で使うため。",
+      "columns": {
+        "contract_id": "共同製作の契約（joint_committee_contracts）",
+        "kind": "販路の種類（theatrical・digital など。値の決まりは無い）",
+        "label": "窓口の表示名",
+        "partner_id": "窓口担当の出資者（partners）",
+        "fee_bps": "窓口手数料率（bps）",
+        "report_offset_months": "窓口の報告予定は期の終わりの何か月後か",
+        "report_day": "窓口の報告予定の日（eom は月末）",
+        "payment_offset_months": "窓口の送金予定は期の終わりの何か月後か",
+        "payment_day": "送金予定の日（eom は月末）。休日なら前の営業日"
+      }
+    },
+    "joint_funding_events": {
+      "domain": "settlement",
+      "name": "共同製作の出資の払込",
+      "description": "1行は、出資者の出資の払込1件。現金の出資か、幹事が制作会社へ払った製作費を幹事の出資に充てたもの。変更・削除はできない。",
+      "domain_reason": "共同製作（入金基準）の委員会の分配を計算する表で、製作委員会の精算の手順で使うため。",
+      "columns": {
+        "contract_id": "共同製作の契約（joint_committee_contracts）",
+        "partner_id": "出資者（joint_committee_members）",
+        "kind": "種類（現金出資か、製作費支払の出資への充当）",
+        "source_ref": "証憑の識別子（契約の中で一意）",
+        "amount_inc_tax_yen": "払込額（円・税込）",
+        "paid_on": "払い込んだ日。充当は製作費の支払日",
+        "milestone_id": "充当のもとの製作費支払（joint_production_milestones）"
+      }
+    },
+    "joint_production_milestones": {
+      "domain": "settlement",
+      "name": "共同製作の制作費支払条件",
+      "description": "1行は、受託制作会社へ製作費を払う段階の1つと、その支払。段階ごとの支払額の合計は直接製作費と一致させる。変更・削除はできない。",
+      "domain_reason": "共同製作（入金基準）の委員会の分配を計算する表で、製作委員会の精算の手順で使うため。",
+      "columns": {
+        "contract_id": "共同製作の契約（joint_committee_contracts）",
+        "producer_partner_id": "受託制作会社（partners）",
+        "stage": "段階（スケジュール承認・撮影終了・納品物の検収合格）",
+        "due_on": "支払予定日",
+        "condition_met_on": "支払の条件がそろった日",
+        "acceptance_on": "納品物の検収に合格した日",
+        "amount_inc_tax_yen": "支払額（円・税込）",
+        "paid_on": "支払った日",
+        "paid_inc_tax_yen": "支払済みの額（円・税込）"
+      }
+    },
+    "mapping_import_provenance": {
+      "domain": "revenue",
+      "name": "読み替え取込の出どころ",
+      "description": "読み替えを通して取り込んだ売上報告1件の出どころ。受け取った原文と読み替え後の CSV を両方残し、書き換えない。",
+      "domain_reason": "売上報告の取込の登録で作るため。",
+      "columns": {
+        "report_id": "登録した売上報告（report_imports）。1報告に1行",
+        "work_id": "作品（works）",
+        "partner_id": "報告元の取引先（partners）",
+        "kind": "報告の種類（劇場・配信・ビデオグラム・放送・その他）",
+        "mapping_version_id": "使った読み替えの版（report_mapping_versions）",
+        "original_text": "受け取った原文（CSV）",
+        "original_hash": "原文の SHA-256。同じ作品・取引先・種類で同じ原文は二度入らない",
+        "canonical_text": "読み替えた後の共通の形の CSV",
+        "canonical_hash": "読み替え後の CSV の SHA-256"
+      }
+    },
+    "memberships": {
+      "domain": "core",
+      "name": "組織の所属",
+      "description": "利用者がどの組織に、どの役割で所属するか。初期データや招待の参加の確定で作る。すでに所属している人の参加を確定すると、有効に戻して期限を上書きする。役割は変えない（役割が違うと確定を止める）",
+      "domain_reason": "組織への所属と役割（権限）は共通基盤が受け持つため。",
+      "columns": {
+        "org_id": "所属する組織（organizations）",
+        "user_id": "利用者（users）",
+        "role": "役割。admin＝管理者、editor＝編集担当、production＝制作担当",
+        "active": "所属が有効か。1＝有効、0＝停止",
+        "expires_at": "所属の期限。空なら無期限"
+      }
+    },
+    "metric_definitions": {
+      "domain": "admin",
+      "name": "指標の定義",
+      "description": "宣伝で記録する指標1つ（項目キー・型・単位・集計方法）を表す。管理者が追加項目の提案を採用したときに足す（手元の DB の初期データでは、試作組織に3件入れる）。",
+      "domain_reason": "要確認: 宣伝の観測値が使う指標の定義だが、行を足すのは管理の追加項目画面での採用のため。（確かめ役が直した: 行を足すのは src/app.mjs:1055-1062 の提案の採用（管理者だけ）で、画面は src/shell/nav-model.mjs:89-93 の管理・設計の「拡張項目」。同じまとまりで状態を変える change_proposals も admin にしている）",
+      "columns": {
+        "field_key": "項目キー（英小文字・数字・_。組織内で一意）",
+        "label": "項目名",
+        "value_type": "値の型（整数・小数・文字・はい/いいえ）",
+        "unit": "単位（回・% など）",
+        "aggregation": "集計方法（合計・平均・最新・集計しない）",
+        "active": "使っているか（1=使う）"
+      }
+    },
+    "mg_contract_links": {
+      "domain": "settlement",
+      "name": "受取MGと支払MGの関連",
+      "description": "1行は、受取MGの契約と支払MGの契約を関連づけた記録。関連だけを持ち、回収の条件は写さない。",
+      "domain_reason": "受け取る MG（精算。D-024）と支払う MG（企画。D-026）をつなぐ表で、MG契約・台帳の画面で登録する。D-026 で分けるまで共有し、精算に置いたまま。",
+      "columns": {
+        "incoming_contract_id": "受取MGの契約（mg_incoming_contracts）",
+        "outgoing_contract_id": "支払MGの契約（mg_outgoing_contracts）",
+        "rationale": "関連づけた理由"
+      }
+    },
+    "mg_incoming_contracts": {
+      "domain": "settlement",
+      "name": "受取MGの契約",
+      "description": "1行は、販売先から MG を受け取る契約（受取MG）1件。条件は条件版（mg_term_versions）で持ち、変更・削除はできない。",
+      "domain_reason": "流通会社から受け取る MG の台帳（D-024）で、MG契約・台帳の画面で登録し、MG の回収と残高を出す精算の手順で使うため。",
+      "columns": {
+        "code": "契約コード（組織の中で一意）",
+        "title": "契約名",
+        "partner_id": "販売先（partners）",
+        "contract_date": "契約締結日",
+        "source_reference": "契約資料の参照"
+      }
+    },
+    "mg_ledger_entries": {
+      "domain": "settlement",
+      "name": "MGの当期報告",
+      "description": "1行は、MG条件版×商品の当期の報告1件（消化対象・実充当・超過報告・計上）。直すときは訂正版の行を足し、訂正前の行は合計に含めない。変更・削除はできない。",
+      "domain_reason": "MG台帳の画面（手入力・Excel取込）で当期の報告を記録し、受け取る MG（D-024）の回収を追う精算の手順のため。支払う MG（企画。D-026）の当期報告もこの表に入っていて、D-026 で分けるまで共有する。",
+      "columns": {
+        "term_version_id": "MGの条件版（mg_version_products と組で参照）",
+        "product_id": "商品（products）",
+        "period_from": "報告の対象期間の開始日",
+        "period_to": "報告の対象期間の終了日",
+        "report_received_on": "報告を実際に受け取った日",
+        "accounting_month": "計上月",
+        "source_reference": "報告資料の参照",
+        "reported_eligible_yen": "消化対象（当期の分配金。円・税抜）。累計ではない",
+        "applied_recoup_yen": "実充当（MG に充てた額。円・税抜）",
+        "reported_overage_yen": "超過報告（MG を超えたと報告された額。円・税抜）",
+        "recognized_yen": "計上（報告書の計上額。円。税込か税抜かは未確認）",
+        "status": "確認状態（unverified 未確認・reviewed 確認済み）",
+        "acknowledgement": "1＝手で入れた値であることを了承した",
+        "confirmation_reason": "確認・訂正の理由",
+        "reverses_entry_id": "訂正元の報告（mg_ledger_entries）。この行で置き換える"
+      }
+    },
+    "mg_outgoing_contracts": {
+      "domain": "planning",
+      "name": "支払MGの契約",
+      "description": "1行は、仕入先・権利元へ MG を払う契約（支払MG）1件。条件は条件版（mg_term_versions）で持ち、変更・削除はできない。",
+      "domain_reason": "権利元へ支払う MG は、権利の調達（企画）の中で受け取る MG とは別のマスタで持つと決めたため（D-026・D-028）。条件版（mg_term_versions）と当期報告（mg_ledger_entries）は、D-026 で分けるまで共有し、精算に置いたまま。",
+      "columns": {
+        "code": "契約コード（組織の中で一意）",
+        "title": "契約名",
+        "supplier_id": "仕入先・権利元（mg_suppliers）",
+        "contract_date": "契約締結日",
+        "source_reference": "契約資料の参照"
+      }
+    },
+    "mg_suppliers": {
+      "domain": "planning",
+      "name": "MGの仕入先",
+      "description": "1行は、支払MGの相手（仕入先・権利元）1社。MG契約の画面で登録し、取引先（partners）とは別の ID で持つ。",
+      "domain_reason": "要確認: 支払う MG の相手（権利元）なので、権利の調達（企画。D-026・D-028）に合わせた。取引先（partners、台帳）へ寄せてこの表をやめるかは未決。",
+      "columns": {
+        "code": "仕入先コード（SUP- で始まる。組織の中で一意）",
+        "name": "仕入先・権利元の名前",
+        "note": "メモ"
+      }
+    },
+    "mg_term_versions": {
+      "domain": "settlement",
+      "name": "MGの条件版",
+      "description": "1行は、受取MGか支払MGの契約の条件の1つの版（回収方式・MG保証額・契約期間）。直すときは新しい版を足す（変更・削除はできない）。",
+      "domain_reason": "MG契約・台帳の画面で登録し、受け取る MG（D-024）の回収と残高を出す精算の手順で使うため。支払う MG（企画。D-026）の条件版もこの表に入っていて、D-026 で分けるまで共有する。",
+      "columns": {
+        "incoming_contract_id": "受取MGの契約（mg_incoming_contracts）。どちらか片方",
+        "outgoing_contract_id": "支払MGの契約（mg_outgoing_contracts）。どちらか片方",
+        "version": "版番号。契約ごとに1から順",
+        "mode": "回収方式（単品・クロスリクープ・特殊条件）",
+        "mg_amount_yen": "MG保証額（円・税抜）",
+        "starts_on": "契約期間の開始日",
+        "ends_on": "契約期間の終了日",
+        "reason": "登録の理由",
+        "source_reference": "条件の根拠（契約資料の参照）",
+        "special_unverified": "1＝特殊条件を未確認の手動条件として登録した"
+      }
+    },
+    "mg_version_phases": {
+      "domain": "settlement",
+      "name": "MG条件版の日程",
+      "description": "1行は、MG条件版の日程の1区間（締めの間隔・締め日・報告予定・支払予定）。区間は契約期間の全体を切れ目なく覆う。変更・削除はできない。",
+      "domain_reason": "MG契約・台帳の画面で登録し、受け取る MG（D-024）の回収と残高を出す精算の手順で使うため。支払う MG（企画。D-026）の日程もこの表に入っていて、D-026 で分けるまで共有する。",
+      "columns": {
+        "term_version_id": "MGの条件版（mg_term_versions）",
+        "phase_order": "区間の順番（1から）",
+        "starts_on": "区間の開始日",
+        "ends_on": "区間の終了日",
+        "interval_months": "締めの間隔（1・3・6・12か月）",
+        "close_day": "締め日（日にち。eom は月末）",
+        "first_close_on": "最初の締め日",
+        "report_offset_months": "報告予定は締め日の何か月後か",
+        "report_day": "報告予定の日",
+        "pay_offset_months": "支払予定は締め日の何か月後か",
+        "pay_day": "支払予定の日"
+      }
+    },
+    "mg_version_products": {
+      "domain": "settlement",
+      "name": "MG条件版の商品評価",
+      "description": "1行は、MG条件版に含める商品1つとその評価額。条件版の商品の評価額の合計は MG保証額と一致させる。変更・削除はできない。",
+      "domain_reason": "MG契約・台帳の画面で登録し、受け取る MG（D-024）の回収と残高を出す精算の手順で使うため。支払う MG（企画。D-026）の商品評価もこの表に入っていて、D-026 で分けるまで共有する。",
+      "columns": {
+        "term_version_id": "MGの条件版（mg_term_versions）",
+        "product_id": "商品（products）",
+        "evaluation_yen": "商品評価額（円・税抜）。合計が MG保証額"
+      }
+    },
+    "observations": {
+      "domain": "publicity",
+      "name": "指標の観測値",
+      "description": "露出1件について、ある期間に測った指標の値1つを表す。宣伝の画面で入れるか宣伝の報告をCSVで取り込んで作り、売上との因果は決めない。",
+      "domain_reason": "露出ごとの指標の値を記録する宣伝の手順で作るため。",
+      "columns": {
+        "exposure_id": "露出（exposures）",
+        "metric_definition_id": "指標の定義（metric_definitions）",
+        "report_id": "取り込んだ宣伝の報告（report_imports）。手入力は空",
+        "source_row": "取り込んだ報告の行番号",
+        "period_from": "観測期間の開始日",
+        "period_to": "観測期間の終了日",
+        "granularity": "観測の粒度（日・週・月・露出単位・未確認）",
+        "value_number": "数値の値（はい/いいえは1/0）",
+        "value_text": "文字の値（文字の指標だけ）",
+        "verification": "値を確認したか（verified/unverified）",
+        "acquired_at": "値を取得した日時",
+        "paid_organic": "広告か自然か（paid・organic・mixed・unknown）",
+        "source": "値の出典",
+        "region": "地域"
+      }
+    },
+    "org_profile_versions": {
+      "domain": "accounting",
+      "name": "会社の法人情報の版",
+      "description": "1行は、組織の法人情報の1つの版（法人名・番号・住所・資本金・自社を表す取引先・期首の基準月）。直すときは新しい版を足す（変更・削除はできない）。",
+      "domain_reason": "要確認: PL・BS の「会社の設定」で管理者が入れるので会計に置いたが、組織の情報として共通基盤（core）とも読める。",
+      "columns": {
+        "version_no": "版番号（1から順）",
+        "legal_name": "法人名",
+        "corporate_number": "法人番号（13桁）",
+        "invoice_registration_number": "適格請求書の登録番号（T＋13桁）",
+        "postal_code": "郵便番号",
+        "address": "住所",
+        "capital_yen": "資本金（円）",
+        "self_partner_id": "自社を表す取引先（partners）",
+        "opening_month": "期首残高の基準月（その月末の残高を手入力する）",
+        "reason": "版を作る理由"
+      }
+    },
+    "org_switch_events": {
+      "domain": "core",
+      "name": "組織の切替の記録",
+      "description": "利用者が操作する組織を切り替えた記録1件。切り替えるたびに足し、変更も削除もできない。業務データの変更ではないので監査ログには入れない。",
+      "domain_reason": "操作する組織の切り替えは共通基盤が受け持つため。",
+      "columns": {
+        "org_id": "切り替えた先の組織（organizations）",
+        "user_id": "切り替えた利用者（users）",
+        "from_org_id": "切り替える前の組織（organizations）",
+        "at": "切り替えた日時"
+      }
+    },
+    "organizations": {
+      "domain": "core",
+      "name": "組織",
+      "description": "システムを使う組織（データの持ち主）1つ。初期データや投入の手順で作り、画面からは作らない。",
+      "domain_reason": "組織はデータの持ち主で、共通基盤が受け持つため。",
+      "columns": {
+        "code": "組織コード（一意）",
+        "name": "組織の名前"
+      }
+    },
+    "package_observation_products": {
+      "domain": "revenue",
+      "name": "ビデオグラム観測の対象商品",
+      "description": "ビデオグラム報告の観測値1つ（report_id・source_row・metric で指す）が、どの商品の数かを表す。商品が決まる行だけに作り、無ければ作品全体の数として扱う。",
+      "domain_reason": "ビデオグラムの売上報告の取込で観測値と同時に作る売上の手順のため。",
+      "columns": {
+        "report_id": "売上報告（report_imports）",
+        "source_row": "報告書の行番号",
+        "metric": "数の種類（package_report_observations と同じ）",
+        "product_id": "商品（products）"
+      }
+    },
+    "package_report_observations": {
+      "domain": "revenue",
+      "name": "ビデオグラム報告の観測値",
+      "description": "ビデオグラムの報告の1行にある、出荷・稼働・在庫・返品の数1つを表す。売上ではないので売上額と合算せず、変更・削除できない。",
+      "domain_reason": "ビデオグラムの売上報告の取込で作る売上の手順のため。",
+      "columns": {
+        "report_id": "売上報告（report_imports。ビデオグラムだけ）",
+        "source_row": "報告書の行番号",
+        "metric": "数の種類（出荷・稼働・在庫・返品）",
+        "count": "数",
+        "unit": "数の単位（観測単位）",
+        "scope": "数の範囲（観測範囲）",
+        "basis": "数の根拠（観測根拠）",
+        "observed_on": "在庫を数えた日（在庫のときは必須）"
+      }
+    },
+    "package_sale_details": {
+      "domain": "revenue",
+      "name": "ビデオグラム売上の詳細",
+      "description": "ビデオグラムの売上報告の売上明細1行について、方式・回転数・単価など報告にある値を表す。金額の正本は売上明細で、ここの額（小数も入る文字）は合算しない。",
+      "domain_reason": "売上報告の取込で売上明細と同時に作る売上の手順のため。",
+      "columns": {
+        "sale_id": "売上明細（sale_lines）",
+        "model": "方式（rental=レンタル、sell_through=セル、license）",
+        "turns_count": "レンタル回数（レンタルだけ）",
+        "average_rental_price_ex_tax": "平均レンタル単価（円・税抜。レンタルだけ）",
+        "holder_unit_price_ex_tax": "当社の単価（円・税抜）",
+        "reported_actual_ex_tax": "報告にある実績額（円・税抜。合算しない）",
+        "reported_recognized_ex_tax": "報告にある計上額（円・税抜。合算しない）",
+        "calculated_actual_ex_tax": "実績額の計算照合値（円・税抜。合算しない）"
+      }
+    },
+    "partner_list_entries": {
+      "domain": "sales",
+      "name": "取引先リストの明細",
+      "description": "取引先別リストの中の、作品1本の1つの契約を1行で持つ（中身は版の表に積む）。再契約は新しい明細を作って前の明細を指し、変更も削除もできない。",
+      "domain_reason": "営業の取引先別リストに明細を足す手順が作る行のため。",
+      "columns": {
+        "list_id": "取引先別リスト（partner_lists）",
+        "work_id": "作品（works）",
+        "renews_entry_id": "再契約の元の明細（partner_list_entries）",
+        "created_batch_id": "作った取込（partner_list_import_batches）",
+        "created_source_row": "作ったときの取込ファイルの行番号"
+      }
+    },
+    "partner_list_entry_versions": {
+      "domain": "sales",
+      "name": "リスト明細の版",
+      "description": "明細の中身（流通・期間・条件）を版ごとに1行で持つ。修正は次の版、取り下げは status＝withdrawn の版で積み、変更も削除もできない。",
+      "domain_reason": "営業の取引先別リストの明細を登録・修正する手順が作る行のため。",
+      "columns": {
+        "list_id": "取引先別リスト（partner_lists）",
+        "entry_id": "明細（partner_list_entries）",
+        "work_id": "作品（works）。明細の作品と同じ",
+        "version_no": "明細ごとの版の番号（1から順に）",
+        "distribution_code": "流通ID（distribution_types。流通マスタにあるものだけ）",
+        "partner_category": "取引先の書類の区分の原文（見放題・レンタルなど）",
+        "territory": "地域（既定は日本）",
+        "product_id": "商品（product_works で作品に配賦した商品）",
+        "partner_work_code": "取引先側の作品コード",
+        "contract_start": "契約開始日。契約済なら必須",
+        "contract_end": "契約終了日",
+        "end_rule": "終了の扱い。date＝日付、auto_renew＝自動更新、perpetual＝期限なし、unknown＝未確認",
+        "announce_on": "告知解禁日",
+        "exclusivity": "独占の別。exclusive＝独占、nonexclusive＝非独占、unknown＝未確認",
+        "status": "planned＝予定、contracted＝契約済、withdrawn＝取り下げ",
+        "settlement_method": "取引方法（FLAT・MG・RS・other＝その他・unverified＝未確認）",
+        "amount_ex_tax": "契約金額（円・税抜）。FLAT・MG の額",
+        "rate_bps": "RS の料率（bps。10000＝100%）",
+        "billing_partner_id": "請求先（partners）。リストの取引先と違うとき",
+        "agreement_id": "販売契約（sales_agreements）",
+        "source_reference": "根拠（契約書・許諾通知書などの参照）",
+        "note": "備考",
+        "import_batch_id": "作った取込（partner_list_import_batches）",
+        "source_row": "取込ファイルの行番号",
+        "reason": "版を作った理由"
+      }
+    },
+    "partner_list_field_definitions": {
+      "domain": "sales",
+      "name": "リストの追加の列",
+      "description": "取引先別リストに足した列の定義（キー・型・使う範囲）を1行で持つ。表示名や選択肢は状態の版で持ち、この行は変更も削除もできない。",
+      "domain_reason": "営業の取引先別リストに列を足す手順が作る行のため。",
+      "columns": {
+        "field_key": "列のキー（英小文字・数字・_）",
+        "value_type": "型（yen＝金額（円）、month＝年月、choice＝選択肢など）",
+        "list_kind": "使うリストの種類（partner_list_kinds）。空欄＝すべて",
+        "partner_id": "使う取引先（partners）。空欄＝すべて"
+      }
+    },
+    "partner_list_field_states": {
+      "domain": "sales",
+      "name": "追加の列の状態（版）",
+      "description": "追加の列の表示名・使う／やめる・並び順・選択肢を版ごとに1行で持つ。直すたびに次の版を足し、変更も削除もできない。",
+      "domain_reason": "営業の取引先別リストの追加の列を直す手順が作る行のため。",
+      "columns": {
+        "definition_id": "追加の列（partner_list_field_definitions）",
+        "version_no": "列ごとの版の番号",
+        "label": "表示名",
+        "active": "1＝使う、0＝やめた",
+        "sort_order": "並び順",
+        "options_json": "選択肢の一覧（choice のとき。文字の配列のJSON）",
+        "reason": "版を作った理由"
+      }
+    },
+    "partner_list_field_values": {
+      "domain": "sales",
+      "name": "追加の列の値",
+      "description": "明細の版ごとに、追加の列の値を1行ずつ持つ。変わっていない値も次の版へ写し、変更も削除もできない。",
+      "domain_reason": "営業の取引先別リストの明細を登録・修正する手順が作る行のため。",
+      "columns": {
+        "entry_version_id": "明細の版（partner_list_entry_versions）",
+        "definition_id": "追加の列（partner_list_field_definitions）",
+        "value_text": "文字の値（文字・日付・年月・選択肢）",
+        "value_number": "数の値（整数・金額（円））"
+      }
+    },
+    "partner_list_import_batches": {
+      "domain": "sales",
+      "name": "リストのExcel取込記録",
+      "description": "取引先別リストへ Excel を1回取り込んだ記録を1行で持つ。同じリストに同じ中身を2回入れられず、変更も削除もできない。",
+      "domain_reason": "営業の取引先別リストへ Excel を取り込む手順が作る行のため。",
+      "columns": {
+        "list_id": "取引先別リスト（partner_lists）",
+        "file_name": "ファイル名",
+        "content_hash": "読み取った表（見出しと行）の照合値",
+        "template_version": "Excel のひな形の版（partner-list-v1 など）",
+        "mode": "partial＝ファイルの行だけ、full＝全件（ファイルに無い明細を取り下げの候補にし、登録のときに選べば取り下げる）",
+        "appended": "足した明細の数",
+        "revised": "直した（次の版を積んだ）明細の数",
+        "withdrawn": "取り下げた明細の数",
+        "unchanged": "変わらなかった行の数",
+        "reason": "取り込んだ理由"
+      }
+    },
+    "partner_list_import_previews": {
+      "domain": "sales",
+      "name": "リスト取込の確認",
+      "description": "取引先別リストへの Excel 取込を登録する前の確認を1行で持つ。確かめた本人だけが30分のうちに1回だけ登録に使え、使うと consumed を1にする。",
+      "domain_reason": "営業の取引先別リストへ Excel を取り込む手順が作る行のため。",
+      "columns": {
+        "token": "確認の識別子（登録のときに送る）",
+        "user_id": "確かめた利用者（users）",
+        "list_id": "取引先別リスト（partner_lists）",
+        "file_name": "ファイル名",
+        "content_hash": "読み取った表の照合値",
+        "template_version": "Excel のひな形の版",
+        "mode": "partial＝ファイルの行だけ、full＝全件（ファイルに無い明細を取り下げの候補にし、登録のときに選べば取り下げる）",
+        "payload_json": "登録する版の一覧（短いキーのJSON）",
+        "unchanged": "変わらなかった行の数",
+        "expires_at": "使える期限の日時",
+        "consumed": "0＝未使用、1＝登録に使った"
+      }
+    },
+    "partner_list_kinds": {
+      "domain": "sales",
+      "name": "取引先リストの種類",
+      "description": "取引先別リストの種類（配信リスト・販売リスト）を1行ずつ持つ。組織に関係なく共通で、行を足すと種類が増え、変更も削除もできない。",
+      "domain_reason": "営業の取引先別リスト（配信・販売リスト）の種類を決める表のため。",
+      "columns": {
+        "code": "種類のコード（distribution＝配信リスト、sales＝販売リスト）",
+        "label": "表示名",
+        "sort_order": "並び順"
+      }
+    },
+    "partner_lists": {
+      "domain": "sales",
+      "name": "取引先別リスト",
+      "description": "取引先ごとの配信リスト・販売リストの見出しを1行で持つ。営業の画面で作り、変更も削除もできない。",
+      "domain_reason": "営業の取引先別リストを作る手順が作る行のため。",
+      "columns": {
+        "partner_id": "取引先（partners）",
+        "list_kind": "リストの種類（partner_list_kinds）",
+        "name": "リスト名。同じ取引先・種類の中で重ならない",
+        "service_name": "サービス名（1社に複数のサービスがあるとき）",
+        "contract_reference": "基本契約の参照",
+        "reason": "作った理由"
+      }
+    },
+    "partner_payment_term_versions": {
+      "domain": "expenses",
+      "name": "取引先の支払条件（版）",
+      "description": "支払先ごとの締め・支払日・支払方法の版。管理者が経費の会計設定で積み、請求書の日付を計算するときに適用開始日で選ぶ。",
+      "domain_reason": "要確認: 取引先に付く条件だが、経費の請求書の締め日・出金予定日の計算に使い、経費の会計設定から作る。",
+      "columns": {
+        "reason": "この版を登録した理由",
+        "partner_id": "支払先の取引先（partners）",
+        "version_no": "取引先ごとの版の連番",
+        "active": "1＝有効、0＝使うのをやめた版",
+        "effective_from": "この条件を使い始める日",
+        "closing_rule": "締めの決め方（day＝指定日、month_end＝月末）",
+        "closing_day": "締めの日（1〜31。月末のときは空）",
+        "payment_month_offset": "締めから支払までの月数（0〜24）",
+        "payment_rule": "支払日の決め方（day＝指定日、month_end＝月末）",
+        "payment_day": "支払の日（1〜31。月末のときは空）",
+        "payment_method": "支払方法（振込・現金・カード・相殺・その他）"
+      }
+    },
+    "partner_profile_versions": {
+      "domain": "ledger",
+      "name": "取引先情報の版",
+      "description": "取引先の請求・連絡先の情報の版1件。直すときは新しい版を足し、変更も削除もできない。締日・支払サイトはここに持たない。",
+      "domain_reason": "取引先の情報は台帳が版で持つため。",
+      "columns": {
+        "partner_id": "取引先（partners）",
+        "version_no": "取引先の中の版番号",
+        "roles_json": "取引の区分の一覧（得意先・仕入先・権利元・放送局・代理店）",
+        "invoice_registration_number": "インボイス登録番号（T＋13桁）",
+        "postal_code": "郵便番号",
+        "address": "住所",
+        "phone": "電話番号",
+        "contact_name": "担当者名",
+        "contact_email": "連絡先のメール",
+        "billing_note": "請求の備考（1000字まで）",
+        "effective_from": "この版の適用開始日"
+      }
+    },
+    "partners": {
+      "domain": "ledger",
+      "name": "取引先",
+      "description": "取引先1社（劇場・配信事業者・販売店など）。取引先の画面や一括登録で作る。請求・連絡先は取引先情報の版（partner_profile_versions）に持つ。",
+      "domain_reason": "取引先は台帳が持ち、ほかの領域が参照するため。",
+      "columns": {
+        "code": "取引先コード（組織内で一意）",
+        "name": "取引先名",
+        "kind": "区分（劇場・配信事業者・販売店・代理店・委託先・その他）",
+        "region": "地域（空も可）",
+        "version": "行の版。更新のたびに1つ進み、同時の更新を見つける"
+      }
+    },
+    "prep_tasks": {
+      "domain": "production",
+      "name": "撮影準備の作業",
+      "description": "撮影に向けた準備の作業1件を表す。撮影日やシーンに結びつけてもよく、日々スケの画面で登録・更新する。",
+      "domain_reason": "撮影に向けた準備を管理する制作の手順で作るため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "shooting_day_id": "関係する撮影日（shooting_days）。空でもよい",
+        "scene_id": "関係するシーン（scenes）。空でもよい",
+        "title": "作業の名前",
+        "owner_label": "担当者の名前（文字で入れる）",
+        "due_on": "期限",
+        "status": "準備の状態（未準備・準備済み・保留）",
+        "note": "備考",
+        "version": "更新のたびに1増える番号（同時更新の検出用）"
+      }
+    },
+    "product_master_profile_versions": {
+      "domain": "ledger",
+      "name": "商品の仕様（版）",
+      "description": "商品ごとの品番・JAN・発売元・販売元・価格・発売日・ディスクなど製品の仕様の版。作品・商品マスタで保存するたびに積み、書き換えない。",
+      "domain_reason": "作品・商品マスタから入れる、商品の仕様の台帳。",
+      "columns": {
+        "product_id": "商品（products）",
+        "revision": "商品ごとの版の連番",
+        "product_number": "品番",
+        "jan_code": "JANコード（8桁か13桁。先頭の0を残す文字）",
+        "product_type": "商品区分",
+        "media": "メディア",
+        "release_on": "発売日",
+        "sales_end_on": "販売期限",
+        "publisher_partner_id": "発売元（partners）",
+        "distributor_partner_id": "販売元（partners）",
+        "label": "レーベル",
+        "series": "商品シリーズ",
+        "sales_class": "レンタル／セル・流通区分",
+        "disc_count": "ディスク枚数",
+        "disc_layer": "ディスク層",
+        "case_color": "ケース色",
+        "pressing_company": "プレス会社",
+        "audio": "音声",
+        "subtitles": "字幕",
+        "video_quality": "画質",
+        "runtime_minutes": "本編の収録時間（分）",
+        "design": "デザイン",
+        "video_production_company": "映像制作会社",
+        "rights_holder": "商品固有の権利元の表記",
+        "original_rights_holder": "商品固有の原権利元の表記",
+        "system_product_name": "基幹向けの商品名",
+        "notes": "備考",
+        "other1": "その他1（意味は未確認）",
+        "other2": "その他2（意味は未確認）",
+        "price_yen": "価格（円。税区分は別の列）",
+        "price_tax_basis": "価格の税区分（未確認・税別・税込）",
+        "price_status": "価格の確定状態（未確認・見込み・確定）",
+        "price_as_of": "価格の評価日",
+        "price_evidence": "価格の根拠",
+        "price_ex_tax_yen": "定価（円・税別）",
+        "price_ex_tax_tax_basis": "定価（税別）の税区分（常に税別）",
+        "price_ex_tax_status": "定価（税別）の確定状態（未確認・見込み・確定）",
+        "price_ex_tax_as_of": "定価（税別）の評価日",
+        "price_ex_tax_evidence": "定価（税別）の根拠",
+        "price_inc_tax_yen": "定価（円・税込）",
+        "price_inc_tax_tax_basis": "定価（税込）の税区分（常に税込）",
+        "price_inc_tax_status": "定価（税込）の確定状態（未確認・見込み・確定）",
+        "price_inc_tax_as_of": "定価（税込）の評価日",
+        "price_inc_tax_evidence": "定価（税込）の根拠",
+        "source_reference": "出所・根拠",
+        "reason": "改訂理由"
+      }
+    },
+    "product_works": {
+      "domain": "ledger",
+      "name": "商品の作品配賦",
+      "description": "商品の売上をどの作品へどれだけ分けるか（配賦）。商品の配賦の画面や一括登録で作る。割合の合計を100%にすることと、売上明細・パッケージ報告の数量・MG契約に使った商品の配賦を変えさせないことは API が確かめる（DB のトリガーは無い）",
+      "domain_reason": "商品と作品の対応で、台帳（作品・商品）の一部のため。",
+      "columns": {
+        "product_id": "商品（products）",
+        "work_id": "配賦先の作品（works）",
+        "allocation_bps": "配賦率（bps。10000＝100%）。1商品の合計を10000にすることは API が確かめる（DB は1行ごとに1〜10000だけを確かめる）"
+      }
+    },
+    "production_appearances": {
+      "domain": "production",
+      "name": "出演（シーン×役）",
+      "description": "どのシーンにどの役が出るかを1行ずつ持つ。台本の確定で出演者から作り、制作の画面の保存で入れ直す。",
+      "domain_reason": "台本の確定と制作の画面（香盤）で出演を決める手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "scene_id": "シーン（scenes）",
+        "character_key": "役（production_characters）"
+      }
+    },
+    "production_calls": {
+      "domain": "production",
+      "name": "役の入り時間",
+      "description": "撮影日ごとに、役の入り時間と支度完了の時刻を1行ずつ持つ。制作の画面で保存するたびに入れ直す。",
+      "domain_reason": "制作の画面（日々スケ）で役の入り時間を入れる手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "day_id": "撮影日（shooting_days）",
+        "character_key": "役（production_characters）",
+        "call_time": "入り時間（撮影日か翌日の日時）",
+        "ready_time": "支度完了の時刻（撮影日か翌日の日時）",
+        "note": "備考"
+      }
+    },
+    "production_characters": {
+      "domain": "production",
+      "name": "役",
+      "description": "作品に出てくる役を1行ずつ持つ。制作の画面で保存するたびに作品の分を消して入れ直し、台本の確定では出演者名から自動で足す。",
+      "domain_reason": "制作の画面で役を登録する手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "key": "役の識別子。画面では自動の値、台本の確定では「role:役名」",
+        "name": "役名。作品の中で重ならない",
+        "short_name": "略称（香盤の列の見出しに使う）",
+        "actor_name": "演じる俳優の名前",
+        "note": "備考"
+      }
+    },
+    "production_day_slots": {
+      "domain": "production",
+      "name": "日々スケの項目",
+      "description": "撮影日の中の、シーン以外の項目（移動・食事など）を1行ずつ持つ。予定と実績の時刻を持ち、制作の画面の保存で入れ直す。",
+      "domain_reason": "制作の画面（日々スケ）で撮影日の項目を入れる手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "day_id": "撮影日（shooting_days）",
+        "key": "項目の識別子（画面で自動に作る）",
+        "after_scene_order": "置く位置。0＝最初、n＝その日のn番目のシーンの後",
+        "kind": "move＝移動、meal＝食事、wrap＝撤収、prep＝準備、other＝その他",
+        "label": "項目名",
+        "planned_start": "予定の開始日時（撮影日か翌日。YYYY-MM-DDTHH:MM）",
+        "planned_end": "予定の終了日時（開始より後）",
+        "actual_start": "実績の開始日時",
+        "actual_end": "実績の終了日時（開始より後）",
+        "note": "備考"
+      }
+    },
+    "production_location_plans": {
+      "domain": "production",
+      "name": "ロケ地の見取り図",
+      "description": "ロケ地1か所の手描きの見取り図を1行で持つ。制作の画面で保存するたびに入れ直す。",
+      "domain_reason": "制作の画面でロケ地の見取り図を描く手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "location_key": "ロケ地（production_locations）",
+        "strokes_json": "描いた線（ペン・太さ・0〜1の座標）の一覧のJSON"
+      }
+    },
+    "production_locations": {
+      "domain": "production",
+      "name": "ロケ地",
+      "description": "作品で使うロケ地を1行ずつ持つ。制作の画面で保存するたびに作品の分を消して入れ直す。",
+      "domain_reason": "制作の画面でロケ地を登録する手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "key": "ロケ地の識別子（画面で自動に作る）",
+        "name": "ロケ地名。作品の中で重ならない",
+        "address": "住所",
+        "floor": "階",
+        "green_room": "控室",
+        "parking": "駐車場",
+        "facilities": "設備",
+        "contact": "連絡先",
+        "note": "備考"
+      }
+    },
+    "production_looks": {
+      "domain": "production",
+      "name": "衣装・メイク",
+      "description": "役ごとの衣装・メイクの組み合わせ（衣装番号）を1行ずつ持つ。制作の画面で保存するたびに入れ直す。",
+      "domain_reason": "制作の画面で衣装・メイクを登録する手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "key": "衣装・メイクの識別子（画面で自動に作る）",
+        "character_key": "役（production_characters）",
+        "label": "衣装番号。同じ役の中で重ならない",
+        "makeup": "メイク",
+        "props": "持ち道具",
+        "shoes": "靴",
+        "accessories": "装飾品",
+        "note": "備考"
+      }
+    },
+    "production_revisions": {
+      "domain": "production",
+      "name": "制作情報の版",
+      "description": "作品ごとに、制作情報（役・ロケ地・香盤の詳細など）の版の番号を1行で持つ。保存と台本の確定のたびに番号を1つ上げ、同時の保存の衝突を見分けるのに使う。",
+      "domain_reason": "制作の画面の保存と台本の日程の確定が書く行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "version": "制作情報の版の番号。保存のたびに1増える"
+      }
+    },
+    "production_scene_details": {
+      "domain": "production",
+      "name": "シーンの詳細",
+      "description": "シーン（scenes）1つに、ページ数・予定尺・ロケ地を足す行。制作の画面の保存で入れ直し、台本の確定でも予定尺とページ数を入れる。",
+      "domain_reason": "制作の画面（香盤）でシーンの詳細を入れる手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "scene_id": "シーン（scenes）",
+        "page_eighths": "台本のページ数（1/8ページ単位。8で1ページ）",
+        "estimated_minutes": "予定尺（分）",
+        "location_key": "ロケ地（production_locations）",
+        "note": "備考"
+      }
+    },
+    "production_scene_looks": {
+      "domain": "production",
+      "name": "シーンの衣装・メイク",
+      "description": "どのシーンでどの衣装・メイクを使うかを1行ずつ持つ。出演する役のシーンにだけ付けられ、制作の画面の保存で入れ直す。",
+      "domain_reason": "制作の画面でシーンごとの衣装を決める手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "scene_id": "シーン（scenes）",
+        "look_key": "衣装・メイク（production_looks）"
+      }
+    },
+    "products": {
+      "domain": "ledger",
+      "name": "商品",
+      "description": "売る商品1つ（配信版・パッケージなど）。売上明細が商品を参照し、商品の作品配賦で作品へ分ける。商品の画面や一括登録で作る。",
+      "domain_reason": "ほかの領域が参照する商品IDの発番元で、台帳が受け持つため。",
+      "columns": {
+        "sku": "商品コード（SKU。組織内で一意）",
+        "name": "商品名",
+        "channel": "流通（劇場・配信・ビデオグラム・放送・ライセンス・その他）",
+        "version": "行の版。更新のたびに1つ進み、同時の更新を見つける"
+      }
+    },
+    "project_memberships": {
+      "domain": "core",
+      "name": "案件ごとの権限",
+      "description": "管理者以外の利用者が、どの案件にどの権限で入れるか。管理者以外が案件を作ったときや、招待の参加を確定したときに作り、参加済みの招待を取り消すと消す",
+      "domain_reason": "案件ごとの権限で、共通基盤（権限）に属するため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "user_id": "利用者（users）",
+        "permission": "edit＝編集（財務も扱える）、production＝制作だけ",
+        "expires_at": "権限の期限。空なら無期限"
+      }
+    },
+    "projects": {
+      "domain": "planning",
+      "name": "案件",
+      "description": "案件1件。作品は案件にぶら下がる。案件の画面や一括登録で作り、作ったあとに書き換える画面・API は無い。予算は財務の権限がある人だけが見られる",
+      "domain_reason": "案件・作品の登録は企画と決めたため（D-028）。案件は複数の作品を持つ企画になりうる。",
+      "columns": {
+        "code": "案件コード（組織内で一意）",
+        "title": "案件名",
+        "status": "状態（企画中・進行中・完了・休止中の4つ）",
+        "budget_yen": "予算（円）。税込か税抜かは未確認",
+        "version": "行の版。いまは案件を書き換える経路が無いので、1のまま"
+      }
+    },
+    "receipt_plan_decisions": {
+      "domain": "revenue",
+      "name": "入金予定の変更判断",
+      "description": "入金予定の変更申請1件への管理者の承認か却下を表す。承認すると入金予定の版が1進み、適用日以後はその予定日を使う。",
+      "domain_reason": "請求の入金予定（売掛）を管理する売上の手順で作るため。",
+      "columns": {
+        "request_id": "変更申請（receipt_plan_requests）",
+        "invoice_id": "請求書（billing_invoices）",
+        "decision": "判断（approved=承認、rejected=却下）",
+        "version_no": "承認で決まる入金予定の版。却下は空",
+        "effective_on": "適用日（この日以後の基準日で新しい予定を使う）",
+        "reason": "判断の理由",
+        "created_by": "判断した管理者（memberships）",
+        "created_at": "判断した日時"
+      }
+    },
+    "receipt_plan_requests": {
+      "domain": "revenue",
+      "name": "入金予定の変更申請",
+      "description": "請求書1通の入金予定日を変えたいという申請1件を表す。入金表の画面で出して管理者が承認・却下し、変更・削除できない。",
+      "domain_reason": "請求の入金予定（売掛）を管理する売上の手順で作るため。",
+      "columns": {
+        "invoice_id": "請求書（billing_invoices）",
+        "base_version": "申請時の入金予定の版（0=請求書の支払期日のまま）",
+        "previous_due_date": "変更前の入金予定日",
+        "proposed_due_date": "変更後の入金予定日（請求日以後）",
+        "reason": "申請の理由"
+      }
+    },
+    "recognition_bases": {
+      "domain": "revenue",
+      "name": "計上基準",
+      "description": "売上の計上月を決める基準のマスタ。5件で固定で、DB を作るときに入り、書き換えない。",
+      "domain_reason": "売上の計上月を決めるためのマスタで、売上報告の取込が使うため。",
+      "columns": {
+        "id": "基準の番号（1〜5で固定）",
+        "code": "基準のコード（sales_month・broadcast_month など）",
+        "name": "基準の名前（販売月・報告受領月・放送月など）",
+        "source_field": "計上月を取り出す列（report_recognition の列名。販売月は年月、ほかは日付）"
+      }
+    },
+    "release_window_import_previews": {
+      "domain": "sales",
+      "name": "ウィンドウ取込の確認",
+      "description": "全作品のウィンドウへの Excel 取込を登録する前の確認を1行で持つ。本人だけが30分のうちに1回だけ登録に使え、使うと consumed を1にする。",
+      "domain_reason": "営業の全作品のウィンドウへ Excel を取り込む手順が作る行のため。",
+      "columns": {
+        "token": "確認の識別子（登録のときに送る）",
+        "user_id": "確かめた利用者（users）",
+        "payload_json": "登録する版の一覧（変わった系列だけ）のJSON",
+        "expires_at": "使える期限の日時",
+        "consumed": "0＝未使用、1＝登録に使った"
+      }
+    },
+    "release_window_type_distributions": {
+      "domain": "sales",
+      "name": "種別と流通IDの対応",
+      "description": "種別の版ごとに、対応する流通IDを1行ずつ持つ。販売条件や売上との突き合わせ（期間外の警告）に使い、変更も削除もできない。",
+      "domain_reason": "営業の全作品のウィンドウで種別を決める手順が作る行のため。",
+      "columns": {
+        "type_id": "種別（release_window_types）",
+        "version_no": "種別の版（release_window_type_versions）",
+        "distribution_code": "流通ID（distribution_types）"
+      }
+    },
+    "release_window_type_fields": {
+      "domain": "sales",
+      "name": "種別の追加項目",
+      "description": "種別の版ごとに、日付のほかに持つ項目（販売予定価格・独占種別など）を1行ずつ持つ。変更も削除もできない。",
+      "domain_reason": "営業の全作品のウィンドウで種別を決める手順が作る行のため。",
+      "columns": {
+        "type_id": "種別（release_window_types）",
+        "version_no": "種別の版（release_window_type_versions）",
+        "field_key": "項目のキー（英小文字・数字・_）",
+        "label": "項目の表示名",
+        "value_type": "型（yen＝金額（円）、choice＝選択肢など）",
+        "choice_domain": "選択肢の辞書の名前（choice のとき。いまは exclusivity）",
+        "sort_order": "並び順"
+      }
+    },
+    "release_window_type_versions": {
+      "domain": "sales",
+      "name": "ウィンドウ種別の版",
+      "description": "種別の表示名・分類・日付の形・使う／使わないを版ごとに1行で持つ。直すたびに次の版を足し、変更も削除もできない。",
+      "domain_reason": "営業の全作品のウィンドウで種別を決める手順が作る行のため。",
+      "columns": {
+        "type_id": "種別（release_window_types）",
+        "version_no": "種別ごとの版の番号",
+        "label": "種別の表示名",
+        "group_label": "画面でまとめる見出しの名前",
+        "family": "分類（theatrical＝劇場、digital＝配信など6つ）",
+        "date_mode": "point＝1日（公開日など）、period＝期間（解禁日〜期限）",
+        "start_label": "開始の日付の見出し（解禁日・公開日など）",
+        "end_label": "終了の日付の見出し。period のときだけ",
+        "has_announce": "告知解禁日を持つか（1＝持つ）",
+        "default_territory": "系列の既定の地域",
+        "sort_order": "並び順",
+        "active": "1＝使う、0＝使わない",
+        "reason": "版を作った理由"
+      }
+    },
+    "release_window_types": {
+      "domain": "sales",
+      "name": "ウィンドウの種別",
+      "description": "劇場公開・配信・放送などのウィンドウの種別を組織ごとに1行で持つ。中身は版の表に積み、種別を1つ足すと画面の列と Excel の見出しが増える。",
+      "domain_reason": "営業の全作品のウィンドウで種別を決める手順が作る行のため。",
+      "columns": {
+        "type_key": "種別のキー（英小文字・数字・_）"
+      }
+    },
+    "report_channel_fact_seals": {
+      "domain": "revenue",
+      "name": "報告の流通別の封印",
+      "description": "売上報告1件の流通別の詳細（劇場・ビデオグラム・配信の詳細と観測値）を入れ終えた印を表す。報告の登録で最後に足し、以後その報告の詳細は足せない。",
+      "domain_reason": "売上報告の登録の最後に足す売上の手順のため。",
+      "columns": {
+        "report_id": "売上報告（report_imports）",
+        "sealed_at": "封印した日時"
+      }
+    },
+    "report_imports": {
+      "domain": "revenue",
+      "name": "売上報告の取込",
+      "description": "取り込んだ売上報告（宣伝の指標の報告も含む）1件の原文と情報。訂正は新しい行を足し、前の行を superseded（訂正版あり）にする。",
+      "domain_reason": "売上報告を原本ごと取り込む売上の手順で作るため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "partner_id": "報告元の取引先（partners）。宣伝の取込では空",
+        "report_key": "報告書キー（1〜200字）。訂正版を同じキーで束ねる",
+        "kind": "報告の種類（劇場・配信・ビデオグラム・放送・その他・宣伝）",
+        "period_from": "報告の対象期間の開始日",
+        "period_to": "報告の対象期間の終了日",
+        "accounting_month": "計上月（YYYY-MM）",
+        "raw_text": "取り込んだ原文（CSV の文字）",
+        "content_hash": "原文の SHA-256。同じキーで同じ原文は二度入らない",
+        "status": "状態。active＝有効、superseded＝訂正版あり、void＝取消済み。いまコードが入れるのは active と superseded だけで、void にする処理は無い",
+        "supersedes_id": "この版が訂正した前の報告（report_imports）"
+      }
+    },
+    "report_issuance_voids": {
+      "domain": "accounting",
+      "name": "帳票の発行の取消",
+      "description": "帳票の発行を取り消した記録1件（理由つき）。1つの発行に1回だけで、変更も削除もできない。",
+      "domain_reason": "要確認: 帳票の発行記録に合わせて精算に置いた。src の組み直し計画では会計（帳票）に置いている。（確かめ役が直した: 帳票の発行記録（report_issuances）と同じ画面・同じファイル（src/report-issuance-routes.mjs:319-340）で作るため。plans/2026-09-29-integrated-src-restructure.md でも accounting）",
+      "columns": {
+        "issuance_id": "取り消した発行（report_issuances）",
+        "reason": "取消の理由（1〜1000字）",
+        "voided_by": "取り消した利用者（memberships）",
+        "voided_at": "取り消した日時"
+      }
+    },
+    "report_issuances": {
+      "domain": "accounting",
+      "name": "帳票の発行記録",
+      "description": "ロイヤリティ報告書・MG売上報告を発行した記録1件。サーバーが同じ条件で作り直した本体とハッシュを残し、変更も削除もできない。取り消すと同じ条件で次の版を発行できる。",
+      "domain_reason": "要確認: 権利元へのロイヤリティ報告書とMG売上報告の発行を記録するので精算に置いた。src の組み直し計画では会計（帳票）に置いている。（確かめ役が直した: 発行は帳票センターの IssuePanel から行う（src/design-model.mjs:94、src/reports/registry.jsx）。要件の会計は「帳票を毎回計算して出す」（docs/requirements/README.md）。plans/2026-09-29-integrated-src-restructure.md でも report-issuance.* は accounting。精算の「報告の記録」とも読めるので要確認）",
+      "columns": {
+        "report_kind": "帳票の種類（royalty＝ロイヤリティ、mg-sales＝MG売上）",
+        "conditions_json": "発行の条件（期間・宛先・作品など）",
+        "conditions_hash": "条件の SHA-256",
+        "content_json": "発行した帳票の本体（サーバーが作り直したもの）",
+        "content_hash": "帳票の種類・条件・本体をまとめた SHA-256",
+        "recipient_type": "宛先の種類。partner＝取引先、supplier＝MGの仕入先",
+        "recipient_id": "宛先のID（partners か mg_suppliers）",
+        "recipient_name": "発行時の宛先の名前",
+        "work_ids_json": "帳票に含む作品（works）のIDの一覧",
+        "headline_yen": "見出しの金額（円・税の扱いは未確認）。例: 当期の権利元額",
+        "version_no": "同じ帳票・同じ条件での版番号。再発行で1つ進む",
+        "previous_issuance_id": "再発行の前の版（report_issuances）",
+        "note": "発行のメモ（1000字まで）",
+        "issued_on": "発行日",
+        "issued_by": "発行を記録した利用者（memberships）",
+        "issued_at": "発行を記録した日時"
+      }
+    },
+    "report_mapping_profiles": {
+      "domain": "revenue",
+      "name": "報告書の読み替え定義",
+      "description": "取引先ごと・報告の種類ごとに、報告書の列を共通の形へ読み替える定義の見出し1件。中身は版に持ち、書き換えない。",
+      "domain_reason": "取引先ごとの報告書を取り込む売上の手順で使うため。",
+      "columns": {
+        "partner_id": "報告を出す取引先（partners）",
+        "kind": "報告の種類（劇場・配信・ビデオグラム・放送・その他）",
+        "name": "読み替え定義の名前"
+      }
+    },
+    "report_mapping_versions": {
+      "domain": "revenue",
+      "name": "読み替え定義の版",
+      "description": "読み替え定義の中身の版1件。直すときは新しい版を足し、書き換えない。取込の登録の時にハッシュで同じ版か確かめる。",
+      "domain_reason": "取引先ごとの報告書を取り込む売上の手順で使うため。",
+      "columns": {
+        "profile_id": "読み替え定義（report_mapping_profiles）",
+        "version_no": "定義の中の版番号（1から）",
+        "definition_json": "列の対応（元の列・固定値・足し引き掛け）と無視する列",
+        "definition_hash": "定義の SHA-256"
+      }
+    },
+    "report_recognition": {
+      "domain": "revenue",
+      "name": "報告の計上基準",
+      "description": "売上報告1件ごとの計上基準と、その基準から決めた計上月。基準の列を含む報告を取り込むときに作り、あとから変えられない。",
+      "domain_reason": "売上報告の取込で計上月を決めるときに作るため。",
+      "columns": {
+        "report_id": "売上報告（report_imports）。1報告に1行",
+        "recognition_basis_id": "計上基準（recognition_bases）",
+        "sales_month": "販売月（YYYY-MM）。販売月の基準で使う",
+        "report_received_on": "報告受領日。報告受領月の基準で使う",
+        "contract_start_on": "契約開始日。契約開始月の基準で使う",
+        "license_start_on": "ライセンス利用開始日。利用開始月の基準で使う",
+        "broadcast_on": "放送日。放送月の基準で使う",
+        "basis_reason": "計上根拠（1〜1000字）",
+        "accounting_status": "会計の確認状態。いまは unverified（未確認）だけ",
+        "resolved_month": "基準から出した計上月。報告と明細の計上月に一致"
+      }
+    },
+    "report_sale_dimensions_versions": {
+      "domain": "accounting",
+      "name": "売上の部門分類（版）",
+      "description": "売上明細1行に付けた部門の版1つを表す。帳票センターで分類するたびに足して変更・削除できず、最大の版番号が今の部門。",
+      "domain_reason": "要確認: 帳票センターで売上明細に部門を付け、帳票を部門別に集計する手順のため会計にしたが、売上明細の属性として売上もありうる。",
+      "columns": {
+        "sale_id": "売上明細（sale_lines）",
+        "version_no": "版番号（明細ごとに1から）",
+        "department_name": "部門名。空は未分類",
+        "reason": "分類した理由"
+      }
+    },
+    "report_source_controls": {
+      "domain": "revenue",
+      "name": "報告原本の合計値",
+      "description": "売上報告の原本に書かれた合計（行数・税抜・税額・税込）を書き写した値1件。報告を登録して封をしたあと、取り込んだ明細の合計と一致するときだけ入る。入ったあとは、その報告の明細（パッケージの観測値を含む）を足すことも変えることも消すこともできず、この値も変更・削除できない",
+      "domain_reason": "売上報告の取込で、原本の合計と明細を照合するため。",
+      "columns": {
+        "report_id": "売上報告（report_imports）",
+        "scope_kind": "範囲。report＝報告全体、channel＝流通ごと",
+        "channel": "流通（範囲が channel のときだけ。ほかは空文字）",
+        "metric": "何の合計か（行数・税抜額・税額・税込額）",
+        "expected_value": "原本の値（行数は件、額は円）"
+      }
+    },
+    "rights_intake_cases": {
+      "domain": "planning",
+      "name": "権利の調達ケース",
+      "description": "作品の権利をどう調達したか（製作委員会・単独保有・権利受託）の下書き1件。改訂は新しい行を足し、書き換えない。",
+      "domain_reason": "権利の調達は企画の独立した業務の流れと決めたため（D-026・D-028）。精算の分配契約と製作委員会契約は、この調達ケースを元に作る。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "case_code": "ケースコード（組織内で一意）",
+        "title": "ケースの名前",
+        "intake_type": "調達の入口（製作委員会・単独保有・権利受託）",
+        "source_case_id": "改訂元のケース（rights_intake_cases）",
+        "snapshot_version": "改訂の版番号。改訂するたびに1つ進む",
+        "status": "状態。いまは draft（下書き）だけ"
+      }
+    },
+    "rights_intake_documents": {
+      "domain": "planning",
+      "name": "調達の契約書参照",
+      "description": "調達ケースの元になる契約書の参照1件（名前・参照先・版）。ケースと同時に作り、書き換えない。",
+      "domain_reason": "権利の調達は企画の独立した業務の流れと決めたため（D-026・D-028）。調達ケース（rights_intake_cases）に合わせる。",
+      "columns": {
+        "intake_case_id": "調達ケース（rights_intake_cases）",
+        "title": "契約書の名前",
+        "reference": "契約書の参照先（1000字まで）",
+        "version_label": "契約書の版の表示",
+        "content_hash": "契約書の SHA-256（64桁。空も可）"
+      }
+    },
+    "rights_intake_participants": {
+      "domain": "planning",
+      "name": "調達の参加者",
+      "description": "調達ケースの参加者1件（自社か取引先、役割・出資額・持分）。ケースと同時に作り、書き換えない。",
+      "domain_reason": "権利の調達は企画の独立した業務の流れと決めたため（D-026・D-028）。調達ケース（rights_intake_cases）に合わせる。",
+      "columns": {
+        "intake_case_id": "調達ケース（rights_intake_cases）",
+        "party_kind": "参加者の種類。current_org＝自社、partner＝取引先",
+        "partner_id": "取引先（partners）。自社なら空",
+        "role": "役割（自由記述）",
+        "investment_yen": "出資額（円）",
+        "explicit_share_bps": "契約に書かれた持分（bps。10000＝100%）"
+      }
+    },
+    "rights_intake_scopes": {
+      "domain": "planning",
+      "name": "調達した権利の範囲",
+      "description": "調達ケースで得た権利の範囲1件（流通・地域・期間・独占か）。ケースと同時に作り、書き換えない。",
+      "domain_reason": "権利の調達は企画の独立した業務の流れと決めたため（D-026・D-028）。調達ケース（rights_intake_cases）に合わせる。",
+      "columns": {
+        "intake_case_id": "調達ケース（rights_intake_cases）",
+        "channel": "流通（自由記述）",
+        "territory": "地域（自由記述）",
+        "rights_start": "権利期間の開始日",
+        "rights_end": "権利期間の終了日",
+        "exclusivity": "独占か（独占・非独占・未確認）"
+      }
+    },
+    "rights_payment_events": {
+      "domain": "settlement",
+      "name": "権利元への支払の記録",
+      "description": "1行は、権利元（個別精算の契約の権利者）か製作委員会の参加者へ支払った記録1件。銀行とはつながず記録だけ。直すときは取消の行を足す。",
+      "domain_reason": "権利元・委員会の参加者への支払を記録する、精算の手順のため。",
+      "columns": {
+        "settlement_contract_id": "個別精算の契約（settlement_contracts）。どちらか片方",
+        "committee_snapshot_id": "委員会報告の保存版（committee_report_snapshots）",
+        "partner_id": "支払先（partners）。契約の権利者か報告の参加者",
+        "amount_yen": "支払額（円・正の数）。税込か税抜かは未確認",
+        "paid_on": "支払日",
+        "reference": "支払の識別番号（組織の中で一意）",
+        "reverses_event_id": "取り消す支払（rights_payment_events）",
+        "reason": "支払の根拠、または取消の理由"
+      }
+    },
+    "royalty_agreements": {
+      "domain": "settlement",
+      "name": "ロイヤリティ契約",
+      "description": "1行は、作品×権利者×種別（監督料・脚本料など）のロイヤリティ契約。ロイヤリティ契約の画面で登録し、変更も削除もできない（条件とサイクルは版を足して変える）。",
+      "domain_reason": "ロイヤリティ契約の画面で登録し、権利者への報告書と支払を計算する元になるため。",
+      "columns": {
+        "project_id": "作品の案件（projects）。work_id と組で作品を指す",
+        "work_id": "作品（works）",
+        "holder_partner_id": "権利者（partners）。報告書と支払の相手",
+        "category": "種別（監督料・脚本料・音楽著作権料・原作料・クリエーター報酬・その他）",
+        "agreement_code": "契約コード（組織の中で一意）",
+        "title": "契約名",
+        "document_reference": "契約書の参照先",
+        "note": "メモ"
+      }
+    },
+    "royalty_irregular_entries": {
+      "domain": "settlement",
+      "name": "ロイヤリティのイレギュラー",
+      "description": "1行は、権利者の報告書に効かせるイレギュラーの記録（金額の調整・締め月の変更・保留・保留の解除・記録だけ）。取消は同じ内容で取消の行を足す。",
+      "domain_reason": "権利者の報告書の金額や締め月を例外的に変える、精算の手順の記録のため。",
+      "columns": {
+        "holder_partner_id": "権利者（partners）",
+        "agreement_id": "ロイヤリティ契約（royalty_agreements）。調整と記録は空でもよい",
+        "kind": "種類（金額の調整・締め月の変更・保留・保留を解く・記録だけ）",
+        "accrual_month": "対象の計上月",
+        "close_month": "調整を入れる締め月、または移し先の締め月",
+        "amount_yen": "調整額（円・税抜）。金額の調整のときだけ",
+        "reason": "理由",
+        "source_reference": "根拠の資料",
+        "reverses_entry_id": "取り消す記録（royalty_irregular_entries）"
+      }
+    },
+    "royalty_manual_accruals": {
+      "domain": "settlement",
+      "name": "ロイヤリティの実額計上",
+      "description": "1行は、計算方法が実額入力の契約に、計上月の実額を入れた記録（音楽著作権料の分配明細など）。直すときは符号を逆にした取消の行を足す。",
+      "domain_reason": "実額入力の契約のロイヤリティを計上する、精算の手順の記録のため。",
+      "columns": {
+        "agreement_id": "ロイヤリティ契約（royalty_agreements）",
+        "accrual_month": "計上月",
+        "amount_yen": "計上額（円・税抜）。取消の行は符号が逆",
+        "source_reference": "元資料（分配明細など）の参照",
+        "reason": "入れた理由",
+        "reverses_entry_id": "取り消す元の行（royalty_manual_accruals）"
+      }
+    },
+    "royalty_schedule_phases": {
+      "domain": "settlement",
+      "name": "サイクルのフェーズ",
+      "description": "1行は、サイクルの版の中の1つの期間（フェーズ）の締め方。計上月から締め月を決め、締め月から報告期限と支払期限を出す。同じ版の中で期間は重ならない。",
+      "domain_reason": "サイクルの版の中身で、精算の手順で締め月と期限を決めるため。",
+      "columns": {
+        "schedule_version_id": "サイクルの版（royalty_schedule_versions）",
+        "starts_month": "フェーズの開始の計上月",
+        "ends_month": "フェーズの終わりの計上月。空はその後ずっと",
+        "cycle_kind": "締め方（毎月・四半期・半年・1年・締め月の列挙・別途協議・計上無し）",
+        "anchor_month": "締め月の1つ（1〜12）。四半期・半年・1年のとき",
+        "custom_close_months": "締め月の一覧（YYYY-MM をカンマ区切り）。custom のとき",
+        "first_close_immediate": "1＝開始の計上月をすぐ締める（初月即締）",
+        "report_offset_months": "報告期限は締め月の何か月後か",
+        "report_day": "報告期限の日（eom は月末）",
+        "payment_offset_months": "支払期限は締め月の何か月後か",
+        "payment_day": "支払期限の日（eom は月末）",
+        "note": "メモ"
+      }
+    },
+    "royalty_schedule_versions": {
+      "domain": "settlement",
+      "name": "ロイヤリティのサイクル版",
+      "description": "1行は、ロイヤリティ契約のサイクル（締め方と期限）の1つの版。最新の版がすべての計上月の締め方を決める（確定済みの報告書は変わらない）。",
+      "domain_reason": "ロイヤリティの締め方と期限を契約ごとに版で持ち、報告書を作る精算の手順で使うため。",
+      "columns": {
+        "agreement_id": "ロイヤリティ契約（royalty_agreements）",
+        "version_no": "版番号。契約ごとに1から順",
+        "statements_from": "報告書を作り始める締め月（移行用）。これより前の締め月は以前の仕組みで報告済みとして報告書を作らない。空はすべて作る",
+        "reason": "サイクルを変える理由"
+      }
+    },
+    "royalty_statement_calculation_parts": {
+      "domain": "settlement",
+      "name": "報告書の計算の分割",
+      "description": "1行は、報告書の計算の内容（JSON）が大きいときに分けて保存した1片。part_no の順につなぐと元の内容になる（クラウドの DB は1つの値を128KBまでしか入れられないため）。",
+      "domain_reason": "報告書の確定版の計算の内容を分けて保存する表で、精算の手順で書くため。",
+      "columns": {
+        "statement_id": "報告書（royalty_statements）",
+        "part_no": "分割の番号。1から順",
+        "body": "計算の内容の一部（JSON の文字列の断片）"
+      }
+    },
+    "royalty_statement_events": {
+      "domain": "settlement",
+      "name": "報告書の報告・支払",
+      "description": "1行は、ロイヤリティ報告書を実際に報告した日、または支払った日と額の記録。直すときは同じ内容の取消の記録を足す。支払の合計は支払予定額まで。",
+      "domain_reason": "報告書を実際に報告・支払した記録で、精算の手順で書くため。",
+      "columns": {
+        "statement_id": "報告書（royalty_statements）",
+        "event_kind": "種類（reported 報告・paid 支払）",
+        "occurred_on": "報告した日、または支払日",
+        "amount_yen": "支払額（円）。支払のときだけ。合計は支払予定額まで",
+        "reference": "支払の識別番号。支払のとき必須",
+        "note": "メモ。取消のときは理由",
+        "reverses_event_id": "取り消す記録（royalty_statement_events）"
+      }
+    },
+    "royalty_statement_lines": {
+      "domain": "settlement",
+      "name": "報告書の明細",
+      "description": "1行は、ロイヤリティ報告書の確定版の明細の1行（当期の計上・報告後の修正・調整・前払金の充当）。確定版と同時に書き、種類ごとの和が確定版の金額と一致する。",
+      "domain_reason": "報告書の確定版と同時に書く明細で、精算の手順で作るため。",
+      "columns": {
+        "statement_id": "報告書（royalty_statements）",
+        "line_no": "報告書の中の行番号",
+        "line_kind": "種類（当期の計上・報告後の修正や遅れて締めた分・調整・前払金の充当）",
+        "agreement_id": "ロイヤリティ契約（royalty_agreements）",
+        "accrual_month": "計上月。当期の計上と修正の行は必ず入る。調整の行は、もとのイレギュラーに計上月があるときだけ入る",
+        "term_version_id": "使った条件版（royalty_term_versions）",
+        "irregular_entry_id": "もとのイレギュラー（royalty_irregular_entries）",
+        "sales_yen": "売上（円・税抜）",
+        "window_fee_yen": "窓口手数料（円・税抜）",
+        "expense_yen": "差し引いた経費（円・税抜）",
+        "committee_income_yen": "委員会収入（円・税抜）",
+        "base_yen": "料率をかけた基礎（円・税抜）",
+        "rate_bps": "料率（bps）",
+        "amount_yen": "明細の額（円・税抜）",
+        "note": "メモ"
+      }
+    },
+    "royalty_statement_voids": {
+      "domain": "settlement",
+      "name": "報告書の取消",
+      "description": "1行は、ロイヤリティ報告書の確定版を取り消した記録。取り消せるのは権利者の最新の確定版で、取り消していない支払の記録が無いものだけ。",
+      "domain_reason": "報告書の確定版を取り消す、精算の手順の記録のため。",
+      "columns": {
+        "statement_id": "取り消した報告書（royalty_statements）",
+        "reason": "取り消す理由",
+        "created_by": "取り消した利用者",
+        "created_at": "取り消した日時"
+      }
+    },
+    "royalty_statements": {
+      "domain": "settlement",
+      "name": "ロイヤリティ報告書",
+      "description": "1行は、権利者×締め月のロイヤリティ報告書の確定版。前期繰越＋当期＋調整−前払金の充当＝支払予定額＋翌期繰越。取り消すと同じ締め月で次の版を作れる。",
+      "domain_reason": "権利者への報告書の確定版で、精算の手順で作り、報告と支払の元になるため。",
+      "columns": {
+        "holder_partner_id": "権利者（partners）",
+        "close_month": "締め月",
+        "report_due_on": "報告期限",
+        "payment_due_on": "支払期限",
+        "version_no": "権利者×締め月の版番号。取り消して作り直すと増える",
+        "previous_statement_id": "前の確定版（royalty_statements）。繰越の引き継ぎ元",
+        "calculation_version": "計算の版（royalty-cycle-v1）",
+        "as_of": "作成したときの基準日",
+        "input_hash": "計算の入力（明細・合計・保留）の SHA-256",
+        "calculation_json": "計算の内容（JSON）。大きいときは分割の数とバイト数だけを入れ、中身は royalty_statement_calculation_parts に分けて入れる",
+        "royalty_yen": "当期のロイヤリティ（円・税抜）。当期と修正の明細の和",
+        "adjustment_yen": "調整（円・税抜）。イレギュラーの調整の明細の和",
+        "advance_recouped_yen": "前払金の充当（円・税抜）",
+        "carried_in_yen": "前期繰越（円・税抜）。前の確定版の翌期繰越",
+        "payable_yen": "支払予定額（円・税抜）",
+        "carried_out_yen": "翌期繰越（円・税抜）。下限未満やマイナスの残高",
+        "hold_count": "締め月の時点で解決していない保留の件数（算定できない売上・サイクル未設定・保留の記録など）",
+        "line_count": "明細の行数"
+      }
+    },
+    "royalty_term_channels": {
+      "domain": "settlement",
+      "name": "条件版の対象流通",
+      "description": "1行は、ロイヤリティ条件版が対象にする流通の1つ。行が無い条件版はすべての流通が対象。報告書で使う前の最新の版にだけ足せる。",
+      "domain_reason": "ロイヤリティ条件版の一部として、精算の計算で対象の売上を絞るため。",
+      "columns": {
+        "term_version_id": "条件版（royalty_term_versions）",
+        "channel_group": "対象の流通（劇場・レンタル・セル・配信・放送・海外・その他）"
+      }
+    },
+    "royalty_term_expense_categories": {
+      "domain": "settlement",
+      "name": "条件版の控除費目",
+      "description": "1行は、経費を差し引く基礎のロイヤリティ条件版で、差し引く経費の費目の1つ。行が無ければ、その作品×計上月の経費すべてを差し引く。",
+      "domain_reason": "ロイヤリティ条件版の一部として、精算の計算で差し引く経費を絞るため。",
+      "columns": {
+        "term_version_id": "条件版（royalty_term_versions）。経費を引く基礎の版だけ",
+        "category": "差し引く経費の費目名"
+      }
+    },
+    "royalty_term_versions": {
+      "domain": "settlement",
+      "name": "ロイヤリティ条件版",
+      "description": "1行は、ロイヤリティ契約の計算条件の1つの版（料率・基礎・前払金・支払の下限）。適用開始の計上月から効き、直すときは新しい版を足す（変更・削除はできない）。",
+      "domain_reason": "ロイヤリティの計算条件を契約ごとに版で持ち、精算の計算に使うため。",
+      "columns": {
+        "agreement_id": "ロイヤリティ契約（royalty_agreements）",
+        "version_no": "版番号。契約ごとに1から順",
+        "effective_from": "適用開始の計上月（YYYY-MM）。前の版より後の月",
+        "calc_method": "計算方法（料率・毎月定額・実額入力）",
+        "base_kind": "料率をかける基礎（gross_sales 売上・after_window_fee 売上−窓口手数料・after_window_fee_and_expenses 売上−窓口手数料−経費・committee_income 本委員会収入・committee_income_after_expenses 本委員会収入−経費）。計算方法が料率のときだけ",
+        "rate_bps": "料率（bps。10000＝100%）",
+        "window_fee_bps": "窓口手数料率（bps）。基礎が窓口手数料を引くときだけ",
+        "fixed_amount_yen": "毎月の定額（円・税抜）。毎月定額のときだけ",
+        "advance_yen": "前払金（円・税抜）。ロイヤリティから充当する。なしは0",
+        "min_payment_yen": "支払の下限（円・税抜）。未満は翌期へ繰り越す",
+        "clause_reference": "根拠の条項（契約書のどこに書いてあるか）",
+        "reason": "条件を変える理由"
+      }
+    },
+    "sale_attribute_values": {
+      "domain": "revenue",
+      "name": "売上の拡張属性の値（版）",
+      "description": "売上明細1件×拡張属性の列1つの値の版。ほかの表に置き場の無い値（劇場名・券種など）を、財務の権限で手入力か売上報告の取込で積み、書き換えない。",
+      "domain_reason": "売上明細1件に付ける値で、売上集計シートの手入力か売上報告の取込で作る。",
+      "columns": {
+        "sale_id": "売上明細（sale_lines）",
+        "column_key": "拡張属性の列キー（sales_sheet_column_versions）",
+        "version_no": "売上×列ごとの版の連番",
+        "value_text": "文字・日付・年月の値",
+        "value_number": "金額・数・率・はい/いいえの値（両方空は値を消した版）",
+        "origin": "manual＝画面で手入力、report_import＝売上報告の取込",
+        "reason": "この版を登録した理由"
+      }
+    },
+    "sale_currency_versions": {
+      "domain": "revenue",
+      "name": "売上の外貨（版）",
+      "description": "売上明細1件ごとの通貨・外貨の額・為替レートの版。円の計上額と外貨×レートが1円まで合うときだけ積め、書き換えない。",
+      "domain_reason": "売上明細1件ごとの外貨の記録で、売上集計シートから作る。",
+      "columns": {
+        "sale_id": "売上明細（sale_lines）",
+        "version_no": "売上ごとの版の連番",
+        "currency_code": "通貨コード（USD など3文字。円は JPY）",
+        "original_amount_x100": "外貨の計上額（税抜。100倍した整数。円のときは空）",
+        "original_royalty_x100": "外貨のロイヤリティ計上額（100倍した整数）",
+        "exchange_rate_x10000": "為替レート（1外貨あたりの円。1万倍した整数）",
+        "rate_date": "レートの適用日",
+        "basis": "レートの根拠（出典）",
+        "reason": "この版を登録した理由"
+      }
+    },
+    "sale_distribution_versions": {
+      "domain": "accounting",
+      "name": "売上の流通区分（版）",
+      "description": "売上明細1行の流通区分・地域・サービス名・精算方式の分類の版1つを表す。帳票センターで分類するたびに足して変更・削除できず、最大の版番号が今の分類。",
+      "domain_reason": "要確認: 帳票センターで分類する手順で作るため会計にしたが、売上集計シートや取引先リストも読む売上明細の属性なので売上もありうる。",
+      "columns": {
+        "sale_id": "売上明細（sale_lines）",
+        "version_no": "版番号（明細ごとに1から）",
+        "distribution_code": "流通ID（distribution_types）",
+        "territory": "地域",
+        "service_name": "サービス名",
+        "settlement_method": "精算方式（未確認・ロイヤリティ・MG・FLAT・その他）",
+        "reason": "分類した理由"
+      }
+    },
+    "sale_lines": {
+      "domain": "revenue",
+      "name": "売上明細",
+      "description": "売上報告から取り込んだ売上の明細1行。取込の登録で作る。請求に使った行と、原本の合計で照合済みの報告の行は変えられない。",
+      "domain_reason": "売上報告を共通の明細にする売上の手順で作るため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "report_id": "元の売上報告（report_imports）",
+        "product_id": "商品（products）。空なら明細の作品の売上とする",
+        "partner_id": "取引先（partners）",
+        "sales_period_from": "販売期間の開始日",
+        "sales_period_to": "販売期間の終了日",
+        "accounting_month": "計上月（YYYY-MM）",
+        "description": "明細の内容（なければ「報告明細」）",
+        "quantity": "数量（空も可）",
+        "amount_ex_tax": "税抜額（円）。マイナスも入る",
+        "tax_amount": "税額（円）。マイナスも入る",
+        "amount_inc_tax": "税込額（円）。税抜額＋税額",
+        "source_row": "原本の行番号"
+      }
+    },
+    "sale_royalty_basis_versions": {
+      "domain": "revenue",
+      "name": "ロイヤリティ計上の基準（版）",
+      "description": "売上明細1件ごとの、ロイヤリティ計上月と計上額（税抜・税込）の版。記録の無い売上は計上月・計上額と同じとみなし、書き換えない。",
+      "domain_reason": "要確認: 売上明細1件ごとの値で売上集計シートから入れるが、中身はロイヤリティ（精算）の計上月・額の基準。",
+      "columns": {
+        "sale_id": "売上明細（sale_lines）",
+        "version_no": "売上ごとの版の連番",
+        "royalty_month": "ロイヤリティ計上月（YYYY-MM）",
+        "royalty_amount_ex_tax": "ロイヤリティ計上額（円・税抜）",
+        "royalty_tax_amount": "ロイヤリティ計上額の消費税（円）",
+        "royalty_amount_inc_tax": "ロイヤリティ計上額（円・税込＝税抜＋消費税）",
+        "reason": "この版を登録した理由"
+      }
+    },
+    "sales_activities": {
+      "domain": "sales",
+      "name": "営業の活動記録",
+      "description": "営業案件で行った連絡・提案・交渉などの活動1回を表す。営業の画面で足し、あとから変更・削除できない。",
+      "domain_reason": "営業案件の連絡・提案・交渉を記録する営業の手順で作るため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "opportunity_id": "営業案件（sales_opportunities）",
+        "partner_id": "相手の取引先（partners。営業案件から写す）",
+        "occurred_on": "活動した日",
+        "activity_type": "活動の種類（連絡・提案・交渉・メモ）",
+        "summary": "活動の内容",
+        "next_action": "次にすること",
+        "next_due_on": "次にすることの期限"
+      }
+    },
+    "sales_agreement_term_versions": {
+      "domain": "sales",
+      "name": "販売契約の条件版",
+      "description": "販売契約の条件（販路・地域・期間・見込額）の版1つを表す。契約の登録と改訂のたびに足して変更・削除できず、最大の版番号が今の条件。",
+      "domain_reason": "販売契約を登録・改訂する営業の手順で作るため。",
+      "columns": {
+        "agreement_id": "販売契約（sales_agreements）",
+        "version_no": "版番号（契約ごとに1から）",
+        "source_version_id": "改訂元の条件版（sales_agreement_term_versions）",
+        "document_reference": "契約書の参照先",
+        "version_label": "版の名前",
+        "channel": "販路（配信・放送・劇場・ビデオグラム・その他）",
+        "territory": "地域",
+        "license_start": "利用開始日",
+        "license_end": "利用終了日",
+        "expected_amount_yen": "契約見込額（円）。税込か税抜かはコードに無い",
+        "note": "備考"
+      }
+    },
+    "sales_agreements": {
+      "domain": "sales",
+      "name": "販売契約",
+      "description": "営業案件から結んだ販売契約1件の見出し（相手・商品・契約コード）を表す。条件は条件版（sales_agreement_term_versions）に持ち、見出しは変えられない。",
+      "domain_reason": "営業案件から販売契約を結ぶ営業の手順で作るため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "opportunity_id": "もとの営業案件（sales_opportunities）",
+        "partner_id": "契約の相手（partners）",
+        "product_id": "対象の商品（products。作品に配賦済みのもの）",
+        "intake_case_id": "権利の調達案件（rights_intake_cases）",
+        "contract_code": "契約コード（組織内で一意）",
+        "title": "契約の名前",
+        "version": "条件版を足すたびに1増える番号"
+      }
+    },
+    "sales_availability_versions": {
+      "domain": "sales",
+      "name": "流通別の販売条件（版）",
+      "description": "作品×流通ID×地域ごとに、解禁日・販売終了日・条件・独占の版1つを表す。営業作品一覧や番販の画面で足して変更・削除できず、最大の版番号が今の条件。",
+      "domain_reason": "作品ごとの販売ウィンドウと条件を決める営業の手順で作るため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "distribution_code": "流通ID（distribution_types）",
+        "territory": "地域",
+        "version_no": "版番号（作品×流通×地域ごとに1から）",
+        "release_on": "解禁日（発売・配信開始日）",
+        "sales_end_on": "販売終了日",
+        "terms_text": "販売条件の文面",
+        "source_reference": "条件の根拠",
+        "intake_case_id": "権利の調達案件（rights_intake_cases）",
+        "document_id": "根拠の契約書類（rights_intake_documents）",
+        "exclusivity": "独占か（独占・非独占・未確認）",
+        "status": "状態（条件未確定・確認済み・取り下げ）"
+      }
+    },
+    "sales_deliverables": {
+      "domain": "sales",
+      "name": "納品物",
+      "description": "販売契約で相手に納める物1件と、その提出・受領の状況を表す。営業の画面で登録し、version をそろえて更新する。",
+      "domain_reason": "販売契約にもとづく納品を管理する営業の手順で作るため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "agreement_id": "販売契約（sales_agreements）",
+        "term_version_id": "根拠の条件版（sales_agreement_term_versions）",
+        "title": "納品物の名前",
+        "due_on": "納期",
+        "status": "状態（未提出・提出済み・受領済み・保留）",
+        "submitted_on": "提出した日",
+        "accepted_on": "相手が受領した日",
+        "note": "備考",
+        "version": "更新のたびに1増える番号（同時更新の検出用）"
+      }
+    },
+    "sales_material_snapshots": {
+      "domain": "sales",
+      "name": "営業資料の版",
+      "description": "営業案件ごとに作った営業資料（あらすじ・提案・条件）の版1つを表す。作ったときの作品・営業案件・取引先・商品の情報を写して固定し、変更・削除できない。",
+      "domain_reason": "営業先への提案資料を作る営業の手順で作るため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "opportunity_id": "営業案件（sales_opportunities）",
+        "partner_id": "提案先の取引先（partners）",
+        "product_id": "対象の商品（products）。空でもよい",
+        "version_no": "版番号（作品×営業案件ごとに1から）",
+        "title": "資料の題",
+        "synopsis": "あらすじ",
+        "pitch": "提案の要点",
+        "terms_text": "条件の文面",
+        "source_json": "作成時の作品・営業案件・取引先・商品・本文の写し",
+        "snapshot_hash": "写しの照合値（組織内で一意）"
+      }
+    },
+    "sales_opportunities": {
+      "domain": "sales",
+      "name": "営業案件",
+      "description": "作品を取引先へ売り込む営業案件1件（見込から受注・失注まで）。営業の画面で作り、版を確かめて段階や見込額を書き換える。活動の記録や販売契約がついたら、案件・作品・取引先は変えられない",
+      "domain_reason": "提案・商談を進める営業の手順で作るため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "partner_id": "商談の相手の取引先（partners）",
+        "name": "営業案件の名前",
+        "stage": "段階（見込・提案・交渉・受注・失注）",
+        "expected_yen": "見込額（円）。未確認なら空。税込か税抜かは未確認",
+        "close_date": "予定日。受注か失注が決まる見込みの日（推測）",
+        "version": "行の版。更新のたびに1つ進み、同時の更新を見つける"
+      }
+    },
+    "sales_report_links": {
+      "domain": "sales",
+      "name": "販売契約と売上報告の対応",
+      "description": "売上報告1件がどの販売契約の条件版にもとづくかを表す。報告が有効で取引先と販路が契約と合うときだけ作れ、変更・削除できない。",
+      "domain_reason": "売上報告を販売契約に結び、売上の根拠を作る営業の手順で作るため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "report_id": "売上報告（report_imports）",
+        "agreement_id": "販売契約（sales_agreements）",
+        "term_version_id": "結んだ時点の最新の条件版（sales_agreement_term_versions）"
+      }
+    },
+    "sales_sheet_column_versions": {
+      "domain": "revenue",
+      "name": "売上集計シートの列（版）",
+      "description": "売上集計シートの列1つの定義（見出し・型・集計の決まり・値の取り方）の版。管理者が初期の83列の採用や列の追加で積み、書き換えない。",
+      "domain_reason": "売上基幹の売上集計シート（売上明細の帳票）の列の定義で、管理者が列を採用・追加して作る。",
+      "columns": {
+        "column_key": "列キー（英小文字・数字・_。版をまたいで同じ列）",
+        "version_no": "列ごとの版の連番",
+        "label": "見出し",
+        "legacy_position": "旧シート（83列）での列番号（1〜83）",
+        "group_key": "列のまとまり（識別・日付・数量・外貨など）",
+        "value_type": "値の型（yen＝円、rate_pct＝率（%）、date＝日付など）",
+        "aggregation": "集計の決まり（sum＝合計、ratio＝分子と分母で再計算など）",
+        "numerator_key": "比率を出すときの分子の列キー",
+        "denominator_key": "比率を出すときの分母の列キー",
+        "ratio_scale": "比率に掛ける数（1か、%で表す100）",
+        "digits": "小数の桁数（0〜6）",
+        "source_kind": "値の取り方（登録済みの表から・計算で作る・拡張属性）",
+        "source_ref": "値の取り方の許可リストのキー（SQL は持たない）",
+        "formula_json": "計算で作る列の式（JSON）",
+        "description": "列の説明",
+        "sort_order": "並び順",
+        "active": "1＝使う、0＝使うのをやめた",
+        "reason": "この版を登録した理由"
+      }
+    },
+    "sales_sheet_view_versions": {
+      "domain": "revenue",
+      "name": "保存した形の中身（版）",
+      "description": "保存した形ごとの列の並び・粒度・切り口・月と税の基準・絞り込みの版。保存し直すたびに積み、書き換えない。",
+      "domain_reason": "売上集計シートの見せ方の保存で、売上基幹の帳票の画面から作る。",
+      "columns": {
+        "view_id": "保存した形（sales_sheet_views）",
+        "version_no": "形ごとの版の連番",
+        "column_keys_json": "表示する列キーの並び（JSON）",
+        "grain": "粒度（detail＝明細、aggregate＝集計）",
+        "dimensions_json": "集計の切り口（最大3つ。JSON）",
+        "month_basis": "月の基準（計上月・販売月・ロイヤリティ計上月）",
+        "tax_basis": "税の基準（ex＝税抜、inc＝税込）",
+        "pivot_months": "月を横に並べるか（1＝並べる）",
+        "hide_empty": "全行が空の列を隠すか（1＝隠す）",
+        "filters_json": "絞り込みの条件（JSON）",
+        "active": "1＝使う、0＝使うのをやめた",
+        "reason": "この版を登録した理由"
+      }
+    },
+    "sales_sheet_views": {
+      "domain": "revenue",
+      "name": "売上集計シートの保存した形",
+      "description": "売上集計シートの見せ方に名前をつけて保存したもの1件。名前は変えず（変えるときは新しく作る）、中身は sales_sheet_view_versions に版で持つ。",
+      "domain_reason": "売上集計シートの見せ方の保存で、売上基幹の帳票の画面から作る。",
+      "columns": {
+        "name": "保存した形の名前（組織の中で重ねない）"
+      }
+    },
+    "sales_source_bindings": {
+      "domain": "revenue",
+      "name": "売上原本の割り当て（版）",
+      "description": "原本の行をどの作品へ割り当てるかの決め方の版1つを表す。付け替えるたびに理由を付けて足し、登録を始めた後は足せず、最大の版番号が今の割り当て。",
+      "domain_reason": "売上報告の原本を作品へ割り当てる売上の手順で作るため。",
+      "columns": {
+        "file_id": "原本（sales_source_files）",
+        "version_no": "版番号（原本ごとに1から連番）",
+        "mode": "決め方（1つの作品・商品コードの列・作品コードの列）",
+        "project_id": "案件（projects）。1つの作品のときだけ",
+        "work_id": "作品（works）。1つの作品のときだけ",
+        "product_column": "商品コードの列の見出し",
+        "work_column": "作品コードの列の見出し",
+        "reason": "割り当て・付け替えの理由"
+      }
+    },
+    "sales_source_commits": {
+      "domain": "revenue",
+      "name": "売上原本の分割の登録",
+      "description": "分割1つを売上報告1件として登録した記録を表す。1つの原本の登録はすべて同じ割り当て・取込範囲・分け方・取引先・報告の種類にそろえ、変更・削除できない。",
+      "domain_reason": "分けた原本を売上報告として登録する売上の手順で作るため。",
+      "columns": {
+        "file_id": "原本（sales_source_files）",
+        "partition_id": "分割（sales_source_partitions）",
+        "binding_id": "割り当ての版（sales_source_bindings）",
+        "selection_id": "取込範囲の版（sales_source_selections）",
+        "work_id": "作品（works）",
+        "mapping_version_id": "使った列対応の版（report_mapping_versions）",
+        "report_id": "登録した売上報告（report_imports）",
+        "preview_token": "登録前の確認の鍵（一意。二重登録を防ぐ）"
+      }
+    },
+    "sales_source_files": {
+      "domain": "revenue",
+      "name": "受領した売上原本",
+      "description": "受け取った売上報告のファイル1つを、作品から切り離して表す。原本取り込みで保存し、同じ中身は組織で1回だけで、変更・削除できない。",
+      "domain_reason": "売上報告を原本ごと取り込む売上の手順で作るため。",
+      "columns": {
+        "storage": "中身の置き方（inline=保存、legacy_artifact=旧原本を参照）",
+        "file_name": "ファイル名",
+        "media_type": "ファイルの種類（MIME）",
+        "byte_length": "大きさ（バイト）",
+        "raw_sha256": "原本の照合値（SHA-256。組織内で一意）",
+        "original_base64": "原本の中身（base64。inline のときだけ）",
+        "extraction_json": "読み取ったシートと表の中身（inline のときだけ）",
+        "extractor_name": "読み取った部品の名前",
+        "extractor_version": "読み取った部品の版",
+        "extraction_status": "読み取りの状態（抽出済み・文字認識待ち）",
+        "legacy_artifact_id": "引き継いだ旧方式の原本（workflow_raw_artifacts）"
+      }
+    },
+    "sales_source_partitions": {
+      "domain": "revenue",
+      "name": "売上原本の作品別の分割",
+      "description": "1回の分け方で、原本から1つの作品へ分けた行の組を表す（分け方1回×作品ごとに1行）。分けた表そのものは保存せず、取込範囲の版と行番号から作り直す。",
+      "domain_reason": "売上報告の原本を作品ごとに分ける売上の手順で作るため。",
+      "columns": {
+        "file_id": "原本（sales_source_files）",
+        "selection_id": "使った取込範囲の版（sales_source_selections）",
+        "binding_id": "使った割り当ての版（sales_source_bindings）",
+        "plan_sha256": "分け方全体の照合値",
+        "project_id": "案件（projects）",
+        "work_id": "分けた先の作品（works）",
+        "row_count": "分けた行数",
+        "source_rows_json": "この作品へ分けた元の行番号",
+        "product_map_json": "商品コードと商品ID・そのときの配賦の写し",
+        "partition_sha256": "分けた表（CSV）の照合値"
+      }
+    },
+    "sales_source_selections": {
+      "domain": "revenue",
+      "name": "売上原本の取込範囲（版）",
+      "description": "原本のどのシートの、どの行を見出しにし、どの行を取り込まないかの版1つを表す。登録を始める前だけ足せて変更・削除できず、最大の版番号が今の選択。",
+      "domain_reason": "売上報告の原本から取り込む範囲を決める売上の手順で作るため。",
+      "columns": {
+        "file_id": "原本（sales_source_files）",
+        "version_no": "版番号（原本ごとに1から連番）",
+        "sheet_name": "シート名",
+        "header_row": "見出しの行番号",
+        "canonical_csv": "取り込む表を整えたCSV",
+        "canonical_sha256": "そのCSVの照合値",
+        "source_rows_json": "CSVの各行の元の行番号",
+        "excluded_json": "取り込まない行・理由・金額",
+        "suggestions_json": "列対応の候補（見出しから決めたもの）",
+        "suggestion_source": "候補の出どころ（規則・AI取込・AI）",
+        "legacy_selection_id": "写した旧方式の選択（workflow_report_selections）"
+      }
+    },
+    "scenes": {
+      "domain": "production",
+      "name": "シーン",
+      "description": "作品の台本の1シーン。台本の取込を確定したときや制作の画面で作り、版を確かめて書き換える。撮影日への割り当てや準備タスクがついたシーンは、案件・作品を変えられない",
+      "domain_reason": "台本からシーンを作り撮影日へつなぐ制作の手順で作るため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "scene_no": "シーン番号（作品の中で一意）",
+        "day_night": "昼夜。D＝昼、N＝夜、DN＝薄暮",
+        "location": "場所",
+        "synopsis": "シーンの内容",
+        "status": "状態。draft＝下書き、ready＝撮影準備済み、shot＝撮影済み",
+        "version": "行の版。更新のたびに1つ進み、同時の更新を見つける"
+      }
+    },
+    "schema_meta": {
+      "domain": "admin",
+      "name": "項目定義の版",
+      "description": "組織ごとに、追加項目（宣伝の指標など）の定義の版番号を1行で持つ。管理者が提案を採用すると1つ進み、取込のプレビューから登録までに定義が変わっていないかを確かめるのに使う。",
+      "domain_reason": "管理者が追加項目の提案を採用する（管理・設計の画面）たびに版が進むため。",
+      "columns": {
+        "org_id": "組織（organizations）。1組織に1行",
+        "version": "項目定義の版番号。提案を採用するたびに1つ進む"
+      }
+    },
+    "sessions": {
+      "domain": "core",
+      "name": "ログインのセッション",
+      "description": "手元の試作でログインしたときのセッション1件。ログインで作り、退出で消す。本番は Cloudflare Access で入るので使わない。",
+      "domain_reason": "ログインの手順で作り、共通基盤（ログイン）が受け持つため。",
+      "columns": {
+        "id_hash": "セッションの鍵（ブラウザに渡す値）の SHA-256",
+        "user_id": "ログインした利用者（users）",
+        "org_id": "ログイン時の既定の組織（organizations）",
+        "expires_at": "セッションの期限（ログインから8時間）"
+      }
+    },
+    "settlement_contracts": {
+      "domain": "settlement",
+      "name": "分配契約",
+      "description": "作品ごとの権利・分配の契約1件。精算の画面で作る。案件・作品・種別・権利元・MG契約額・MG実支払額は書き換えられない（トリガーで止める）。料率などの条件は条件版に持つ",
+      "domain_reason": "分配の計算の元になる契約で、精算の手順で作るため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "contract_code": "契約コード（組織内で一意）",
+        "title": "契約名",
+        "contract_type": "種別（手数料型・MG調達型・自社権利型）",
+        "holder_partner_id": "権利元の取引先（partners）。自社権利型は空",
+        "mg_contract_yen": "MG契約額（円）。MG調達型だけ。税の扱いは未確認",
+        "mg_paid_yen": "MGの実支払額（円）。契約額以下。MG調達型だけ"
+      }
+    },
+    "settlement_report_links": {
+      "domain": "settlement",
+      "name": "報告と分配契約の紐付け",
+      "description": "売上報告を、作品ごとにどの分配契約・条件版で精算するかの紐付け1件。精算の画面で作る。有効な報告だけを使え、製作委員会の報告に使った報告は使えない。",
+      "domain_reason": "売上報告を分配契約へつないで精算する手順で作るため。",
+      "columns": {
+        "report_id": "売上報告（report_imports）",
+        "work_id": "作品（works）",
+        "contract_id": "分配契約（settlement_contracts）",
+        "term_version_id": "使う条件版（settlement_term_versions）",
+        "report_basis": "報告額の基準。gross＝控除前、net＝控除後"
+      }
+    },
+    "settlement_term_versions": {
+      "domain": "settlement",
+      "name": "分配契約の条件版",
+      "description": "分配契約の条件（料率など）の版1件。契約を作るときに版1を作り、改訂は新しい版を足す。変更も削除もできない。",
+      "domain_reason": "契約の条件版に沿って分配を計算する精算の手順で作るため。",
+      "columns": {
+        "contract_id": "分配契約（settlement_contracts）",
+        "version_no": "契約の中の版番号（1から）",
+        "platform_rate_bps": "プラットフォーム料率（bps）。控除前の報告額から引く",
+        "agency_fee_bps": "代理店手数料率（bps）。自社権利型は空",
+        "recoup_basis": "MG回収に充てる額（料率控除後か手数料控除後か）。MG型だけ",
+        "overage_enabled": "MG超過後の追加分配の有無（0/1）。いまは常に空",
+        "overage_rate_bps": "MG超過後の追加分配の料率（bps）。いまは常に空",
+        "note": "条件のメモ（1000字まで）"
+      }
+    },
+    "shooting_days": {
+      "domain": "production",
+      "name": "撮影日",
+      "description": "作品の撮影日1日分を班ごとに表す。台本の日程の確定か日々スケの画面で作り、同じ作品・日付・班は1行だけ。",
+      "domain_reason": "台本からの日程の確定と日々スケの登録という制作の手順で作るため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "shoot_date": "撮影日",
+        "unit": "班の名前（同じ日に複数の班がありうる）",
+        "label": "撮影日の表示名",
+        "notes": "備考",
+        "version": "更新のたびに1増える番号（同時更新の検出用）"
+      }
+    },
+    "tax_calculation_lines": {
+      "domain": "revenue",
+      "name": "税計算の明細",
+      "description": "1行は、税計算に使った元の売上明細1件と、その税区分・税率・参考の税額。変更・削除はできない。",
+      "domain_reason": "要確認: 請求・入金の画面で請求を確定するときに書くので売上に置いたが、src の再編の計画では税の表を会計に置く。",
+      "columns": {
+        "snapshot_id": "税計算（tax_calculation_snapshots）",
+        "sale_id": "元の売上明細（sale_lines）",
+        "report_id": "元の売上報告（report_imports）",
+        "voucher_id": "伝票の識別（元の売上報告の報告キー）",
+        "category": "税区分（課税10%・軽減8%・免税・非課税・不課税）",
+        "rate_bps": "税率（bps。1000＝10%）",
+        "amount_ex_tax": "元の明細の税抜額（円）",
+        "source_tax": "元の明細の税額（円）",
+        "amount_inc_tax": "元の明細の税込額（円）",
+        "exact_numerator": "丸める前の税額を分数にしたときの分子",
+        "exact_denominator": "丸める前の税額を分数にしたときの分母",
+        "reference_tax_scaled": "参考の税額を10の（桁数）乗倍した整数",
+        "reference_precision": "参考の税額の小数の桁数（0〜4）"
+      }
+    },
+    "tax_calculation_snapshots": {
+      "domain": "revenue",
+      "name": "請求の税計算",
+      "description": "1行は、請求1件を確定したときの税計算の結果。元の売上明細の税額と、税率ごとに1回丸めた請求の税額を並べて残す。変更・削除はできない。",
+      "domain_reason": "要確認: 請求・入金の画面で請求を確定するときに書くので売上に置いたが、src の再編の計画では税の表を会計に置く。",
+      "columns": {
+        "invoice_id": "請求（billing_invoices）",
+        "preview_hash": "確認の画面で見た入力と計算の SHA-256",
+        "rule_version_id": "使った税ルールの版（tax_rule_versions）",
+        "invoice_date": "請求日",
+        "source_period_from": "元の売上報告の期間の最初の日",
+        "source_period_to": "元の売上報告の期間の最後の日",
+        "calculation_json": "計算の内容（明細・参考の計算・税率別の合計。JSON）",
+        "amount_ex_tax": "請求の税抜額（円）",
+        "source_tax": "元の売上明細の税額の合計（円）",
+        "billed_tax": "請求の税額（円）",
+        "delta": "請求の税額−元の税額（円）"
+      }
+    },
+    "tax_invoice_links": {
+      "domain": "revenue",
+      "name": "請求の再発行のつながり",
+      "description": "1行は、再発行した請求と、取り消した元の請求のつながり。変更・削除はできない。",
+      "domain_reason": "請求・入金の画面で、取り消した請求を再発行するときに書くため。",
+      "columns": {
+        "invoice_id": "再発行した請求（billing_invoices）",
+        "prior_invoice_id": "取り消した元の請求（billing_invoices）",
+        "reason": "再発行の理由"
+      }
+    },
+    "tax_invoice_rate_totals": {
+      "domain": "revenue",
+      "name": "税計算の税率別合計",
+      "description": "1行は、税計算の税区分×税率ごとの合計と、1回だけ丸めた請求の税額。変更・削除はできない。",
+      "domain_reason": "要確認: 請求・入金の画面で請求を確定するときに書くので売上に置いたが、src の再編の計画では税の表を会計に置く。",
+      "columns": {
+        "snapshot_id": "税計算（tax_calculation_snapshots）",
+        "category": "税区分（課税10%・軽減8%・免税・非課税・不課税）",
+        "rate_bps": "税率（bps。1000＝10%）",
+        "amount_ex_tax": "税抜額（円）。税込起点では税込額−請求の税額",
+        "exact_numerator": "丸める前の税額を分数にしたときの分子",
+        "exact_denominator": "丸める前の税額を分数にしたときの分母",
+        "billed_tax": "請求の税額（円）。税率ごとに1回丸める",
+        "source_tax": "元の明細の税額の合計（円）",
+        "delta": "請求の税額−元の税額（円）"
+      }
+    },
+    "tax_rule_versions": {
+      "domain": "accounting",
+      "name": "税ルールの版",
+      "description": "1行は、請求の税計算のルールの1つの版（組織の既定か取引先別）。適用開始日から効き、変更・削除はできない。管理者だけが登録する。",
+      "domain_reason": "管理者が税計算台帳の画面（計上）で登録する税計算のルールで、src の再編の計画でも税は会計に置くため。",
+      "columns": {
+        "scope_type": "適用先（default 組織の既定・partner 取引先別）",
+        "partner_id": "取引先（partners）。取引先別のときだけ",
+        "version": "版番号。適用先ごとに1から順",
+        "base_version": "もとにした版の番号（初版は0）。同時の更新を防ぐ",
+        "effective_from": "適用開始日",
+        "effective_to": "適用終了日。空は終わりなし",
+        "basis": "計算の起点（exclusive 税抜起点・inclusive 税込起点）",
+        "grouping_mode": "参考の計算の単位（invoice 請求書・voucher 伝票）",
+        "rounding_mode": "端数処理（切り捨て・四捨五入・切り上げ）",
+        "precision": "参考の税額の小数の桁数（0〜4）",
+        "reason": "登録の理由",
+        "evidence": "根拠"
+      }
+    },
+    "theatrical_sale_details": {
+      "domain": "revenue",
+      "name": "劇場売上の詳細",
+      "description": "劇場の売上報告の売上明細1行について、方式・券種・動員など報告にある値を表す。金額の正本は売上明細で、ここの額（小数も入る文字）は合算しない。",
+      "domain_reason": "売上報告の取込で売上明細と同時に作る売上の手順のため。",
+      "columns": {
+        "sale_id": "売上明細（sale_lines）",
+        "model": "方式（劇場・非劇場×歩合・定額）",
+        "ticket_type_code": "券種",
+        "purchase_channel": "購入経路",
+        "admissions_count": "動員数",
+        "gross_box_office_ex_tax": "興行収入（円・税抜。報告の値）",
+        "reported_actual_ex_tax": "報告にある実績額（円・税抜。合算しない）",
+        "reported_recognized_ex_tax": "報告にある計上額（円・税抜。合算しない）",
+        "calculated_actual_ex_tax": "実績額の計算照合値（円・税抜。合算しない）"
+      }
+    },
+    "transaction_guards": {
+      "domain": "core",
+      "name": "書き込みの条件確認",
+      "description": "まとめて行う書き込みの途中で条件を確かめるための表。条件に合わないときに値0を入れて失敗させ、同じまとまりの書き込みをすべて取り消す。行は残らない。",
+      "domain_reason": "どの業務にも属さない、まとめて行う書き込みの土台のため。",
+      "columns": {
+        "value": "1だけ入れられる。0を入れると失敗し、書き込みを止める"
+      }
+    },
+    "users": {
+      "domain": "core",
+      "name": "利用者",
+      "description": "ログインする利用者1人。メールで本人を見分ける。招待の参加を確定したときや初期データで作る。",
+      "domain_reason": "ログインと利用者は共通基盤が受け持つため。",
+      "columns": {
+        "email": "メールアドレス（小文字・一意）。ログインで本人を見分ける",
+        "display_name": "画面に出す名前"
+      }
+    },
+    "work_contract_set_versions": {
+      "domain": "ledger",
+      "name": "作品の契約一覧（版）",
+      "description": "作品の契約の並びを一組として固定する版。保存するたびに積み、中身の契約は work_contract_versions に同じ版番号で持つ。",
+      "domain_reason": "作品・商品マスタから入れる、作品の契約を版で持つ台帳。",
+      "columns": {
+        "work_id": "作品（works）",
+        "revision": "作品ごとの版の連番",
+        "source_reference": "出所・根拠",
+        "reason": "改訂理由"
+      }
+    },
+    "work_contract_versions": {
+      "domain": "ledger",
+      "name": "作品の契約の内容（版）",
+      "description": "契約一覧の版ごとの、契約1件の種類・相手・締結日・期間・根拠の文書・並び順。版と一緒に書き、書き換えない。",
+      "domain_reason": "作品・商品マスタから入れる、作品の契約を版で持つ台帳。",
+      "columns": {
+        "work_id": "作品（works）",
+        "revision": "契約一覧の版（work_contract_set_versions）",
+        "contract_key": "契約（work_contracts のキー）",
+        "position": "表示順",
+        "title": "契約名",
+        "kind": "契約の種類（権利の取得・出資・製作委託・配給委託・その他）",
+        "signed_on": "締結日",
+        "starts_on": "開始日",
+        "ends_on": "終了日",
+        "partner_id": "相手の取引先（partners）",
+        "document_reference": "根拠の文書"
+      }
+    },
+    "work_contracts": {
+      "domain": "ledger",
+      "name": "作品の契約",
+      "description": "作品の中で契約1件を見分けるキー。契約を初めて保存するときに作り、版をまたいで同じ契約を指す。書き換えない。",
+      "domain_reason": "作品・商品マスタから入れる、作品の契約を版で持つ台帳。",
+      "columns": {
+        "work_id": "作品（works）",
+        "contract_key": "作品の中で契約を見分けるキー"
+      }
+    },
+    "work_finance_versions": {
+      "domain": "ledger",
+      "name": "作品の費用（版）",
+      "description": "作品ごとの総製作費・宣伝費の予算・自社の出資額・販売権の購入費の版で、額ごとに税区分・確定状態・評価日・根拠を持つ。作品・商品マスタで保存するたびに積み、製作委員会の作品は条件版を参照して製作費と自社出資を持たない。",
+      "domain_reason": "要確認: 作品・商品マスタから入れるが、製作費・宣伝予算・出資は企画の収支試算と出資の準備にも当たる。",
+      "columns": {
+        "work_id": "作品（works）",
+        "revision": "作品ごとの版の連番",
+        "committee_term_version_id": "参照する製作委員会の条件版（committee_term_versions）",
+        "self_partner_id": "保存時に自社を表した取引先（partners。委員会の条件版を参照するときだけ入る）",
+        "production_cost_yen": "総製作費（円・宣伝費を含まない。税区分は別の列）",
+        "production_cost_tax_basis": "総製作費の税区分（未確認・税別・税込）",
+        "production_cost_status": "総製作費の確定状態（未確認・見込み・確定）",
+        "production_cost_as_of": "総製作費の評価日",
+        "production_cost_evidence": "総製作費の根拠",
+        "promotion_budget_yen": "宣伝費の予算（円。税区分は別の列）",
+        "promotion_budget_tax_basis": "宣伝費の予算の税区分（未確認・税別・税込）",
+        "promotion_budget_status": "宣伝費の予算の確定状態（未確認・見込み・確定）",
+        "promotion_budget_as_of": "宣伝費の予算の評価日",
+        "promotion_budget_evidence": "宣伝費の予算の根拠",
+        "own_investment_yen": "自社の出資額（円・税別）",
+        "own_investment_tax_basis": "自社の出資額の税区分（税別だけ）",
+        "own_investment_status": "自社の出資額の確定状態（未確認・見込み・確定）",
+        "own_investment_as_of": "自社の出資額の評価日",
+        "own_investment_evidence": "自社の出資額の根拠",
+        "sales_rights_purchase_yen": "販売権の購入費（円。税区分は別の列）",
+        "sales_rights_purchase_tax_basis": "販売権の購入費の税区分（未確認・税別・税込）",
+        "sales_rights_purchase_status": "販売権の購入費の確定状態（未確認・見込み・確定）",
+        "sales_rights_purchase_as_of": "販売権の購入費の評価日",
+        "sales_rights_purchase_evidence": "販売権の購入費の根拠",
+        "source_reference": "出所・根拠",
+        "reason": "改訂理由"
+      }
+    },
+    "work_master_profile_versions": {
+      "domain": "ledger",
+      "name": "作品の仕様（版）",
+      "description": "作品ごとのシリーズ・レーベル・製作区分・登録状態・権利処理の確かめた内容などの版。作品・商品マスタで保存するたびに積み、書き換えない。",
+      "domain_reason": "作品・商品マスタの作品情報で入れる、作品の仕様の台帳。",
+      "columns": {
+        "work_id": "作品（works）",
+        "revision": "作品ごとの版の連番",
+        "series": "シリーズ",
+        "label": "レーベル",
+        "production_category": "製作区分",
+        "registration_state": "登録状態（未確認・仮登録・確認済み）",
+        "work_kind": "作品の種別（作品・集約・未同定）",
+        "internal_notes": "社内メモ",
+        "other1": "その他1（意味は未確認）",
+        "other2": "その他2（意味は未確認）",
+        "lead_distribution_class": "主となる流通区分",
+        "cycle_boundary_date": "サイクル境界日（原文のまま）",
+        "active_flag": "有効状態（原文のまま）",
+        "overseas_sales_rights": "海外販売権（確かめた内容）",
+        "distribution_rights": "配給権（確かめた内容）",
+        "primary_use": "一次利用",
+        "secondary_use": "二次利用",
+        "copyright_royalty_notes": "著作権ロイヤリティの注記",
+        "director_copyright_royalty_status": "監督の権利処理の状態",
+        "screenplay_copyright_royalty_status": "脚本の権利処理の状態",
+        "original_work_copyright_royalty_status": "原作の権利処理の状態",
+        "music_copyright_royalty_status": "音楽の権利処理の状態",
+        "producer_royalty_status": "プロデューサーの権利処理の状態",
+        "video_quality_subtitle_dubbing": "画質・字幕・吹替（作品共通）",
+        "dubbing_availability": "吹替の有無",
+        "music_copyright_society_registration": "音楽著作権管理団体への登録（確かめた内容）",
+        "source_reference": "出所・根拠",
+        "reason": "改訂理由"
+      }
+    },
+    "work_proposal_profiles": {
+      "domain": "sales",
+      "name": "提案用の作品情報",
+      "description": "提案資料に出す作品情報（フリガナ・英題・イントロダクションなど）を、作品ごとの版で1行に持つ。直すたびに次の版を足し、変更も削除もできない。",
+      "domain_reason": "営業の提案資料に出す作品情報を登録する手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "revision": "作品ごとの版の番号（1から順に）",
+        "title_kana": "題名のフリガナ",
+        "title_en": "英題",
+        "genre": "ジャンル",
+        "copyright_notice": "コピーライトの表記",
+        "caution": "提案のときの注意事項",
+        "intro_short": "イントロダクション（短）",
+        "intro_long": "イントロダクション（長）",
+        "info_url": "作品情報のURL",
+        "image_url": "画像のURL（キーとどちらか一方）",
+        "image_key": "保存済みの画像のキー（URLとどちらか一方）",
+        "image_file_name": "画像のファイル名",
+        "source_reference": "出所・改訂の理由（必須）"
+      }
+    },
+    "work_release_window_field_values": {
+      "domain": "sales",
+      "name": "ウィンドウの追加項目の値",
+      "description": "作品のウィンドウの版ごとに、追加項目の値を1行ずつ持つ。型は種別の版の項目とトリガーで照らし合わせ、変更も削除もできない。",
+      "domain_reason": "営業の全作品のウィンドウで作品の日付を入れる手順が作る行のため。",
+      "columns": {
+        "window_id": "作品のウィンドウ（work_release_windows）",
+        "version_no": "ウィンドウの版（work_release_window_versions）",
+        "field_key": "項目のキー（release_window_type_fields）",
+        "value_text": "文字の値（文字・日付・選択肢のコード）",
+        "value_number": "数の値（整数・金額（円））。税抜などは項目名で示す"
+      }
+    },
+    "work_release_window_versions": {
+      "domain": "sales",
+      "name": "作品のウィンドウの版",
+      "description": "作品のウィンドウの日付と状態を版ごとに1行で持つ。画面の入力や Excel 取込で次の版を足し、変更も削除もできない。",
+      "domain_reason": "営業の全作品のウィンドウで作品の日付を入れる手順が作る行のため。",
+      "columns": {
+        "window_id": "作品のウィンドウ（work_release_windows）",
+        "version_no": "ウィンドウごとの版の番号",
+        "type_version_no": "使った種別の版の番号（release_window_type_versions）",
+        "start_on": "開始の日付（日・月・年のどれかの細かさ）",
+        "end_on": "終了の日付（日・月・年のどれか）",
+        "announce_on": "告知解禁日（日・月・年のどれか）",
+        "date_precision": "開始の細かさ。day・month・year・range＝時期の原文・tbd＝未定",
+        "timing_raw": "時期の原文（range・tbd のとき）",
+        "status": "draft＝予定、confirmed＝確定、withdrawn＝取り下げ",
+        "availability_version_id": "根拠にした販売条件の版（sales_availability_versions）",
+        "source_kind": "入れ方。manual＝画面、excel_import＝Excel 取込、from_availability＝販売条件から写した",
+        "source_reference": "根拠。Excel 取込ではファイル名",
+        "reason": "版を作った理由",
+        "import_batch_id": "取込の確認（release_window_import_previews）"
+      }
+    },
+    "work_release_windows": {
+      "domain": "sales",
+      "name": "作品のウィンドウ",
+      "description": "作品×種別×地域の組み合わせ（系列）を1行で持つ。日付などの中身は版の表に積み、変更も削除もできない。",
+      "domain_reason": "営業の全作品のウィンドウで作品の日付を入れる手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "type_id": "種別（release_window_types）",
+        "territory": "地域（既定は日本）"
+      }
+    },
+    "work_rights_party_versions": {
+      "domain": "ledger",
+      "name": "作品の権利元（版）",
+      "description": "権利元一覧の版ごとの権利元1者（取引先か名前・役割・権利の範囲・根拠）。版と一緒に書き、書き換えない。",
+      "domain_reason": "作品・商品マスタから入れる、作品の権利元の台帳。",
+      "columns": {
+        "work_id": "作品（works）",
+        "revision": "権利元一覧の版（work_rights_versions）",
+        "position": "表示順",
+        "partner_id": "権利元の取引先（partners。無いときは名前）",
+        "name": "権利元の名前（取引先が無いとき）",
+        "role": "権利元の役割",
+        "rights_scope": "権利の範囲",
+        "notes": "備考",
+        "evidence": "根拠"
+      }
+    },
+    "work_rights_versions": {
+      "domain": "ledger",
+      "name": "作品の権利元一覧（版）",
+      "description": "作品の権利元を一組として保存する版。保存するたびに積み、行の無い版で全員の撤回を記録できる。書き換えない。",
+      "domain_reason": "作品・商品マスタから入れる、作品の権利元の台帳。",
+      "columns": {
+        "work_id": "作品（works）",
+        "revision": "作品ごとの版の連番",
+        "source_reference": "出所・根拠",
+        "reason": "改訂理由"
+      }
+    },
+    "workbench_analysis_snapshots": {
+      "domain": "admin",
+      "name": "分析用の読取記録",
+      "description": "分析のために DB の行をある時点で読んだことを、件数と照合値で1行に残す。行そのものは持たない。",
+      "domain_reason": "要確認: 作業台（表編集・加工・承認）の表だが、src 再編の計画は workbench.sql を revenue に置いているため。",
+      "columns": {
+        "dataset": "対象のデータ。works＝作品、sales_import＝売上取込など",
+        "change_set_id": "きっかけの変更セット（workbench_change_sets）。空欄あり",
+        "source_boundary_json": "読んだ時刻と範囲（案件・作品）のJSON",
+        "content_hash": "読んだ行の照合値",
+        "row_count": "読んだ行の数"
+      }
+    },
+    "workbench_applications": {
+      "domain": "admin",
+      "name": "変更セットの反映",
+      "description": "承認済みの変更セットを DB へ反映した記録を1行で持つ。変更セット1つにつき1行で、同じキーでの二重の反映を止める。",
+      "domain_reason": "要確認: 作業台（表編集・加工・承認）の表だが、src 再編の計画は workbench.sql を revenue に置いているため。",
+      "columns": {
+        "change_set_id": "反映した変更セット（workbench_change_sets）",
+        "idempotency_key": "二重の反映を止めるためのキー",
+        "result_json": "反映した行などの結果のJSON",
+        "applied_by": "反映した利用者（users）"
+      }
+    },
+    "workbench_change_sets": {
+      "domain": "admin",
+      "name": "変更セット（承認申請）",
+      "description": "検証を通った下書きを、理由をつけて承認に出した申請を1行で持つ。管理者の承認と DB への反映のときに状態と日時を書き換える。",
+      "domain_reason": "要確認: 作業台（表編集・加工・承認）の表だが、src 再編の計画は workbench.sql を revenue に置いているため。",
+      "columns": {
+        "draft_id": "下書き（workbench_drafts）",
+        "revision": "申請の版。いまは1のまま、承認の照合に使う",
+        "draft_revision": "申請した下書きの版",
+        "validation_id": "使った検証（workbench_validations）",
+        "content_hash": "申請の中身の照合値（承認の照合に使う）",
+        "reason": "変更の理由",
+        "status": "submitted＝申請中、approved＝承認済み、applied＝反映済み",
+        "submitted_by": "申請した利用者（users）",
+        "approved_by": "承認した管理者（users）",
+        "approved_at": "承認した日時",
+        "applied_at": "DB へ反映した日時"
+      }
+    },
+    "workbench_drafts": {
+      "domain": "admin",
+      "name": "表編集の下書き",
+      "description": "利用者が表を直している途中の下書きを1行で持つ。保存のたびに行と手順を書き換えて版を1つ上げ、承認に出すと状態が submitted になる。",
+      "domain_reason": "要確認: 作業台（表編集・加工・承認）の表だが、src 再編の計画は workbench.sql を revenue に置いているため。",
+      "columns": {
+        "user_id": "下書きを作った利用者（users）",
+        "dataset": "対象のデータ。works＝作品、sales_import＝売上取込など",
+        "project_id": "範囲の案件（projects）。空欄あり",
+        "work_id": "範囲の作品（works）。空欄あり",
+        "revision": "下書きの版。保存のたびに1増える",
+        "status": "draft＝編集中、submitted＝承認申請済み",
+        "source_snapshot_id": "元にしたデータ（workbench_snapshots）",
+        "source_artifact_id": "元にしたファイル（workbench_source_artifacts）",
+        "rows_json": "編集中の行のJSON",
+        "steps_json": "加工の手順の一覧のJSON",
+        "lookup_refs_json": "突き合わせに使う参照（名前と workbench_snapshots）のJSON",
+        "recipe_version_id": "使った加工手順の版（workbench_recipe_versions）",
+        "updated_at": "最後に保存した日時"
+      }
+    },
+    "workbench_lineage": {
+      "domain": "admin",
+      "name": "加工の試し実行の記録",
+      "description": "加工の手順を試しに実行したときの、入力と結果の照合値と経過を1行で持つ。試すたびに1行足す。",
+      "domain_reason": "要確認: 作業台（表編集・加工・承認）の表だが、src 再編の計画は workbench.sql を revenue に置いているため。",
+      "columns": {
+        "run_type": "実行の種類。いまのコードは preview（試し実行）だけを書く",
+        "source_id": "元にしたデータの識別子。いまのコードは書かない（推測）",
+        "engine_version": "加工の部品の版",
+        "input_hash": "入力（行・手順・参照）の照合値",
+        "result_hash": "結果の行の照合値",
+        "detail_json": "各段の経過と行の由来のJSON"
+      }
+    },
+    "workbench_recipe_versions": {
+      "domain": "admin",
+      "name": "加工手順の版",
+      "description": "加工手順の中身を版ごとに1行で持つ。直すたびに次の版を足し、変更も削除もできない。",
+      "domain_reason": "要確認: 作業台（表編集・加工・承認）の表だが、src 再編の計画は workbench.sql を revenue に置いているため。",
+      "columns": {
+        "recipe_id": "加工手順（workbench_recipes）",
+        "version_no": "手順ごとの版の番号",
+        "steps_json": "加工の手順の一覧のJSON",
+        "lookup_refs_json": "突き合わせに使う参照（名前と workbench_snapshots）のJSON",
+        "steps_hash": "手順の照合値"
+      }
+    },
+    "workbench_recipes": {
+      "domain": "admin",
+      "name": "加工手順",
+      "description": "保存した加工手順の名前を1行で持つ。手順の中身は版の表（workbench_recipe_versions）に積む。",
+      "domain_reason": "要確認: 作業台（表編集・加工・承認）の表だが、src 再編の計画は workbench.sql を revenue に置いているため。",
+      "columns": {
+        "dataset": "対象のデータ。works＝作品、sales_import＝売上取込など",
+        "name": "手順の名前"
+      }
+    },
+    "workbench_snapshots": {
+      "domain": "admin",
+      "name": "表編集の元データ",
+      "description": "表編集の下書きや突き合わせの元にする行を、その時点のまま固定した写しを1行で持つ。DB から読んだ行か、取り込んだファイルのシートから読んだ行を入れ、変更も削除もできない。",
+      "domain_reason": "要確認: 作業台（表編集・加工・承認）の表だが、src 再編の計画は workbench.sql を revenue に置いているため。",
+      "columns": {
+        "dataset": "対象のデータ。works＝作品、sales_import＝売上取込など",
+        "scope_json": "読んだ範囲（案件・作品。ファイルから読んだときは原本・シート・見出し行）のJSON",
+        "rows_json": "固定した行（DB の行かファイルの行）のJSON",
+        "content_hash": "行の照合値"
+      }
+    },
+    "workbench_source_artifacts": {
+      "domain": "admin",
+      "name": "表編集の原本",
+      "description": "表編集に取り込んだ Excel・CSV のファイルを原本のまま1行で持つ。同じ中身のファイルは組織で1つだけで、変更も削除もできない。",
+      "domain_reason": "要確認: 作業台（表編集・加工・承認）の表だが、src 再編の計画は workbench.sql を revenue に置いているため。",
+      "columns": {
+        "name": "ファイル名",
+        "media_type": "ファイルの種類（拡張子で xlsx か csv を決める）",
+        "raw_base64": "ファイルそのもの（base64）",
+        "source_hash": "ファイルの照合値（SHA-256）",
+        "byte_length": "ファイルの大きさ（バイト）",
+        "extraction_json": "読み取ったシート・警告・文字コードのJSON"
+      }
+    },
+    "workbench_validations": {
+      "domain": "admin",
+      "name": "表編集の検証",
+      "description": "下書きの1つの版を全件で確かめた結果を1行で持つ。承認に出すにはこの結果が要り、変更も削除もできない。",
+      "domain_reason": "要確認: 作業台（表編集・加工・承認）の表だが、src 再編の計画は workbench.sql を revenue に置いているため。",
+      "columns": {
+        "draft_id": "下書き（workbench_drafts）",
+        "draft_revision": "確かめた下書きの版",
+        "input_hash": "確かめた入力の照合値",
+        "result_hash": "結果（変更の一覧）の照合値",
+        "result_json": "変更の一覧・警告・行の由来などのJSON",
+        "status": "結果の状態。いまのコードは valid（通った）だけを書く"
+      }
+    },
+    "workflow_raw_artifacts": {
+      "domain": "production",
+      "name": "受領した原本",
+      "description": "取り込んだ台本または売上報告のファイル1つを、原本のまま1行で持つ。取り込みの画面で書き、変更も削除もできない。",
+      "domain_reason": "要確認: 台本（制作）と売上報告（売上）の両方の原本を持つが、src 再編の計画は workflow.sql を制作に置いているため。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "kind": "script＝台本、sales_report＝売上報告",
+        "file_name": "ファイル名",
+        "media_type": "ファイルの種類（画面から送られた値。空欄あり）",
+        "byte_length": "ファイルの大きさ（バイト）",
+        "raw_sha256": "原本の照合値（SHA-256）。同じ原本の二重取込を止める",
+        "original_base64": "原本のファイルそのもの（base64）",
+        "extractor_name": "読み取りに使った部品の名前",
+        "extractor_version": "読み取りに使った部品の版",
+        "extraction_json": "読み取った中身（文やシートの表）のJSON",
+        "extraction_status": "extracted＝読み取り済み、ocr_pending＝画像PDFの文字認識待ち"
+      }
+    },
+    "workflow_report_commits": {
+      "domain": "revenue",
+      "name": "報告の登録確定",
+      "description": "売上報告の原本を売上明細へ登録した記録を1行で持つ。原本1つ・報告1つにつき1回だけ書き、変更も削除もできない。",
+      "domain_reason": "売上報告の原本を売上明細へ登録する売上の取り込みの手順が作る行のため。",
+      "columns": {
+        "work_id": "作品（works）",
+        "artifact_id": "売上報告の原本（workflow_raw_artifacts）",
+        "selection_id": "使った取込範囲（workflow_report_selections）",
+        "mapping_version_id": "使った列対応の版（report_mapping_versions）",
+        "report_id": "登録した売上報告（report_imports）",
+        "preview_token": "使った取込の確認（import_previews）",
+        "committed_by": "登録した利用者（users）",
+        "committed_at": "登録した日時"
+      }
+    },
+    "workflow_report_selections": {
+      "domain": "revenue",
+      "name": "報告の取込範囲",
+      "description": "売上報告の原本から、取り込むシートと見出し行を選んだ版を1行で持つ。選び直すたびに版を積み、変更も削除もできない。",
+      "domain_reason": "売上報告の原本から取り込む範囲を選ぶ売上の取り込みの手順が作る行のため。",
+      "columns": {
+        "artifact_id": "売上報告の原本（workflow_raw_artifacts）",
+        "work_id": "作品（works）",
+        "version_no": "原本ごとの版の番号",
+        "sheet_name": "選んだシート名",
+        "header_row": "見出しの行の番号（1から）",
+        "canonical_csv": "選んだ範囲を見出しつきの CSV にしたもの",
+        "canonical_sha256": "その CSV の照合値（SHA-256）",
+        "source_rows_json": "CSV の各行が原本の何行目かの一覧（JSON）",
+        "suggestions_json": "列の対応の候補（共通の列と原本の見出し）のJSON",
+        "suggestion_source": "候補の出どころ。rule-based＝見出しの語から決まりで出した候補、imported-ai＝画面から持ち込んだAIの候補、configured-ai＝設定したAIが出した候補"
+      }
+    },
+    "workflow_schedule_previews": {
+      "domain": "production",
+      "name": "日程案（確定前）",
+      "description": "確認済みの台本から作った撮影の日程案を、確定の前に1行で持つ。作った本人が15分のうちに1回だけ確定に使え、使うと consumed を1にする。",
+      "domain_reason": "確認済みの台本から撮影の日程案を作る制作の手順が作る行のため。",
+      "columns": {
+        "token": "日程案の識別子（確定のときに送る）",
+        "artifact_id": "台本の原本（workflow_raw_artifacts）",
+        "review_id": "元にした台本の確認（workflow_script_reviews）",
+        "work_id": "作品（works）",
+        "user_id": "日程案を作った利用者（users）。本人だけが確定できる",
+        "input_json": "撮影日・時間予算・出演者と場所の候補日・班のJSON",
+        "input_hash": "入力の照合値",
+        "proposal_json": "日程案（日ごとのシーン・入らないシーン）のJSON",
+        "proposal_hash": "日程案の照合値",
+        "consumed": "0＝未使用、1＝確定に使った",
+        "expires_at": "使える期限の日時"
+      }
+    },
+    "workflow_script_commit_days": {
+      "domain": "production",
+      "name": "台本確定の撮影日",
+      "description": "台本の確定のとき、日程案の日ごとに、同じ日付・同じ班の撮影日を1行ずつ持つ（新しく作った日と、もとからあった日）。確定の記録を書いたときにトリガーが自動で入れる。",
+      "domain_reason": "台本の日程を確定する制作の手順で自動に作られる行のため。",
+      "columns": {
+        "commit_id": "台本の登録確定（workflow_script_commits）",
+        "work_id": "作品（works）",
+        "shooting_day_id": "撮影日（shooting_days）",
+        "proposal_index": "日程案の中の日の順番（0から）"
+      }
+    },
+    "workflow_script_commit_scenes": {
+      "domain": "production",
+      "name": "台本確定のシーン",
+      "description": "台本の確定で作ったシーンを1行ずつ持つ。確定の記録を書いたときにトリガーが自動で入れる。",
+      "domain_reason": "台本の日程を確定する制作の手順で自動に作られる行のため。",
+      "columns": {
+        "commit_id": "台本の登録確定（workflow_script_commits）",
+        "work_id": "作品（works）",
+        "scene_id": "作ったシーン（scenes）",
+        "source_index": "確認済みのシーン一覧での順番（0から）"
+      }
+    },
+    "workflow_script_commits": {
+      "domain": "production",
+      "name": "台本の登録確定",
+      "description": "台本の日程案を確定し、シーン・撮影日・割り当てを作った記録を1行で持つ。原本1つにつき1回だけ書く。",
+      "domain_reason": "台本の日程案を確定する制作の手順が作る行のため。",
+      "columns": {
+        "artifact_id": "台本の原本（workflow_raw_artifacts）",
+        "review_id": "確定に使った台本の確認（workflow_script_reviews）",
+        "work_id": "作品（works）",
+        "preview_token": "使った日程案（workflow_schedule_previews）",
+        "proposal_hash": "確定した日程案の照合値",
+        "committed_by": "確定した利用者（users）",
+        "committed_at": "確定した日時"
+      }
+    },
+    "workflow_script_reviews": {
+      "domain": "production",
+      "name": "台本の確認（版）",
+      "description": "台本の原本から読み取ったシーンの一覧を、人が確かめて直した版を1行で持つ。確かめるたびに版を積み、変更も削除もできない。",
+      "domain_reason": "台本を読み取って人が確かめる制作の手順が作る行のため。",
+      "columns": {
+        "artifact_id": "台本の原本（workflow_raw_artifacts）",
+        "work_id": "作品（works）",
+        "version_no": "原本ごとの確認の版の番号",
+        "scenes_json": "確かめたシーンの一覧（番号・昼夜・場所・出演・予定尺など）のJSON",
+        "review_hash": "確かめた中身の照合値",
+        "reviewed_by": "確かめた利用者（users）",
+        "reviewed_at": "確かめた日時"
+      }
+    },
+    "works": {
+      "domain": "planning",
+      "name": "作品",
+      "description": "作品1本。案件にぶら下がり、売上・経費・契約などが作品を参照する。作品の画面や一括登録で作る。",
+      "domain_reason": "案件・作品の登録は企画と決めたため（D-028）。ほかの領域は、ここで発番した作品IDを参照する。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "code": "作品コード（組織内で一意）",
+        "title": "作品名",
+        "format": "形式。画面の選択肢は film＝映画、series＝シリーズ（DB では値を制限しない）",
+        "forecast_yen": "売上見込（円）。税込か税抜かは未確認",
+        "version": "行の版。更新のたびに1つ進み、同時の更新を見つける"
+      }
+    },
+    "cloud_analytics_state": {
+      "domain": "core",
+      "name": "分析の写しの現在状態",
+      "description": "組織ごとの分析更新の世代・実行中のロック・検証済みの有効な写しを持つ。成果物はR2に保存し、この表で有効な実行を選ぶ。",
+      "domain_reason": "業務の原本から分析の写しを作る共通基盤のため。",
+      "columns": {
+        "generation": "分析更新を開始するたびに増える世代。古いジョブの反映を防ぐ",
+        "lock_job": "実行中の分析ジョブのID。ロックが無いときはNULL",
+        "lock_until": "実行中のロックの有効期限（UTCのISO日時）",
+        "active_run": "現在有効な検証済み分析ジョブのID",
+        "active_hash": "現在有効な分析のverification.jsonのSHA-256"
+      }
+    },
+    "cloud_analytics_jobs": {
+      "domain": "core",
+      "name": "分析の写しの更新ジョブ",
+      "description": "分析更新ごとの状態・基準日・定義版・監査記録の上限と、R2の成果物の検証結果を持つ。検証を終えた実行だけを有効な写しとして選ぶ。",
+      "domain_reason": "業務の原本から分析の写しを作る共通基盤のため。",
+      "columns": {
+        "id": "分析実行のID（ハイフンを除いたUUID）",
+        "generation": "開始時に割り当てた組織内の分析更新の世代",
+        "status": "実行状態（running・verified・failed・expired）。状態の更新はアプリが行う",
+        "as_of": "分析の確認日（YYYY-MM-DD）",
+        "definition_version": "分析に使った定義の版",
+        "audit_through": "写しに含めた組織内の監査記録のIDの上限",
+        "manifest_hash": "検証したverification.jsonのSHA-256",
+        "error": "失敗または期限切れの理由",
+        "finished_at": "終了日時（UTCのISO日時）"
+      }
+    }
+  }
+}

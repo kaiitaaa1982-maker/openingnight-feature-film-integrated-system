@@ -1,0 +1,1 @@
+const video=document.getElementById('demo');document.getElementById('play').onclick=()=>{video.currentTime=0;video.play()};document.querySelectorAll('[data-time]').forEach(button=>button.onclick=()=>{video.currentTime=Number(button.dataset.time);video.play()});

@@ -1,0 +1,30 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {openTestDb} from './test-db.mjs';
+import {createApp} from '../src/app.mjs';
+import {seedReportDemo} from '../scripts/seed-report-demo.mjs';
+
+test('report demo seed fills annual sales, MG sales and royalty reports with reconciled fictional data, once', async (t) => {
+  const db = await openTestDb({t});
+  const first = await seedReportDemo(db);
+  assert.equal(first.skipped, false);
+  const counts = await db.get('SELECT (SELECT COUNT(*) FROM sale_lines) AS sales, (SELECT COUNT(*) FROM mg_ledger_entries) AS ledger');
+  assert.equal((await seedReportDemo(db)).skipped, true);
+  assert.deepEqual(await db.get('SELECT (SELECT COUNT(*) FROM sale_lines) AS sales, (SELECT COUNT(*) FROM mg_ledger_entries) AS ledger'), counts, 'the second run adds nothing');
+  const app = createApp({db, mode: 'local'});
+  const cookie = (await app.request('/api/local/login', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({email: 'admin@openingnight.invalid'})})).headers.get('set-cookie').split(';')[0];
+  const get = async (path) => (await app.request(`/api${path}`, {headers: {cookie}})).json();
+  const annual = await get('/reports/annual-sales?from=2026-05&to=2027-04&axis=partner');
+  assert.equal(annual.totals.total, 240000 + 320000 + 280000 + 120000 + 260000 + 75000);
+  assert.equal(annual.totals.prevTotal, 180000 + 210000 + 90000);
+  assert.equal(annual.integrity.diff, 0);
+  const months = await get('/reports/mg-sales/months?direction=incoming');
+  assert.deepEqual(months.months.map((m) => m.month), ['2026-08', '2026-07', '2026-06']);
+  const mg = await get('/rights-reports/mg-portfolio?direction=incoming&month=2026-08');
+  assert.equal(mg.report.totals.guaranteeYen, 1000000);
+  assert.equal(mg.report.totals.cumulative.appliedYen, 1000000);
+  const royalty = await get('/reports/royalty-statement?from=2026-05&to=2027-04');
+  assert.ok(royalty.rows.length >= 2);
+  assert.ok(royalty.hold.length >= 1, 'the MG royalty contract shows held lines');
+  assert.ok(royalty.checks.every((c) => c.value === 0), JSON.stringify(royalty.checks));
+});

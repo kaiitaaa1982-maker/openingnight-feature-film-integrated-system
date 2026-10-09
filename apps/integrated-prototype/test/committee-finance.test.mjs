@@ -1,0 +1,55 @@
+import {foreignKeyViolations} from './test-db.mjs';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {fixture,good} from './committee-independent-fixture.mjs';
+import {normalizeFunding,normalizeDeductions,committeeHistory} from '../src/committee-finance.mjs';
+import {calculateCommitteeWindow} from '../src/committee.mjs';
+import {committeeReportSheets} from '../src/rights-report-output.mjs';
+const funding={productionCostYen:1000000,investments:[{partnerId:1,amountYen:600000},{partnerId:2,amountYen:400000}]};
+const members=[{partnerId:1,shareBps:6000},{partnerId:2,shareBps:4000}];
+const window={kind:'digital',label:'配信',windowPartnerId:1,managerPartnerId:2,route:'via_manager',platformRateBps:0,windowFeeBps:1000,managerFeeBps:0,feeOrder:'window_first',windowFeeBasis:'platform_net',managerFeeBasis:'after_window'};
+test('explicit royalty and production recovery conserve source and capital without guessing contract rules',()=>{
+ assert.deepEqual(normalizeFunding(funding,members),funding);
+ assert.throws(()=>normalizeFunding({...funding,productionCostYen:900000},members),/合計/);
+ const d=[{reportId:1,category:'royalty',recipientPartnerId:3,amountYen:10000,sourceReference:'RIGHT-01'},{reportId:2,category:'production_recoup',recipientPartnerId:1,amountYen:20000,sourceReference:'RECOUP-01'}];
+ const reports=[{reportId:1,windowId:1,reportBasis:'net',amount:60000},{reportId:2,windowId:1,reportBasis:'net',amount:40000}];
+ const deductions=normalizeDeductions(d,reports,[{id:1},{id:2},{id:3}],members,funding,980000);
+ assert.throws(()=>normalizeDeductions(d,reports,[{id:1},{id:3}],members,funding,990000),/残高/);
+ assert.throws(()=>normalizeDeductions([...d,d[0]],reports,[{id:1},{id:3}],members,funding),/重複/);
+ const result={...calculateCommitteeWindow({window,reports,expenses:[],members,deductions}),windowId:1};
+ assert.equal(result.distributionPool,60000);assert.deepEqual(result.payouts.map(p=>p.amount),[36000,24000]);assert.equal(result.conservation.total,100000);
+ const history=committeeHistory([{id:1,calculation:{windows:[result],selectedReports:reports,deductions,lines:[]}}]);
+ assert.deepEqual(history.map(r=>r.distributionPool),[44000,16000]);
+ assert.equal(history.reduce((n,r)=>n+r.memberDistributions.reduce((n,p)=>n+p.amount,0)+r.residual,0),60000);
+ const feeOnly={...calculateCommitteeWindow({window,reports:[],expenses:[{amount:-3000}],members}),windowId:1};
+ const feeHistory=committeeHistory([{id:2,period_to:'2026-10-31',calculation:{windows:[feeOnly],selectedReports:[],selectedExpenses:[{windowId:1,amount:-3000}],lines:[]}}]);
+ assert.equal(feeHistory[0].distributionPool,3000);assert.equal(feeHistory[0].reportId,null);assert.equal(feeHistory[0].expenseTotal,-3000);
+ const offsetExpenses=[{expenseId:8,windowId:1,accountingMonth:'2026-10',amount:3000},{expenseId:9,windowId:1,accountingMonth:'2026-11',amount:-3000}];
+ const offsetWindow={...calculateCommitteeWindow({window,reports:[],expenses:offsetExpenses,members}),windowId:1};
+ const offsetHistory=committeeHistory([{id:4,calculation:{windows:[offsetWindow],selectedReports:[],selectedExpenses:offsetExpenses,lines:[]}}]);
+ assert.deepEqual(offsetHistory.map(r=>[r.accountingMonth,r.expenseTotal,r.expenseIds]),[['2026-10',3000,[8]],['2026-11',-3000,[9]]]);
+ assert.equal(offsetHistory.reduce((n,r)=>n+r.distributionPool,0),0);
+ const grossReports=[{reportId:1,windowId:1,reportBasis:'gross',amount:1},{reportId:2,windowId:1,reportBasis:'gross',amount:2},{reportId:3,windowId:1,reportBasis:'gross',amount:3}];
+ const small={...calculateCommitteeWindow({window:{...window,platformRateBps:5000},reports:grossReports,expenses:[],members}),windowId:1};
+ assert.deepEqual(committeeHistory([{id:3,calculation:{windows:[small],selectedReports:grossReports,lines:[]}}]).map(r=>r.platformFeeKnown),[0,1,1]);
+});
+test('committee API saves funding and external royalty evidence and blocks reuse, over-recovery and edits',async(t)=>{
+ const f=await fixture({t});try{
+  const contract=good(await f.req('/committee/contracts',{workId:1,intakeCaseId:f.intakeCase.id,documentId:f.intakeCase.documents[0].id,contractCode:'FINANCE-C',title:'控除と回収の独立実証',managerPartnerId:2,funding,windows:[window],phases:[{label:'月次',startsOn:'2026-09-01',endsOn:'2026-10-31',firstCloseOn:'2026-09-30',intervalMonths:1,closeDay:'eom',reportOffsetMonths:1,reportDay:'eom',paymentOffsetMonths:2,paymentDay:'eom',referenceType:'release',referenceDate:'2026-09-01'}]}));
+  const reportId=f.reports.find(r=>r.kind==='digital').id;
+  const input={workId:1,termVersionId:contract.versionId,periodIndex:1,periodDateBasis:'sales_period',reportLinks:[{reportId,reportBasis:'net'}],expenseAllocations:[],deductions:[{reportId,category:'royalty',recipientPartnerId:3,amountYen:10000,sourceReference:'RIGHT-SOURCE-01'},{reportId,category:'production_recoup',recipientPartnerId:1,amountYen:20000,sourceReference:'REC-SOURCE-01'}]};
+  const preview=good(await f.req('/committee/previews',input));assert.equal(preview.totals.distributionPool,60000);
+  const saved=good(await f.req('/committee/snapshots',{token:preview.token}));
+  const report=good(await f.req(`/rights-reports/committee?workId=1&snapshotId=${saved.snapshotId}`)).report;
+  assert.equal(report.funding.productionCostYen,1000000);assert.equal(report.totals.current.royaltyDeductions,10000);assert.equal(report.reconciliation.conservationDifferenceYen,0);
+  assert.equal(report.history[0].distributionPool,60000);assert.equal(report.deductions.length,2);
+  assert.ok(committeeReportSheets(report).some(s=>s.name==='権利処理費報告'));
+  await assert.rejects(f.db.run('UPDATE committee_snapshot_deductions SET amount_yen=1'),/immutable/);
+  for(const table of ['committee_snapshot_deductions','committee_term_funding','committee_term_investments'])await assert.rejects(f.db.run(`DELETE FROM ${table}`),/immutable/);
+  await f.sale('COM-NEXT','digital',2000000,{period_from:'2026-10-01',period_to:'2026-10-31',report_received_on:'2026-11-05'});
+  const next=(await f.db.get("SELECT id FROM report_imports WHERE report_key='COM-NEXT'")).id;
+  const reuse=await f.req('/committee/previews',{...input,periodIndex:2,reportLinks:[{reportId:next,reportBasis:'net'}],deductions:[{...input.deductions[0],reportId:next}]});assert.equal(reuse.status,409);assert.match(reuse.data.error,/使用済み/);
+  const over=await f.req('/committee/previews',{...input,periodIndex:2,reportLinks:[{reportId:next,reportBasis:'net'}],deductions:[{...input.deductions[1],reportId:next,amountYen:990000,sourceReference:'REC-OVER'}]});assert.equal(over.status,409);assert.match(over.data.error,/残高/);
+  assert.deepEqual(await foreignKeyViolations(f.db),[]);
+ }finally{f.db.close()}
+});

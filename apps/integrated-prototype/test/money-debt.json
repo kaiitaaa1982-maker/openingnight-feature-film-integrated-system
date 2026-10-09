@@ -1,0 +1,267 @@
+{
+ "note": "返すべき借り。docs/rules/money.md に反しているもの。直したら減らす。足してはいけない（金額でない所は money-rules.test.mjs の NOT_MONEY に理由を書いて許す）",
+ "unguarded": {
+  "billing_invoice_line_works": [
+   "allocation_bps"
+  ],
+  "billing_invoice_lines": [
+   "amount_ex_tax",
+   "tax_amount",
+   "amount_inc_tax"
+  ],
+  "billing_invoices": [
+   "amount_ex_tax",
+   "tax_amount",
+   "amount_inc_tax"
+  ],
+  "billing_receipt_allocations": [
+   "amount_yen"
+  ],
+  "billing_receipts": [
+   "amount_yen"
+  ],
+  "broadcast_availability_rates": [
+   "rate_bps"
+  ],
+  "committee_investment_payments": [
+   "amount_yen"
+  ],
+  "committee_snapshot_deductions": [
+   "amount_yen"
+  ],
+  "committee_snapshot_expenses": [
+   "amount_ex_tax"
+  ],
+  "committee_snapshot_lines": [
+   "allocation_bps",
+   "allocated_amount_ex_tax"
+  ],
+  "committee_snapshot_member_amounts": [
+   "share_bps",
+   "amount_yen"
+  ],
+  "committee_term_funding": [
+   "production_cost_yen"
+  ],
+  "committee_term_investments": [
+   "amount_yen"
+  ],
+  "committee_term_members": [
+   "share_bps"
+  ],
+  "committee_term_window_fee_shares": [
+   "share_bps"
+  ],
+  "committee_term_windows": [
+   "platform_rate_bps",
+   "window_fee_bps",
+   "manager_fee_bps"
+  ],
+  "expense_payments": [
+   "amount_yen"
+  ],
+  "expense_tax_category_versions": [
+   "rate_bps"
+  ],
+  "expenses": [
+   "budget_yen",
+   "actual_ex_tax",
+   "tax_amount",
+   "actual_inc_tax"
+  ],
+  "gl_manual_amounts": [
+   "amount_yen",
+   "tax_yen"
+  ],
+  "joint_committee_contracts": [
+   "production_cost_inc_tax_yen",
+   "pa_inc_tax_yen",
+   "manager_fee_bps",
+   "income_threshold_yen",
+   "transfer_threshold_yen"
+  ],
+  "joint_committee_costs": [
+   "amount_yen"
+  ],
+  "joint_committee_members": [
+   "share_bps",
+   "contribution_inc_tax_yen"
+  ],
+  "joint_committee_sales": [
+   "amount_contract_yen",
+   "gross_inc_tax_yen"
+  ],
+  "joint_committee_windows": [
+   "fee_bps"
+  ],
+  "joint_funding_events": [
+   "amount_inc_tax_yen"
+  ],
+  "joint_production_milestones": [
+   "amount_inc_tax_yen",
+   "paid_inc_tax_yen"
+  ],
+  "mg_ledger_entries": [
+   "reported_eligible_yen",
+   "applied_recoup_yen",
+   "reported_overage_yen",
+   "recognized_yen"
+  ],
+  "mg_term_versions": [
+   "mg_amount_yen"
+  ],
+  "mg_version_products": [
+   "evaluation_yen"
+  ],
+  "org_profile_versions": [
+   "capital_yen"
+  ],
+  "partner_list_entry_versions": [
+   "amount_ex_tax",
+   "rate_bps"
+  ],
+  "product_master_profile_versions": [
+   "price_yen",
+   "price_ex_tax_yen",
+   "price_inc_tax_yen"
+  ],
+  "product_works": [
+   "allocation_bps"
+  ],
+  "projects": [
+   "budget_yen"
+  ],
+  "report_issuances": [
+   "headline_yen"
+  ],
+  "rights_intake_participants": [
+   "investment_yen",
+   "explicit_share_bps"
+  ],
+  "rights_payment_events": [
+   "amount_yen"
+  ],
+  "royalty_irregular_entries": [
+   "amount_yen"
+  ],
+  "royalty_manual_accruals": [
+   "amount_yen"
+  ],
+  "royalty_statement_events": [
+   "amount_yen"
+  ],
+  "royalty_statement_lines": [
+   "sales_yen",
+   "window_fee_yen",
+   "expense_yen",
+   "committee_income_yen",
+   "base_yen",
+   "rate_bps",
+   "amount_yen"
+  ],
+  "royalty_statements": [
+   "royalty_yen",
+   "adjustment_yen",
+   "advance_recouped_yen",
+   "carried_in_yen",
+   "payable_yen",
+   "carried_out_yen"
+  ],
+  "royalty_term_versions": [
+   "rate_bps",
+   "window_fee_bps",
+   "fixed_amount_yen",
+   "advance_yen",
+   "min_payment_yen"
+  ],
+  "sale_lines": [
+   "amount_ex_tax",
+   "tax_amount",
+   "amount_inc_tax"
+  ],
+  "sales_agreement_term_versions": [
+   "expected_amount_yen"
+  ],
+  "sales_opportunities": [
+   "expected_yen"
+  ],
+  "settlement_contracts": [
+   "mg_contract_yen",
+   "mg_paid_yen"
+  ],
+  "settlement_term_versions": [
+   "platform_rate_bps",
+   "agency_fee_bps",
+   "overage_rate_bps"
+  ],
+  "tax_calculation_lines": [
+   "rate_bps",
+   "amount_ex_tax",
+   "source_tax",
+   "amount_inc_tax"
+  ],
+  "tax_calculation_snapshots": [
+   "amount_ex_tax",
+   "source_tax",
+   "billed_tax"
+  ],
+  "tax_invoice_rate_totals": [
+   "rate_bps",
+   "amount_ex_tax",
+   "billed_tax",
+   "source_tax"
+  ],
+  "work_finance_versions": [
+   "production_cost_yen",
+   "promotion_budget_yen",
+   "own_investment_yen",
+   "sales_rights_purchase_yen"
+  ],
+  "works": [
+   "forecast_yen"
+  ]
+ },
+ "parseFloat": {},
+ "floatLiteral": {
+  "src/sales-sheet/sales-sheet-input.mjs": 1,
+  "src/ui/grid-model.mjs": 2
+ },
+ "roundScaled": {
+  "src/bulk/bulk-validate.mjs": 1,
+  "src/expense-sheet/import-service.mjs": 2,
+  "src/mg-ledger-import.mjs": 1,
+  "src/report-center-model.mjs": 1,
+  "src/rights/rights-ui-model.mjs": 1,
+  "src/sales-ops/partner-list-model.mjs": 1,
+  "src/ui/grid-model.mjs": 1
+ },
+ "roundMoney": {
+  "src/royalty/royalty-model.mjs": 1,
+  "src/sales-sheet/sales-sheet-input.mjs": 1
+ },
+ "roundBare": {
+  "src/billing/receipt-model.mjs": 1,
+  "src/rights/rights-ui-model.mjs": 2,
+  "src/transforms/engine.mjs": 3,
+  "src/ui/format.mjs": 2,
+  "src/work/allocation.mjs": 1
+ },
+ "zeroFill": {
+  "src/billing/receipt-model.mjs": 1,
+  "src/import/sales-source-routes.mjs": 2,
+  "src/mg-ledger-import.mjs": 1,
+  "src/pl-bs/pl-bs-data.mjs": 2,
+  "src/royalty/royalty-model.mjs": 1
+ },
+ "rateFormula": {
+  "src/app.mjs": 3,
+  "src/committee-finance.mjs": 1,
+  "src/committee-joint.mjs": 1,
+  "src/committee.mjs": 1,
+  "src/committee/committee-income.mjs": 1,
+  "src/royalty/royalty-model.mjs": 1
+ },
+ "sqlFloat": {
+  "src/sales-sheet/sales-sheet.sql": 3
+ }
+}

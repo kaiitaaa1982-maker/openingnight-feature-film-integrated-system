@@ -1,0 +1,40 @@
+{
+  "synthetic": true,
+  "intake": {
+    "types": ["committee", "sole_owned", "entrusted"],
+    "work_id": 1,
+    "same_work_contract_link": "accept",
+    "foreign_org_or_work_contract_link": "reject",
+    "committee_one_investor_without_share": "distribution_unconfirmed",
+    "document_reference": "metadata only; never fetch or read",
+    "legacy_contract": "no intake inferred"
+  },
+  "raw_report": {
+    "headers": ["報告番号", "販売開始", "販売終了", "受領日", "数量", "単価", "税額", "税込売上", "摘要"],
+    "rows": [
+      ["MAP-FAKE-001", "2026-09-01", "2026-09-30", "2026-10-05", "2", "1000", "200", "2200", "架空配信A"],
+      ["MAP-FAKE-001", "2026-09-01", "2026-09-30", "2026-10-05", "3", "2000", "600", "6600", "架空配信B"]
+    ]
+  },
+  "expected": {
+    "recognition_basis_id": 2,
+    "accounting_month": "2026-10",
+    "row_ex_tax": [2000, 6000],
+    "row_tax": [200, 600],
+    "row_inc_tax": [2200, 6600],
+    "total_ex_tax": 8000,
+    "total_tax": 800,
+    "total_inc_tax": 8800,
+    "source_rows": [2, 3]
+  },
+  "invariants": [
+    "tax excluded amount is explicitly mapped quantity times unit price",
+    "source CSV and mapping version remain reproducible",
+    "same source under a newer mapping version cannot duplicate sales",
+    "missing mapped header fails preview",
+    "missing numeric operand does not become zero",
+    "mismatching tax totals reject the entire report",
+    "unknown columns require explicit handling",
+    "cross-organization and finance-denied access rejected"
+  ]
+}

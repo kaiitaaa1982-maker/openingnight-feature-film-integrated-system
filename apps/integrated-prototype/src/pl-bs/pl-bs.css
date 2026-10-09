@@ -1,0 +1,16 @@
+/* PL・BS（管理会計の試算）の画面。帳票の共通の見た目（reports.css）に足すものだけ */
+.plbs-heading{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:var(--radius);background:var(--panel-2);font-size:13px}
+.plbs-heading strong{font-size:15px}
+.plbs-rules{font-size:13px;color:var(--ink-2)}
+.plbs-rules summary{cursor:pointer;font-weight:700}
+.plbs-rules ul{margin:6px 0 0;padding-left:20px;line-height:1.7}
+.plbs-detail{display:grid;gap:10px;padding:12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.plbs-detail h3{margin:0;font-size:14px}
+.plbs-form{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;padding:12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.plbs-form h3{width:100%;margin:0;font-size:14px}
+.plbs-history summary{cursor:pointer;font-weight:700;font-size:13px}
+.plbs-kv{display:grid;gap:6px;margin:0}
+.plbs-kv>div{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:8px;font-size:13px}
+.plbs-kv dt{color:var(--ink-3)}
+.plbs-kv dd{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.plbs-payments{margin:0;padding-left:20px;font-size:13px;line-height:1.8}

@@ -1,0 +1,13 @@
+/* 閲覧用プレビューだけで読む。常に見える帯（下端に固定）と、リンクを開けなかったときの知らせ。色はアプリの変数を使う（明・暗の両方） */
+.on-preview-banner{position:fixed;left:0;right:0;bottom:0;z-index:1000;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 12px;min-height:34px;padding:6px 16px;background:var(--warn-soft,#f7eeda);color:var(--warn,#8a6115);border-top:1px solid currentColor;font:13px/1.4 var(--sans,system-ui,sans-serif);text-align:center}
+.on-preview-banner strong{font-weight:700}
+.on-preview-banner small{font-size:12px;opacity:.85}
+.on-preview-toast{position:fixed;right:16px;bottom:48px;z-index:1001;max-width:min(420px,calc(100vw - 32px));padding:10px 14px;border:1px solid currentColor;border-radius:var(--radius,10px);background:var(--bad-soft,#f6e4e4);color:var(--bad,#8d3a3a);font:600 13px/1.5 var(--sans,system-ui,sans-serif);box-shadow:var(--shadow,0 4px 16px rgba(0,0,0,.15))}
+.on-preview-toast[hidden]{display:none}
+body.on-preview{padding-bottom:48px}
+@media (max-width:640px){body.on-preview{padding-bottom:72px}}
+body.on-preview .app-shell>.app-side{padding-bottom:64px}
+/* 退出するとログイン画面に戻り、プレビューでは入り直せない（登録を受け付けない）ため、退出の操作は出さない */
+body.on-preview .app-user>button.text{display:none}
+.on-preview-failure{max-width:560px;margin:15vh auto;padding:24px 16px;font:15px/1.6 var(--sans,system-ui,sans-serif)}
+.on-preview-failure h1{font-size:18px}

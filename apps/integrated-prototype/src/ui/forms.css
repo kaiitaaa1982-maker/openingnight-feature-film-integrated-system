@@ -1,0 +1,101 @@
+/* 共通の入力・通知・候補検索・条件入力。UI指針: ../../../../docs/design/ui-guidelines.md（§8 のトークンだけを使う） */
+
+/* 入力欄 */
+.on-form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px 16px;margin:0;padding:0;border:0;min-width:0}
+.on-field{display:grid;gap:6px;align-content:start;min-width:0}
+.on-field-wide{grid-column:1/-1}
+.on-field-label{display:flex;align-items:center;gap:8px;color:var(--ink-2);font-size:13px;font-weight:650}
+.on-req{display:inline-block;padding:1px 6px;border:1px solid var(--warn);border-radius:6px;color:var(--warn);font-size:11px;font-weight:700;line-height:1.5}
+.on-field-hint{margin:0;color:var(--ink-3);font-size:12px;line-height:1.5}
+.on-field-preview{margin:0;color:var(--accent);font-size:12px}
+.on-field-error{margin:0;color:var(--bad);font-size:12px;font-weight:650}
+.on-field-invalid input,.on-field-invalid select,.on-field-invalid textarea{border-color:var(--bad);background:var(--bad-soft)}
+.on-input-unit{position:relative;display:flex;align-items:center}
+.on-input-num{text-align:right;font-variant-numeric:tabular-nums}
+.on-input-yen .on-input-num{padding-right:32px}
+.on-unit{position:absolute;right:11px;color:var(--ink-3);font-size:13px;pointer-events:none}
+input[readonly],textarea[readonly]{background:var(--panel-3);color:var(--ink-2)}
+.on-form-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px}
+
+/* 登録フォーム */
+.on-record{display:grid;gap:12px}
+.on-record-head{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.on-record-form{padding:16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.on-record-edit .on-record-form{border-color:var(--accent)}
+.on-record-title{margin:0 0 12px;font-size:15px}
+
+/* 通知 */
+.on-notice{padding:10px 14px;border:1px solid var(--line);border-left-width:4px;border-radius:var(--radius);background:var(--panel-2);font-size:13px;line-height:1.6}
+.on-notice-ok{border-left-color:var(--ok);background:var(--ok-soft)}
+.on-notice-error{border-left-color:var(--bad);background:var(--bad-soft)}
+.on-notice-warn{border-left-color:var(--warn);background:var(--warn-soft)}
+.on-notice-info{border-left-color:var(--accent);background:var(--accent-soft)}
+.on-notice-compact{padding:6px 10px}
+.on-notice-body{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px}
+.on-notice-tone{flex:none;padding:1px 7px;border-radius:6px;background:var(--panel);font-size:11px;font-weight:800}
+.on-notice-ok .on-notice-tone{color:var(--ok)}
+.on-notice-error .on-notice-tone{color:var(--bad)}
+.on-notice-warn .on-notice-tone{color:var(--warn)}
+.on-notice-info .on-notice-tone{color:var(--accent)}
+.on-notice-text{flex:1 1 240px;min-width:0;color:var(--ink)}
+.on-notice-text p{margin:0}
+.on-notice-title{display:block;margin-bottom:2px}
+.on-notice-actions{display:flex;flex-wrap:wrap;gap:8px}
+.on-notice-actions button{min-height:34px;padding:0 12px}
+.on-notice-details{margin-top:8px;max-height:260px;overflow:auto}
+.on-notice-count{margin:6px 0 0;color:var(--ink-2);font-size:12px}
+.on-notice-table{width:100%;border-collapse:collapse;font-size:12px;background:var(--panel)}
+.on-notice-table th,.on-notice-table td{padding:5px 8px;border-bottom:1px solid var(--line-2);text-align:left;vertical-align:top}
+.on-notice-tech{margin-top:8px;color:var(--ink-3);font-size:12px}
+.on-notice-tech pre{max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-all;font-family:var(--mono)}
+
+/* 画面単位のエラー */
+.on-error-boundary{border-left:4px solid var(--bad)}
+.on-error-boundary h2{margin:4px 0 8px}
+.on-error-boundary-tone{margin:0;color:var(--bad);font-size:12px;font-weight:800}
+
+/* 候補検索 */
+.on-picker{position:relative}
+.on-picker-box{position:relative;display:flex;align-items:center}
+.on-picker-box input{padding-right:40px}
+.on-picker-clear{position:absolute;right:4px;min-height:32px;padding:0 8px}
+.on-picker-list{position:absolute;z-index:20;top:calc(100% + 4px);left:0;right:0;max-height:320px;margin:0;padding:4px;overflow:auto;list-style:none;border:1px solid var(--line-3);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
+.on-picker-option{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--ink)}
+.on-picker-active{background:var(--accent-soft)}
+.on-picker-current .on-picker-label{font-weight:800}
+.on-picker-label{color:var(--ink)}
+.on-picker-code{color:var(--ink-3);font-family:var(--mono);font-size:12px}
+.on-picker-hint{flex-basis:100%;color:var(--ink-3);font-size:12px}
+.on-picker-empty,.on-picker-more{padding:8px 10px;color:var(--ink-3);font-size:12px}
+.on-picker-status{margin:0;font-size:12px}
+.on-picker-ok{color:var(--ok)}
+.on-picker-warn{color:var(--warn)}
+.on-picker-pending{color:var(--warn)}
+.on-picker-neutral{color:var(--ink-3)}
+
+/* 一覧＋登録 */
+.on-resource{display:grid;gap:14px}
+.on-resource-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.on-resource-head h2{margin:0}
+.on-resource-head p{margin:2px 0 0;color:var(--ink-3);font-size:13px}
+.on-resource-detail{display:grid;gap:12px;padding:16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.on-resource-detail dl{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px 16px;margin:0}
+.on-resource-detail dt{color:var(--ink-3);font-size:12px}
+.on-resource-detail dd{margin:2px 0 0;color:var(--ink);overflow-wrap:anywhere}
+.on-resource-lock{color:var(--ink-2);font-size:13px}
+
+/* 条件入力 */
+.on-conditions{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 14px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.on-conditions .on-field{flex:1 1 170px;max-width:280px}
+.on-conditions .on-field-wide{flex-basis:260px;max-width:360px}
+.on-conditions-summary{flex-basis:100%;margin:0;color:var(--ink-2);font-size:12px}
+.on-conditions-rule{flex-basis:100%;margin:0;color:var(--ink-3);font-size:12px}
+.on-segmented{display:inline-flex;border:1px solid var(--line-3);border-radius:var(--radius);overflow:hidden}
+.on-segmented button{min-height:40px;border:0;border-radius:0;background:var(--panel);color:var(--ink-2);font-weight:650}
+.on-segmented button+button{border-left:1px solid var(--line-3)}
+.on-segmented button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+
+@media(max-width:640px){
+  .on-form-grid{grid-template-columns:1fr}
+  .on-conditions .on-field{max-width:none;flex-basis:100%}
+}

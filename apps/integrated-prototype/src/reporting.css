@@ -1,0 +1,11 @@
+.sheet table{font-variant-numeric:tabular-nums;min-width:100%}.sheet th,.sheet td{white-space:nowrap;text-align:right}.sheet th:first-child,.sheet td:first-child{text-align:left}.sheet thead th{background:var(--panel-3);position:sticky;top:0}.sheet tbody th:first-child{position:sticky;left:0;background:var(--panel);z-index:1}.sheet small{display:block;color:var(--ink-2)}.sheet-total,tfoot{font-weight:600;background:var(--panel-3)}.sheet .wrap-cell{white-space:pre-wrap;min-width:220px;text-align:left}.monthly-bars{display:grid;gap:9px}.monthly-bar{display:grid;grid-template-columns:45px 1fr 100px;gap:12px;align-items:center}.monthly-bar>span:last-child{text-align:right;font-variant-numeric:tabular-nums}.bar-track{background:var(--panel-3);height:15px}.bar-track span{display:block;background:var(--accent);height:100%}.bar-track span.negative{background:var(--bad)}
+
+/* 月別入金表（ReportCenter.jsx の ReceiptSheet）。状態の札・入金の登録は tax.css の bl-* を使う。 */
+.receipt-sheet .rs-sub{display:block;margin-top:2px;color:var(--ink-3);font-size:11.5px;white-space:nowrap}
+.rs-requests{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.rs-requests>li{display:grid;gap:8px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.rs-requests p{margin:0;color:var(--ink-2);font-size:13px;overflow-wrap:anywhere}
+.rs-request-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+.rs-request-head span{font-variant-numeric:tabular-nums}
+.rs-decision{display:grid;gap:4px}
+.rs-decision .on-form-actions{margin-top:4px}

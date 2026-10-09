@@ -1,0 +1,73 @@
+/* 営業（パイプライン・営業案件と契約・流通別の販売条件・営業資料）。
+   UI指針: docs/design/ui-guidelines.md。色・角丸・影はトークンだけを使う（ライト・ダークはトークン側で切り替わる）。 */
+
+.so-page { display: grid; gap: 16px; min-width: 0; }
+.so-section { display: grid; gap: 12px; min-width: 0; }
+.so-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 16px; }
+.so-head h2, .so-head h3 { margin: 0 0 4px; }
+.so-head .on-field { min-width: 11em; }
+.so-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+/* 状態は色＋文字（色だけに頼らない） */
+.so-tone { display: inline-flex; align-items: center; padding: 1px 8px; border: 1px solid var(--line-2); border-radius: 6px;
+  background: var(--panel-2); color: var(--ink-2); font-size: 12px; font-weight: 700; line-height: 1.6; white-space: nowrap; }
+.so-tone-ok { border-color: var(--ok); background: var(--ok-soft); color: var(--ok); }
+.so-tone-warn { border-color: var(--warn); background: var(--warn-soft); color: var(--warn); }
+.so-tone-bad { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+
+/* 集計のタイル（.rp-tiles を土台に、注意のあるタイルだけ左の線で示す） */
+.so-tiles > div.is-bad { border-left: 3px solid var(--bad); }
+.so-tiles > div.is-warn { border-left: 3px solid var(--warn); }
+.so-tiles small { color: var(--ink-3); font-size: 12px; }
+
+/* 行の直下の詳細 */
+.so-detail { display: grid; gap: 12px; padding: 12px 14px; border-left: 3px solid var(--accent); background: var(--panel-2); white-space: normal; }
+.so-detail h4 { margin: 0; font-size: 14px; }
+.so-timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.so-timeline li { display: grid; gap: 2px; padding: 8px 10px; border: 1px solid var(--line-2); border-radius: var(--radius); background: var(--panel); }
+.so-timeline strong { font-size: 13px; }
+.so-timeline span, .so-timeline small { color: var(--ink-2); font-size: 12.5px; overflow-wrap: anywhere; }
+
+/* 入力（FormField を並べる自前のフォーム） */
+.so-form { display: grid; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+.so-form h3, .so-form h4 { margin: 0; font-size: 15px; }
+.so-form .on-notice { margin: 0; }
+.so-confirm { display: grid; gap: 10px; padding: 12px 14px; border: 1px solid var(--warn); border-radius: var(--radius); background: var(--warn-soft); color: var(--ink); }
+.so-confirm p { margin: 0; }
+
+/* 候補（売上報告の関連付け） */
+.so-candidates { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.so-candidates li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 10px 12px;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel-2); }
+.so-candidates li.is-disabled { color: var(--ink-3); }
+.so-candidates small { display: block; color: var(--ink-2); font-size: 12.5px; }
+
+/* 営業資料の確認用の表示 */
+.so-preview { display: grid; gap: 12px; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+.so-preview h3 { margin: 0; font-size: 18px; }
+.so-preview h4 { margin: 0; font-size: 14px; color: var(--ink-2); }
+.so-preview p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.7; }
+.so-preview dl { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px 16px; margin: 0; }
+.so-preview dt { color: var(--ink-3); font-size: 12px; }
+.so-preview dd { margin: 2px 0 0; overflow-wrap: anywhere; }
+/* 印刷用の帳票（サーバーのHTML）は画面に出さず、印刷のときだけ使う */
+.so-print-frame { position: absolute; width: 0; height: 0; border: 0; }
+
+@media (max-width: 640px) {
+  .so-head { align-items: stretch; }
+  .so-head .on-field { min-width: 0; flex: 1 1 100%; }
+  .so-detail { padding: 10px; }
+}
+/* 流通別の販売条件の月別表示 */
+.rm-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.rm-head h3{margin:0}
+.rm-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:12px}
+.rm-group{padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.rm-group h4{margin:0 0 8px;font-size:13px;color:var(--ink-2)}
+.rm-group ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.rm-group li{display:grid;gap:2px}
+.rm-group li button.text{justify-self:start;min-height:0;padding:0;text-align:left}
+.rm-group li small{color:var(--ink-3);font-size:12px}
+
+/* 行から売上集計シートを開くリンク（財務の権限がある人だけ） */
+.rw-sheet-link { font-weight: 700; color: var(--accent); white-space: nowrap; }

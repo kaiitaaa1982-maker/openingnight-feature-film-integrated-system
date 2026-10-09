@@ -1,0 +1,117 @@
+/* 共通の表（DataGrid）・タブ（Tabs）・出力ボタン（ReportOutputBar）。docs/design/ui-guidelines.md 準拠。
+   色は styles.css のトークンだけを使う（ライト・ダークはトークン側で切り替わる）。 */
+
+.dg { display: grid; gap: 10px; min-width: 0; }
+.dg-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+
+/* 操作列 */
+.dg-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.dg-toolbar-custom { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.dg-search { flex: 1 1 14em; max-width: 24em; }
+.dg-search input { min-height: 38px; }
+.dg-check { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 13px; cursor: pointer; }
+.dg-check input { width: 18px; height: 18px; min-height: 0; padding: 0; }
+.dg-count { color: var(--ink-2); font-size: 13px; font-variant-numeric: tabular-nums; margin-left: auto; }
+.dg-toolbar > button { min-height: 38px; }
+
+.dg-columns { position: relative; }
+.dg-columns > summary { cursor: pointer; color: var(--accent); font-size: 13px; font-weight: 700; padding: 8px 4px; list-style-position: inside; }
+.dg-columns > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.dg-columns-list { position: absolute; z-index: 20; top: 100%; left: 0; display: grid; gap: 6px; min-width: 14em; max-height: 50vh; overflow: auto;
+  padding: 10px 12px; background: var(--panel); color: var(--ink); border: 1px solid var(--line-3); border-radius: var(--radius); box-shadow: var(--shadow); }
+.dg-columns-list label { display: flex; align-items: center; gap: 8px; font-size: 13px; white-space: nowrap; cursor: pointer; }
+.dg-columns-list input { width: 18px; height: 18px; min-height: 0; padding: 0; }
+.dg-columns-list button { margin-top: 4px; min-height: 36px; }
+
+.dg-notice { margin: 0; padding: 8px 12px; border-radius: var(--radius); background: var(--warn-soft); color: var(--warn); font-size: 13px; }
+
+/* 表本体 */
+.dg-scroll { overflow: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+.dg-table { width: 100%; border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
+.dg-table th, .dg-table td { padding: 8px 12px; border-bottom: 1px solid var(--line-2); white-space: nowrap; text-align: left; vertical-align: top; }
+.dg-table thead th { position: sticky; top: 0; z-index: 2; background: var(--panel-3); color: var(--ink-2); border-bottom: 1px solid var(--line-3); vertical-align: bottom; cursor: default; }
+.dg-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.dg-table .dg-wrap { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 16em; max-width: 40em; }
+.dg-table .dg-sticky { position: sticky; z-index: 1; background: var(--panel); }
+.dg-table thead th.dg-sticky { z-index: 3; background: var(--panel-3); }
+.dg-table .dg-sticky-edge { box-shadow: inset -1px 0 0 var(--line-3); }
+/* 2段の見出し（列の group）。1段目はまとまりの名前、2段目は1段目の高さだけ下に留める */
+/* 子の結合子で書く（行の詳細の中に入れ子にした表には効かせない） */
+.dg-table.dg-has-groups > thead > tr:not(.dg-group-row) > th { top: var(--dg-group-height, 0px); }
+.dg-table > thead > tr.dg-group-row > th { padding: 6px 12px; border-bottom: 1px solid var(--line-2); color: var(--ink); font-size: 12px; font-weight: 700; vertical-align: middle; }
+.dg-table > thead > tr.dg-group-row > th.dg-group { text-align: center; background: var(--panel-2); border-left: 1px solid var(--line-3); border-right: 1px solid var(--line-3); }
+.dg-table > thead > tr.dg-group-row > th.dg-group-empty { background: var(--panel-3); }
+
+.dg-sort { display: inline-flex; align-items: center; gap: 4px; width: 100%; min-height: 32px; padding: 0; border: 0; border-radius: 0;
+  background: transparent; color: inherit; font: inherit; font-weight: 700; text-align: left; cursor: pointer; }
+.dg-table th.num .dg-sort { justify-content: flex-end; }
+.dg-sort:hover { background: transparent; color: var(--ink); text-decoration: underline; }
+.dg-sort:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.dg-sort-mark { display: inline-block; min-width: 1em; color: var(--accent); font-size: 11px; }
+.dg-head-label { font-weight: 700; }
+.dg-filter { margin-top: 6px; font-weight: 400; }
+.dg-filter input, .dg-filter select { min-height: 32px; padding: 4px 8px; font-size: 12px; min-width: 7em; }
+
+.dg-table tbody tr[data-pos] { cursor: default; }
+.dg-table tbody tr[data-pos]:hover td { background: var(--panel-2); }
+.dg-table tbody tr[data-pos]:focus { outline: none; }
+.dg-table tbody tr[data-pos]:focus-visible td { background: var(--accent-soft); }
+.dg-table tbody tr[data-pos]:focus-visible td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+.dg-table tbody tr.dg-open td { background: var(--accent-soft); }
+.dg-table tbody tr.dg-detail td { background: var(--panel-2); white-space: normal; padding: 12px 16px; border-bottom: 1px solid var(--line-3); }
+.dg-table tbody tr.dg-subtotal td { font-weight: 700; background: var(--panel-2); border-bottom: 1px solid var(--line-3); }
+.dg-table td.dg-empty { padding: 20px; text-align: center; color: var(--ink-2); white-space: normal; }
+.dg-table td.dg-empty button { margin-left: 8px; min-height: 36px; }
+
+.dg-table tfoot td { position: sticky; bottom: 0; z-index: 2; background: var(--panel-3); color: var(--ink); font-weight: 700; border-top: 2px solid var(--line-3); border-bottom: 0; }
+.dg-table tfoot td.dg-sticky { z-index: 3; background: var(--panel-3); }
+.dg-total-label { color: var(--ink-2); font-size: 12px; font-weight: 700; }
+
+.dg-unknown { color: var(--warn); font-weight: 700; font-size: 12px; }
+.dg-muted { color: var(--ink-2); }
+.dg-table td.dg-neg { color: var(--bad); }
+.dg-table td.dg-not-summable { color: var(--ink-2); font-weight: 400; }
+
+/* 出力ボタン */
+.report-output { display: grid; gap: 6px; }
+.report-output-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+.report-output-buttons button { min-height: 38px; padding: 0 12px; }
+.report-output-choice { display: flex; flex-wrap: wrap; align-items: end; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel-2); }
+.report-output-choice label { display: grid; gap: 4px; font-size: 13px; color: var(--ink-2); }
+.report-output-choice select { min-height: 36px; }
+.report-output-choice button { min-height: 36px; }
+.report-output-error { margin: 0; color: var(--bad); font-size: 13px; }
+
+/* タブ */
+.on-tabs { display: grid; gap: 14px; min-width: 0; }
+.on-tabs-list { display: flex; gap: 2px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: thin; }
+.on-tab { display: inline-flex; align-items: center; gap: 6px; min-height: 42px; padding: 0 14px; border: 0; border-bottom: 3px solid transparent; border-radius: 0;
+  background: transparent; color: var(--ink-2); font-weight: 700; white-space: nowrap; cursor: pointer; }
+.on-tab:hover { background: var(--panel-3); color: var(--ink); }
+.on-tab[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+.on-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.on-tab:disabled { color: var(--ink-3); cursor: not-allowed; background: transparent; }
+.on-tab-badge { min-width: 1.6em; padding: 1px 6px; border-radius: var(--radius); background: var(--panel-3); color: var(--ink-2); font-size: 12px; text-align: center; font-variant-numeric: tabular-nums; }
+.on-tab[aria-selected="true"] .on-tab-badge { background: var(--accent-soft); color: var(--accent); }
+.on-tab-panel:focus { outline: none; }
+
+@media (max-width: 640px) {
+  .dg-search { flex-basis: 100%; max-width: none; }
+  .dg-count { margin-left: 0; }
+  .dg-table th, .dg-table td { padding: 7px 9px; }
+  .dg-table .dg-wrap { min-width: 12em; }
+  /* 狭い画面では固定列を先頭1列だけにし、幅を抑えて残りの列を横スクロールで見られるようにする */
+  .dg-table tbody td.dg-sticky:not(:first-child) { position: static; }
+  .dg-table thead th.dg-sticky:not(:first-child), .dg-table tfoot td.dg-sticky:not(:first-child) { left: auto !important; z-index: 2; }
+  .dg-table .dg-sticky-edge:not(:first-child) { box-shadow: none; }
+  .dg-table .dg-sticky:first-child { max-width: 42vw; white-space: normal; overflow-wrap: anywhere; box-shadow: inset -1px 0 0 var(--line-3); }
+}
+
+@media print {
+  .dg-toolbar, .dg-filter, .dg-notice { display: none; }
+  .dg-scroll { max-height: none !important; overflow: visible; border: 0; }
+  .dg-table thead th, .dg-table tfoot td, .dg-table .dg-sticky { position: static; }
+}
+/* 行の詳細を見えている幅に収め、横スクロールしても左端に留める */
+.dg-detail-frame { position: sticky; left: 16px; box-sizing: border-box; max-width: 100%; }
+@media print { .dg-detail-frame { position: static; width: auto !important; } }

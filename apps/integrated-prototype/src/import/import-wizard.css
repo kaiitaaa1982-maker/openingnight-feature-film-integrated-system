@@ -1,0 +1,164 @@
+/* 売上報告の取込ウィザード。色はトークンだけを使う（ライト・ダーク両方）。 */
+.iw{position:relative}
+.iw-vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.iw-head h2{margin:0 0 6px}
+.iw-head p{margin:0}
+.iw-step h3{margin:0 0 12px;font-size:17px}
+.iw-step h4{margin:18px 0 8px;font-size:14px}
+.iw-step>.on-form-grid{margin-bottom:12px}
+
+/* 段階表示（上部に固定） */
+.iw-steps{position:sticky;top:0;z-index:6;background:var(--bg);padding:6px 0;margin:-6px 0}
+.iw-steps ol{display:flex;gap:6px;margin:0;padding:0;list-style:none;overflow-x:auto;scrollbar-width:thin}
+.iw-steps li{flex:1 0 auto;min-width:0}
+.iw-step-label,.iw-step-link{display:flex;align-items:center;gap:8px;width:100%;min-height:40px;padding:6px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);color:var(--ink-3);font-size:13px;font-weight:650;white-space:nowrap}
+.iw-step-link{justify-content:flex-start;cursor:pointer;color:var(--ink-2)}
+.iw-step-link:hover{border-color:var(--accent);color:var(--accent)}
+.iw-step-no{display:inline-grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;border:1px solid currentColor;font-size:12px;font-variant-numeric:tabular-nums}
+.iw-steps li.is-current .iw-step-label{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.iw-steps li.is-current .iw-step-no{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.iw-steps li.is-done .iw-step-no,.iw-steps li.is-done .iw-step-link .iw-step-no{border-color:var(--ok);color:var(--ok)}
+
+/* 下部の操作（手順のカードの下端に固定） */
+.iw-actions{position:sticky;bottom:0;z-index:5;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin:18px -20px -20px;padding:12px 20px;border-top:1px solid var(--line);border-radius:0 0 var(--radius) var(--radius);background:var(--panel-2)}
+
+/* 手順1 */
+.iw-drop{position:relative;display:grid;place-items:center;min-height:96px;margin:14px 0 8px;padding:12px;border:2px dashed var(--line-3);border-radius:var(--radius);background:var(--panel-2);color:var(--ink-2);font-weight:650;text-align:center}
+.iw-drop label{display:grid;place-items:center;width:100%;min-height:72px;cursor:pointer}
+.iw-drop input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.iw-drop:hover,.iw-drop:focus-within,.iw-drop.is-over{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.iw-drop.is-busy{opacity:.7}
+.iw-drop.is-disabled{opacity:.6}
+.iw-drop.is-disabled input{cursor:not-allowed}
+.iw-file{margin:6px 0;overflow-wrap:anywhere}
+.iw-previous{margin:10px 0;padding:10px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2);font-size:13px}
+.iw-previous p{margin:0}
+.iw-previous details{margin-top:8px}
+.iw-pending{margin:10px 0;font-size:13px}
+.iw-pending ul{margin:8px 0;padding-left:18px}
+.iw-pending li{margin:4px 0}
+.iw-legacy{margin-top:18px;padding-top:12px;border-top:1px solid var(--line-2)}
+.iw-legacy>summary{cursor:pointer;color:var(--ink-2);font-weight:650}
+
+/* 小さな表 */
+.iw-mini{width:100%;margin:6px 0;font-size:12px}
+.iw-mini th{position:static}
+.iw-mini th,.iw-mini td{padding:6px 8px}
+.iw-mini td{white-space:normal;overflow-wrap:anywhere}
+
+/* 手順2: 原本の先頭の行 */
+.iw-sheet{max-width:100%;max-height:60vh;overflow:auto;margin:10px 0;border:1px solid var(--line);border-radius:var(--radius)}
+.iw-sheet:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.iw-sheet table{border:0;border-radius:0;font-size:12px}
+.iw-sheet thead th{position:sticky;top:0;z-index:2;background:var(--panel-3);text-align:center;cursor:default}
+.iw-sheet tbody th{position:sticky;left:0;z-index:1;background:var(--panel-2);cursor:pointer}
+.iw-sheet th,.iw-sheet td{padding:5px 8px;border-bottom:1px solid var(--line-2);border-right:1px solid var(--line-2)}
+.iw-sheet td{max-width:220px;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:var(--ink)}
+.iw-sheet .iw-rowno{min-width:112px;text-align:left;white-space:nowrap}
+.iw-sheet .iw-rowno label{display:inline-flex;align-items:center;gap:6px;margin:0;vertical-align:middle;font-variant-numeric:tabular-nums}
+.iw-sheet .iw-rowno input{width:auto;min-height:0;height:auto;margin:0}
+.iw-sheet .iw-tag{vertical-align:middle}
+.iw-sheet tr:hover td{background:var(--panel-3)}
+.iw-sheet tr.is-header td,.iw-sheet tr.is-header th{background:var(--hi);border-color:var(--hi-line);color:var(--ink);font-weight:700}
+.iw-sheet tr.is-above td{color:var(--ink-3)}
+.iw-sheet tr.is-total td{background:var(--warn-soft)}
+.iw-tag{display:inline-block;margin-left:6px;padding:0 6px;border:1px solid var(--accent);border-radius:6px;color:var(--accent);font-size:11px;font-weight:700;line-height:1.6}
+.iw-tag.is-warn{border-color:var(--warn);color:var(--warn)}
+.iw-inline{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;margin:10px 0}
+.iw-inline .on-field{min-width:180px;flex:1 1 180px}
+
+/* 手順3: 列の対応 */
+.iw-map-wrap{max-width:100%;overflow-x:auto}
+.iw-attributes>summary{cursor:pointer;font-weight:700;color:var(--accent);padding:4px 0}
+.iw-attr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(14em,1fr));gap:8px 12px;margin-top:8px}
+.iw-map{margin:8px 0;font-size:13px}
+.iw-map thead th{position:static;cursor:default}
+.iw-map tbody th{position:static;width:22%;background:var(--panel-2);color:var(--ink);font-weight:650;vertical-align:top;white-space:normal}
+.iw-map tbody th .on-req{margin-left:6px}
+.iw-map td{vertical-align:top;white-space:normal}
+.iw-map tr.is-invalid th{box-shadow:inset 3px 0 0 var(--bad)}
+.iw-map-control{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.iw-map-control select,.iw-map-control input{min-width:0;max-width:100%}
+.iw-map-control>select{flex:1 1 220px}
+.iw-map-control>input{flex:1 1 160px}
+.iw-note{width:30%;color:var(--ink-3);font-size:12px}
+.iw-fixed{margin:0;color:var(--ink-2);overflow-wrap:anywhere}
+.iw-operands{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.iw-operands select{flex:1 1 140px}
+.iw-sign{color:var(--ink-2);font-weight:700}
+.iw-ignored{margin:10px 0;color:var(--ink-2);font-size:13px;overflow-wrap:anywhere}
+.iw-checks{display:grid;gap:8px}
+.iw-checks>button{justify-self:start}
+.iw-check{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.iw-check select{flex:1 1 140px;min-width:0}
+
+/* 手順4 */
+.iw-step .rp-tiles{margin:10px 0}
+.iw-tile-bad{border-color:var(--bad)!important;background:var(--bad-soft)!important}
+.iw-tile-bad strong{color:var(--bad)}
+.iw-status{display:inline-block;padding:0 7px;border-radius:6px;font-size:12px;font-weight:700;line-height:1.7}
+.iw-status.is-ok{background:var(--ok-soft);color:var(--ok)}
+.iw-status.is-warn{background:var(--warn-soft);color:var(--warn)}
+.iw-status.is-error{background:var(--bad-soft);color:var(--bad)}
+.iw-bad-cell{display:inline-grid;gap:2px;padding:2px 6px;border-radius:6px;background:var(--bad-soft);color:var(--bad);font-weight:700;white-space:normal}
+.iw-bad-cell small{font-size:11px;font-weight:600;text-align:left}
+.iw-overlap{margin:12px 0;padding:12px;border:1px solid var(--warn);border-radius:var(--radius);background:var(--panel-2)}
+.iw-overlap h4{margin-top:12px}
+.iw-radios{display:grid;gap:8px}
+.iw-radios>label{display:flex;align-items:center;gap:8px}
+.iw-exclude{margin:14px 0;padding:12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.iw-exclude h4{margin-top:0}
+.iw-exclude ul{display:grid;gap:8px;margin:8px 0;padding:0;list-style:none}
+.iw-exclude li{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:8px 10px;border-left:4px solid var(--bad);border-radius:6px;background:var(--panel)}
+.iw-exclude li.is-warn{border-left-color:var(--warn)}
+.iw-exclude-check{display:flex;align-items:center;gap:6px;font-weight:700;white-space:nowrap}
+.iw-exclude-why{flex:1 1 260px;color:var(--ink-2);font-size:13px;overflow-wrap:anywhere}
+.iw-exclude li input[type="text"]{flex:1 1 100%;min-width:0}
+.iw-more{margin:10px 0}
+.iw-more>summary{cursor:pointer;color:var(--ink-2)}
+.iw-excluded{margin:12px 0}
+.iw-controls{margin:14px 0}
+.iw-compare{display:grid;gap:4px;margin:10px 0;padding-left:18px}
+.iw-confirm{margin:14px 0;padding:14px;border:2px solid var(--accent);border-radius:var(--radius);background:var(--accent-soft)}
+.iw-confirm p{margin:0}
+
+/* 手順5 */
+.iw-result{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px 18px;margin:14px 0}
+.iw-result div{min-width:0}
+.iw-result dt{color:var(--ink-3);font-size:12px}
+.iw-result dd{margin:2px 0 0;overflow-wrap:anywhere}
+.iw-code{font-family:var(--mono);font-size:12px}
+
+@media (max-width:980px){
+  .iw-steps{position:static;margin:0;padding:0}
+}
+@media (max-width:640px){
+  .iw-actions{margin:14px -20px -20px;padding:10px 16px;justify-content:stretch}
+  .iw-actions>button{flex:1 1 auto}
+  .iw-map thead{display:none}
+  .iw-map,.iw-map tbody,.iw-map tr,.iw-map th,.iw-map td{display:block;width:auto}
+  .iw-map tr{padding:8px 0;border-bottom:1px solid var(--line-2)}
+  .iw-map tbody th{padding:4px 8px;background:transparent}
+  .iw-map td{padding:4px 8px;border:0}
+  .iw-note:empty{display:none}
+  .iw-step-label,.iw-step-link{font-size:12px;padding:6px 8px}
+  .iw-steps li{flex:0 0 auto}
+  .iw-steps li.is-current{flex:1 0 auto}
+  .iw-steps li:not(.is-current) .iw-step-text{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+}
+
+/* 作品の決め方（手順1・手順4）と作品への割り当て */
+.iw-assign-mode{margin:0 0 12px;padding:10px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.iw-assign-mode legend{padding:0 6px;font-weight:650}
+.iw-assign-mode label{display:flex;align-items:flex-start;gap:8px;margin:6px 0;cursor:pointer}
+.iw-assign-mode label input{width:auto;min-height:0;margin:3px 0 0}
+.iw-assign-mode label small{display:block;color:var(--ink-3);font-weight:400}
+.iw-assign-mode .on-form-grid{margin-top:8px}
+.iw-inline-check{display:inline-flex;align-items:center;gap:6px;margin:6px 0;cursor:pointer}
+.iw-inline-check input{width:auto;min-height:0;margin:0}
+.iw-offer{margin:12px 0;padding:10px 14px;border:1px solid var(--line);border-radius:var(--radius)}
+.iw-binding{margin:0 0 12px}
+.iw-binding p{margin:0 0 8px;overflow-wrap:anywhere}
+.iw-multi{margin-top:12px}
+.iw-results tr[aria-current] td{background:var(--accent-soft)}
+.iw-total-row th,.iw-total-row td{font-weight:700}

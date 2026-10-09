@@ -1,0 +1,96 @@
+/* 外枠。UI指針: ../../../../docs/design/ui-guidelines.md（§8 のトークンだけを使う）。
+   旧 styles.css の .shell 規則と同じ詳細度で負けないよう .shell.app-shell で書く。 */
+.shell.app-shell{display:grid;grid-template-columns:268px minmax(0,1fr);min-height:100vh}
+.app-skip{position:absolute;left:12px;top:-60px;z-index:50;padding:10px 14px;border-radius:var(--radius);background:var(--accent);color:var(--accent-ink);font-weight:700;text-decoration:none}
+.app-skip:focus{top:12px}
+.app-shell :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* サイドバー */
+.app-shell>.app-side{position:sticky;top:0;height:100vh;overflow-y:auto;padding:18px 12px 28px;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+/* サイドバーが画面より長いとき、項目が縮んで見えなくならないようにする（縦に並べてスクロール） */
+.app-shell>.app-side>*{flex-shrink:0}
+.app-shell .app-nav{grid-template-columns:minmax(0,1fr)}
+.app-brand{display:flex;align-items:center;gap:10px;padding:2px 8px 6px;color:var(--ink);text-decoration:none}
+.app-brand>span:first-child{display:grid;place-items:center;width:38px;height:38px;border-radius:var(--radius);background:var(--ink);color:var(--panel);font-weight:900}
+.app-brand-text{display:flex;flex-direction:column}
+.app-brand-text small{color:var(--ink-3);font-size:12px}
+.app-area-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line-3);border-radius:var(--radius);overflow:hidden}
+.app-area-tabs button{min-height:40px;border:0;border-radius:0;background:var(--panel-2);color:var(--ink-2);font-weight:700;padding:0 4px;font-size:13px;letter-spacing:-.02em;white-space:nowrap}
+.app-area-tabs button+button{border-left:1px solid var(--line-3)}
+.app-area-tabs button[aria-selected="true"]{background:var(--accent-soft);color:var(--accent)}
+.app-area-tabs button:disabled{opacity:1;color:var(--ink-3);background:var(--panel-3)}
+.app-area-note{margin:-4px 4px 0;color:var(--ink-3);font-size:12px}
+/* 売上基幹の2段目（業務）。上段の切替より控えめにし、選んでいる業務だけ縁取る */
+.app-sub-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin-top:-4px;padding:4px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.app-sub-tabs button{min-height:36px;padding:0 6px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--ink-2);font-size:13px;font-weight:700;line-height:1.3}
+.app-sub-tabs button:hover{background:var(--panel);color:var(--ink)}
+.app-sub-tabs button[aria-selected="true"]{background:var(--panel);border-color:var(--accent);color:var(--accent)}
+.app-nav{display:grid;gap:4px}
+.app-nav-shared{margin-top:auto;padding-top:12px;border-top:1px solid var(--line)}
+.app-nav-group ul{list-style:none;margin:0 0 6px;padding:0;display:grid;gap:2px}
+/* 畳んだグループ（hidden）は display:grid に負けないよう明示して隠す */
+.app-nav-group ul[hidden]{display:none}
+.app-nav .app-nav-group-head{display:flex;align-items:center;gap:8px;width:100%;min-height:32px;padding:0 8px;border:0;background:transparent;color:var(--ink-3);font-size:12px;font-weight:800;letter-spacing:.04em;text-align:left}
+.app-nav .app-nav-group-head:hover{background:var(--panel-2);color:var(--ink-2)}
+.app-nav-caret{margin-left:auto;font-size:11px}
+.app-nav-here{padding:0 6px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:0}
+.app-nav-item{display:grid;gap:1px;padding:7px 10px;border-radius:8px;color:var(--ink-2);text-decoration:none;border-left:3px solid transparent}
+.app-nav-item:hover{background:var(--panel-2);color:var(--ink)}
+.app-nav-item.is-current{background:var(--accent-soft);color:var(--ink);border-left-color:var(--accent)}
+.app-nav-label{font-size:14px;font-weight:650}
+.app-nav-desc{color:var(--ink-3);font-size:11.5px;line-height:1.45}
+.app-nav-item.is-current .app-nav-label{color:var(--accent)}
+
+/* 上部 */
+.app-main{min-width:0}
+.app-topbar{flex-wrap:wrap}
+.app-topbar .app-work-selector{flex:1 1 320px;max-width:520px}
+.app-topbar .on-picker{grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:10px}
+.app-topbar .on-picker .on-field-label{white-space:nowrap}
+.app-topbar .on-picker-status{grid-column:2}
+.app-scope{display:flex;flex-direction:column}
+.app-scope small{color:var(--ink-3)}
+.app-user{margin-left:auto}
+/* 組織の切替（所属が2つ以上のときだけ出る） */
+.app-org{display:flex;flex-direction:column;gap:2px;min-width:0;margin:0}
+.app-org-row{display:flex;align-items:center;gap:8px;min-width:0}
+.app-org-apply{min-height:36px;white-space:nowrap}
+.app-org-error .text{margin-left:6px;font-size:12px}
+.app-topbar .app-org-field{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.app-org-field select{min-height:36px;width:auto;max-width:260px;padding:4px 8px}
+.app-org-status{color:var(--ink-3);font-size:12px}
+.app-org-error{color:var(--bad);font-size:12px}
+.app-menu-button{display:none}
+.app-admin-entry{flex-shrink:0;white-space:nowrap;min-height:36px}
+.app-nav-shared h2.app-nav-group-head{margin:0 0 6px;color:var(--ink-2)}
+.app-page-title h1:focus{outline:none}
+.app-page-title h1:focus-visible{outline:3px solid var(--accent);outline-offset:4px;border-radius:4px}
+.app-page-desc{margin:-12px 0 18px;color:var(--ink-3);font-size:13px}
+.app-unsaved{margin-bottom:18px;padding:14px 16px;border:1px solid var(--warn);border-left-width:4px;border-radius:var(--radius);background:var(--warn-soft);color:var(--ink)}
+.app-unsaved p{margin:0}
+.app-locked{border-left:4px solid var(--line-3)}
+.app-scrim{display:none}
+
+
+@media (max-width:980px){
+  .shell.app-shell{grid-template-columns:minmax(0,1fr)}
+  .app-shell>.app-side{position:fixed;left:0;top:0;bottom:0;z-index:40;width:min(320px,88vw);height:auto;transform:translateX(-105%);transition:transform .2s ease;box-shadow:var(--shadow)}
+  .app-shell.is-drawer-open>.app-side{transform:none}
+  .app-scrim{display:block;position:fixed;inset:0;z-index:30;min-height:0;border:0;border-radius:0;background:var(--ink);opacity:.35;padding:0}
+  .app-menu-button{display:inline-flex;align-items:center}
+  .app-topbar{position:sticky}
+}
+@media (max-width:640px){
+  .app-topbar{flex-direction:row;align-items:center;padding:10px 12px;gap:10px}
+  .app-topbar .app-work-selector{order:3;flex-basis:100%;max-width:none}
+  .app-topbar .on-picker{grid-template-columns:1fr}
+  .app-topbar .on-picker-status{grid-column:1}
+  .app-user{gap:8px}
+  .app-user>span{display:none}
+  .app-org{order:2;flex:1 1 100%}
+  .app-org-row,.app-org-field{flex:1 1 auto;min-width:0}
+  .app-org-field select{flex:1 1 auto;max-width:none;min-width:0}
+}
+@media (prefers-reduced-motion:reduce){
+  .app-shell>.app-side{transition:none}
+}

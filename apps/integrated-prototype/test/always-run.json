@@ -1,0 +1,171 @@
+{
+  "version": 1,
+  "pathBase": "core",
+  "tests": [
+    {
+      "file": "apps/integrated-prototype/test/pg-export.test.mjs",
+      "reason": "日次書き出し・復旧・金額の照合と、読み取りの途中に別接続の書き込みを挟むsnapshotを検査する"
+    },
+    {
+      "file": "apps/integrated-prototype/test/money-rules.test.mjs",
+      "reason": "整数円・率・端数の扱いと金額の借りの増加を止める"
+    },
+    {
+      "file": "apps/integrated-prototype/test/dialect-rules.test.mjs",
+      "reason": "SQLite/PostgreSQL の共通 SQL と dialect-debt.json の借りを検査する"
+    },
+    {
+      "file": "apps/integrated-prototype/test/pg-ddl.test.mjs",
+      "reason": "生成した PostgreSQL DDL と SQLite の制約の対応を検査する。scripts/pg-ddl.mjs --check も実行する"
+    },
+    {
+      "file": "apps/integrated-prototype/test/pg-db.test.mjs",
+      "reason": "PostgreSQL の DB 入口・トランザクション・返り値を検査する"
+    },
+    {
+      "file": "apps/integrated-prototype/test/pg-src-dialect.test.mjs",
+      "reason": "移植した SQL の方言差で業務結果が変わらないか検査する"
+    },
+    {
+      "file": "apps/integrated-prototype/test/pg-src-dialect2.test.mjs",
+      "reason": "追加の方言修正と DB エラーの扱いの回帰を止める"
+    },
+    {
+      "file": "apps/integrated-prototype/test/db-error-api.test.mjs",
+      "reason": "DB の失敗を API が正しい状態とエラーに変換するか検査する"
+    },
+    {
+      "file": "apps/integrated-prototype/test/database-rules.test.mjs",
+      "reason": "表・SQL・移行の規則違反を止める"
+    },
+    {
+      "file": "apps/integrated-prototype/test/migrations.test.mjs",
+      "reason": "SQLite の移行と表の制約の回帰を止める"
+    },
+    {
+      "file": "apps/integrated-prototype/test/test-rules.test.mjs",
+      "reason": "骨抜き・T0 の欠落・concurrency の印の漏れを止める"
+    },
+    {
+      "file": "apps/integrated-prototype/test/requirements-trace.test.mjs",
+      "reason": "要件のテスト状態と証拠の試験の対応を保つ"
+    },
+    {
+      "file": "apps/integrated-prototype/test/dependency-rules.test.mjs",
+      "reason": "実装と試験の依存の境界を守る"
+    },
+    {
+      "file": "apps/integrated-prototype/test/logging-rules.test.mjs",
+      "reason": "ログ・エラー・監査の規則違反を止める"
+    },
+    {
+      "file": "apps/integrated-prototype/test/session-org.test.mjs",
+      "reason": "セッションの所属と組織の分離を検査する"
+    },
+    {
+      "file": "apps/integrated-prototype/test/shell-org.test.mjs",
+      "reason": "画面の枠で選んだ組織とアクセス可能な組織の対応を検査する"
+    },
+    {
+      "file": "apps/integrated-prototype/test/org-switch-shell.test.mjs",
+      "reason": "組織を切り替えた後の表示やデータの混在を止める"
+    },
+    {
+      "file": "apps/integrated-prototype/test/req5-admin-visibility.test.mjs",
+      "reason": "管理画面のデータを役割と所属で制限する"
+    },
+    {
+      "file": "apps/integrated-prototype/test/req5-admin-visibility-sqlite.test.mjs",
+      "reason": "SQLite/D1 の管理用カタログでも閲覧の境界を保つ"
+    },
+    {
+      "file": "apps/integrated-prototype/test/cloud-security.test.mjs",
+      "reason": "Cloud の入口の認証・Origin に関する制約を検査する"
+    },
+    {
+      "file": "apps/integrated-prototype/test/royalty-model.test.mjs",
+      "reason": "独立した期待値でロイヤリティ計算と丸めを確かめる"
+    },
+    {
+      "file": "apps/integrated-prototype/test/royalty-statement.test.mjs",
+      "reason": "ロイヤリティ報告書の金額と明細の一致を確かめる"
+    },
+    {
+      "file": "apps/integrated-prototype/test/royalty-review-fixes.test.mjs",
+      "reason": "ロイヤリティの指摘修正と金額の回帰を止める"
+    },
+    {
+      "file": "apps/integrated-prototype/test/tax-oracle-independent.test.mjs",
+      "reason": "実装とは独立した計算で税額を照合する"
+    },
+    {
+      "file": "apps/integrated-prototype/test/tax-ledger.test.mjs",
+      "reason": "税の台帳と集計額の回帰を止める"
+    },
+    {
+      "file": "apps/integrated-prototype/test/fictional-committee.test.mjs",
+      "reason": "架空の委員会の収支・分配を独立した期待値で確かめる"
+    },
+    {
+      "file": "apps/integrated-prototype/test/fictional-committee-sqlite.test.mjs",
+      "reason": "作成した SQLite を開き直し委員会の架空データを照合する"
+    },
+    {
+      "file": "apps/integrated-prototype/test/production-plans.test.mjs",
+      "reason": "同じ版の制作計画を同時保存して一方だけが通り、その側の値が残ることを確かめる",
+      "concurrency": true
+    },
+    {
+      "file": "apps/integrated-prototype/test/broadcast-proposal-drafts.test.mjs",
+      "reason": "放送提案の同時作成・削除・申請の競合を確かめる",
+      "concurrency": true
+    },
+    {
+      "file": "apps/integrated-prototype/test/catalog.test.mjs",
+      "reason": "作品カタログの同じ版への同時更新で二重保存を止める",
+      "concurrency": true
+    },
+    {
+      "file": "apps/integrated-prototype/test/req6-expense-api.test.mjs",
+      "reason": "請求書の同じ版への同時更新で二重登録を止める",
+      "concurrency": true
+    },
+    {
+      "file": "apps/integrated-prototype/test/req6-expense-accounting-extras.test.mjs",
+      "reason": "同じカード支払への同時引落登録の競合を確かめる",
+      "concurrency": true
+    },
+    {
+      "file": "apps/integrated-prototype/test/req5-work-master.test.mjs",
+      "reason": "作品マスタの同じ版への同時更新を排他する",
+      "concurrency": true
+    },
+    {
+      "file": "apps/integrated-prototype/test/reporting-independent.test.mjs",
+      "reason": "同じ入金予定の同時承認を独立した期待値で確かめる",
+      "concurrency": true
+    },
+    {
+      "file": "apps/integrated-prototype/test/billing-independent.test.mjs",
+      "reason": "同じ売上への同時請求を一度に制限し金額の二重計上を止める",
+      "concurrency": true
+    },
+    {
+      "file": "apps/integrated-prototype/test/cloud-r2-db.test.mjs",
+      "reason": "R2 の DB 層と束ねた書き込みを確かめる。同時 run を持つため concurrency の印を保つ",
+      "concurrency": true
+    },
+    {
+      "file": "scripts/ops/agents-map.test.mjs",
+      "reason": "地図と入口の案内の欠落を止める"
+    },
+    {
+      "file": "scripts/ops/rules-sync.test.mjs",
+      "reason": "開発ルールの正本と Claude 用の写しのずれを止める"
+    },
+    {
+      "file": "scripts/ops/check-cloud-db-config.test.mjs",
+      "reason": "秘密値を含む接続設定と本番への誤接続を止める"
+    }
+  ]
+}

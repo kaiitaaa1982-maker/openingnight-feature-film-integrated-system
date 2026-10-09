@@ -1,0 +1,111 @@
+/* 権利・分配、権利の調達、製作委員会、権利先・MG帳票の画面。色はトークンだけ（ui-guidelines §8）。ライト・ダーク両対応。 */
+
+/* 数値のセル（右寄せ・桁をそろえる） */
+.rt-page .num,.rr-report .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* 画面の冒頭 */
+.rt-intro{display:grid;gap:10px}
+.rt-intro h2{margin:2px 0 0}
+.rt-intro p{margin:0;color:var(--ink-2)}
+.rt-eyebrow{margin:0;color:var(--accent);font-size:12px;font-weight:800;letter-spacing:.06em}
+
+/* 分配の流れ（番号つきの段） */
+.rt-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:4px 0 0;padding:0;list-style:none;counter-reset:rt-step}
+.rt-flow li{position:relative;display:flex;align-items:center;gap:8px;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2);color:var(--ink-2);font-size:13px;counter-increment:rt-step}
+.rt-flow li::before{content:counter(rt-step);flex:none;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:12px}
+
+/* 一覧の見出しと操作 */
+.rt-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px 16px}
+.rt-head h2,.rt-head h3{margin:0 0 4px}
+.rt-head p{margin:0}
+.rt-muted{margin:0;color:var(--ink-3);font-size:13px;line-height:1.6}
+.rt-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.rt-count{padding:3px 9px;border-radius:var(--radius);background:var(--panel-3);color:var(--ink-2);font-size:12px;font-variant-numeric:tabular-nums}
+.rt-count.is-warn{background:var(--warn-soft);color:var(--warn)}
+
+/* 状態（色＋文字） */
+.rt-state{font-weight:700}
+.rt-state.is-ok{color:var(--ok)}
+.rt-state.is-warn{color:var(--warn)}
+
+/* 押した場所に開く入力（改訂・新しい版） */
+.rt-inline{display:grid;gap:12px;margin-top:12px;padding:14px;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--radius);background:var(--panel-2)}
+.rt-inline h4{margin:0}
+
+/* 入力の段落（基本 → 出資 → 窓口 → 控除 → 日程） */
+.rt-form{display:grid;gap:16px}
+.rt-section{display:grid;gap:12px;margin:0;padding:14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);min-width:0}
+.rt-section>legend{display:flex;align-items:center;gap:8px;padding:0 6px;font-weight:800}
+.rt-step{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--accent-soft);color:var(--accent);font-size:12px}
+.rt-row{display:grid;gap:10px;padding:12px;border:1px solid var(--line-2);border-radius:var(--radius);background:var(--panel-2);min-width:0}
+.rt-row-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;font-weight:700}
+.rt-chips{display:flex;flex-wrap:wrap;gap:6px}
+.rt-chip{padding:4px 9px;border:1px solid var(--line-2);border-radius:999px;background:var(--panel);color:var(--ink-2);font-size:12px}
+.rt-errors{margin:6px 0 0;padding-left:18px}
+.rt-errors li{margin:2px 0}
+
+/* 小さな表（帳票の中の表） */
+.rt-table{width:100%;border-collapse:collapse;font-size:13px}
+.rt-table th,.rt-table td{padding:7px 9px;border-bottom:1px solid var(--line-2);text-align:left;vertical-align:top}
+.rt-table thead th{color:var(--ink-2);font-size:12px;font-weight:700;background:var(--panel-2)}
+.rt-table tfoot th,.rt-table tfoot td{border-top:2px solid var(--line-3);border-bottom:0;font-weight:800}
+.rt-table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:var(--radius)}
+
+/* 紐付け（未紐付けの売上報告1件ごと） */
+.rt-link{display:grid;gap:10px;padding:14px 0;border-bottom:1px solid var(--line-2)}
+.rt-link:last-child{border-bottom:0}
+.rt-link-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;align-items:end}
+.rt-link-controls label{display:grid;gap:4px;font-size:13px;color:var(--ink-2)}
+.rt-default-note{margin:0;color:var(--ink-3);font-size:12px}
+
+/* 権利先・MG帳票 */
+.rr-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.8rem;align-items:end;margin:1rem 0 0;border:0;padding:0;min-width:0}
+.rr-controls label{min-width:0}
+.rr-controls select{width:100%}
+.rr-warning{display:flex;gap:.7rem;flex-wrap:wrap;padding:.6rem 1rem;border:1px solid var(--warn);background:var(--warn-soft);color:var(--ink);border-radius:var(--radius);margin:1rem 0}
+.rr-warning strong{color:var(--warn)}
+.rr-report{min-width:0}
+.rr-report>header{display:flex;justify-content:space-between;gap:1rem;align-items:start}
+.rr-report h2{margin:.3rem 0}
+.rr-report header p{margin:.4rem 0}
+.rr-actions{display:flex;flex-wrap:wrap;gap:.5rem;flex-shrink:0}
+.rr-headline{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin:1rem 0}
+.rr-headline>div{padding:1rem;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.rr-headline span,.rr-headline strong,.rr-table small{display:block}
+.rr-headline strong{font-size:1.25rem;margin-top:.3rem;font-variant-numeric:tabular-nums}
+.rr-table{overflow:auto;max-width:100%;margin:1rem 0}
+.rr-table table{width:100%;border-collapse:collapse}
+.rr-table th,.rr-table td{padding:.65rem;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;vertical-align:top}
+.rr-table small{font-weight:400;font-size:.78rem;color:var(--ink-3);white-space:normal;overflow-wrap:anywhere;max-width:28rem}
+.rr-table tbody th{font-weight:500}
+.rr-table .rr-total th,.rr-table .rr-total td,.rr-table tfoot th,.rr-table tfoot td{font-weight:800;background:var(--panel-2)}
+.rr-caution{color:var(--warn);font-weight:700}
+.rr-report footer{margin-top:1rem;color:var(--ink-3);font-size:.8rem;overflow-wrap:anywhere}
+
+@media(max-width:850px){
+  .rr-headline{grid-template-columns:repeat(2,1fr)}
+  .rr-report>header{display:block}
+  .rr-actions{margin:.8rem 0}
+  .rt-flow{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rt-link-controls{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .rt-flow{grid-template-columns:1fr}
+  .rr-headline{grid-template-columns:1fr}
+}
+
+/* 印刷は紙の地（Canvas）と文字色（CanvasText）に固定する */
+@media print{
+  .rr-report.print-target{color-scheme:light}
+  .rr-report.print-target,.rr-report.print-target *{visibility:visible!important;color:CanvasText!important}
+  .rr-report.print-target{position:absolute;inset:0 auto auto 0;width:100%;margin:0!important;padding:0!important;box-shadow:none!important;border:0!important;background:Canvas!important}
+  .rr-report .rr-actions,.rr-report .report-output{display:none!important}
+  .rr-report .rr-table{overflow:visible}
+  .rr-report .rr-table th,.rr-report .rr-table td{white-space:normal;font-size:9pt;padding:2.5mm;overflow-wrap:anywhere}
+  .rr-report .rr-table small{font-size:8pt}
+  .rr-report th,.rr-report td,.rr-report .rr-headline>div,.rr-report .rr-warning{background:Canvas!important}
+  .rr-report tr{break-inside:avoid}
+  .rr-report thead{display:table-header-group}
+  .rr-report h3{break-after:avoid}
+  .rr-report .rr-headline{grid-template-columns:repeat(4,1fr)}
+}

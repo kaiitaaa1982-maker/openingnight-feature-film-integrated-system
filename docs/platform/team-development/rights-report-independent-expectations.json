@@ -1,0 +1,21 @@
+{
+  "source": "新規に作成した架空例。資料の作品名・金額・料率から転記していない。実装とは別の算術で期待値を固定。",
+  "mg": {
+    "guarantee": 3000000,
+    "evaluation": {"A": 1800000, "B": 500000, "C": 700000},
+    "previousApplied": {"A": 1000000, "B": 200000, "C": 100000},
+    "currentApplied": {"A": 400000, "B": 250000, "C": 350000},
+    "cumulativeApplied": {"A": 1400000, "B": 450000, "C": 450000},
+    "previousAppliedTotal": 1300000,
+    "currentAppliedTotal": 1000000,
+    "cumulativeAppliedTotal": 2300000,
+    "contractRemaining": 700000,
+    "rule": "クロスリクープのため作品ごとの独立回収残高は算出しない。訂正前のB当期300000は除外して250000だけを集計する。"
+  },
+  "committee": {
+    "previous": {"grossReported": 100000, "netReported": 0, "platformFeeKnown": 50000, "platformNet": 50000, "windowFee": 10000, "managerFee": 2000, "expenseTotal": 3000, "distributionPool": 35000, "members": {"A": 21000, "B": 14000}},
+    "current": {"grossReported": 200000, "netReported": 0, "platformFeeKnown": 100000, "platformNet": 100000, "windowFee": 20000, "managerFee": 4000, "expenseTotal": 6000, "distributionPool": 70000, "members": {"A": 42000, "B": 28000}},
+    "cumulative": {"grossReported": 300000, "netReported": 0, "platformFeeKnown": 150000, "platformNet": 150000, "windowFee": 30000, "managerFee": 6000, "expenseTotal": 9000, "distributionPool": 105000, "members": {"A": 63000, "B": 42000}},
+    "rule": "窓口20%、幹事は窓口控除後の5%、出資分配60:40の架空例。手数料収入と出資分配額は合算表示しない。"
+  }
+}

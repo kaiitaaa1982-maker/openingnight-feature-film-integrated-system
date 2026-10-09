@@ -1,0 +1,32 @@
+/* 設計キャンバス。外枠のサイドバーは隠さない（戻り道を常に残す）。色はトークンだけ。 */
+.dc{min-width:0;max-width:1280px;margin:0 auto}
+.dc-header{display:flex;justify-content:space-between;gap:24px;align-items:center;margin-bottom:20px}.dc-header>button{white-space:nowrap;flex-shrink:0}
+.dc-header h2{font-size:24px;margin:0 0 8px}.dc-header p{color:var(--ink-2);margin:0;line-height:1.7}
+.dc-controls{display:flex;flex-wrap:wrap;gap:16px;align-items:end;padding:18px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius)}
+.dc-controls>label{min-width:180px;flex:1}
+.dc-tabs{margin:20px 0 0}
+.dc-selection{padding:18px 0 12px;display:grid;gap:8px}.dc-selection strong{font-size:20px}.dc-selection span{font-size:14px;color:var(--ink-2);line-height:1.8;max-width:90ch}
+.dc-board{display:block;margin-top:12px}.dc-pane{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+.dc-pane-head{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-bottom:16px;margin-bottom:20px;border-bottom:1px solid var(--line)}
+.dc-pane-head h3{font-size:20px;margin:0}.dc-pane-head small{color:var(--ink-2)}
+.dc-concept-map{max-width:780px;margin:0 auto;display:grid;gap:16px}
+.dc-object{display:grid;width:100%;gap:6px;text-align:left;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);padding:18px;border-radius:var(--radius);min-height:44px}
+.dc-object:hover{background:var(--panel-3)}
+.dc-object small{font-size:12px;color:var(--ink-2);font-weight:500}.dc-object.selected{border:2px solid var(--accent);background:var(--accent-soft)}
+.dc-concept-link{border-left:2px dashed var(--line-3);margin-left:24px;padding:0 0 0 24px}.dc-concept-link>span{display:block;margin:0 0 10px;color:var(--ink-2);font-size:13px}
+.dc-related{border-top:1px solid var(--line);margin-top:28px;padding-top:14px}.dc-related h4{margin:0 0 10px}
+.dc-chips{display:flex;flex-wrap:wrap;gap:8px}.dc-chips button{font-size:13px;background:var(--panel-2);color:var(--accent);border:1px solid var(--line-3)}.dc-chips button:hover{background:var(--accent-soft)}
+.dc-er-tools{display:flex;flex-wrap:wrap;align-items:end;gap:12px}.dc-er-tools label{min-width:170px;flex:1}.dc-er-tools .dc-zoom{flex:0 0 100px;min-width:100px}
+.dc-graph-scroll{overflow:auto;padding:20px;margin:16px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.dc-er-svg{color:var(--ink-3);max-width:none}.dc-er-svg g{cursor:pointer}.dc-er-svg rect{fill:var(--panel);stroke:var(--line-3)}.dc-er-svg rect.selected{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.dc-er-svg text{fill:var(--ink);font:11px var(--sans)}.dc-er-svg text.dc-table-title{font-size:13px;font-weight:700}.dc-er-svg text.dc-table-code{fill:var(--ink-2);font:10px var(--mono)}.dc-er-svg g:focus{outline:none}.dc-er-svg g:focus rect{stroke:var(--accent);stroke-width:3}
+.dc-er h4{margin:20px 0 8px}.dc-er th,.dc-er td{font-size:13px;padding:10px}
+.dc-fk-list{display:flex;flex-direction:column;gap:8px}
+.dc-fk{display:grid;gap:2px;text-align:left;overflow-wrap:anywhere;padding:10px;background:var(--panel-2);color:var(--ink);border:1px solid var(--line);font-weight:500;min-height:44px}
+.dc-fk small{color:var(--ink-2);font:11.5px/1.6 var(--mono)}
+.dc-fk:hover{background:var(--panel-3)}
+.dc-muted,.dc-footer{font-size:12.5px;color:var(--ink-2);line-height:1.8}.dc-footer{padding:20px 0}
+.dc-files{margin:0 0 14px}.dc-files summary{cursor:pointer;color:var(--ink-2);font-size:13px;font-weight:700}.dc-files ul{margin:8px 0 0;padding-left:20px;display:grid;gap:4px}
+.dc-preview{min-width:0}.dc-preview fieldset{margin:0;padding:0;border:0;min-width:0}.dc-preview a{pointer-events:none}.dc-preview :disabled{opacity:1;color:var(--ink)}
+.dc button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(max-width:700px){.dc-header{display:block}.dc-header>button{margin-top:14px}.dc-controls{padding:14px}.dc-pane{padding:16px}.dc-pane-head{flex-wrap:wrap}.dc-concept-link{margin-left:12px;padding-left:16px}.dc-er-tools label{flex:1 1 100%}.dc-er-tools .dc-zoom{flex:1 1 100%}}

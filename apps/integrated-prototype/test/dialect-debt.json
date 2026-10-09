@@ -1,0 +1,55 @@
+{
+ "note": "返すべき借り。docs/rules/dialect.md に反している SQLite の方言の形の数（ファイルごと）。直したら減らす。足してはいけない（別のファイルへ動かしただけなら、PR の差分で合計が増えていないことを見せる）",
+ "glob": {
+  "migrations/0001_initial.sql": 17,
+  "migrations/0002_ux_extensions.sql": 4,
+  "migrations/0003_royalty_committee.sql": 20,
+  "migrations/0004_eigyo_sales_sheet.sql": 35,
+  "migrations/0005_sales_proposals.sql": 5,
+  "migrations/0007_pl_bs.sql": 9,
+  "migrations/0008_broadcast_proposal_drafts.sql": 4,
+  "migrations/0009_req5_master_extensions.sql": 1,
+  "migrations/0010_req6_expenses.sql": 7,
+  "src/broadcast.sql": 1,
+  "src/broadcast/proposal-drafts.sql": 4,
+  "src/committee/committee-extras.sql": 1,
+  "src/expense-accounting/expense-accounting.sql": 1,
+  "src/expense-sheet/expense-sheet.sql": 6,
+  "src/master-extensions/product-master.sql": 1,
+  "src/mg.sql": 3,
+  "src/pl-bs/pl-bs.sql": 9,
+  "src/progress/expected-reports.sql": 2,
+  "src/report-issuance.sql": 1,
+  "src/rights-payments.sql": 1,
+  "src/royalty/royalty.sql": 19,
+  "src/sales-ops/partner-lists.sql": 10,
+  "src/sales-ops/proposal-profiles.sql": 5,
+  "src/sales-ops/release-windows.sql": 17,
+  "src/sales-sheet/sales-sheet.sql": 8,
+  "src/schema.sql": 12,
+  "src/ux-extensions.sql": 1
+ },
+ "typeof": {
+  "migrations/0004_eigyo_sales_sheet.sql": 2,
+  "src/sales-sheet/sales-sheet.sql": 2
+ },
+ "insertOr": {
+  "migrations/0004_eigyo_sales_sheet.sql": 3,
+  "src/channel-sales.sql": 1,
+  "src/reporting.sql": 1,
+  "src/sales-ops/distribution-additions.sql": 2,
+  "src/sales-ops/partner-lists.sql": 1,
+  "src/schema.sql": 12
+ },
+ "upsertBare": {},
+ "lastInsertRowid": {},
+ "sqliteMaster": {
+  "src/admin/er-routes.mjs": 3,
+  "src/committee-channel-migration.mjs": 2,
+  "src/local-migrations.mjs": 4,
+  "src/mg-migration.mjs": 1
+ },
+ "errorText": {
+  "src/data-platform/db-errors.mjs": 3
+ }
+}

@@ -1,0 +1,67 @@
+/* 売上集計シート（83列）。色は styles.css のトークンだけを使う（ライト・ダークはトークン側で切り替わる）。 */
+.ss-sheet { min-width: 0; display: grid; gap: 12px; }
+/* 格子の子は中身（横に長い表）の幅で広がらないようにする（ページが横にはみ出さない） */
+.ss-sheet > *, .ss-detail > *, .ss-admin > * { min-width: 0; }
+.ss-admin-table { max-width: 100%; }
+.ss-embedded { border: 0; padding: 0; box-shadow: none; background: transparent; }
+.ss-embedded h3 { margin: 0 0 4px; }
+.ss-sheet .rw-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 12px; }
+.ss-sheet .rw-filters .on-field { min-width: 9em; flex: 0 1 12em; }
+.ss-sheet .rw-q { display: flex; align-items: flex-end; gap: 6px; flex: 1 1 18em; }
+.ss-sheet .rw-q .on-field { flex: 1 1 auto; }
+.ss-sheet .rw-q button { min-height: 38px; }
+.ss-sheet .rw-link-button { display: inline-flex; align-items: center; min-height: 38px; padding: 0 12px; border: 1px solid var(--line-3); border-radius: var(--radius);
+  background: var(--panel); color: var(--accent); font-weight: 700; text-decoration: none; }
+.ss-sheet .rw-link-button:hover { background: var(--panel-2); }
+.ss-sheet .rw-link-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ss-sheet .rw-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 14px; color: var(--ink-2); font-size: 13px; }
+.ss-sheet .rw-pager button { min-height: 38px; }
+.ss-check { min-height: 38px; display: inline-flex; align-items: center; gap: 6px; }
+
+.ss-sets { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.ss-sets-label { font-size: 13px; font-weight: 700; color: var(--ink-2); margin-right: 4px; }
+.ss-sets button { min-height: 34px; padding: 0 10px; font-size: 13px; }
+.ss-chip { display: inline-flex; align-items: center; padding: 2px 8px; border: 1px solid var(--line-2); border-radius: 999px; background: var(--panel-2); color: var(--ink-2); font-size: 12.5px; }
+
+.ss-views > summary, .ss-admin > summary, .ss-all > summary { cursor: pointer; font-weight: 700; color: var(--accent); padding: 4px 0; }
+.ss-views { display: block; min-width: 0; }
+.ss-views > * + * { margin-top: 8px; }
+.ss-admin { display: block; min-width: 0; }
+.ss-admin > * + * { margin-top: 10px; }
+.ss-admin-table { overflow: auto; max-height: 50vh; border: 1px solid var(--line); border-radius: var(--radius); }
+.ss-inactive td { color: var(--ink-3); }
+
+/* 行の下に開く詳細 */
+.ss-detail { display: grid; gap: 12px; }
+.ss-detail-head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 0; font-size: 13.5px; }
+.ss-edit { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+.ss-edit h4 { margin: 0; font-size: 14px; }
+.ss-edit p { margin: 0; }
+.ss-edit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(14em, 1fr)); gap: 8px 12px; align-items: end; }
+.ss-edit-actions { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 12px; }
+.ss-edit-actions .on-field { flex: 1 1 18em; }
+.ss-edit-actions button { min-height: 38px; }
+.ss-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(22em, 1fr)); gap: 12px; }
+.ss-values { display: grid; grid-template-columns: repeat(auto-fill, minmax(16em, 1fr)); gap: 4px 16px; margin: 8px 0; }
+.ss-values .ss-values-group { grid-column: 1 / -1; font-weight: 700; color: var(--ink-2); border-bottom: 1px solid var(--line); padding-bottom: 2px; }
+.ss-values div { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px dashed var(--line); padding: 2px 0; font-size: 13px; }
+.ss-values dt { color: var(--ink-2); }
+.ss-values dd { margin: 0; font-variant-numeric: tabular-nums; text-align: right; }
+.ss-history { border-collapse: collapse; width: 100%; font-size: 13px; }
+.ss-history th, .ss-history td { border-bottom: 1px solid var(--line); padding: 4px 8px; text-align: left; vertical-align: top; }
+.ss-history thead th { position: sticky; top: 0; background: var(--panel-2); }
+
+@media (max-width: 640px) {
+  .ss-sheet .rw-filters .on-field { flex: 1 1 100%; }
+  .ss-sheet .rw-q { flex-basis: 100%; }
+  .ss-two { grid-template-columns: 1fr; }
+  .ss-sheet .so-head .so-actions { width: 100%; }
+}
+
+/* 未採用の組織の案内・データのある最新の年度 */
+.ss-initial > summary { cursor: pointer; font-weight: 700; color: var(--accent); padding: 4px 0; }
+.ss-initial .ss-admin-table { max-height: 40vh; margin-top: 6px; }
+.ss-elsewhere { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.ss-elsewhere p { margin: 0; }
+.ss-latest { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 10px 12px; border: 1px solid var(--line-2); border-left: 3px solid var(--accent); border-radius: var(--radius); background: var(--panel-2); font-size: 13.5px; }
+.ss-latest button { min-height: 34px; }

@@ -1,0 +1,98 @@
+{
+ "note": "試験の二重化（PG 計画 段1・香盤表 #11）。npm run test:pg は pending と sqliteOnly を除いた全試験を ON_TEST_DB=pg で流す。pending は PostgreSQL でまだ落ちる本と原因の札（test/pg-matrix.mjs の PENDING_CAUSES）で、直したら減らすだけ（test/test-rules.test.mjs の PENDING_CEILING）。sqliteOnly は SQLite そのもの（D1 の束ねの模擬を含む）を確かめる本と理由",
+ "pending": [],
+ "sqliteOnly": [
+  {
+   "file": "app-sqlite.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。SQLite のファイルに書いた入力が、LocalDatabase で開き直しても残る（ファイルの SQLite を2回開く）。app の1件を PR7 で分けた"
+  },
+  {
+   "file": "channel-sales-model.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。SQLite の表の定義の当て直しと移行の形を確かめる"
+  },
+  {
+   "file": "cloud-analytics-pg.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。自前で SQLite と PostgreSQL の両方を開いて比べる（すでに両方の DB で流れる）"
+  },
+  {
+   "file": "cloud-analytics-sqlite.test.mjs",
+   "reason": "D1 の束ねの模擬（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。D1 の束ねを node:sqlite で模し、本番の入口（R2BackedD1Database）が素の batch を1回だけ呼び LocalDatabase と同じ写しになることと、SQLite のファイルを2つの接続で開き node:sqlite の prepare を差し替えて抽出の途中に書き込みを挟む。cloud-analytics の2件を PR7 で分けた。R2 の層を試験の DB の入口にかぶせた写しは 2026-10-04 から本体が両方の DB で確かめる"
+  },
+  {
+   "file": "db-docs.test.mjs",
+   "reason": "SQLite そのものを確かめる（SQLite の表の定義から文書を作る scripts/build-db-docs.mjs の試験。plan() が openSchema() で SQLite を開く。段4で PostgreSQL の DDL から作る形に変えるときに片づける）"
+  },
+  {
+   "file": "fictional-committee-sqlite.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。スクリプト（scripts/seed-fictional-committee.mjs）が SQLite のファイルに作った架空の委員会を閉じて開き直し、記録と計算・出力・権限が残ることを確かめる（ファイルの SQLite を2回開く。fictional-committee の1件を PR6 で分けた。同じ照合は本体が両方の DB で確かめる）"
+  },
+  {
+   "file": "mg-migration-sqlite.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。SQLite の表（mg_version_phases）を古い CHECK で作り直し、node:sqlite の接続に SQLite だけの移行（migrateMgCloseDays）を当てて行が変わらないことを確かめる。mg-migration を PR7 で名前を変えた"
+  },
+  {
+   "file": "migrations.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。D1・SQLite の移行（migrations/）を当てて確かめる"
+  },
+  {
+   "file": "money-rules.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。SQLite の DDL の金額の型・CHECK を確かめる"
+  },
+  {
+   "file": "pg-db.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。自前で SQLite と PostgreSQL の両方を開いて比べる（すでに両方の DB で流れる）"
+  },
+  {
+   "file": "pg-ddl.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。SQLite の移行と生成した PostgreSQL の DDL を自前で開いて比べる"
+  },
+  {
+   "file": "pg-local-seed.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。SQLite の試作の行とファクトリの PostgreSQL の土台を自前で開いて比べる（すでに両方の DB で流れる）"
+  },
+  {
+   "file": "production-plans-sqlite.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。LocalDatabase が当てる SQLite の DDL（productionSql）を、表を消した SQLite の DB に2回当て直しても既存の行が変わらない。production-plans の1件を PR7 で分けた（表の外部キー・CHECK の拒否は本体が両方の DB で確かめる）"
+  },
+  {
+   "file": "report-completion-sqlite.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。古い表の定義（放送の無い CHECK）の SQLite のファイルに migrateCommitteeChannels（sqlite_master を読む SQLite だけの移行）を当て、sqlite_master・rowid・PRAGMA で前後を比べて開き直す（report-completion の1件を PR6 で分けた）"
+  },
+  {
+   "file": "reporting-migration.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。SQLite の古い表からの移行を確かめる"
+  },
+  {
+   "file": "req5-admin-visibility-sqlite.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。node:sqlite に架空の215表を作り、手元・D1 の束ねの模擬の上の D1・R2 退避の D1 の入口で sqlite_master と PRAGMA の表値関数から表の定義を読む（3問い合わせ・表別 PRAGMA への切替・値100個の上限・引用符つきの表名）。req5-admin-visibility の4種を PR7 で分けた（PostgreSQL のカタログは admin-er-model、実際の表での見え方は本体が両方の DB で確かめる）"
+  },
+  {
+   "file": "req5-master-integration-sqlite.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。移行の 0001〜0008 を当てた node:sqlite に 0009 を足し、既存の行・sqlite_master の数・PRAGMA foreign_key_check を確かめる。req5-master-integration の1件を PR7 で分けた"
+  },
+  {
+   "file": "req6-expense-schema.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。SQLite の表の定義・トリガーを直接確かめる"
+  },
+  {
+   "file": "royalty-review-fixes-sqlite.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。F10: SQLite の INSERT OR REPLACE（衝突した行を消して入れ直す）を表のトリガーが止める（PostgreSQL に INSERT OR REPLACE は無い）。royalty-review-fixes の2件を PR6 で分けた。F8（D1 の束ねの模擬の上の明細480行）は 2026-10-04 に R2 の層を試験の DB の入口にかぶせて本体へ戻した"
+  },
+  {
+   "file": "seed-record-replay.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。SQLite の書き込みの記録と再生を確かめる"
+  },
+  {
+   "file": "seed-record-to-sql.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。SQLite の書き込みの記録を D1 に当てる SQL にする形を確かめる"
+  },
+  {
+   "file": "source-controls.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。SQLite の表の定義の当て直しを確かめる"
+  },
+  {
+   "file": "ux-migration.test.mjs",
+   "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。SQLite の移行（0002）の連結を確かめる"
+  }
+ ]
+}

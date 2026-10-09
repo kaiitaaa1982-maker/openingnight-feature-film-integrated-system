@@ -1,0 +1,71 @@
+/* 全作品のウィンドウ（営業基幹）。色は styles.css のトークンだけを使う（ライト・ダークはトークン側で切り替わる）。 */
+.rw-grid { min-width: 0; }
+.rw-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 12px; }
+.rw-filters .on-field { min-width: 9em; flex: 0 1 12em; }
+.rw-q { display: flex; align-items: flex-end; gap: 6px; flex: 1 1 18em; }
+.rw-q .on-field { flex: 1 1 auto; }
+.rw-q button, .rw-filters > button { min-height: 38px; }
+.rw-warn-only { min-height: 38px; }
+.rw-view { display: inline-flex; gap: 0; border: 1px solid var(--line-3); border-radius: var(--radius); overflow: hidden; }
+.rw-view button { min-height: 36px; border: 0; border-radius: 0; padding: 0 12px; }
+.rw-view button + button { border-left: 1px solid var(--line-3); }
+.rw-link-button { display: inline-flex; align-items: center; min-height: 38px; padding: 0 12px; border: 1px solid var(--line-3); border-radius: var(--radius);
+  background: var(--panel); color: var(--accent); font-weight: 700; text-decoration: none; }
+.rw-link-button:hover { background: var(--panel-2); }
+.rw-link-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* 状態（色＋文字） */
+.rw-state { display: inline-flex; align-items: center; padding: 0 6px; border: 1px solid var(--line-2); border-radius: 6px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.rw-state-ok { border-color: var(--ok); background: var(--ok-soft); color: var(--ok); }
+.rw-state-info { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.rw-state-muted { color: var(--ink-3); text-decoration: line-through; }
+.rw-state-none { color: var(--ink-3); border-style: dashed; }
+
+/* 日付のセル（押すと版の履歴を開く） */
+.rw-cell { display: inline-flex; align-items: center; gap: 4px; min-height: 28px; padding: 0 4px; border: 0; border-radius: 4px; background: transparent;
+  color: var(--ink); font: inherit; font-variant-numeric: tabular-nums; text-align: left; cursor: pointer; }
+.rw-cell:hover { background: var(--panel-2); text-decoration: underline; }
+.rw-cell:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.rw-cell small { padding: 0 4px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); font-size: 11px; font-weight: 700; }
+.rw-cell-none { color: var(--ink-3); }
+.rw-cell-muted span { color: var(--ink-3); text-decoration: line-through; }
+.rw-cell-muted small { background: var(--panel-3); color: var(--ink-2); }
+.rw-cell-warn { color: var(--warn); font-weight: 700; }
+.rw-warn-mark { color: var(--warn); font-weight: 700; }
+.rw-warn-text { color: var(--warn); font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+.rw-work { font-weight: 700; }
+
+.rw-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 14px; color: var(--ink-2); font-size: 13px; }
+.rw-pager button { min-height: 38px; }
+
+/* 行の下に開く詳細（種別の選択・版の履歴・新しい版） */
+.rw-detail { display: grid; gap: 12px; }
+.rw-type-picker { display: flex; flex-wrap: wrap; gap: 6px; }
+.rw-type-button { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 10px; font-size: 13px; }
+.rw-type-button.is-selected { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.rw-history { display: grid; gap: 10px; }
+.rw-history-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.rw-history-head h4 { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.rw-history-head small { color: var(--ink-2); font-weight: 400; font-size: 12.5px; }
+.rw-editor { display: grid; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+.rw-editor h5 { margin: 0; font-size: 14px; }
+.rw-editor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(13em, 1fr)); gap: 8px 12px; align-items: end; }
+.rw-editor-action { display: flex; align-items: flex-end; }
+.rw-editor-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.rw-editor-buttons button, .rw-editor-action button { min-height: 38px; }
+
+/* ページ（取込・種別） */
+.rw-section { display: grid; gap: 12px; }
+.rw-section h3 { margin: 0; }
+.rw-upload { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.rw-types > summary { cursor: pointer; font-weight: 700; color: var(--accent); padding: 4px 0; }
+.rw-type-form { display: grid; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel-2); }
+.rw-type-form fieldset { display: grid; gap: 8px; border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 12px; }
+.rw-type-form legend { font-size: 13px; font-weight: 700; color: var(--ink-2); padding: 0 4px; }
+.rw-field-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(10em, 1fr)); gap: 8px; align-items: end; }
+
+@media (max-width: 640px) {
+  .rw-filters .on-field { flex: 1 1 100%; }
+  .rw-q { flex-basis: 100%; }
+  .so-head .so-actions { width: 100%; }
+}

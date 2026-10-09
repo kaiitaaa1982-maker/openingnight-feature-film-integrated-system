@@ -1,0 +1,108 @@
+/* 請求・入金・税の画面（Billing.jsx・TaxLedger.jsx・billing/ReceiptForm.jsx）。色は :root のトークンだけを使う。 */
+
+/* ---- 税計算（請求の作成・税計算台帳） ---- */
+.tax-ledger,.tax-invoice{min-width:0}
+.tax-ledger td small{display:block;color:var(--ink-3);margin-top:4px}
+.tax-invoice .table-wrap{max-height:440px;overflow:auto}
+.tax-invoice fieldset{border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:0 0 18px;min-width:0}
+.tax-invoice legend{font-weight:700;padding:0 6px}
+.tax-bulk{display:flex;gap:12px;align-items:end;margin:12px 0;flex-wrap:wrap}
+.tax-preview{border:1px solid var(--accent);background:var(--accent-soft);border-radius:var(--radius);padding:18px;margin:16px 0;color:var(--ink)}
+.tax-preview pre,.tax-audit{white-space:pre-wrap;overflow-wrap:anywhere;max-height:480px;overflow:auto;font-size:12px}
+.tax-ledger details{margin-top:12px}
+.tax-ledger summary,.tax-invoice summary{cursor:pointer;font-weight:700}
+.tax-audit-meta{display:grid;grid-template-columns:minmax(130px,1fr) 3fr;gap:10px;margin:12px 0}
+.tax-audit-meta dt{color:var(--ink-3)}
+.tax-audit-meta dd{margin:0;overflow-wrap:anywhere}
+.tax-blockers{margin:10px 0 0;padding:10px 12px 10px 28px;border-left:3px solid var(--warn);background:var(--warn-soft);color:var(--ink);font-size:13px;border-radius:0 var(--radius) var(--radius) 0}
+.tax-blockers li+li{margin-top:6px}
+.tax-blockers button{margin-left:8px;min-height:30px;padding:0 10px}
+.tax-calc-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px}
+.tax-candidate-meta{color:var(--ink-3);font-size:12px}
+.tax-rule-form{display:grid;gap:12px}
+
+/* ---- 状態の札（色＋文字。色だけに頼らない） ---- */
+.bl-state{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;background:var(--panel-3);color:var(--ink-2);font-size:12px;font-weight:600;white-space:nowrap;line-height:1.6}
+.bl-state.is-ok{background:var(--ok-soft);color:var(--ok)}
+.bl-state.is-warn{background:var(--warn-soft);color:var(--ink)}
+.bl-state.is-bad{background:var(--bad-soft);color:var(--bad)}
+.bl-state.is-info{background:var(--accent-soft);color:var(--accent)}
+
+/* ---- 請求・入金（Billing.jsx） ---- */
+.bl-links{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.billing .section-head>button,.tax-ledger .section-head>button{flex:0 0 auto;white-space:nowrap}
+.bl-links>span{color:var(--ink-3);font-size:12px}
+.bl-links button{min-height:34px;padding:0 12px}
+.bl-row-actions{display:flex;flex-wrap:nowrap;gap:6px}
+.bl-row-actions button{min-height:30px;padding:0 10px;font-size:12.5px;white-space:nowrap}
+.bl-detail{display:grid;gap:14px;padding:6px 2px 10px;min-width:0;white-space:normal;text-align:left}
+.bl-detail-frame{position:sticky;left:16px;box-sizing:border-box;max-width:100%}
+.bl-detail h4{margin:0;font-size:14px}
+.bl-detail-meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0;color:var(--ink-2);font-size:13px}
+.bl-detail-meta div{display:flex;gap:6px}
+.bl-detail-meta dt{color:var(--ink-3)}
+.bl-detail-meta dd{margin:0}
+.bl-actions{display:flex;flex-wrap:wrap;gap:8px}
+.bl-preview{display:grid;gap:8px}
+.bl-preview iframe{min-height:560px}
+.bl-cancel-form{display:grid;gap:12px;padding:14px;border:1px solid var(--warn);border-radius:var(--radius);background:var(--panel)}
+.bl-cancel-form h4{margin:0}
+.bl-table-wrap{overflow:auto;max-width:100%}
+.bl-table{border-collapse:collapse;min-width:100%;font-size:13px}
+.bl-table caption{text-align:left;font-weight:700;padding:0 0 6px}
+.bl-table th,.bl-table td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.bl-table thead th{background:var(--panel-3);color:var(--ink-2);font-weight:600;white-space:nowrap}
+.bl-table .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bl-table tfoot th,.bl-table tfoot td{font-weight:700;background:var(--panel-2)}
+.bl-table button{min-height:30px;padding:0 10px;font-size:12.5px}
+.bl-pre{white-space:pre-wrap;overflow-wrap:anywhere}
+.bl-fold>summary{cursor:pointer;font-weight:700;padding:4px 0}
+.bl-fold[open]>summary{margin-bottom:12px}
+
+/* ---- 入金の登録（billing/ReceiptForm.jsx） ---- */
+.bl-receipt{display:grid;gap:14px;min-width:0;padding:16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel)}
+.bl-receipt-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.bl-receipt-head h3{margin:0;font-size:16px}
+.bl-receipt-head button{flex:0 0 auto;white-space:nowrap}
+.bl-alloc{display:grid;gap:10px;margin:0;padding:12px;border:1px solid var(--line);border-radius:var(--radius);min-width:0}
+.bl-alloc legend{font-weight:700;padding:0 6px}
+.bl-alloc-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.bl-alloc-tools .rp-muted{font-size:12.5px}
+.bl-alloc-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.bl-alloc-item{display:grid;grid-template-columns:minmax(180px,1.1fr) minmax(220px,1.4fr) minmax(200px,1fr);gap:8px 14px;align-items:start;padding:10px 12px;border:1px solid var(--line-2);border-radius:var(--radius);background:var(--panel-2)}
+.bl-alloc-item.is-selected{border-color:var(--accent)}
+.bl-alloc-item.is-disabled .bl-alloc-pick strong{color:var(--ink-2)}
+.bl-alloc-pick{display:flex;gap:10px;align-items:flex-start;cursor:pointer;min-width:0}
+.bl-alloc-pick input{width:auto;min-height:0;margin-top:4px;flex:0 0 auto}
+.bl-alloc-pick span{display:grid;gap:2px;min-width:0;overflow-wrap:anywhere}
+.bl-alloc-pick small{color:var(--ink-3);font-size:12px}
+.bl-alloc-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0}
+.bl-alloc-nums div{display:grid;gap:2px;min-width:0}
+.bl-alloc-nums dt{color:var(--ink-3);font-size:11px}
+.bl-alloc-nums dd{margin:0;text-align:left}
+.bl-alloc-reason{grid-column:1/-1;margin:0}
+.bl-receipt-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
+.bl-receipt-sum>div{display:grid;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.bl-receipt-sum span,.bl-receipt-sum small{color:var(--ink-3);font-size:12px}
+.bl-receipt-sum strong{font-size:18px;text-align:left}
+.bl-receipt-sum>div.is-ok{border-color:var(--ok)}
+.bl-receipt-sum>div.is-ok small{color:var(--ok);font-weight:600}
+.bl-receipt-sum>div.is-warn{border-color:var(--warn);background:var(--warn-soft)}
+.bl-receipt-sum>div.is-warn small{color:var(--ink);font-weight:600}
+.bl-dup-list{margin:6px 0 0;padding-left:18px}
+.bl-confirm{display:grid;gap:12px}
+.bl-confirm-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px 16px;margin:0}
+.bl-confirm-meta div{display:grid;gap:2px;min-width:0}
+.bl-confirm-meta .is-wide{grid-column:1/-1}
+.bl-confirm-meta dt{color:var(--ink-3);font-size:12px}
+.bl-confirm-meta dd{margin:0;font-weight:600;text-align:left;overflow-wrap:anywhere}
+
+@media(max-width:760px){
+  .tax-bulk{align-items:stretch;flex-direction:column}
+  .tax-preview{padding:10px}
+  .tax-audit-meta{grid-template-columns:1fr;gap:6px}
+  .tax-audit-meta dd{margin-bottom:10px}
+  .bl-alloc-item{grid-template-columns:1fr}
+  .bl-receipt{padding:12px}
+  .bl-row-actions{flex-wrap:wrap}
+}

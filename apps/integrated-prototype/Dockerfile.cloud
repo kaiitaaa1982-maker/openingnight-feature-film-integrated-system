@@ -1,0 +1,16 @@
+FROM node:24-bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-pip python3-venv && rm -rf /var/lib/apt/lists/*
+WORKDIR /app/apps/integrated-prototype
+COPY apps/integrated-prototype/package.json apps/integrated-prototype/package-lock.json ./
+RUN npm ci --omit=dev --ignore-scripts
+COPY apps/integrated-prototype/requirements-cloud.txt ./
+RUN python3 -m venv /opt/venv && /opt/venv/bin/pip install --no-cache-dir -r requirements-cloud.txt
+ENV PATH="/opt/venv/bin:${PATH}"
+COPY apps/integrated-prototype/src ./src
+COPY apps/integrated-prototype/scripts/export-workbench-snapshot.mjs apps/integrated-prototype/scripts/cloud-snapshot-materialize.mjs ./scripts/
+COPY apps/integrated-prototype/python/cloud_entrypoint.py apps/integrated-prototype/python/cloud_extract_server.py apps/integrated-prototype/python/cloud_analytics.py apps/integrated-prototype/python/extract_document.py ./python/
+COPY analytics-poc/run_workbench_snapshot.py /app/analytics-poc/run_workbench_snapshot.py
+COPY analytics-poc/dbt /app/analytics-poc/dbt
+ENV CLOUD_ANALYTICS_NODE=/usr/local/bin/node
+EXPOSE 8080
+CMD ["python3","/app/apps/integrated-prototype/python/cloud_entrypoint.py"]

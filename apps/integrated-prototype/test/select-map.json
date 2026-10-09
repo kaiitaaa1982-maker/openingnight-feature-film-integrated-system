@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "pathBase": "core",
+  "routes": [],
+  "inputs": [
+    {
+      "pattern": "apps/integrated-prototype/migrations/**",
+      "tests": [
+        "apps/integrated-prototype/test/*.test.mjs"
+      ],
+      "reason": "SQL ? DB ?????????R3 ???????"
+    },
+    {
+      "pattern": "apps/integrated-prototype/src/*.sql",
+      "tests": [
+        "apps/integrated-prototype/test/*.test.mjs"
+      ],
+      "reason": "SQL ? DB ?????????R3 ???????"
+    },
+    {
+      "pattern": "apps/integrated-prototype/src/**/*.sql",
+      "tests": [
+        "apps/integrated-prototype/test/*.test.mjs"
+      ],
+      "reason": "SQL ? DB ?????????R3 ???????"
+    },
+    {
+      "pattern": "apps/integrated-prototype/pg/**",
+      "tests": [
+        "apps/integrated-prototype/test/*.test.mjs"
+      ],
+      "reason": "SQL ? DB ?????????R3 ???????"
+    },
+    {
+      "pattern": "apps/integrated-prototype/docs/rules/**",
+      "tests": [
+        "apps/integrated-prototype/test/*-rules.test.mjs",
+        "apps/integrated-prototype/test/requirements-trace.test.mjs",
+        "apps/integrated-prototype/test/select-tests.test.mjs",
+        "scripts/ops/agents-map.test.mjs",
+        "scripts/ops/rules-sync.test.mjs"
+      ],
+      "reason": "import ????????????????"
+    },
+    {
+      "pattern": "apps/integrated-prototype/docs/requirements/**",
+      "tests": [
+        "apps/integrated-prototype/test/*-rules.test.mjs",
+        "apps/integrated-prototype/test/requirements-trace.test.mjs",
+        "apps/integrated-prototype/test/select-tests.test.mjs",
+        "scripts/ops/agents-map.test.mjs",
+        "scripts/ops/rules-sync.test.mjs"
+      ],
+      "reason": "import ????????????????"
+    },
+    {
+      "pattern": "apps/integrated-prototype/AGENTS.md",
+      "tests": [
+        "apps/integrated-prototype/test/*-rules.test.mjs",
+        "apps/integrated-prototype/test/requirements-trace.test.mjs",
+        "apps/integrated-prototype/test/select-tests.test.mjs",
+        "scripts/ops/agents-map.test.mjs",
+        "scripts/ops/rules-sync.test.mjs"
+      ],
+      "reason": "import ????????????????"
+    },
+    {
+      "pattern": "apps/integrated-prototype/test/*-debt.json",
+      "tests": [
+        "apps/integrated-prototype/test/*-rules.test.mjs",
+        "apps/integrated-prototype/test/requirements-trace.test.mjs",
+        "apps/integrated-prototype/test/select-tests.test.mjs",
+        "scripts/ops/agents-map.test.mjs",
+        "scripts/ops/rules-sync.test.mjs"
+      ],
+      "reason": "import ????????????????"
+    },
+    {
+      "pattern": "apps/integrated-prototype/test/pg-matrix.json",
+      "tests": [
+        "apps/integrated-prototype/test/*-rules.test.mjs",
+        "apps/integrated-prototype/test/requirements-trace.test.mjs",
+        "apps/integrated-prototype/test/select-tests.test.mjs",
+        "scripts/ops/agents-map.test.mjs",
+        "scripts/ops/rules-sync.test.mjs"
+      ],
+      "reason": "import ????????????????"
+    },
+    {
+      "pattern": "apps/integrated-prototype/test/always-run.json",
+      "tests": [
+        "apps/integrated-prototype/test/*-rules.test.mjs",
+        "apps/integrated-prototype/test/requirements-trace.test.mjs",
+        "apps/integrated-prototype/test/select-tests.test.mjs",
+        "scripts/ops/agents-map.test.mjs",
+        "scripts/ops/rules-sync.test.mjs"
+      ],
+      "reason": "import ????????????????"
+    },
+    {
+      "pattern": "apps/integrated-prototype/test/select-map.json",
+      "tests": [
+        "apps/integrated-prototype/test/*-rules.test.mjs",
+        "apps/integrated-prototype/test/requirements-trace.test.mjs",
+        "apps/integrated-prototype/test/select-tests.test.mjs",
+        "scripts/ops/agents-map.test.mjs",
+        "scripts/ops/rules-sync.test.mjs"
+      ],
+      "reason": "import ????????????????"
+    },
+    {
+      "pattern": "apps/integrated-prototype/migration-manifest.json",
+      "tests": [
+        "apps/integrated-prototype/test/*-rules.test.mjs",
+        "apps/integrated-prototype/test/requirements-trace.test.mjs",
+        "apps/integrated-prototype/test/select-tests.test.mjs",
+        "scripts/ops/agents-map.test.mjs",
+        "scripts/ops/rules-sync.test.mjs"
+      ],
+      "reason": "import ????????????????"
+    },
+    {
+      "pattern": "AGENTS.md",
+      "tests": [
+        "apps/integrated-prototype/test/*-rules.test.mjs",
+        "apps/integrated-prototype/test/requirements-trace.test.mjs",
+        "apps/integrated-prototype/test/select-tests.test.mjs",
+        "scripts/ops/agents-map.test.mjs",
+        "scripts/ops/rules-sync.test.mjs"
+      ],
+      "reason": "core ?????????"
+    },
+    {
+      "pattern": ".claude/rules/**",
+      "tests": [
+        "apps/integrated-prototype/test/*-rules.test.mjs",
+        "apps/integrated-prototype/test/requirements-trace.test.mjs",
+        "apps/integrated-prototype/test/select-tests.test.mjs",
+        "scripts/ops/agents-map.test.mjs",
+        "scripts/ops/rules-sync.test.mjs"
+      ],
+      "reason": "core ?????????"
+    }
+  ]
+}

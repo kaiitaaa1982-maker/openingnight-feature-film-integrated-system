@@ -1,0 +1,2 @@
+# Names only. Supply environment-specific values locally; never commit real values.
+CONTAINER_SHARED_TOKEN=change-me

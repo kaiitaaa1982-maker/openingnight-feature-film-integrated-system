@@ -1,0 +1,32 @@
+/* 取引先別の配信・販売リスト（営業基幹）。色は styles.css のトークンだけを使う（ライト・ダークはトークン側で切り替わる）。
+   状態・重なりは色だけでなく文字（「独占どうし」「注意」・状態名）でも出す。 */
+.pl-head { gap: 8px; }
+.rw-filters .on-field.pl-partner { flex: 1 1 28em; max-width: 40em; }
+.pl-kind { margin-left: 8px; padding: 0 6px; border: 1px solid var(--line-2); border-radius: 6px; color: var(--ink-2); font-size: 12px; font-weight: 400; white-space: nowrap; }
+.rw-type-button .pl-kind { margin-left: 0; }
+.rw-state-warn { border-color: var(--warn); background: var(--warn-soft); color: var(--warn); }
+.pl-excl-text { color: var(--bad); font-weight: 700; white-space: nowrap; }
+.pl-mode { display: inline-flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; margin: 0; padding: 4px 10px; border: 1px solid var(--line); border-radius: var(--radius); }
+.pl-mode legend { padding: 0 4px; color: var(--ink-2); font-size: 12.5px; }
+.pl-mode label { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; white-space: nowrap; }
+.pl-mode input { width: 18px; height: 18px; min-height: 0; margin: 0; padding: 0; flex: 0 0 auto; }
+.pl-form { background: var(--panel-2); }
+
+/* 作品×取引先のセル（契約期間）。赤＝独占どうしの重なり、黄＝そのほかの重なり、点線＝予定 */
+.pl-cell-list { display: grid; gap: 4px; }
+.pl-cell { display: inline-flex; flex-direction: column; gap: 0; padding: 2px 6px; border: 1px solid var(--line-2); border-radius: 6px; background: var(--panel);
+  font-variant-numeric: tabular-nums; white-space: nowrap; line-height: 1.35; }
+.pl-cell small { color: var(--ink-2); font-size: 11.5px; }
+.pl-cell-exclusive { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); font-weight: 700; }
+.pl-cell-exclusive small { color: var(--bad); }
+.pl-cell-caution { border-color: var(--warn); background: var(--warn-soft); color: var(--warn); }
+.pl-cell-caution small { color: var(--warn); }
+.pl-cell-planned { border-style: dashed; }
+.pl-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0; color: var(--ink-2); font-size: 12.5px; }
+.pl-legend .pl-cell { display: inline-flex; flex-direction: row; padding: 0 6px; }
+.pl-reason-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; }
+.pl-reason-form .on-field { flex: 1 1 20em; }
+.pl-upload-file { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+/* 行の詳細に入れ子にした版の履歴は、外側の詳細の折り返し（white-space: normal）を受けずに1行で出す */
+.dg-detail .pl-history .dg-table td, .dg-detail .pl-history .dg-table th { white-space: nowrap; }
+.dg-detail .pl-history .dg-table td.dg-wrap { white-space: pre-wrap; }

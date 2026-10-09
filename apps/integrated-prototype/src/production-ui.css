@@ -1,0 +1,95 @@
+.production-workspace{--prod-ink:var(--ink);--prod-line:var(--line);--prod-soft:var(--panel-2);color:var(--prod-ink)}
+.production-workspace .production-head{display:flex;justify-content:space-between;align-items:center;gap:24px;border-top:4px solid var(--accent);padding:16px 20px}
+.production-workspace .production-head h2{margin:4px 0 6px;font-size:20px}.production-workspace .production-head p{margin:0;color:var(--ink-2)}.production-head .text{padding:0;text-decoration:underline}
+.production-save{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.production-save span{font-size:13px;color:var(--ink-2);margin-right:5px}.production-save .production-pending{color:var(--warn);font-weight:700}
+.production-daytabs{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 4px}
+.production-daytabs button{background:var(--panel);border:1px solid var(--prod-line);color:var(--prod-ink);padding:9px 14px;border-radius:8px;font-weight:700}
+.production-daytabs button.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.production-card{overflow:hidden}.production-card .section-head{margin-bottom:14px}.production-card h3{margin:0}
+.production-note{color:var(--ink-2);font-size:13px;margin:4px 0 10px}
+
+/* 表（香盤・シーン別衣装・移動予定）。is-sticky は見出し行と S# 列を固定する */
+.production-table-wrap{max-width:100%;overflow:auto;border:1px solid var(--prod-line);border-radius:8px}
+.production-table-wrap.is-sticky{max-height:min(72vh,760px)}
+.production-table-wrap table{border-collapse:separate;border-spacing:0;width:100%;min-width:680px;background:var(--panel);font-size:13px}
+.production-table-wrap th,.production-table-wrap td{border-bottom:1px solid var(--prod-line);padding:9px 10px;text-align:left;vertical-align:middle}
+.production-table-wrap thead th{position:sticky;top:0;z-index:3;background:var(--accent-soft);white-space:nowrap}
+.production-table-wrap tbody th,.production-table-wrap tfoot th{position:static;white-space:nowrap}
+.production-table-wrap th.production-sticky-col{position:sticky;left:0;top:auto;z-index:2;background:var(--panel);border-right:1px solid var(--prod-line)}
+.production-table-wrap thead th.production-sticky-col{top:0;z-index:4;background:var(--accent-soft)}
+.production-table-wrap tfoot td,.production-table-wrap tfoot th{background:var(--accent-soft);font-weight:800}
+.production-table-wrap .date-band th{background:var(--panel-3);padding:8px 10px;font-weight:800}
+.production-band-label{position:sticky;left:10px}
+.production-table-wrap .subtotal td,.production-table-wrap .subtotal th,.production-table-wrap .subtotal th.production-sticky-col,.production-table-wrap tfoot th.production-sticky-col{background:var(--accent-soft);font-weight:700}
+.production-table-wrap .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.production-table-wrap .production-wrap{white-space:normal;min-width:180px;overflow-wrap:anywhere}
+.production-matrix td:nth-child(3) input,.production-matrix td:last-child input{width:76px;min-width:0}.production-matrix select{min-width:128px;max-width:210px}.production-matrix small{display:block;color:var(--ink-2);font-size:11px}
+.production-matrix .cast-cell{text-align:center;min-width:44px;padding:0}.production-cast-head{text-align:center !important}
+.production-cast-hit{display:flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;cursor:pointer}
+.production-cast-hit input,.production-next input,.production-scenechecks input{width:20px;height:20px;min-height:0;margin:0;padding:0;accent-color:var(--accent)}
+.production-scene-open{min-height:32px;border:0;background:transparent;color:var(--accent);font-weight:800;text-decoration:underline;cursor:pointer;padding:2px}
+
+.production-inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.production-inline input,.production-inline select{min-width:180px;flex:1;max-width:360px}
+.production-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px}.production-mini,.production-look{border:1px solid var(--prod-line);border-radius:10px;background:var(--prod-soft);padding:14px;display:grid;gap:10px}
+.production-mini label,.production-look label,.production-location label,.production-assignment label{display:grid;gap:5px;font-size:12px;font-weight:700;color:var(--ink-2)}
+.production-mini input,.production-look input,.production-location input,.production-assignment input,.production-assignment select{width:100%;min-width:0}
+.production-timeline{border:1px solid var(--prod-line);border-radius:8px;overflow:hidden}
+.production-line{display:grid;grid-template-columns:36px minmax(160px,2fr) minmax(110px,1fr) 80px minmax(100px,1fr);gap:10px;padding:12px;border-bottom:1px solid var(--prod-line);align-items:center}.production-line:last-child{border-bottom:0}.production-line>span:first-child{font-weight:800;color:var(--accent)}.production-line small{color:var(--ink-2)}.production-line.interlude{background:var(--accent-soft)}
+.production-two{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px}.production-two h4{margin:0 0 4px}.production-two .production-mini{margin-top:10px;grid-template-columns:repeat(2,minmax(0,1fr))}.production-two .production-mini>button{grid-column:1/-1;justify-self:start}
+.production-call{display:grid;grid-template-columns:90px 1fr 1fr;align-items:start;gap:8px;margin:8px 0;padding-top:8px;border-top:1px solid var(--line-2)}.production-call>strong{padding-top:6px}
+.production-formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.production-formgrid label{display:grid;gap:4px;font-size:12px;font-weight:700;color:var(--ink-2)}.production-formgrid input{width:100%;min-width:0}
+.production-assignment{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;border:1px solid var(--prod-line);border-radius:8px;padding:12px;margin:12px 0}
+.production-assignment-no{grid-column:1/-1;font-weight:800;color:var(--accent)}.production-assignment-no::before{content:"撮影順 "}
+.production-assignment .production-actions{grid-column:1/-1}
+.production-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:end}
+
+/* 時刻（撮影日の時刻＋翌日） */
+.production-time{display:grid;gap:5px;min-width:0}
+.production-time-label{font-size:12px;font-weight:700;color:var(--ink-2)}
+.production-time-inputs{display:flex;align-items:center;gap:8px}
+.production-time-inputs input[type=time]{flex:1;min-width:0;width:auto}
+.production-next{display:inline-flex !important;align-items:center;gap:5px;min-height:42px;white-space:nowrap;font-size:13px;color:var(--ink)}
+.production-time-warn{color:var(--warn);font-size:12px;line-height:1.5}
+
+/* 出力（Excel・印刷） */
+.production-output{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.production-output-label{font-size:12px;font-weight:700;color:var(--ink-2)}
+.production-output-note{font-size:12px;color:var(--warn)}
+.production-output-row{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:6px}.production-output-row .production-output{margin:0}
+.production-scope{min-width:180px}
+
+.production-scenechecks{display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--prod-line);padding-top:10px}.production-scenechecks label{display:flex;align-items:center;gap:4px;min-height:32px}
+.production-lookhead,.production-location header{display:flex;justify-content:space-between;align-items:center;gap:10px}.production-lookhead strong{font-size:16px}
+.production-tag{display:inline-block;padding:4px 7px;border-radius:5px;margin:2px;background:var(--ok-soft);color:var(--ok)}.production-tag.missing{background:var(--bad-soft);color:var(--bad);font-weight:700}
+.production-location{padding:18px}.production-location header{margin-bottom:13px}.production-location header h3{margin:0}.production-location header span{font-size:12px;color:var(--ink-2)}.production-locationfoot{display:grid;gap:8px;margin-top:14px;font-size:13px}.production-locationfoot a{color:var(--accent);font-weight:700}
+.production-add{border:1px solid var(--line);border-radius:8px;padding:12px 16px;background:var(--panel)}.production-add summary{cursor:pointer;font-weight:600;min-height:32px}.production-add .card{border:0;margin-top:12px;padding:0;box-shadow:none}
+.production-locations{display:grid;gap:16px}.production-location-layout{display:grid;grid-template-columns:minmax(250px,1fr) minmax(340px,1.5fr);gap:22px;align-items:start}
+.production-location-links{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.production-location-links strong{margin-right:3px}.production-locationfoot>button{justify-self:start}
+.production-plan{--plan-blue:var(--accent);--plan-red:var(--bad);min-width:0}.production-plan h4{margin:0 0 6px}.production-plan-help,.production-plan-notice{font-size:12px;color:var(--ink-2);line-height:1.6;margin:6px 0 10px}
+.production-plan-tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:9px}.production-plan-tools button{min-height:40px;padding:7px 10px;display:inline-flex;align-items:center;gap:5px}.production-plan-tools button.selected{outline:2px solid var(--accent);outline-offset:-2px;background:var(--accent-soft);color:var(--ink)}.production-plan-tools>span{font-size:12px;color:var(--ink-2);margin-left:auto}
+.production-plan-ink{display:inline-block;width:11px;height:11px;border-radius:50%}.production-plan-ink.blue{background:var(--plan-blue)}.production-plan-ink.red{background:var(--plan-red)}
+.production-plan-surface{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}.production-plan-base{display:block;width:100%;height:auto;color:var(--panel)}.production-plan-surface canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+
+/* ダークテーマでは、チェック欄・時刻欄などブラウザ標準の部品も暗い配色で描く */
+:root[data-theme="dark"] .production-workspace,:root[data-theme="dark"] .work-catalog{color-scheme:dark}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .production-workspace,:root:not([data-theme="light"]) .work-catalog{color-scheme:dark}}
+
+/* 準備タスク */
+.production-summary{margin:0 0 12px;font-size:13px;color:var(--ink-2)}.production-overdue{color:var(--warn)}
+.production-state.is-warn{color:var(--warn);font-weight:700}.production-state.is-ok{color:var(--ok)}
+
+/* 作品・商品マスタ（WorkCatalog.jsx） */
+.wc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}.wc-head h2{margin:0 0 4px}
+.wc-lead{margin:0;color:var(--ink-2);font-size:13px}
+.wc-create{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0 4px}
+.wc-search{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin-top:12px}.wc-search label{flex:1;min-width:220px;max-width:480px}.wc-search span{font-size:13px;color:var(--ink-2)}
+.wc-table td.num{text-align:right;font-variant-numeric:tabular-nums}.wc-table td small{display:block;color:var(--ink-3);font-size:11px}
+.wc-table .wc-window{display:grid;gap:2px;padding:4px 0}.wc-table .wc-window+.wc-window{border-top:1px solid var(--line-2)}
+.wc-work-name{font-weight:700;text-align:left;white-space:normal;min-width:9em;min-height:36px}
+.wc-ids{margin-top:8px;font-size:12px;color:var(--ink-3)}.wc-ids summary{cursor:pointer}
+.wc-note{margin:4px 0 12px;color:var(--ink-2);font-size:13px}
+.wc-station{color:var(--ink)}
+.wc-section{margin:22px 0 6px}.work-catalog .grid-form{align-items:start}
+
+@media(max-width:1000px){.production-location-layout{grid-template-columns:1fr}.production-plan-surface{max-width:760px}}
+@media(max-width:760px){.production-workspace .production-head{display:block}.production-save{margin-top:14px}.production-two,.production-formgrid,.wc-create{grid-template-columns:1fr}.production-line{grid-template-columns:26px 1fr 90px}.production-line span:nth-of-type(3),.production-line small{grid-column:2/-1}.production-call{grid-template-columns:1fr}.production-two .production-mini{grid-template-columns:1fr}.production-table-wrap.is-sticky{max-height:65vh}}

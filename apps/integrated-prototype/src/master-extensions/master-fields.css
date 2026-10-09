@@ -1,0 +1,13 @@
+.master-fields { margin-top: 2rem; }
+.master-section { margin-block: 1.5rem; padding: 1.2rem; border: 1px solid #cbd5df; border-radius: .6rem; background: #fff; }
+.master-section h3 { margin-top: 0; }
+.master-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,240px),1fr)); gap: 1rem; margin-block: 1rem; }
+.master-section label { display: flex; flex-direction: column; gap: .35rem; min-width: 0; }
+.master-section input,.master-section select { width: 100%; box-sizing: border-box; }
+.master-form { border: 0; padding: 0; min-width: 0; }
+.master-money,.master-row { border: 1px solid #d7dee6; border-radius: .4rem; padding: 1rem; margin-block: 1rem; min-width: 0; }
+.master-form:disabled input,.master-form:disabled select { color: #273548; opacity: 1; background: #f3f5f7; }
+.master-note { color: #526174; font-size: .9rem; }
+.master-totals { background: #f2f6fb; padding: 1rem; border-radius: .4rem; }
+.master-section [role=alert],.master-fields>[role=alert] { color: #9e321c; background: #fff0e9; padding: .7rem; }
+.master-section [role=status] { color: #155b38; }

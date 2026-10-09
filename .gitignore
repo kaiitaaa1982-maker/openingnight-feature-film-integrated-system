@@ -1,0 +1,63 @@
+# === 認証情報（最優先・絶対に入れない） ===
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+credentials.json
+auth.json
+secrets/
+
+# === 業務データ ===
+*.xlsx
+*.xlsm
+*.csv
+!**/fixtures/*.csv
+raw/
+data/
+db/*.sqlite
+*.dump
+
+# === 生成物 ===
+node_modules/
+.next/
+dist/
+dist-preview/
+build/
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.tsbuildinfo
+
+# === 一時・退避 ===
+tmp/
+.tmp/
+_archive/
+*.bak
+*.bak_*
+
+# === OS ===
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# === Cloudflare ===
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.wrangler/
+
+# スパイク（PptxGenJS on Workers の技術検証。成果は kikaku-dx へ移した）
+.spike/
+
+# Artifact 版のビルド成果物（build-artifact.mjs で再生成できる）
+apps/kikaku-mock/dist/
+
+# ただし Artifact 版のビルド台本は生成物ではなく原本。上の `build/`（生成物の置き場）に
+# 巻き込まれて黙って追跡外になる — package.json の build:kikaku-artifact が指す実体なので戻す。
+!apps/kikaku-mock/build/
+
+# dbt が作る匿名の利用者 ID（端末ごと）
+.user.yml

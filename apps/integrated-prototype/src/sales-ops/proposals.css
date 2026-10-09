@@ -1,0 +1,18 @@
+/* 営業基幹「提案資料」。色は styles.css のトークンだけを使う（ライト・ダークはトークン側で切り替わる）。 */
+.pp-report { min-width: 0; }
+.pp-bases { display: flex; flex-wrap: wrap; gap: 6px; }
+.pp-bases button { display: inline-flex; align-items: center; gap: 6px; min-height: 38px; }
+.pp-count { padding: 0 6px; border-radius: 6px; background: var(--panel-2); color: var(--ink-2); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pp-bases button[aria-pressed="true"] .pp-count { background: var(--accent-soft); color: var(--accent); }
+.pp-filters { align-items: flex-end; }
+.pp-month { display: flex; align-items: flex-end; gap: 6px; }
+.pp-month .on-field { min-width: 12em; }
+.pp-month > button { min-height: 38px; }
+.pp-notes { display: grid; gap: 8px; }
+.pp-notes h3 { margin: 0; font-size: 14px; }
+.pp-notes ul { margin: 4px 0 0; padding-left: 1.2em; color: var(--ink-2); font-size: 13px; }
+.pp-entry { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 10px 14px; }
+.pp-entry p { margin: 0; color: var(--ink-2); font-size: 13px; }
+.pp-profile { display: grid; gap: 12px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+.pp-profile h3 { margin: 0; }
+.pp-profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(16em, 1fr)); gap: 8px 12px; }

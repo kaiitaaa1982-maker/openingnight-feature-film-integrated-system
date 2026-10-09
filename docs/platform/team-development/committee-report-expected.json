@@ -1,0 +1,143 @@
+{
+  "synthetic": true,
+  "shares_bps": [
+    6000,
+    4000
+  ],
+  "windows": [
+    {
+      "kind": "digital",
+      "report_basis": "gross",
+      "reported_ex_tax": 100000,
+      "platform_rate_bps": 5000,
+      "platform_deduction": 50000,
+      "platform_net": 50000,
+      "window_fee_bps": 2000,
+      "window_fee": 10000,
+      "manager_fee_bps": 500,
+      "manager_basis": "after_window",
+      "manager_fee": 2000,
+      "expenses": 3000,
+      "distribution_pool": 35000,
+      "member_distributions": [
+        21000,
+        14000
+      ],
+      "residual": 0,
+      "route": "via_manager"
+    },
+    {
+      "kind": "package",
+      "report_basis": "net",
+      "reported_ex_tax": 80000,
+      "platform_rate_bps": 5000,
+      "platform_deduction": 0,
+      "platform_net": 80000,
+      "window_fee_bps": 3000,
+      "window_fee": 24000,
+      "manager_fee_bps": 0,
+      "manager_fee": 0,
+      "expenses": 6000,
+      "distribution_pool": 50000,
+      "member_distributions": [
+        30000,
+        20000
+      ],
+      "residual": 0,
+      "route": "direct",
+      "platform_deduction_note": "No additional deduction; original platform deduction is unknown for net reports."
+    }
+  ],
+  "total": {
+    "reported_ex_tax": 180000,
+    "platform_deduction": 50000,
+    "window_fee": 34000,
+    "manager_fee": 2000,
+    "expenses": 9000,
+    "distribution_pool": 85000,
+    "member_distributions": [
+      51000,
+      34000
+    ],
+    "residual": 0,
+    "platform_deduction_note": "Known deductions from gross reports only; excludes unknown deductions behind net reports."
+  },
+  "manager_first": {
+    "platform_net": 50000,
+    "manager_fee": 2500,
+    "window_fee_after_manager": 9500,
+    "distribution_pool": 38000,
+    "member_distributions": [
+      22800,
+      15200
+    ]
+  },
+  "window_first_manager_on_platform_net": {
+    "platform_net": 50000,
+    "window_fee": 10000,
+    "manager_fee": 2500,
+    "distribution_pool": 37500
+  },
+  "rounding": {
+    "pool": 101,
+    "member_distributions": [
+      60,
+      40
+    ],
+    "residual": 1
+  },
+  "schedule": {
+    "release_anchor": "2026-09-01",
+    "first": {
+      "from": "2026-09-01",
+      "close": "2026-09-30",
+      "report": "2026-10-31",
+      "payment": "2026-11-30"
+    },
+    "quarterly_closes": [
+      "2026-12-31",
+      "2027-03-31",
+      "2027-06-30",
+      "2027-09-30",
+      "2027-12-31",
+      "2028-03-31",
+      "2028-06-30"
+    ],
+    "transition_stub": {
+      "from": "2028-07-01",
+      "close": "2028-08-31",
+      "requires_explicit_acceptance": true
+    },
+    "semiannual_closes": [
+      "2029-02-28",
+      "2029-08-31"
+    ],
+    "annual_closes": [
+      "2030-08-31",
+      "2031-08-31"
+    ]
+  },
+  "invariants": [
+    "each window and overall conserve money including residual",
+    "net report is not charged platform fee again",
+    "fee recipient and investment distribution remain separate",
+    "same report and expense cannot fund multiple saved reports",
+    "crossing-period rows and unknown receipt dates are not guessed",
+    "negative pool blocks saving rather than applying unstated clawbacks",
+    "saved statement and schedule are immutable",
+    "no payout or accounting confirmation"
+  ],
+  "ui_sample": {
+    "report_key": "MAP-FAKE-001",
+    "report_basis": "net",
+    "platform_net": 8000,
+    "window_fee": 1600,
+    "manager_fee": 320,
+    "expenses": 0,
+    "distribution_pool": 6080,
+    "member_distributions": [
+      3648,
+      2432
+    ]
+  }
+}

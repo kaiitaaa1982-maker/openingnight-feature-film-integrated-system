@@ -1,0 +1,3 @@
+# These reviewed text fixtures have byte-level provenance hashes.
+fixtures/distribution-master.csv -text
+fixtures/xlsx-source/** -text

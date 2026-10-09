@@ -1,0 +1,2 @@
+# Excel 版などの書き出し（node scripts/build-db-docs.mjs --xlsx）。生成物なので git に入れない
+_build/

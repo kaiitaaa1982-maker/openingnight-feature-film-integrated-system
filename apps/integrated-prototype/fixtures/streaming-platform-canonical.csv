@@ -1,0 +1,4 @@
+﻿report_key,partner_id,product_id,period_from,period_to,sales_period_from,sales_period_to,recognition_basis_id,sales_month,report_received_on,contract_start_on,license_start_on,broadcast_on,basis_reason,accounting_month,description,quantity,amount_ex_tax,tax_amount,amount_inc_tax,supersedes_id,kind
+demo-digital-20260922,2,1,2026-08-01,2026-08-31,2026-08-01,2026-08-31,2,,2026-09-05,,,,配信月次報告を受領した月で計上,2026-09,TVOD視聴売上,1250,367500,36750,404250,,digital
+demo-digital-20260922,2,1,2026-08-01,2026-08-31,2026-08-01,2026-08-31,2,,2026-09-05,,,,配信月次報告を受領した月で計上,2026-09,SVOD固定売上,1,480000,48000,528000,,digital
+demo-digital-20260922,2,1,2026-08-01,2026-08-31,2026-08-01,2026-08-31,2,,2026-09-05,,,,配信月次報告を受領した月で計上,2026-09,EST購入売上,320,307200,30720,337920,,digital

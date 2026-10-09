@@ -1,0 +1,134 @@
+/* MG契約・台帳。色はトークンだけ（ライト・ダーク両方）。状態は色と文字の両方で示す。 */
+.mg-ledger{min-width:0}
+.mg-ledger>*{min-width:0}
+.mg-muted{margin:4px 0 0;color:var(--ink-3);font-size:13px;line-height:1.55}
+.mg-eyebrow{margin:0 0 2px;color:var(--accent);font-size:12px;font-weight:700}
+.mg-hero h2{margin:0}
+.mg-hero .on-tabs{margin-top:14px}
+.mg-section-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:10px 16px}
+.mg-section-head h3{margin:0}
+.mg-section-head>div:first-child{flex:1 1 320px;min-width:0}
+.mg-diff{color:var(--warn);font-weight:650}
+.mg-old{color:var(--ink-3)}
+.mg-derived{display:block;padding:9px 11px;border:1px dashed var(--line-3);border-radius:var(--radius);background:var(--panel-2);color:var(--ink-2);font-size:13px}
+.mg-check{display:flex!important;align-items:center;gap:.5rem;color:var(--ink-2);font-size:13px;font-weight:650}
+.mg-check input{width:auto;min-height:0}
+
+/* 契約の一覧と回収状況 */
+.mg-totals{display:flex;flex-wrap:wrap;gap:6px 18px;margin:12px 0;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2);color:var(--ink-2);font-size:13px}
+.mg-totals strong{color:var(--ink);font-variant-numeric:tabular-nums}
+.mg-contract-list{display:grid;gap:8px;margin:12px 0 0;padding:0;list-style:none}
+.mg-contract{display:grid;grid-template-columns:minmax(12rem,1.2fr) minmax(14rem,1.4fr) minmax(12rem,1fr);gap:8px 16px;align-items:center;width:100%;min-height:0;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);color:var(--ink);font-weight:400;text-align:left}
+.mg-contract:hover{background:var(--panel-2)}
+.mg-contract.is-selected{background:var(--accent-soft)}
+.mg-contract-name{display:grid;gap:2px;min-width:0}
+.mg-contract-name strong{overflow-wrap:anywhere}
+.mg-contract-name small{color:var(--ink-3);font-size:12px}
+.mg-nums{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--ink-2);font-size:13px}
+.mg-nums b{color:var(--ink);font-weight:650;font-variant-numeric:tabular-nums}
+.mg-progress{display:grid;gap:4px;min-width:0}
+.mg-progress-track{display:block;height:8px;overflow:hidden;border:1px solid var(--line);border-radius:999px;background:var(--panel-3)}
+.mg-progress-fill{display:block;height:100%;background:var(--accent)}
+.mg-progress.is-reached .mg-progress-fill{background:var(--ok)}
+.mg-progress.is-zero .mg-progress-fill,.mg-progress.is-none .mg-progress-fill{background:var(--line-3)}
+.mg-progress-text{color:var(--ink-2);font-size:12px}
+.mg-progress-text strong{margin-right:6px}
+.mg-progress.is-open .mg-progress-text strong{color:var(--accent)}
+.mg-progress.is-reached .mg-progress-text strong{color:var(--ok)}
+.mg-progress.is-zero .mg-progress-text strong,.mg-progress.is-none .mg-progress-text strong{color:var(--ink-2)}
+
+/* 選んだ契約 */
+.mg-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin:14px 0}
+.mg-tiles>div{display:grid;gap:4px;align-content:start;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.mg-tiles span{color:var(--ink-3);font-size:12px}
+.mg-tiles strong{font-size:18px;font-variant-numeric:tabular-nums}
+.mg-sub{margin:10px 0}
+.mg-sub>summary,.mg-details>summary,.mg-history>summary{cursor:pointer;font-weight:650}
+.mg-sub[open]>summary{margin-bottom:10px}
+.mg-form,.mg-report{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.mg-form .on-form-grid,.mg-report .on-form-grid{margin-top:12px}
+.mg-ledger fieldset{min-width:0;margin:16px 0;padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius)}
+.mg-ledger legend{padding:0 6px;font-weight:700}
+.mg-products{max-height:320px;overflow:auto;margin-top:10px;padding:0 12px;border:1px solid var(--line);border-radius:var(--radius)}
+.mg-product{display:grid;grid-template-columns:minmax(12rem,1fr) minmax(12rem,.8fr);gap:8px 16px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line-2)}
+.mg-product:last-child{border-bottom:0}
+.mg-eval{display:grid;gap:4px}
+.mg-sum{margin:10px 0 0;color:var(--ink-2);font-size:13px;font-variant-numeric:tabular-nums}
+.mg-sum.is-gap{color:var(--warn);font-weight:650}
+.mg-phase{margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--line-2)}
+.mg-phase h4{margin:0 0 8px;font-size:14px}
+.mg-schedule{margin:10px 0 0;padding:8px 10px;border-radius:var(--radius);background:var(--panel-2);color:var(--ink-2);font-size:13px}
+.mg-schedule.is-bad{background:var(--bad-soft);color:var(--bad)}
+.mg-report-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(16rem,22rem);gap:16px;align-items:start}
+.mg-amount{display:grid;gap:4px;align-content:start}
+.mg-candidate{display:grid;gap:6px;margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2);font-size:13px}
+.mg-candidate dl{display:grid;grid-template-columns:1fr auto;gap:4px 12px;margin:4px 0}
+.mg-candidate dt{color:var(--ink-2)}
+.mg-candidate dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;font-weight:650}
+.mg-candidate p{margin:0}
+.mg-status-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0 8px}
+.mg-confirm{display:grid;gap:8px;margin-top:14px;padding:14px 16px;border:1px solid var(--accent);border-radius:var(--radius);background:var(--accent-soft)}
+.mg-confirm dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 16px;margin:4px 0}
+.mg-confirm dt{color:var(--ink-2)}
+.mg-confirm dd{margin:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+
+/* 状態の印（色＋文字） */
+.mg-state,.mg-badge{display:inline-block;padding:1px 7px;border:1px solid var(--line-3);border-radius:6px;background:var(--panel);color:var(--ink-2);font-size:12px;font-weight:650;white-space:nowrap}
+.mg-state.is-reviewed,.mg-badge.is-insert{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.mg-state.is-unverified,.mg-badge.is-correction{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.mg-state.is-superseded,.mg-badge.is-unchanged{background:var(--panel-3);color:var(--ink-3)}
+.mg-badge.is-error{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+
+/* 台帳 */
+.mg-filters{margin:12px 0}
+.mg-filter-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.mg-ledger-detail{display:grid;gap:10px;padding:4px 0;white-space:normal}
+.mg-ledger-detail dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 16px;margin:0}
+.mg-ledger-detail dt{color:var(--ink-3)}
+.mg-ledger-detail dd{margin:0;overflow-wrap:anywhere}
+.mg-ledger-detail button{justify-self:start}
+
+/* 取込 */
+.mg-import-body{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-top:12px}
+.mg-steps{display:grid;gap:14px;margin:0;padding:0;list-style:none}
+.mg-steps .on-form-actions{margin-top:8px}
+.mg-drop{position:relative;display:grid;place-items:center;min-height:5rem;margin-top:8px;padding:12px;border:1px dashed var(--line-3);border-radius:var(--radius);background:var(--panel-2);color:var(--ink-2);text-align:center;cursor:pointer}
+.mg-drop input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.mg-drop.is-busy{cursor:progress}
+.mg-preview{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.mg-file{margin:0;color:var(--ink-2);font-size:13px}
+.mg-counts{display:flex;flex-wrap:wrap;gap:8px}
+.mg-count{display:grid;gap:2px;min-width:7rem;min-height:0;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);color:var(--ink);font-weight:400;text-align:left}
+.mg-count:hover{background:var(--panel-2)}
+.mg-count[aria-pressed="true"]{background:var(--accent-soft)}
+.mg-count span,.mg-count small{color:var(--ink-3);font-size:12px}
+.mg-count strong{font-size:18px;font-variant-numeric:tabular-nums}
+.mg-count.is-error strong{color:var(--bad)}
+.mg-count.is-insert strong{color:var(--ok)}
+.mg-count.is-correction strong{color:var(--warn)}
+.mg-table-wrap{max-height:60vh;overflow:auto;border:1px solid var(--line);border-radius:var(--radius)}
+.mg-table{width:100%;border-collapse:collapse;font-size:13px}
+.mg-table th,.mg-table td{padding:6px 8px;border-bottom:1px solid var(--line-2);text-align:left;vertical-align:top;white-space:nowrap}
+.mg-table thead th{position:sticky;top:0;z-index:1;background:var(--panel-3);color:var(--ink-2)}
+.mg-table .num{text-align:right;font-variant-numeric:tabular-nums}
+.mg-table small{display:block;color:var(--ink-3);font-size:11px}
+.mg-table small.mg-diff{color:var(--warn)}
+.mg-table tr.is-error>th,.mg-table tr.is-error>td{background:var(--panel-2)}
+.mg-table .mg-cell-error{background:var(--bad-soft);color:var(--bad)}
+.mg-row-note td{padding-top:0;white-space:normal}
+.mg-reason,.mg-note{display:block;font-size:12px;line-height:1.5}
+.mg-reason{color:var(--bad)}
+.mg-note{color:var(--ink-2)}
+.mg-commit{display:grid;gap:8px}
+.mg-history{margin-top:4px}
+.mg-history[open]>summary{margin-bottom:8px}
+.mg-details{display:grid;gap:10px}
+.mg-list{margin:0;padding-left:1.2rem;color:var(--ink-2);font-size:13px}
+
+@media(max-width:900px){.mg-report-grid{grid-template-columns:1fr}}
+@media(max-width:720px){
+  .mg-contract{grid-template-columns:1fr}
+  .mg-product{grid-template-columns:1fr}
+  .mg-confirm dl,.mg-ledger-detail dl{grid-template-columns:1fr}
+  .mg-confirm dd,.mg-ledger-detail dd{margin-bottom:6px}
+}

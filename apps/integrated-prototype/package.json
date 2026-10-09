@@ -1,0 +1,42 @@
+{
+  "name": "openingnight-integrated-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "node src/server.mjs",
+    "test": "node --test --test-concurrency=1 test/*.test.mjs",
+    "test:pg": "node scripts/test-pg.mjs",
+    "check": "npm run build && npm test",
+    "pretest": "node scripts/prepare-test-assets.mjs",
+    "pretest:pg": "node scripts/prepare-test-assets.mjs",
+    "prebuild": "node scripts/prepare-test-assets.mjs",
+    "ci:migrations": "node scripts/ci-migrations.mjs",
+    "test:changed": "node scripts/select-tests.mjs --run sqlite",
+    "test:pg:changed": "node scripts/select-tests.mjs --run pg",
+    "pretest:changed": "node scripts/prepare-test-assets.mjs",
+    "pretest:pg:changed": "node scripts/prepare-test-assets.mjs"
+  },
+  "dependencies": {
+    "@cloudflare/containers": "^0.3.7",
+    "@hono/node-server": "^1.19.1",
+    "fast-xml-parser": "^5.11.1",
+    "fflate": "^0.8.3",
+    "hono": "^4.9.8",
+    "jose": "^6.1.0",
+    "pg": "^8.23.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@vitejs/plugin-react": "^5.0.4",
+    "vite": "^7.1.7",
+    "wrangler": "4.127.0"
+  }
+}

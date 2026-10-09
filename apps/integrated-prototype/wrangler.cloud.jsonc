@@ -1,0 +1,164 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "openingnight-integrated-demo",
+  "account_id": "00000000000000000000000000000000",
+  "main": "src/cloud-worker.mjs",
+  "compatibility_date": "2026-09-21",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "app.example.invalid",
+      "custom_domain": true
+    }
+  ],
+  "limits": {
+    "cpu_ms": 60000
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "vars": {
+    "DEPLOYMENT_ENABLED": "true",
+    "PUBLIC_ORIGIN": "https://app.example.invalid",
+    "ACCESS_TEAM_DOMAIN": "example-team.cloudflareaccess.com",
+    "ACCESS_AUD": "0000000000000000000000000000000000000000000000000000000000000000",
+    "AI_ENABLED": "false",
+    "D1_ATOMIC_STATEMENT_LIMIT": "500",
+    "CLOUD_ANALYTICS_REGISTRATION_ID": "00000000-0000-0000-0000-000000000003",
+    "CLOUD_ANALYTICS_DEFINITION_VERSION": "56f983631d7c965590c6f996d607cbf60feec890d85542d7c8b7474e8b4e4e06"
+  },
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "openingnight-integrated-demo",
+      "database_id": "00000000-0000-0000-0000-000000000001",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "PRIVATE_ARTIFACTS",
+      "bucket_name": "openingnight-integrated-demo"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "WORKBENCH_CONTAINER",
+        "class_name": "WorkbenchExtractContainer"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "WorkbenchExtractContainer"
+      ]
+    }
+  ],
+  "containers": [
+    {
+      "class_name": "WorkbenchExtractContainer",
+      "image": "./Dockerfile.cloud",
+      "image_build_context": "../..",
+      "instance_type": "standard-1",
+      "max_instances": 1
+    }
+  ],
+  "build": {
+    "command": "npm run build"
+  },
+  "env": {
+    "staging": {
+      "name": "openingnight-integrated-demo-staging",
+      "routes": [
+        {
+          "pattern": "staging.example.invalid",
+          "custom_domain": true
+        }
+      ],
+      "workers_dev": false,
+      "preview_urls": false,
+      "observability": {
+        "enabled": true,
+        "head_sampling_rate": 1
+      },
+      "vars": {
+        "DEPLOYMENT_ENABLED": "true",
+        "PUBLIC_ORIGIN": "https://staging.example.invalid",
+        "ACCESS_TEAM_DOMAIN": "example-team.cloudflareaccess.com",
+        "ACCESS_AUD": "0000000000000000000000000000000000000000000000000000000000000000",
+        "AI_ENABLED": "false",
+        "D1_ATOMIC_STATEMENT_LIMIT": "500",
+        "CLOUD_ANALYTICS_REGISTRATION_ID": "00000000-0000-0000-0000-000000000003",
+        "CLOUD_ANALYTICS_DEFINITION_VERSION": "56f983631d7c965590c6f996d607cbf60feec890d85542d7c8b7474e8b4e4e06",
+        "DATABASE_ENGINE": "postgres"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "openingnight-integrated-demo-staging",
+          "database_id": "00000000-0000-0000-0000-000000000002",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "PRIVATE_ARTIFACTS",
+          "bucket_name": "openingnight-integrated-demo-staging"
+        },
+        {
+          "binding": "PG_EXPORTS",
+          "bucket_name": "openingnight-integrated-demo-staging-pg-exports"
+        }
+      ],
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "WORKBENCH_CONTAINER",
+            "class_name": "WorkbenchExtractContainer"
+          }
+        ]
+      },
+      "containers": [
+        {
+          "class_name": "WorkbenchExtractContainer",
+          "image": "./Dockerfile.cloud",
+          "image_build_context": "../..",
+          "instance_type": "standard-1",
+          "max_instances": 1
+        }
+      ],
+      "hyperdrive": [
+        {
+          "binding": "HYPERDRIVE",
+          "id": "00000000000000000000000000000000"
+        }
+      ],
+      "placement": {
+        "mode": "targeted",
+        "region": "aws:ap-northeast-1"
+      },
+      "triggers": {
+        // 日次の書き出し（UTC 18:00＝日本時間 03:00）。"30 * * * *" は段2の実測の練習 E・F を当日に始めるための一時の毎時
+        // （2026-10-09 代表の判断。会社ルート plans/2026-10-08-pg-stage2-measure.md）。S8 の PostgreSQL に戻す PR で外す
+        "crons": [
+          "0 18 * * *",
+          "30 * * * *"
+        ]
+      }
+    }
+  }
+}

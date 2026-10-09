@@ -1,0 +1,29 @@
+export const committeeLabels={grossReported:'控除前報告額',netReported:'控除後報告額',platformFeeKnown:'把握済みPF控除',platformNet:'PF控除後原資',windowFee:'窓口手数料',managerFee:'幹事手数料',expenseTotal:'経費',royaltyDeductions:'権利処理費控除',productionRecoupDeductions:'製作費回収控除',distributionPool:'分配原資',residual:'未配分端数'};
+const periods=['previous','current','cumulative'];
+export function committeeReportSheets(report,partyName=id=>`権利先 ${id}`){
+ const ids=[...new Set(Object.values(report.totals).flatMap(t=>t.memberDistributions.map(m=>m.partnerId)))];
+ return [
+ {name:'収支報告',rows:[['収支項目（JPY税抜）','前回まで','当期','累計'],...Object.entries(committeeLabels).map(([key,label])=>[label,...periods.map(p=>report.totals[p][key])])]},
+ {name:'出資者分配',rows:[['権利先ID','権利先','前回まで','当期','累計'],...ids.map(id=>[id,partyName(id),...periods.map(p=>report.totals[p].memberDistributions.find(m=>m.partnerId===id)?.amount||0)])]},
+ {name:'販路別収支',rows:[['販路','期間区分','PF控除後原資','窓口手数料','幹事手数料','経費','権利処理費控除','製作費回収控除','分配原資','端数'],...(report.byChannel||[]).flatMap(w=>periods.map((p,i)=>[w.label||w.kind,['前回まで','当期','累計'][i],...['platformNet','windowFee','managerFee','expenseTotal','royaltyDeductions','productionRecoupDeductions','distributionPool','residual'].map(k=>w[p][k])]))]},
+ {name:'控除条件',rows:[['販路','経路','手数料の順序','窓口料率bp','窓口計算基礎','幹事料率bp','幹事計算基礎','経費控除'],...report.details.map(w=>[w.label||w.kind,w.route,w.feeOrder,w.windowFeeBps??'旧版未保持',w.windowFeeBasis,w.managerFeeBps??'旧版未保持',w.managerFeeBasis,'窓口・幹事手数料控除後'])]},
+ {name:'報告履歴',rows:[['保存報告ID','条件版ID','開始','終了','締め','報告予定','支払予定'],...report.sourceSnapshots.map(s=>[s.snapshotId,s.termVersionId,s.periodFrom,s.periodTo,s.closeOn,s.reportOn,s.paymentOn])]},
+ {name:'元売上明細',rows:[['保存報告ID','原報告ID','売上ID','原本行','作品ID','窓口ID','配賦bp','計上月','販売開始','販売終了','配賦後税抜'],...(report.sourceLines||[]).map(r=>[r.snapshotId,r.reportId,r.saleId,r.sourceRow,r.workId,r.windowId,r.allocationBps,r.accountingMonth,r.salesPeriodFrom,r.salesPeriodTo,r.allocatedAmountExTax])]},
+ {name:'製作費と出資',rows:[['項目','権利先ID','権利先','持分bp','金額円'],['製作費総額','','','',report.funding?.productionCostYen??'未登録'],...(report.members||[]).map(m=>['出資額',m.partner_id??m.partnerId,partyName(m.partner_id??m.partnerId),m.share_bps??m.shareBps,report.funding?.investments?.find(i=>i.partnerId===(m.partner_id??m.partnerId))?.amountYen??'未登録']),['回収累計','','','',report.totals.cumulative.productionRecoupDeductions],['回収残高','','','',report.funding?report.funding.productionCostYen-report.totals.cumulative.productionRecoupDeductions:'未登録']]},
+ {name:'損益収支経緯',rows:[['報告版ID','計上月','元報告ID','販路','窓口取引先','報告額基準','報告額','PF控除','窓口手数料','幹事手数料','経費','権利処理費','製作費回収','分配原資','元売上ID群','費用・分配の明細化基準'],...(report.history||[]).map(r=>[r.snapshotId,r.accountingMonth,r.reportId,r.label||r.kind,partyName(r.windowPartnerId),r.reportBasis,r.reportedAmount,r.platformFeeKnown,r.windowFee,r.managerFee,r.expenseTotal,r.deductions.filter(d=>d.category==='royalty').reduce((n,d)=>n+d.amountYen,0),r.deductions.filter(d=>d.category==='production_recoup').reduce((n,d)=>n+d.amountYen,0),r.distributionPool,r.saleIds.join(' / '),r.allocationBasis])]},
+ ...((report.deductions||[]).some(d=>d.category==='royalty')?[{name:'権利処理費報告',rows:[['保存報告ID','対象開始','対象終了','元報告ID','受取先ID','受取先','税抜額','根拠識別番号'],...report.deductions.filter(d=>d.category==='royalty').map(d=>[d.snapshotId,d.periodFrom,d.periodTo,d.reportId,d.recipientPartnerId,partyName(d.recipientPartnerId),d.amountYen,d.sourceReference])]}]:[]),
+ {name:'製作費回収明細',rows:[['保存報告ID','元報告ID','受取先ID','受取先','回収額','根拠識別番号'],...(report.deductions||[]).filter(d=>d.category==='production_recoup').map(d=>[d.snapshotId,d.reportId,d.recipientPartnerId,partyName(d.recipientPartnerId),d.amountYen,d.sourceReference])]},
+ {name:'照合',rows:[['項目','値'],['原資保存（当期）',report.reconciliation.conservationDifferenceYen],['元売上と報告額の差（当期）',report.reconciliation.sourceDifferenceYen??'元明細未保持'],['分配保存（当期）',report.reconciliation.memberDifferenceYen],['宛先部分表示',report.partialDisplay?'部分表示・照合は全参加者で実施':'全員'],['欠落期間数',report.gaps.length],['状態','下書き・未確認。支払実績ではありません'],['対象期',`${report.selected.periodFrom}〜${report.selected.periodTo}`],['期間基準',report.selected.periodDateBasis],['通貨・税基準','JPY・税抜'],['生成日時',report.generatedAt],...report.warnings.map(w=>['確認事項',w])]},
+ ];
+}
+export function mgReportSheets(report,workName=id=>`作品 ${id}`){
+ return [{name:'MG契約',rows:[['項目','値'],['方向',report.direction==='incoming'?'受取MG':'支払MG'],['契約',report.contract.code],['条件版',report.selectedVersion.version],['計上月',report.accountingMonth],['保証額',report.headline.guaranteeYen],['累計実充当',report.headline.cumulativeAppliedYen],['未消化残高',report.headline.contractRemainingYen],['保証額超の充当',report.headline.appliedExceedYen],['実支払額','未連携・計上額から推定しない'],['保証額の粒度','契約単位。商品・作品行へ複製加算しない']]},
+ {name:'作品商品別実績',rows:[['作品ID','作品','商品ID','商品コード','指標','前回まで','当期','累計'],...report.rows.flatMap(r=>Object.entries({eligibleYen:'消化対象',appliedYen:'実充当',overageYen:'超過報告',recognizedYen:'計上'}).map(([key,label])=>[r.workId,workName(r.workId),r.productId,r.productSku,label,r.prior[key],r.current[key],r.cumulative[key]]))]},
+ {name:'根拠と訂正',rows:[['台帳ID','条件版ID','計上月','原資料','訂正元ID','状態'],...[...new Map(report.rows.flatMap(r=>r.sources).map(s=>[s.entryId,s])).values()].map(s=>[s.entryId,s.termVersionId,s.accountingMonth,s.sourceReference,s.reversesEntryId,s.status])]},
+ {name:'照合',rows:[['項目','値'],['実充当配賦差額',report.headline.cumulativeAppliedYen-report.rows.reduce((sum,r)=>sum+r.cumulative.appliedYen,0)],['未確認報告数',report.unverifiedCount],['生成日時',report.generatedAt],['訂正の基準',report.knowledgeBasis],...report.warnings.map(w=>['確認事項',w])]}];
+}
+export function committeeOutputSheets(report,kind,partyName){
+ const sheets=committeeReportSheets(report,partyName);
+ const names={distribution:['出資者分配','販路別収支','製作費と出資','照合'],royalty:['権利処理費報告','照合'],history:['損益収支経緯','報告履歴','元売上明細','照合']};
+ return names[kind]?sheets.filter(sheet=>names[kind].includes(sheet.name)):sheets;
+}

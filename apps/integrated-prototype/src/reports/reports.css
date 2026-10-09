@@ -1,0 +1,87 @@
+/* 帳票センター。UI指針: ../../../../docs/design/ui-guidelines.md（§8 のトークンだけを使う） */
+.rp-muted{margin:0;color:var(--ink-3);font-size:13px;line-height:1.6}
+.rp-warn{color:var(--warn)}
+.rp-intro-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:12px 24px;margin-bottom:8px}
+.rp-intro-head h2{margin:0 0 4px}
+.rp-fiscal{display:flex;flex-wrap:wrap;align-items:center;gap:8px;color:var(--ink-2);font-size:13px}
+.rp-fiscal-form{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;width:100%;padding:10px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.rp-fiscal-form select{min-width:110px}
+.rp-inline{display:flex;align-items:center;gap:6px;font-weight:600}
+.rp-inline input{width:auto;min-height:0}
+.rp-group-title{margin:16px 0 8px;color:var(--ink-2);font-size:13px;font-weight:800;letter-spacing:.04em}
+.rp-cards{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.rp-card{display:grid;gap:6px;width:100%;height:100%;min-height:0;padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2);color:var(--ink);text-align:left;font-weight:400;align-content:start}
+.rp-card:hover{background:var(--panel-3);border-color:var(--line-3)}
+.rp-card.is-featured{border-left:4px solid var(--accent)}
+.rp-card.is-selected{border-color:var(--accent);background:var(--accent-soft)}
+.rp-card-title{font-size:15px;font-weight:800;color:var(--ink)}
+.rp-card-desc{color:var(--ink-2);font-size:12.5px;line-height:1.55}
+.rp-card-formats{display:flex;flex-wrap:wrap;gap:4px}
+.rp-badge{padding:1px 7px;border:1px solid var(--line-3);border-radius:6px;background:var(--panel);color:var(--ink-2);font-size:11px;font-weight:700}
+.rp-toggle{margin-top:14px}
+.rp-selected{display:grid;gap:10px;scroll-margin-top:90px}
+.rp-crumb{margin:0;color:var(--ink-2);font-size:13px;display:flex;align-items:center;gap:8px}
+
+/* 帳票本体 */
+.rp-report{display:grid;gap:14px}
+.rp-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:12px}
+.rp-head h2{margin:0 0 4px}
+.rp-meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--ink-2);font-size:12.5px}
+.rp-check{font-weight:700}
+.rp-check.is-ok{color:var(--ok)}
+.rp-check.is-bad{color:var(--bad)}
+.rp-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.rp-tiles>div{display:grid;gap:4px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.rp-tiles span{color:var(--ink-3);font-size:12px}
+.rp-tiles strong{font-size:20px;font-variant-numeric:tabular-nums}
+.rp-tiles small{color:var(--ink-3);font-size:12px}
+.rp-tiles>div.is-warn{border-color:var(--warn);background:var(--warn-soft)}
+.rp-tiles>div.is-warn span{color:var(--ink-2)}
+.rp-chart{margin:0;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.rp-chart svg{display:block;width:100%;height:auto;max-height:200px}
+.rp-bar{fill:var(--accent);opacity:.85}
+.rp-bar.is-future{fill:var(--line-3);opacity:.6}
+.rp-cum{fill:none;stroke:var(--warn);stroke-width:2.5}
+.rp-axis{fill:var(--ink-3);font-size:11px;font-family:var(--sans)}
+.rp-chart figcaption{display:flex;align-items:center;gap:6px;color:var(--ink-3);font-size:12px}
+.rp-key{display:inline-block;width:14px;height:8px;border-radius:2px}
+.rp-key-bar{background:var(--accent)}
+.rp-key-line{height:3px;background:var(--warn)}
+.rp-cell{min-height:0;padding:0 2px;border:0;background:transparent;color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer}
+.rp-cell:hover{background:var(--accent-soft);color:var(--accent)}
+.rp-drill{display:grid;gap:8px;padding:10px 12px;border-left:3px solid var(--accent);background:var(--panel-2)}
+.rp-drill-head{margin:0;font-size:13px;color:var(--ink-2);display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+@media (max-width:640px){.rp-cards{grid-template-columns:1fr}.rp-tiles{grid-template-columns:1fr 1fr}}
+.sl-detail{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px 16px;margin:0}
+.sl-detail dt{color:var(--ink-3);font-size:12px}
+.sl-detail dd{margin:2px 0 0;color:var(--ink);overflow-wrap:anywhere}
+.rp-legacy{margin-top:12px;padding-top:10px;border-top:1px solid var(--line-2)}
+.rp-legacy summary{cursor:pointer;color:var(--ink-2);font-size:13px;font-weight:650}
+.rp-filter{display:flex;flex-wrap:wrap;gap:4px}
+.rp-filter button{min-height:32px}
+.rp-filter button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+/* 月次の受領進捗 */
+.pm-cards{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.pm-card{display:grid;gap:4px;min-height:0;padding:10px 12px;text-align:left;border:1px solid var(--line);border-left-width:4px;border-radius:var(--radius);background:var(--panel-2);color:var(--ink)}
+.pm-card span{color:var(--ink-3);font-size:12px;font-weight:600}
+.pm-card strong{font-size:20px;font-variant-numeric:tabular-nums}
+.pm-card:hover{background:var(--panel-3);color:var(--ink)}
+.pm-card[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.pm-card.is-bad{border-left-color:var(--bad)}.pm-card.is-warn{border-left-color:var(--warn)}.pm-card.is-info{border-left-color:var(--accent)}.pm-card.is-ok{border-left-color:var(--ok)}
+.pm-scroll{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:var(--radius)}
+.pm-table{border-collapse:separate;border-spacing:0;min-width:100%;font-size:13px}
+.pm-table th,.pm-table td{padding:6px 8px;border-bottom:1px solid var(--line-2);border-right:1px solid var(--line-2);background:var(--panel);white-space:nowrap}
+.pm-table thead th{position:sticky;top:0;z-index:2;background:var(--panel-2);color:var(--ink-2);font-weight:700;text-align:center}
+.pm-table thead th small{display:block;color:var(--ink-3);font-size:11px;font-weight:400}
+.pm-table .pm-sticky{position:sticky;left:0;z-index:1;text-align:left;min-width:180px;max-width:260px;white-space:normal}
+.pm-table thead .pm-sticky{z-index:3}
+.pm-table th.pm-sticky span{display:block;font-weight:700;color:var(--ink)}
+.pm-table th.pm-sticky small{display:block;color:var(--ink-3);font-weight:400}
+.pm-cell{text-align:center}
+.pm-cell button{min-height:32px;width:100%;padding:0 6px;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--ink);font-size:12px;font-weight:700}
+.pm-cell.is-bad button{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+.pm-cell.is-warn button{background:var(--warn-soft);color:var(--ink);border-color:var(--warn)}
+.pm-cell.is-info button{background:var(--accent-soft);color:var(--accent)}
+.pm-cell.is-ok button{background:var(--ok-soft);color:var(--ok)}
+.pm-cell button:hover{border-color:var(--accent)}
+.pm-none{color:var(--ink-3)}

@@ -1,0 +1,78 @@
+/* 番販・放送。色はトークンだけ（ライト・ダークの両方で読める）。状態は色＋文字。 */
+.bc-workspace{min-width:0;width:100%;display:grid;gap:16px}
+.bc-heading{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 24px}
+.bc-heading h2{margin:4px 0}
+.bc-current{margin:0;color:var(--ink-2);font-size:13px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.bc-current strong{color:var(--ink)}
+.bc-muted{color:var(--ink-3);font-size:12px}
+.bc-work{display:grid;gap:1px}
+.bc-work small{color:var(--ink-3);font-family:var(--mono);font-size:11px}
+.bc-station{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px}
+.bc-badge{display:inline-block;padding:1px 7px;border:1px solid var(--line-3);border-radius:6px;background:var(--panel);color:var(--ink-2);font-size:11px;font-weight:700;white-space:nowrap}
+.bc-badge.is-warn{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.bc-flag{display:inline-block;padding:1px 7px;border-left:3px solid var(--line-3);border-radius:4px;background:var(--panel-2);color:var(--ink-2);font-size:12px;font-weight:700}
+.bc-flag.is-warn{border-left-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.bc-flag.is-bad{border-left-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.bc-flag.is-ok{border-left-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.bc-toolbar{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px 16px}
+.bc-toolbar h4{margin:0 0 4px}
+.bc-action-buttons{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px}
+.bc-actions{display:grid;gap:8px;min-width:0}
+.bc-actions.is-compact{display:inline-grid}
+.bc-actions.is-compact button,.bc-action-buttons button{min-height:34px;padding:0 12px}
+.bc-reason{display:grid;gap:6px;max-width:520px;padding:10px 12px;border:1px solid var(--line-2);border-left:4px solid var(--warn);border-radius:var(--radius);background:var(--panel-2)}
+.bc-reason.is-irreversible{border-left-color:var(--bad)}
+.bc-reason label{display:flex;align-items:center;gap:8px;color:var(--ink-2);font-size:13px;font-weight:650}
+.bc-reason textarea{width:100%}
+.bc-reason-warn{margin:0;color:var(--bad);font-size:13px;font-weight:700}
+button.bc-danger{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.bc-link-button{display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border:1px solid var(--accent);border-radius:var(--radius);background:var(--panel);color:var(--accent);font-weight:700;text-decoration:none}
+.bc-link-button:hover{background:var(--accent-soft)}
+.bc-roundtrip{display:grid;gap:10px;padding-top:14px;border-top:1px solid var(--line)}
+.bc-upload{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.bc-upload label{color:var(--ink-2);font-size:13px;font-weight:650}
+.bc-upload input[type=file]{max-width:100%}
+.bc-preview{display:grid;gap:10px}
+.bc-select{display:grid;gap:4px;color:var(--ink-2);font-size:13px;font-weight:650;min-width:min(320px,100%)}
+.bc-select select{width:100%}
+.bc-editor{display:grid;gap:12px;padding:16px;border:1px solid var(--accent);border-radius:var(--radius);background:var(--panel-2)}
+.bc-editor h4{margin:0}
+.bc-changes{display:grid;gap:4px;padding:8px 12px;border-left:3px solid var(--accent);background:var(--accent-soft);color:var(--ink);font-size:13px}
+.bc-changes ul{margin:0;padding-left:18px}
+.bc-history{margin:6px 0 0;padding-left:20px;display:grid;gap:8px}
+.bc-history li{display:grid;gap:2px}
+.bc-history span{color:var(--ink-2);font-size:13px}
+.bc-history small{color:var(--ink-3)}
+.bc-months summary{cursor:pointer;color:var(--ink-2);font-weight:650}
+.bc-month-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:8px}
+.bc-month{padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.bc-month h4{margin:0 0 8px}
+.bc-slot-card{display:grid;gap:2px;margin-top:6px;padding:8px 10px;border-left:4px solid var(--line-3);background:var(--panel);color:var(--ink)}
+.bc-slot-card span{color:var(--ink-2);font-size:13px}
+.bc-slot-card small{color:var(--ink-3)}
+.bc-slot-card.is-warn{border-left-color:var(--warn);background:var(--warn-soft)}
+.bc-slot-card.is-warn small{color:var(--warn);font-weight:700}
+.bc-slot-card.is-bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.bc-slot-card.is-bad small{color:var(--bad);font-weight:700}
+.bc-cards{display:grid;gap:10px}
+.bc-card{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:12px 20px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.bc-card-main{display:grid;gap:6px;justify-items:start;flex:1 1 320px;min-width:0}
+.bc-card-main h4,.bc-card-main p{margin:0}
+.bc-card-form{display:grid;grid-template-columns:repeat(2,minmax(140px,1fr));gap:8px 12px;align-items:end;flex:1 1 360px;max-width:520px}
+/* 放送枠の入力（dialog）。showModal で他の部分は操作できなくなり、Esc で閉じる。 */
+.bc-dialog{width:min(780px,calc(100vw - 32px));max-height:calc(100vh - 48px);padding:0;border:1px solid var(--line-3);border-radius:var(--radius);background:var(--panel);color:var(--ink);box-shadow:var(--shadow);overflow:auto}
+.bc-dialog::backdrop{background:var(--bg);opacity:.78}
+.bc-dialog-body{display:grid;gap:14px;padding:20px 22px}
+.bc-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.bc-dialog-head h3{margin:0}
+.bc-station-field{display:grid;gap:8px;margin:0;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);min-width:0}
+.bc-station-field legend{display:flex;align-items:center;gap:8px;padding:0 4px;color:var(--ink-2);font-size:13px;font-weight:650}
+.bc-check{display:inline-flex;align-items:center;gap:8px;color:var(--ink-2);font-size:13px}
+.bc-check input{width:auto;min-height:0}
+@media(max-width:700px){
+  .bc-heading{align-items:stretch;flex-direction:column}
+  .bc-card-form{grid-template-columns:1fr;max-width:none}
+  .bc-dialog{width:calc(100vw - 16px);max-height:calc(100vh - 16px)}
+  .bc-dialog-body{padding:14px}
+  .bc-reason{max-width:none}
+}

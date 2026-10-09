@@ -1,0 +1,4 @@
+﻿report_key,partner_id,product_id,period_from,period_to,sales_period_from,sales_period_to,recognition_basis_id,sales_month,report_received_on,contract_start_on,license_start_on,broadcast_on,basis_reason,accounting_month,description,quantity,amount_ex_tax,tax_amount,amount_inc_tax,supersedes_id,kind
+demo-package-20260922,3,2,2026-08-01,2026-08-31,2026-08-01,2026-08-31,3,,,2026-08-01,,,契約利用期間の開始月で計上,2026-08,レンタルDVD正味売上,765,321300,32130,353430,,package
+demo-package-20260922,3,2,2026-08-01,2026-08-31,2026-08-01,2026-08-31,3,,,2026-08-01,,,契約利用期間の開始月で計上,2026-08,レンタルBD正味売上,248,143840,14384,158224,,package
+demo-package-20260922,3,2,2026-08-01,2026-08-31,2026-08-01,2026-08-31,3,,,2026-08-01,,,契約利用期間の開始月で計上,2026-08,セルDVD正味売上,145,261000,26100,287100,,package

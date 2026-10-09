@@ -1,0 +1,26 @@
+/* ロイヤリティの画面。UI指針: ../../../../docs/design/ui-guidelines.md（§8 のトークンだけを使う） */
+.ry-status{display:inline-block;padding:1px 8px;border-radius:6px;border:1px solid var(--line-3);background:var(--panel-2);font-size:12px;font-weight:800;white-space:nowrap}
+.ry-status.is-bad{color:var(--bad);border-color:var(--bad);background:var(--bad-soft)}
+.ry-status.is-warn{color:var(--warn);border-color:var(--warn);background:var(--warn-soft)}
+.ry-status.is-ok{color:var(--ok);border-color:var(--ok);background:var(--ok-soft)}
+.ry-status.is-info{color:var(--accent)}
+.ry-checks{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0;padding:10px 12px;border:1px solid var(--line-2);border-radius:var(--radius)}
+.ry-checks legend{font-size:13px;font-weight:700;color:var(--ink-2)}
+.ry-checks .check{font-weight:600;color:var(--ink)}
+.ry-phase{display:grid;gap:10px;padding:12px;border:1px solid var(--line-2);border-radius:var(--radius);background:var(--panel-2)}
+.ry-phase-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ry-phase-head h4{margin:0;font-size:14px}
+.ry-due{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,.8fr);gap:8px;align-items:end}
+.ry-section{display:grid;gap:12px;padding-top:6px}
+.ry-section>h3{margin:6px 0 0;font-size:16px}
+.ry-kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px 16px;margin:0}
+.ry-kv>div{display:grid;gap:2px;padding:8px 10px;border:1px solid var(--line-2);border-radius:var(--radius);background:var(--panel-2)}
+.ry-kv dt{color:var(--ink-3);font-size:12px}
+.ry-kv dd{margin:0;font-weight:700;overflow-wrap:anywhere}
+.ry-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
+.ry-cover{display:grid;gap:14px;padding:18px;border:2px solid var(--line);border-radius:var(--radius);background:var(--panel)}
+.ry-cover-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:2px solid var(--ink)}
+.ry-cover-head h3{margin:0;font-size:20px}
+.ry-cover-head p{margin:2px 0 0;color:var(--ink-2)}
+.ry-payable{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+@media(max-width:640px){.ry-due{grid-template-columns:1fr}}
