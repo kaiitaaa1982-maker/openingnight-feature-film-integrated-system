@@ -1,0 +1,1 @@
+{"format":"openingnight-preview","version":1,"recordedAt":"2026-10-25T21:04:24.830Z","timeZone":"Asia/Tokyo","org":{"code":"DEMO-SALES","name":"架空データ（デモ）"},"user":{"displayName":"架空デモ管理者","role":"admin"},"pages":1141,"generator":"scripts/build-preview.mjs","count":2797,"parts":["preview-data-1.json","preview-data-2.json","preview-data-3.json"]}

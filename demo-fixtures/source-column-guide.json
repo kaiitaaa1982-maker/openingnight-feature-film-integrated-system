@@ -1,0 +1,16 @@
+{
+  "notice": "非公式の架空データです。実在企業の発行書式を再現したものではありません。",
+  "work": {"id": 1, "code": "WRK-DEMO", "title": "風のあとさき"},
+  "streaming-platform": {
+    "headerRow": 4,
+    "masterMatches": {"商品ｺｰﾄﾞ": {"SKU-DIGI": {"product_id": 1, "channel": "digital"}}},
+    "suggestedMapping": {"作品CD": "work_code", "商品ｺｰﾄﾞ": "product_sku", "対象月": "sales_month", "視聴/契約数": "quantity", "正味売上": "amount_ex_tax"},
+    "fixedValues": {"partner_id": 2, "product_id": 1, "recognition_basis_id": 2, "kind": "digital"}
+  },
+  "videogram-rental": {
+    "headerRow": 4,
+    "masterMatches": {"品番": {"SKU-PACK": {"product_id": 2, "channel": "package"}}},
+    "suggestedMapping": {"作品コード": "work_code", "品番": "product_sku", "集計年月": "sales_month", "正味数量": "quantity", "正味額": "amount_ex_tax"},
+    "fixedValues": {"partner_id": 3, "product_id": 2, "recognition_basis_id": 3, "kind": "package"}
+  }
+}

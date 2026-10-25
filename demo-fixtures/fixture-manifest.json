@@ -1,0 +1,140 @@
+{
+  "generatedAt": "2026-09-21T22:26:13.991Z",
+  "fixtures": [
+    {
+      "id": "streaming-platform",
+      "files": {
+        "xlsx": "streaming-platform-sample.xlsx",
+        "csv": "streaming-platform-sample.csv"
+      },
+      "work": {
+        "code": "WRK-DEMO",
+        "title": "風のあとさき"
+      },
+      "period": "2026-08",
+      "disclaimer": "非公式・架空データ・実在企業発行書式ではありません。取込・加工テスト専用。",
+      "validRows": 3,
+      "badSourceRow": 8,
+      "expected": {
+        "gross": 1389000,
+        "fee": 234300,
+        "net": 1154700
+      },
+      "reloadInspection": {
+        "ok": true,
+        "artifactToolReloaded": true
+      }
+    },
+    {
+      "id": "videogram-rental",
+      "files": {
+        "xlsx": "videogram-rental-sample.xlsx",
+        "csv": "videogram-rental-sample.csv"
+      },
+      "work": {
+        "code": "WRK-DEMO",
+        "title": "風のあとさき"
+      },
+      "period": "2026-08",
+      "disclaimer": "非公式・架空データ・実在企業発行書式ではありません。取込・加工テスト専用。",
+      "validRows": 3,
+      "badSourceRow": 8,
+      "expected": {
+        "netUnits": 1158,
+        "net": 726140
+      },
+      "reloadInspection": {
+        "ok": true,
+        "artifactToolReloaded": true
+      }
+    },
+    {
+      "id": "demo-sales-streaming",
+      "org": {
+        "code": "DEMO-SALES",
+        "name": "架空データ（デモ）"
+      },
+      "files": {
+        "xlsx": "demo-sales-streaming-sample.xlsx"
+      },
+      "partner": {
+        "code": "DEMO-PF-B",
+        "name": "架空配信B・都度課金（架空）"
+      },
+      "kind": "digital",
+      "sheet": "Details",
+      "headerRow": 4,
+      "binding": {
+        "mode": "by_product",
+        "productColumn": "商品ｺｰﾄﾞ"
+      },
+      "amountColumn": "正味売上",
+      "period": "2026-07",
+      "disclaimer": "非公式・架空データ・実在企業発行書式ではありません。取込・加工テスト専用。",
+      "validRows": 9,
+      "works": 6,
+      "badSourceRow": 14,
+      "badReason": "商品コード欠落・正味額不一致",
+      "expected": {
+        "gross": 3122200,
+        "fee": 835160,
+        "net": 2287040,
+        "netByWork": {
+          "DEMO-W01": 492560,
+          "DEMO-W04": 339880,
+          "DEMO-W12": 151200,
+          "DEMO-W16": 106400,
+          "DEMO-W19": 854000,
+          "DEMO-W20": 343000
+        }
+      },
+      "excelInspection": {
+        "ok": true,
+        "tool": "Excel COM（開いて全再計算・検証期待値シートの差は正常行すべて0）"
+      }
+    },
+    {
+      "id": "demo-sales-videogram",
+      "org": {
+        "code": "DEMO-SALES",
+        "name": "架空データ（デモ）"
+      },
+      "files": {
+        "xlsx": "demo-sales-videogram-sample.xlsx"
+      },
+      "partner": {
+        "code": "DEMO-RNT-A",
+        "name": "架空レンタルチェーン（架空）"
+      },
+      "kind": "package",
+      "sheet": "Details",
+      "headerRow": 4,
+      "binding": {
+        "mode": "by_product",
+        "productColumn": "品番"
+      },
+      "amountColumn": "正味額",
+      "period": "2026-07",
+      "disclaimer": "非公式・架空データ・実在企業発行書式ではありません。取込・加工テスト専用。",
+      "validRows": 7,
+      "works": 5,
+      "badSourceRow": 12,
+      "badReason": "返品超過・正味額不一致",
+      "expected": {
+        "netUnits": 1449,
+        "net": 640580,
+        "netByWork": {
+          "DEMO-W03": 154040,
+          "DEMO-W05": 55020,
+          "DEMO-W09": 190020,
+          "DEMO-W14": 168840,
+          "DEMO-W17": 72660
+        }
+      },
+      "excelInspection": {
+        "ok": true,
+        "tool": "Excel COM（開いて全再計算・検証期待値シートの差は正常行すべて0）"
+      }
+    }
+  ]
+}
