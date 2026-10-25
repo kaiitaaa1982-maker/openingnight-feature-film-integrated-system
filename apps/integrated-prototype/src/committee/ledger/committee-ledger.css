@@ -1,0 +1,36 @@
+/* 製作委員会の契約の式・台帳の画面。見た目は core docs/design/integrated-system-visual.md（黒・白・灰＋赤1色、角丸0・影なし）。
+   赤は「いま確認すること」と止まっている印（検査の落ち・差額・回だけの変更）だけ */
+.cl { --cl-ink: #111111; --cl-paper: #ffffff; --cl-soft: #f3f1ec; --cl-sub: #5e5850; --cl-faint: #6b655c; --cl-rule: #cfc8ba; --cl-red: #b3261e;
+  max-width: 1080px; color: var(--cl-ink); font-family: Noto Sans JP, Yu Gothic, Hiragino Sans, Meiryo, sans-serif; }
+.cl-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 10px 0; }
+.cl select, .cl input { width: auto; }
+.cl select, .cl input, .cl textarea { font: inherit; font-size: 13px; border: 1px solid var(--cl-ink); border-radius: 0; background: var(--cl-paper); color: var(--cl-ink); padding: 2px 6px; }
+.cl input.n { text-align: right; width: 120px; font-variant-numeric: tabular-nums; }
+.cl button { font: inherit; font-size: 13px; border: 1px solid var(--cl-ink); border-radius: 0; background: var(--cl-paper); color: var(--cl-ink); padding: 3px 12px; cursor: pointer; }
+.cl button.pri { background: var(--cl-ink); color: var(--cl-paper); }
+.cl-tabs { display: flex; gap: 0; margin: 12px 0; border-bottom: 1px solid var(--cl-ink); }
+.cl-tabs button { border: 0; border-bottom: 3px solid transparent; padding: 4px 14px; font-weight: 600; color: var(--cl-sub); background: transparent; }
+.cl-tabs button[aria-pressed="true"] { color: var(--cl-ink); border-bottom-color: var(--cl-ink); font-weight: 800; }
+.cl-table { border-collapse: collapse; width: 100%; font-size: 13px; margin-bottom: 14px; }
+.cl-table th, .cl-table td { padding: 3px 8px; border-bottom: 1px solid var(--cl-rule); text-align: left; white-space: nowrap; }
+.cl-table th { color: var(--cl-sub); font-weight: 500; background: var(--cl-soft); }
+.cl-table .n { text-align: right; font-variant-numeric: tabular-nums; }
+.cl-table tr.grp td { background: var(--cl-soft); font-weight: 700; }
+.cl-table tr.sum td { font-weight: 800; border-bottom: 1px solid var(--cl-ink); }
+.cl-table tr.own td { font-weight: 800; }
+.cl-tag { display: inline-block; border: 1px solid var(--cl-ink); font-size: 11px; padding: 0 6px; margin-left: 6px; font-weight: 600; }
+.cl-red, .cl-tag.red { color: var(--cl-red); border-color: var(--cl-red); }
+.cl-note { color: var(--cl-sub); font-size: 12px; margin: 4px 0 10px; }
+.cl-alert { border-left: 3px solid var(--cl-red); padding: 6px 10px; margin: 8px 0; font-size: 13px; }
+.cl-lane { border: 1px solid var(--cl-ink); margin-bottom: 10px; }
+.cl-lane-head { background: var(--cl-soft); padding: 4px 10px; font-size: 13px; border-bottom: 1px solid var(--cl-rule); }
+.cl-steps { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; align-items: center; }
+.cl-step { border: 1px solid var(--cl-ink); padding: 4px 8px; font-size: 12px; min-width: 120px; }
+.cl-step b { display: block; font-weight: 800; }
+.cl-arrow { color: var(--cl-faint); }
+
+.cl-pad { padding: 0 8px 8px; margin: 0; }
+.cl-narrow { width: 80px; }
+.cl-months button { padding: 0 4px; margin-right: 1px; }
+.cl-months button[aria-pressed="true"] { background: var(--cl-ink); color: var(--cl-paper); }
+.cl details > summary { cursor: pointer; }

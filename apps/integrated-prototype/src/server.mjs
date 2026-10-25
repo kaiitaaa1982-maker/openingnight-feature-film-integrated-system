@@ -31,7 +31,7 @@ const fetch = async request => {
   const response = await app.fetch(request);
   const headers = new Headers(response.headers);
   headers.set('X-Content-Type-Options','nosniff'); headers.set('X-Frame-Options','DENY'); headers.set('Referrer-Policy','no-referrer');
-  headers.set('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'");
+  headers.set('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src https://player.vimeo.com; frame-ancestors 'none'; base-uri 'none'; object-src 'none'");
   return new Response(response.body,{status:response.status,statusText:response.statusText,headers});
 };
 const server = serve({ fetch, hostname: '127.0.0.1', port }, info => {

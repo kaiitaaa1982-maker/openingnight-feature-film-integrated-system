@@ -78,8 +78,8 @@ export function ManualAmounts({from, to, works = [], canEdit, onChanged}) {
     <section className="card rp-report" aria-label="手入力">
       <header className="rp-head">
         <div>
-          <h2>手入力の額（勘定科目×月）</h2>
-          <p className="rp-muted">システムに無い科目（全社費用・営業外・特別・法人税等・借入金・資本金など）と、期首残高の基準月{body?.openingMonth ? `（${monthLabel(body.openingMonth)}）` : ''}の残高を入れます。PLの科目は税抜の発生額、BSの科目は月末の残高です。課税の費用・収益は消費税額も入れると、現預金は税込で動き、税額は未払消費税等（仮払・仮受）に入ります。取り消した行は表に入りません。</p>
+          <h2>手入力</h2>
+          {body?.openingMonth && <p className="rp-muted">期首 {monthLabel(body.openingMonth)}末</p>}
         </div>
       </header>
       {state.error && <Notice error={state.error} />}
@@ -90,13 +90,13 @@ export function ManualAmounts({from, to, works = [], canEdit, onChanged}) {
         <form className="plbs-form" onSubmit={save}>
           <h3>額を入れる</h3>
           <FormField type="select" label="勘定科目" required value={form.accountId} options={accountOptions} onChange={(value) => setForm({...form, accountId: value})}
-            hint={account?.note || (account ? `${isBalance ? '月末の残高' : '発生額（PL）'}を入れます` : '')} />
+            hint={account?.note} />
           <FormField type="month" label="月" required value={form.month} onChange={(value) => setForm({...form, month: value})} />
-          <FormField type="yen" label={isBalance ? '月末の残高（円）' : '発生額（税抜・円）'} required allowNegative value={form.amount} onChange={(value) => setForm({...form, amount: value})} hint={isBalance ? '' : '税抜'} />
-          {takesTax && <FormField type="yen" label="消費税額（円）" allowNegative value={form.tax} onChange={(value) => setForm({...form, tax: value})} hint="課税の費用・収益だけ（非課税・不課税は空欄）" />}
+          <FormField type="yen" label={isBalance ? '月末の残高（円）' : '発生額（税抜・円）'} required allowNegative value={form.amount} onChange={(value) => setForm({...form, amount: value})} />
+          {takesTax && <FormField type="yen" label="消費税額（円）" allowNegative value={form.tax} onChange={(value) => setForm({...form, tax: value})} />}
           <FormField type="select" label="作品（任意）" value={form.workId} blankLabel="作品を付けない（会社全体）" options={works.map((work) => ({value: String(work.id), label: `${work.code}｜${work.title}`}))}
-            onChange={(value) => setForm({...form, workId: value})} hint="作品に付けた費用・収益は、その作品のPLに入ります" />
-          <FormField type="text" label="根拠" required wide value={form.basis} maxLength={500} onChange={(value) => setForm({...form, basis: value})} hint="資料名・計算の仕方（例: 給与台帳 2026年5月分）" />
+            onChange={(value) => setForm({...form, workId: value})} />
+          <FormField type="text" label="根拠" required wide value={form.basis} maxLength={500} onChange={(value) => setForm({...form, basis: value})} />
           <FormField type="select" label="状態" value={form.status} includeBlank={false} options={[{value: 'unverified', label: '未確認'}, {value: 'reviewed', label: '確認済み'}]} onChange={(value) => setForm({...form, status: value})} />
           <button type="submit" disabled={busy || !form.accountId || !form.month || !form.basis}>{busy ? '保存中…' : '入れる'}</button>
         </form>
@@ -107,7 +107,6 @@ export function ManualAmounts({from, to, works = [], canEdit, onChanged}) {
           <summary>入れた額の履歴（取消を含む {body.rows.length}行）</summary>
           <DataGrid columns={MANUAL_HISTORY_COLUMNS} rows={body.rows} rowKey="id" showTotals={false} persistKey="plbs-manual-history" ariaLabel="入れた額の履歴"
             onRowClick={canEdit ? (row) => setReverse(row.live ? {...row, reason: ''} : null) : undefined} exportSpec={{name: '手入力の履歴'}} />
-          {canEdit && <p className="rp-muted">取り消す行を押すと、取消の理由を入れる欄が出ます。</p>}
         </details>
       )}
       {reverse && (
@@ -179,7 +178,6 @@ export function CompanySettings({canEdit, onChanged, onNavigate}) {
       <header className="rp-head">
         <div>
           <h2>会社の設定</h2>
-          <p className="rp-muted">このシステムを運用している会社の法人情報です。変えるたびに新しい版を足し、前の版は残ります。</p>
         </div>
       </header>
       {notice && <Notice tone={notice.tone} message={notice.message} error={notice.error} onDismiss={() => setNotice(null)} />}
@@ -197,10 +195,9 @@ export function CompanySettings({canEdit, onChanged, onNavigate}) {
         <FormField type="text" label="インボイス登録番号" value={form.invoiceRegistrationNumber} disabled={!canEdit} placeholder="T1234567890123" onChange={(value) => setForm({...form, invoiceRegistrationNumber: value})} />
         <FormField type="text" label="郵便番号" value={form.postalCode} disabled={!canEdit} onChange={(value) => setForm({...form, postalCode: value})} />
         <FormField type="text" label="住所" wide value={form.address} disabled={!canEdit} onChange={(value) => setForm({...form, address: value})} />
-        <FormField type="yen" label="資本金（円）" value={form.capitalYen} disabled={!canEdit} onChange={(value) => setForm({...form, capitalYen: value})} hint="会社BSの資本金は手入力の残高で入れます（ここは法人の情報）" />
-        <FormField type="select" label="自社を表す取引先" value={form.selfPartnerId} disabled={!canEdit} options={partnerOptions} blankLabel="選ばない" onChange={(value) => setForm({...form, selfPartnerId: value})}
-          hint="製作委員会の参加者のうち自社にあたる取引先。委員会作品の自社の取り分に使います" />
-        <FormField type="month" label="期首残高の基準月" value={form.openingMonth} disabled={!canEdit} onChange={(value) => setForm({...form, openingMonth: value})} hint="この月の月末残高を手入力で入れ、その後の動きを足してBSを出します" />
+        <FormField type="yen" label="資本金（円）" value={form.capitalYen} disabled={!canEdit} onChange={(value) => setForm({...form, capitalYen: value})} />
+        <FormField type="select" label="自社を表す取引先" value={form.selfPartnerId} disabled={!canEdit} options={partnerOptions} blankLabel="選ばない" onChange={(value) => setForm({...form, selfPartnerId: value})} />
+        <FormField type="month" label="期首残高の基準月" value={form.openingMonth} disabled={!canEdit} onChange={(value) => setForm({...form, openingMonth: value})} />
         {canEdit && <FormField type="text" label="変更の理由" required wide value={form.reason} onChange={(value) => setForm({...form, reason: value})} />}
         {canEdit && <button type="submit" disabled={busy || !form.legalName.trim() || !form.reason.trim()}>新しい版を保存</button>}
       </form>
@@ -209,7 +206,7 @@ export function CompanySettings({canEdit, onChanged, onNavigate}) {
         <p><button type="button" disabled={busy} onClick={() => run(() => shell.request('/pl-bs/accounts/defaults', {method: 'POST', body: '{}'}), '勘定科目の初期値を入れました')}>
           勘定科目の初期値を入れる（{body.missingDefaults}科目）</button></p>
       )}
-      <DataGrid columns={accountColumns} rows={body.accounts} rowKey="id" showTotals={false} persistKey="plbs-accounts" emptyText="勘定科目がまだありません。初期値を入れてください" exportSpec={{name: '勘定科目'}} />
+      <DataGrid columns={accountColumns} rows={body.accounts} rowKey="id" showTotals={false} persistKey="plbs-accounts" emptyText="勘定科目なし" exportSpec={{name: '勘定科目'}} />
       {canEdit && (
         <form className="plbs-form" onSubmit={(event) => { event.preventDefault(); run(() => shell.request('/pl-bs/accounts', {method: 'POST', body: JSON.stringify(account)}), `科目 ${account.code} を足しました`); }}>
           <h3>手入力の科目を足す</h3>

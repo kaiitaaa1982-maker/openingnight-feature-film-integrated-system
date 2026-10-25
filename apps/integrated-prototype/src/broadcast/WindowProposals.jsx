@@ -89,7 +89,7 @@ export function ProposalDetail({row, compose = null}) {
         <section><h5>塞がっている期間</h5>{r.blocked.length ? <ul>{r.blocked.map((b, i) => <li key={i}>{intervalText(b)} {b.station}（{b.kind === 'holdback' ? `ホールドバック${b.months}か月` : '独占'}{b.planned ? '・予定' : ''}{b.productScoped ? '・この商品の指定' : ''}）</li>)}</ul> : <p className="rp-muted">なし</p>}</section>
         <section><h5>提案する期間</h5>{r.proposals.length ? <ul>{r.proposals.map((p, i) => <li key={i}>{intervalText(p)}（{p.run}{p.short ? '・短い' : ''}）{p.others.length ? `／同時期の他局: ${p.others.map((o) => o.station).join('・')}` : ''}</li>)}</ul> : <p className="rp-muted">{r.state === 'blocked' ? '提案なし（要確認の理由を見てください）' : '24か月以内に空きはありません'}</p>}</section>
         <section><h5>許諾回数と残り</h5>
-          <p className="rp-muted">許諾放送回数・ホールドバックは 営業基幹 › 取引先別リスト › 局のリスト › 明細を開いた「放送の条件」で入れます（版で積みます）。</p>
+          <p className="rp-muted">許諾放送回数・ホールドバックは 営業管理 › 取引先別の配信・販売リスト › 局のリスト › 明細を開いた「放送の条件」で入れます（版で積みます）。</p>
           {r.licenses.length ? <ul>{r.licenses.map((l) => (
             <li key={l.entryId}>{l.station}（明細 {l.entryId}・{exclusivityText(l)}）: {l.licensed === null ? '許諾回数は未確認' : `${l.licensed}回中${l.used}回・残り${l.remaining}回`}{l.holdbackMonths === null ? '・ホールドバック未確認' : `・ホールドバック${l.holdbackMonths}か月`}
               {missingTerms(l) && l.partnerId && l.listId && !shell.readOnly && (

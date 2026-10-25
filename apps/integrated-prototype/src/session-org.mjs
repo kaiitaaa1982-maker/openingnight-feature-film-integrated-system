@@ -67,9 +67,11 @@ export async function identityForUser(db, user, cookieHeader, now = Date.now()) 
   };
 }
 
-// Cloudflare Access で確かめたメール（小文字）から利用者を引き、所属を選ぶ
-export async function identityForEmail(db, email, cookieHeader, now = Date.now()) {
+// Cloudflare Access で確かめたメール（小文字）から利用者を引き、所属を選ぶ。
+// onUser(user) は利用者を引けた直後、所属を読む前に呼ぶ（PostgreSQL の入口に利用者 ID を置き、所属を行単位の権限の下で読むため。src/cloud-worker.mjs）
+export async function identityForEmail(db, email, cookieHeader, now = Date.now(), {onUser} = {}) {
   const user = await db.get('SELECT id AS user_id,email,display_name FROM users WHERE email=?', [email]);
+  if (user && onUser) onUser(user);
   return identityForUser(db, user, cookieHeader, now);
 }
 

@@ -15,6 +15,7 @@ import {listFiles, mimeOf, FILE_LIMIT_BYTES, requiredPreviewApiUrls} from './bui
 import {PREVIEW_BANNER_TEXT, PREVIEW_MISSING_MESSAGE, PREVIEW_READ_ONLY_MESSAGE, snapshotKey} from '../src/preview/snapshot-client.mjs';
 import {ADDITIONAL_SHEET_COLUMNS} from '../src/sales-sheet/column-registry.mjs';
 import {fiscalSettingFrom, fiscalYearOf} from '../src/ui/condition-model.mjs';
+import {expenseColumnsOfSet} from '../src/expense-sheet/expense-columns.mjs';
 
 const appRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -345,7 +346,9 @@ export async function verifyPreview(options, log = console.log) {
     await page.goto(`${home}?p=expense-sheet`,{waitUntil:'load'});await wait(1200);
     const expenseTable=page.getByRole('table',{name:'経費集計シート',exact:true});
     const headers=await expenseTable.getByRole('columnheader').allTextContents();
-    check('経費集計シート: 基本25列の見出し',headers.length===25&&['締め日','出金予定日','出金日'].every(label=>headers.some(h=>h.includes(label))),headers.join('・'));
+    // 画面の既定の列セット（basic＝standard33）の見出しは経費の列の定義から（#26〜33 を含む）
+    const basicHeadings=expenseColumnsOfSet('basic').map(c=>c.label);
+    check(`経費集計シート: 基本${basicHeadings.length}列の見出し`,headers.length===basicHeadings.length&&basicHeadings.every(label=>headers.some(h=>h.includes(label))),headers.join('・'));
     const expenseTabs=page.getByRole('group',{name:'経費の業務'});
     await expenseTabs.getByRole('button',{name:'出金予定',exact:true}).click();await wait();
     const payoutRows=await page.getByRole('table',{name:'出金予定の明細',exact:true}).locator('tbody tr').count();

@@ -1,8 +1,9 @@
 // 売上集計シート（83列・売上基幹 › 計上 › 帳票）の API。設計: docs/platform/team-development/eigyo-sales-sheet-design.md §4。
-// - 列カタログ: 一覧・初期の83列の採用・列の追加・版（管理者だけ・理由必須・監査記録）
+// - 列カタログ: 一覧・辞書（column-registry.mjs の SHEET_COLUMNS）の採用・採用済みの組織を辞書の v2 にそろえる adopt-v2・列の追加・版
+//   （管理者だけ・理由必須・監査記録）。列の並び・CSV は辞書の順（sort_order）
 // - シート: サーバー側で絞り、ページに分ける（明細）／切り口で集計する（集計）。合計・空の列は条件に合う全行から作る
 // - 値: 拡張属性（1売上×1列×版）・外貨・ロイヤリティ計上の基準を版で積む（財務の権限・理由必須・監査記録）
-// - シート定義（保存した形）・Excel（条件のシートつき）・83列の順の CSV
+// - シート定義（保存した形）・Excel（条件のシートつき）・辞書の順（sort_order）の CSV
 // 見られるのは制作担当以外で、売上明細と同じ「財務の権限がある作品の、有効な報告の売上」。商品を複数の作品に配賦した明細は、
 // 配賦先の作品すべてに権限があるときだけ出す（額は配賦前の明細の額）。
 // D1 の上限: 作品・売上のIDを値として並べない（権限は副問い合わせ、読んだ売上のIDは json_each の1つの値で渡す）。
@@ -11,13 +12,17 @@ import {encodeReportXlsx} from '../xlsx-report.mjs';
 import {toCsv} from '../csv.mjs';
 import {DISTRIBUTION_TYPE_LABELS_SQL} from '../distribution-label.mjs';
 import {
-  INITIAL_SHEET_COLUMNS, INITIAL_CATALOG_VERSION, COLUMN_SETS, COLUMN_SET_LABELS, ALL_SET, SOURCE_REFS, GROUPS, VALUE_TYPES, AGGREGATIONS, SOURCE_KINDS,
-  columnsOfSet, BLOCK_LABELS, salesBlock, ADDITIONAL_SHEET_COLUMNS, ADDITIONAL_CATALOG_VERSION, ADDITIONAL_COLUMN_SETS,
+  INITIAL_CATALOG_VERSION, SHEET_CATALOG_VERSION, COLUMN_SETS, COLUMN_SET_LABELS, ALL_SET, SOURCE_REFS, GROUPS, VALUE_TYPES, AGGREGATIONS, SOURCE_KINDS,
+  columnsOfSet, BLOCK_LABELS, salesBlock, ADDITIONAL_SHEET_COLUMNS, ADDITIONAL_CATALOG_VERSION, ADDITIONAL_COLUMN_SETS, KIND_CODE, KIND_CODE_OTHER, kindDistributionCode,
+  isV2Catalog, ROYALTY_AMOUNT_KEYS, REMOVED_ATTRIBUTE_KEYS,
 } from './column-registry.mjs';
 import {
   DIMENSIONS, MONTH_BASES, TAX_BASES, GRAINS, MAX_PIVOT_MONTHS, catalogIndex, requiredKeys, needsOf, rowRecord, rowValues, createGroup, addToGroup, finishGroup,
-  aggregateCell, groupKeyOf, pivotAmountKey, monthRange, gridType, groupLabel,
+  aggregateCell, groupKeyOf, pivotAmountKey, pivotAmountLabel, monthRange, gridType, groupLabel, royaltyAmountMismatches, attributeOrphans, adoptionRows, adoptV2Plan,
+  royaltyPivotDiffers, royaltyPivotNote, RATE_BLOCKS, rateKeyConflicts, rateBlockMismatches, rateSaleBlocksOf,
 } from './sales-sheet-model.mjs';
+import {mgContractStatus} from '../mg-portfolio.mjs';
+import {loadRoyaltyMismatchRows, loadLatestAttributeValues, loadIncomingMg, loadRateSaleBlockRows} from './sales-sheet-store.mjs';
 import {
   parseAttributeValue, sameAttribute, normalizeCurrencyInput, normalizeRoyaltyInput, normalizeColumnDefinition, normalizeSheetQuery, normalizeViewDefinition, BILLING_FILTERS, DEAL_TYPES,
 } from './sales-sheet-input.mjs';
@@ -36,7 +41,8 @@ export const SUMMARY_LIMIT = 50000; // 合計・空の列を画面のたびに�
 export const EXPORT_LIMIT = 100000; // 集計・出力で読む行の上限（Excel の帳票の行の上限と同じ）
 export const MAX_VALUE_CHANGES = 500;
 const IDS = 'SELECT CAST(value AS INTEGER) FROM json_each(?)';
-const KIND_CODE = {digital: 'digital_unknown', package: 'package_unknown', theatrical: 'theatrical', broadcast: 'broadcast_unknown'};
+// 流通の分類が無い明細の流通区分（報告の種類の既定）。column-registry.mjs の KIND_CODE から作る（シートの値と絞り込みで同じ表）
+const KIND_CODE_SQL = `CASE r.kind ${Object.entries(KIND_CODE).map(([kind, code]) => `WHEN '${kind}' THEN '${code}'`).join(' ')} ELSE '${KIND_CODE_OTHER}' END`;
 
 const text = (value, max, required = false) => {
   if (value !== null && value !== undefined && typeof value !== 'string') throw Error('文字を入力してください');
@@ -67,7 +73,7 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
   async function loadCatalog(orgId) {
     const rows = await db.all(`SELECT c.*, u.display_name AS created_by_name FROM sales_sheet_column_versions c LEFT JOIN users u ON u.id=c.created_by
       WHERE c.org_id=? AND c.version_no=(SELECT MAX(x.version_no) FROM sales_sheet_column_versions x WHERE x.org_id=c.org_id AND x.column_key=c.column_key)
-      ORDER BY COALESCE(c.legacy_position,1000), c.sort_order, c.column_key`, [orgId]);
+      ORDER BY c.sort_order, c.column_key`, [orgId]);
     return rows.map((row) => ({...row, active: Number(row.active) === 1}));
   }
   const publicColumn = (column) => ({
@@ -106,7 +112,7 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
     if (f.kind) { where.push('r.kind=?'); params.push(f.kind); }
     if (f.distribution) {
       where.push(`COALESCE((SELECT d.distribution_code FROM sale_distribution_versions d WHERE d.org_id=s.org_id AND d.sale_id=s.id ORDER BY d.version_no DESC LIMIT 1),
-        CASE r.kind WHEN 'digital' THEN 'digital_unknown' WHEN 'package' THEN 'package_unknown' WHEN 'theatrical' THEN 'theatrical' WHEN 'broadcast' THEN 'broadcast_unknown' ELSE 'other' END)=?`);
+        ${KIND_CODE_SQL})=?`);
       params.push(f.distribution);
     }
     // 請求（取り消していない請求に入っている売上が請求済）・商品（none は商品を決めていない明細）・取引区分（流通分類の精算方式。記録が無ければ未確認）
@@ -136,32 +142,18 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
     const shared = {types: new Map(), mg: null, depth: null};
     for (const row of await db.all(DISTRIBUTION_TYPE_LABELS_SQL)) shared.types.set(row.code, row.label);
     if (needs.has('mg')) {
-      const [terms, products, ledger] = await Promise.all([
-        db.all(`SELECT t.id,t.incoming_contract_id,t.version,t.mg_amount_yen,t.starts_on,t.ends_on,c.code FROM mg_term_versions t
-          JOIN mg_incoming_contracts c ON c.org_id=t.org_id AND c.id=t.incoming_contract_id WHERE t.org_id=? AND t.incoming_contract_id IS NOT NULL`, [orgId]),
-        db.all('SELECT term_version_id,product_id FROM mg_version_products WHERE org_id=?', [orgId]),
-        db.all('SELECT id,term_version_id,accounting_month,applied_recoup_yen,reverses_entry_id FROM mg_ledger_entries WHERE org_id=?', [orgId]),
-      ]);
-      const latest = new Map();
-      for (const t of terms) if (!latest.has(t.incoming_contract_id) || latest.get(t.incoming_contract_id).version < t.version) latest.set(t.incoming_contract_id, t);
-      const contractOfTerm = new Map(terms.map((t) => [t.id, t.incoming_contract_id]));
-      const byProduct = new Map();
+      // 受取の MG 契約ごとの条件版（商品つき）と台帳の行。版の選び方と残高は MG 台帳の計算（mg-portfolio.mjs の mgContractStatus）を使う
+      const {contracts, terms, products, ledger} = await loadIncomingMg(db, orgId);
+      const contractOfTerm = new Map(terms.map((t) => [Number(t.id), Number(t.incoming_contract_id)]));
+      const productsOfTerm = new Map();
       for (const p of products) {
-        const contract = contractOfTerm.get(p.term_version_id);
-        if (contract === undefined || latest.get(contract)?.id !== p.term_version_id) continue;
-        if (!byProduct.has(p.product_id)) byProduct.set(p.product_id, []);
-        byProduct.get(p.product_id).push(latest.get(contract));
+        if (!productsOfTerm.has(Number(p.term_version_id))) productsOfTerm.set(Number(p.term_version_id), new Set());
+        productsOfTerm.get(Number(p.term_version_id)).add(Number(p.product_id));
       }
-      const reversed = new Set(ledger.filter((e) => e.reverses_entry_id).map((e) => e.reverses_entry_id));
-      const applied = new Map(); // contract -> [{month, yen}]
-      for (const e of ledger) {
-        if (e.reverses_entry_id || reversed.has(e.id)) continue;
-        const contract = contractOfTerm.get(e.term_version_id);
-        if (contract === undefined) continue;
-        if (!applied.has(contract)) applied.set(contract, []);
-        applied.get(contract).push({month: e.accounting_month, yen: Number(e.applied_recoup_yen)});
-      }
-      shared.mg = {byProduct, applied};
+      const byContract = new Map(contracts.map((c) => [Number(c.id), {code: c.code, versions: [], ledger: []}]));
+      for (const t of terms) byContract.get(Number(t.incoming_contract_id))?.versions.push({...t, id: Number(t.id), version: Number(t.version)});
+      for (const e of ledger) byContract.get(contractOfTerm.get(Number(e.term_version_id)))?.ledger.push(e);
+      shared.mg = {byContract, productsOfTerm, memo: new Map()};
     }
     if (needs.has('depth')) {
       const chain = new Map((await db.all('SELECT id,supersedes_id FROM report_imports WHERE org_id=?', [orgId])).map((row) => [row.id, row.supersedes_id]));
@@ -178,13 +170,24 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
     }
     return shared;
   }
+  // 売上の商品が入っている受取の MG 契約と、計上月の条件版・残高。条件版は MG 台帳の選び方（その月末までに始まった最新の版。FR-SETL-MGL-050）、
+  // 残高は MG 台帳の回収の計算（保証額−計上月までの実充当。訂正は訂正後の行。FR-SETL-MGL-026）。商品が入っているかは MG 帳票の商品の行と同じ
+  // （選んだ版の商品と、計上月までの台帳の行の商品）。商品が入っている契約が2つ以上なら、選んだ版の始まりが遅い契約（同じなら ID の大きい契約）
   function mgFor(shared, productId, month) {
-    const list = productId ? shared.mg?.byProduct.get(productId) : null;
-    if (!list?.length) return null;
-    const covering = list.filter((t) => t.starts_on.slice(0, 7) <= month && t.ends_on.slice(0, 7) >= month);
-    const term = (covering.length ? covering : list).sort((a, b) => b.starts_on.localeCompare(a.starts_on) || b.id - a.id)[0];
-    const recouped = (shared.mg.applied.get(term.incoming_contract_id) || []).filter((e) => e.month <= month).reduce((n, e) => n + e.yen, 0);
-    return {code: term.code, mg_amount_yen: term.mg_amount_yen, starts_on: term.starts_on, ends_on: term.ends_on, balance_yen: term.mg_amount_yen - recouped};
+    if (!productId || !shared.mg) return null;
+    const key = `${productId}|${month}`;
+    if (shared.mg.memo.has(key)) return shared.mg.memo.get(key);
+    let found = null;
+    for (const [contractId, contract] of shared.mg.byContract) {
+      const status = mgContractStatus({versions: contract.versions, ledger: contract.ledger, accountingMonth: month});
+      if (!status || !(shared.mg.productsOfTerm.get(status.version.id)?.has(Number(productId)) || status.ledgerProductIds.has(Number(productId)))) continue;
+      const candidate = {contractId, code: contract.code, mg_amount_yen: status.guaranteeYen, starts_on: status.version.starts_on, ends_on: status.version.ends_on,
+        balance_yen: status.remainingAppliedYen};
+      if (!found || candidate.starts_on > found.starts_on || (candidate.starts_on === found.starts_on && candidate.contractId > found.contractId)) found = candidate;
+    }
+    const value = found ? {code: found.code, mg_amount_yen: found.mg_amount_yen, starts_on: found.starts_on, ends_on: found.ends_on, balance_yen: found.balance_yen} : null;
+    shared.mg.memo.set(key, value);
+    return value;
   }
 
   // ids の売上の ctx を ids の順で返す
@@ -261,7 +264,7 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
       const d = dist.get(row.id);
       const invoice = bill.get(row.id);
       const billed = invoice && !invoice.voided_on;
-      const code = d?.distribution_code || KIND_CODE[row.kind] || 'other';
+      const code = d?.distribution_code || kindDistributionCode(row.kind);
       byId.set(row.id, {
         s: row, r: {kind: row.kind, report_key: row.report_key, created_at: row.report_created_at, content_hash: row.content_hash, supersedes_id: row.supersedes_id, depth: shared.depth ? shared.depth(row.report_id) : null,
           status: row.report_status, period_from: row.report_period_from, period_to: row.report_period_to}, recognition: recognition.get(row.id) || null,
@@ -287,7 +290,7 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
     if (parsed.error) throw Error(parsed.error);
     const f = parsed.value;
     const selected = (f.columns.length ? f.columns : columnsOfSet(f.set, catalog)).filter((key) => index.has(key));
-    const pivotKey = f.pivot ? pivotAmountKey(f.monthBasis, f.taxBasis) : null;
+    const pivotKey = f.pivot ? pivotAmountKey(f.monthBasis, f.taxBasis, index) : null;
     const keys = requiredKeys([...selected, ...(pivotKey ? [pivotKey] : [])], index);
     const needs = needsOf(keys, index, {dimensions: f.dimensions, monthBasis: f.monthBasis});
     return {catalog, index, f, selected, keys, needs, pivotKey};
@@ -309,7 +312,7 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
     }
     return {total, tooMany: false};
   }
-  const conditionList = (f, names = {}) => [
+  const conditionList = (f, names = {}, pivotKey = null) => [
     ['月の基準', MONTH_BASES[f.monthBasis]], ['期間', f.from || f.to ? `${f.from || '…'}〜${f.to || '…'}` : '指定なし'],
     ...(f.workId ? [['作品', names.work || String(f.workId)]] : []), ...(f.partnerId ? [['取引先', names.partner || String(f.partnerId)]] : []),
     ...(f.kind ? [['報告の種類', {theatrical: '劇場', digital: '配信', package: 'ビデオグラム', broadcast: '放送', other: 'その他'}[f.kind]]] : []),
@@ -317,7 +320,7 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
     ...(f.billing ? [['請求', BILLING_FILTERS[f.billing]]] : []), ...(f.productId ? [['商品', f.productId === 'none' ? '商品未登録（作品に直接計上）' : names.product || String(f.productId)]] : []),
     ...(f.deal ? [['取引区分', DEAL_TYPES[f.deal]]] : []),
     ['粒度', GRAINS[f.grain]], ...(f.dimensions.length ? [['切り口', f.dimensions.map((d) => DIMENSIONS[d].label).join('・')]] : []),
-    ...(f.pivot ? [['月を横に並べる', `${TAX_BASES[f.taxBasis]}の${f.monthBasis === 'royalty' ? 'ロイヤリティ計上額' : '計上額'}`]] : []),
+    ...(f.pivot ? [['月を横に並べる', `${TAX_BASES[f.taxBasis]}の${pivotAmountLabel(pivotKey ?? pivotAmountKey(f.monthBasis, f.taxBasis))}`]] : []),
     ['列セット', f.columns.length ? '指定した列' : COLUMN_SET_LABELS[f.set] || f.set],
   ];
   // 条件に出す名前。作品は財務の権限がある案件の中で引く（権限が無ければ denied。売上明細と同じく 403 にする）
@@ -338,11 +341,14 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
   }
   const WORK_DENIED = '作品の財務権限がありません';
 
-  // 集計（切り口ごと）。全行から作ってページに分ける
+  // 集計（切り口ごと）。全行から作ってページに分ける。royaltyPivotDiffers: ロイヤリティ計上月の横並びが計上額を読み、
+  // ロイヤリティ計上の額が計上額と違う明細の数（4列を止めたあとに額の違う版を記録した明細。条件に出す）
   async function aggregateRows(i, prep) {
     const groups = new Map();
     const pivotMonths = new Set();
     const totals = createGroup(prep.keys, prep.index);
+    const watchRoyalty = prep.f.monthBasis === 'royalty' && Boolean(prep.pivotKey);
+    let royaltyDiffers = 0;
     const result = await eachRow(i, prep, (ctx) => {
       const record = rowRecord(ctx, prep.keys, prep.index, {monthBasis: prep.f.monthBasis});
       addToGroup(totals, record);
@@ -355,6 +361,7 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
         const amount = record.values[prep.pivotKey];
         if (amount !== null && amount !== undefined) group.pivot.set(record.month, (group.pivot.get(record.month) || 0) + amount);
       }
+      if (watchRoyalty && royaltyPivotDiffers(ctx, prep.pivotKey)) royaltyDiffers += 1;
     });
     if (result.tooMany) return result;
     let months = [];
@@ -372,8 +379,11 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
       return row;
     }).sort((a, b) => prep.f.dimensions.map((dim) => String(a[`dimkey_${dim}`] || '￿').localeCompare(String(b[`dimkey_${dim}`] || '￿'))).find((n) => n !== 0) || 0);
     const total = finishGroup(totals);
-    return {total: result.total, rows, months, totals: Object.fromEntries(prep.selected.map((key) => [key, aggregateCell(prep.index.get(key), total.values[key])])), mixed: total.mixed};
+    return {total: result.total, rows, months, totals: Object.fromEntries(prep.selected.map((key) => [key, aggregateCell(prep.index.get(key), total.values[key])])), mixed: total.mixed,
+      royaltyPivotDiffers: royaltyDiffers};
   }
+  // 横並びの額の注意（ロイヤリティ計上月の横並びが計上額を読み、ロイヤリティ計上の額が違う明細があるとき）を条件の最後に足す
+  const withPivotNote = (conditions, out) => (out.royaltyPivotDiffers ? [...conditions, ['横並びの額', royaltyPivotNote(out.royaltyPivotDiffers)]] : conditions);
 
   // 明細の1ページ（と、条件に合う全行の合計・空の列）
   async function detailPage(i, prep, {summary = true} = {}) {
@@ -416,6 +426,32 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
   const scopeText = (i) => (i.role === 'admin' ? '組織の全作品の有効な報告の売上明細（訂正で置き換えた旧報告は含めない）'
     : '財務の権限がある作品の有効な報告の売上明細（訂正で置き換えた旧報告は含めない。複数の作品に配賦した商品の明細は、配賦先すべてに権限があるときだけ）');
 
+  // ---- 採用の前に数える件数 -----------------------------------------------------------------------
+  // 裁定3 (a): ロイヤリティ計上の額が売上と食い違う版（最新のロイヤリティ計上の基準・外貨の版。報告の状態は問わない）を、4項目ごとに売上の数で数える
+  async function royaltyMismatchOf(orgId) {
+    return royaltyAmountMismatches(await loadRoyaltyMismatchRows(db, orgId));
+  }
+  // 拡張属性の最新の版（数の値は Number にそろえる）
+  const latestAttributeValues = async (orgId) => (await loadLatestAttributeValues(db, orgId)).map(attributeNumber);
+  // 裁定1の前提（G-7）: 1売上に料率が2つ以上ある売上と、料率のキーと流通のまとまりが食い違う売上
+  async function ratePremiseOf(orgId, values) {
+    const blocks = rateSaleBlocksOf(await loadRateSaleBlockRows(db, orgId, Object.keys(RATE_BLOCKS)));
+    return {rateKeys: rateKeyConflicts(values), rateBlocks: rateBlockMismatches(values, blocks)};
+  }
+  const examplesText = (item) => (item.count ? `${item.count}件（売上ID ${item.examples.join('・')}${item.count > item.examples.length ? ' ほか' : ''}）` : '0件');
+  const keptReasonOf = (mismatch, kept) => `ロイヤリティ計上の額が売上と食い違う版が${mismatch.count}件あるので、ロイヤリティ計上の額の${kept.length}列（${kept.join('・')}）を残しました`
+    + '（FR-SETL-ACCR-096 は額を変えさせない。食い違いは列「ロイヤリティ計上額の食い違い」で探せます）';
+  // 列の版をまとめて入れる（1つの文。行数によらず文の数は増えない）。rows は adoptionRows・adoptV2Plan の行（version_no・active つき）
+  const insertVersions = (i, rows, reason) => ({sql: `INSERT INTO sales_sheet_column_versions(org_id,column_key,version_no,label,legacy_position,group_key,value_type,aggregation,
+      numerator_key,denominator_key,ratio_scale,digits,source_kind,source_ref,formula_json,description,sort_order,active,reason,created_by)
+    SELECT ?,json_extract(j.value,'$.k'),json_extract(j.value,'$.v'),json_extract(j.value,'$.l'),json_extract(j.value,'$.p'),json_extract(j.value,'$.g'),json_extract(j.value,'$.t'),
+      json_extract(j.value,'$.a'),json_extract(j.value,'$.nk'),json_extract(j.value,'$.dk'),json_extract(j.value,'$.rs'),json_extract(j.value,'$.d'),json_extract(j.value,'$.sk'),
+      json_extract(j.value,'$.sr'),json_extract(j.value,'$.f'),json_extract(j.value,'$.ds'),json_extract(j.value,'$.o'),json_extract(j.value,'$.x'),?,? FROM json_each(?) j`,
+  params: [i.org_id, reason, i.user_id, JSON.stringify(rows.map((row) => ({
+    k: row.column_key, v: row.version_no, l: row.label, p: row.legacy_position, g: row.group_key, t: row.value_type, a: row.aggregation, nk: row.numerator_key, dk: row.denominator_key,
+    rs: row.ratio_scale, d: row.digits, sk: row.source_kind, sr: row.source_ref, f: row.formula_json, ds: row.description, o: row.sort_order, x: row.active,
+  })))]});
+
   // ---- API: カタログ ----------------------------------------------------------------------------
   app.get('/api/sales-sheet/columns', wrap(async (c) => {
     const i = c.get('identity');
@@ -425,23 +461,26 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
     const index = catalogIndex(catalog);
     const finance = (await permittedProjects(db, i, true)).length > 0;
     const adopted = catalog.length > 0;
-    const additionalColumns = ADDITIONAL_SHEET_COLUMNS.filter((column) => !index.has(column.column_key))
+    const v2 = isV2Catalog(index);
+    // 追加の列（互換）: 統合前に初期の列だけを採用した組織に、まだ無い追加の列。辞書を採用した組織（v2）と採用前の組織には無い（採用で辞書の列が入る）
+    const additionalColumns = (adopted && !v2 ? ADDITIONAL_SHEET_COLUMNS.filter((column) => !index.has(column.column_key)) : [])
       .map((column) => ({key: column.column_key, label: column.label, group: column.group_key, groupLabel: groupLabel(column)}));
     // 採用前: 採用する列の一覧（採用前に見られるように）と、管理者以外には依頼先の管理者の名前（組織の中の有効な管理者だけ）
+    const adoption = adopted ? null : adoptionRows({keepRoyalty: (await royaltyMismatchOf(i.org_id)).count > 0});
     const pending = adopted ? {} : {
-      initialColumns: INITIAL_SHEET_COLUMNS.map((column) => ({key: column.column_key, label: column.label, legacyPosition: column.legacy_position ?? null, group: column.group_key, groupLabel: groupLabel(column)})),
+      initialColumns: adoption.map((column) => ({key: column.column_key, label: column.label, legacyPosition: column.legacy_position ?? null, group: column.group_key, groupLabel: groupLabel(column)})),
     };
     const contacts = adopted && !additionalColumns.length ? {} : {
       admins: i.role === 'admin' ? [] : (await db.all(`SELECT u.display_name FROM memberships m JOIN users u ON u.id=m.user_id
         WHERE m.org_id=? AND m.role='admin' AND m.active=1 AND (m.expires_at IS NULL OR m.expires_at>?) ORDER BY u.display_name`, [i.org_id, nowIso()])).map((row) => row.display_name),
     };
     return c.json({
-      ok: true, adopted, ...pending, ...contacts, canAdmin: i.role === 'admin', canEdit: finance, catalogVersion: INITIAL_CATALOG_VERSION,
+      ok: true, adopted, ...pending, ...contacts, canAdmin: i.role === 'admin', canEdit: finance, catalogVersion: adopted && !v2 ? INITIAL_CATALOG_VERSION : SHEET_CATALOG_VERSION,
       columns: catalog.map((column) => publicColumn(index.get(column.column_key))),
       sets: [...COLUMN_SETS.map((set) => ({key: set.key, label: set.label, columns: columnsOfSet(set.key, catalog)})), {key: ALL_SET, label: COLUMN_SET_LABELS[ALL_SET], columns: columnsOfSet(ALL_SET, catalog)},
         ...ADDITIONAL_COLUMN_SETS.map((set) => ({key: set.key, label: set.label, columns: columnsOfSet(set.key, catalog)}))],
       additionalPending: additionalColumns.length, additionalColumns,
-      initialCount: INITIAL_SHEET_COLUMNS.length, groups: GROUPS, valueTypes: VALUE_TYPES, aggregations: AGGREGATIONS, sourceKinds: SOURCE_KINDS,
+      initialCount: (adoption ?? adoptionRows()).length, groups: GROUPS, valueTypes: VALUE_TYPES, aggregations: AGGREGATIONS, sourceKinds: SOURCE_KINDS,
       sourceRefs: Object.entries(SOURCE_REFS).map(([key, value]) => ({key, label: value.label, valueType: value.valueType})),
       dimensions: Object.entries(DIMENSIONS).map(([key, value]) => ({key, label: value.label})), monthBases: MONTH_BASES, taxBases: TAX_BASES, grains: GRAINS, blocks: BLOCK_LABELS,
     });
@@ -458,26 +497,68 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
     return c.json({ok: true, canOpen: true, workIds: works.map((row) => row.id)});
   }));
 
+  // 新しい組織の採用: 辞書（SHEET_COLUMNS）の使う列を版1で入れる。裁定3 (a): ロイヤリティ計上の額が売上と食い違う版が0件なら、その4列は入れない
   app.post('/api/sales-sheet/columns/adopt', wrap(async (c) => {
     const i = c.get('identity');
     if (i.role !== 'admin') return bad(c, '列の採用・追加・変更は管理者が行います', 403);
     const b = await body(c), reason = reasonOf(b.reason);
     if ((await loadCatalog(i.org_id)).length) return bad(c, 'この組織は売上集計シートの列を採用済みです。列は追加・版の作成で直してください', 409);
-    const payload = INITIAL_SHEET_COLUMNS.map((column, n) => ({
-      k: column.column_key, l: column.label, p: column.legacy_position, g: column.group_key, t: column.value_type, a: column.aggregation, nk: column.numerator_key, dk: column.denominator_key,
-      rs: column.ratio_scale, d: column.digits, sk: column.source_kind, sr: column.source_ref, f: column.formula ? JSON.stringify(column.formula) : null, ds: column.description, o: (n + 1) * 10,
-    }));
+    const mismatch = await royaltyMismatchOf(i.org_id);
+    const kept = mismatch.count > 0 ? [...ROYALTY_AMOUNT_KEYS] : [];
+    const rows = adoptionRows({keepRoyalty: kept.length > 0});
     await db.batch([
       guard('EXISTS(SELECT 1 FROM sales_sheet_column_versions WHERE org_id=?)', [i.org_id]),
-      {sql: `INSERT INTO sales_sheet_column_versions(org_id,column_key,version_no,label,legacy_position,group_key,value_type,aggregation,numerator_key,denominator_key,ratio_scale,digits,
-          source_kind,source_ref,formula_json,description,sort_order,active,reason,created_by)
-        SELECT ?,json_extract(j.value,'$.k'),1,json_extract(j.value,'$.l'),json_extract(j.value,'$.p'),json_extract(j.value,'$.g'),json_extract(j.value,'$.t'),json_extract(j.value,'$.a'),
-          json_extract(j.value,'$.nk'),json_extract(j.value,'$.dk'),json_extract(j.value,'$.rs'),json_extract(j.value,'$.d'),json_extract(j.value,'$.sk'),json_extract(j.value,'$.sr'),
-          json_extract(j.value,'$.f'),json_extract(j.value,'$.ds'),json_extract(j.value,'$.o'),1,?,? FROM json_each(?) j`,
-      params: [i.org_id, reason, i.user_id, JSON.stringify(payload)]},
-      audit(i, 'adopt', 'sales_sheet_column', i.org_id, {template: INITIAL_CATALOG_VERSION, columns: payload.length, reason}),
+      insertVersions(i, rows, reason),
+      audit(i, 'adopt', 'sales_sheet_column', i.org_id, {template: SHEET_CATALOG_VERSION, columns: rows.length, kept, royaltyMismatch: mismatch.count, reason}),
     ]);
-    return c.json({ok: true, adopted: payload.length}, 201);
+    return c.json({ok: true, adopted: rows.length, kept, ...(kept.length ? {keptReason: keptReasonOf(mismatch, kept)} : {})}, 201);
+  }));
+
+  // 採用済みの組織（統合前の初期の列・追加の列）を辞書の v2 にそろえる（香盤表 #7 で代表が流す）。差分は sales-sheet-model.mjs の adoptV2Plan:
+  // 退役キー・外す列（と裁定3で止める4列）の使っている列に active=0 の版、無い列を版1、残す列の見出し・群・並び・式・説明などが違えば次の版。
+  // 裁定3の食い違いがある組織では、止めてあった4列を使う版に戻す（止めたあとに額の違う版を記録した組織は、流し直すと4列が戻る）。
+  // 取り方の違う列・見出しの重なりと、料率の集計の分子・分母を変えるのに裁定1の前提（G-7）を満たさない売上がある組織は、409 で名指しし版を足さない。
+  // 2回目の呼び出しは版を足さない
+  app.post('/api/sales-sheet/columns/adopt-v2', wrap(async (c) => {
+    const i = c.get('identity');
+    if (i.role !== 'admin') return bad(c, '列の採用・追加・変更は管理者が行います', 403);
+    const b = await body(c), reason = reasonOf(b.reason);
+    const catalog = await loadCatalog(i.org_id);
+    if (!catalog.length) return bad(c, 'この組織は売上集計シートの列をまだ採用していません。先に列を採用してください（採用で辞書の列が入ります）', 409);
+    const mismatch = await royaltyMismatchOf(i.org_id);
+    const plan = adoptV2Plan(catalog, {keepRoyalty: mismatch.count > 0});
+    if (plan.conflicts.length) {
+      return bad(c, `辞書と取り方（型・取り方の種類・許可リストのキー・元の列番号）の違う列があります: ${plan.conflicts.map((item) => `${item.key}（${item.items.join('・')}）`).join('、')}。`
+        + '辞書の誤りか、同じキーの独自列です。版は足していません', 409, {conflicts: plan.conflicts});
+    }
+    if (plan.labelClashes.length) {
+      return bad(c, `辞書の見出しがほかの列の見出しと重なります（全角・半角を区別しない）: ${plan.labelClashes.map((item) => `${item.label}（${item.keys.join('・')}）`).join('、')}。版は足していません`,
+        409, {labelClashes: plan.labelClashes});
+    }
+    const values = await latestAttributeValues(i.org_id);
+    if (plan.rateBasisChanged.length) {
+      // 辞書の料率の列は計上額（税抜）を分子にする（統合前は流通のまとまりの当社売上）。前提を満たさない売上があると、料率の集計が黙って変わる
+      const premise = await ratePremiseOf(i.org_id, values);
+      if (premise.rateKeys.count || premise.rateBlocks.count) {
+        return bad(c, `料率の列の前提を満たさない売上があります: 料率が2つ以上ある売上 ${examplesText(premise.rateKeys)}、料率のキーと流通のまとまりが食い違う売上 ${examplesText(premise.rateBlocks)}。`
+          + '辞書の料率の集計は計上額（税抜）を分子にするので、このままそろえると料率の集計が変わります。料率の値を直してから流し直してください。版は足していません',
+        409, {ratePremise: premise, rateBasisChanged: plan.rateBasisChanged});
+      }
+    }
+    const activeAfter = new Set([...catalog.filter((column) => column.active && !plan.deactivated.includes(column.column_key)).map((column) => column.column_key),
+      ...plan.added, ...plan.reactivated]);
+    const result = {
+      ok: true, template: SHEET_CATALOG_VERSION, adopted: plan.versions.length, added: plan.added, updated: plan.updated, deactivated: plan.deactivated, kept: plan.kept,
+      reactivated: plan.reactivated, ...(plan.kept.length ? {keptReason: keptReasonOf(mismatch, plan.kept)} : {}), updatedFields: plan.updatedFields, revertedEdits: plan.revertedEdits,
+      royaltyMismatch: mismatch, attributeOrphans: attributeOrphans(values, {dictionaryKeys: [...activeAfter], removedKeys: REMOVED_ATTRIBUTE_KEYS}),
+    };
+    if (!plan.versions.length) return c.json(result);
+    await db.batch([
+      insertVersions(i, plan.versions, reason),
+      audit(i, 'adopt', 'sales_sheet_column', i.org_id, {template: SHEET_CATALOG_VERSION, via: 'adopt-v2', added: plan.added, updated: plan.updated, deactivated: plan.deactivated,
+        kept: plan.kept, reactivated: plan.reactivated, revertedEdits: plan.revertedEdits.map((item) => item.key), royaltyMismatch: mismatch.count, reason}),
+    ]);
+    return c.json(result, 201);
   }));
 
   const insertColumn = (i, d, versionNo, reason) => ({sql: `INSERT INTO sales_sheet_column_versions(org_id,column_key,version_no,label,legacy_position,group_key,value_type,aggregation,numerator_key,
@@ -485,12 +566,14 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
   params: [i.org_id, d.column_key, versionNo, d.label, d.legacy_position, d.group_key, d.value_type, d.aggregation, d.numerator_key, d.denominator_key, d.ratio_scale, d.digits,
     d.source_kind, d.source_ref, d.formula_json, d.description, d.sort_order, d.active, reason, i.user_id]});
 
+  // 追加の列（互換）: 統合前に初期の列だけを採用した組織だけが使う。辞書を採用した組織（v2）には追加の列が入っているので、何もしない
   app.post('/api/sales-sheet/columns/adopt-additional', wrap(async (c) => {
     const i = c.get('identity');
     if (i.role !== 'admin') return bad(c, '追加の列の採用は管理者が行います', 403);
     const b = await body(c), reason = reasonOf(b.reason);
     const index = catalogIndex(await loadCatalog(i.org_id));
     if (!index.size) return bad(c, '先に初期の83列を採用してください', 409);
+    if (isV2Catalog(index)) return c.json({ok: true, adopted: 0});
     for (const column of ADDITIONAL_SHEET_COLUMNS) {
       const existing = index.get(column.column_key);
       if (existing && (existing.source_kind !== column.source_kind || existing.source_ref !== column.source_ref || existing.value_type !== column.value_type || existing.legacy_position !== null)) {
@@ -549,7 +632,7 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
     const prep = await prepare(i, c.req.query());
     const named = await names(i, prep.f);
     if (named.denied) return bad(c, WORK_DENIED, 403);
-    const conditions = conditionList(prep.f, named);
+    const conditions = conditionList(prep.f, named, prep.pivotKey);
     const columns = prep.selected.map((key) => publicColumn(prep.index.get(key)));
     if (!prep.catalog.length) return c.json({ok: true, adopted: false, columns: [], rows: [], total: 0, page: 1, pages: 1, conditions, scope: scopeText(i)});
     if (prep.f.grain === 'aggregate') {
@@ -561,7 +644,8 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
       return c.json({ok: true, adopted: true, grain: 'aggregate', selected: prep.selected, dimensions: prep.f.dimensions.map((key) => ({key, label: DIMENSIONS[key].label})),
         columns: visible, hiddenEmpty: columns.filter((column) => !visible.includes(column)).map((column) => column.key), months: out.months, pivotKey: prep.pivotKey,
         rows: out.rows.slice((page - 1) * prep.f.pageSize, page * prep.f.pageSize), groups: out.rows.length, total: out.total, page, pages, pageSize: prep.f.pageSize,
-        totals: out.totals, mixed: out.mixed, latestMonth: out.total === 0 ? await latestMonthOf(i, prep) : null, unclassifiedCount: await unclassifiedCountOf(i, prep), conditions, scope: scopeText(i)});
+        totals: out.totals, mixed: out.mixed, latestMonth: out.total === 0 ? await latestMonthOf(i, prep) : null, unclassifiedCount: await unclassifiedCountOf(i, prep),
+        conditions: withPivotNote(conditions, out), scope: scopeText(i)});
     }
     const out = await detailPage(i, prep, {summary: c.req.query('summary') !== '0'});
     const hidden = prep.f.hideEmpty && out.empty ? new Set(out.empty) : new Set();
@@ -579,7 +663,7 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
     if (!prep.catalog.length) return bad(c, '売上集計シートの列がまだ採用されていません', 409);
     const named = await names(i, prep.f);
     if (named.denied) return bad(c, WORK_DENIED, 403);
-    const conditions = conditionList(prep.f, named);
+    let conditions = conditionList(prep.f, named, prep.pivotKey);
     const sheetColumn = (column) => {
       const type = gridType(column);
       return {key: column.column_key, label: column.label, type: column.aggregation === 'min_max' || column.aggregation === 'distinct' ? (prep.f.grain === 'aggregate' ? 'text' : type) : type,
@@ -592,11 +676,12 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
       if (out.tooMany) return bad(c, `条件に合う売上が${out.total.toLocaleString('ja-JP')}件あり、出力できる${EXPORT_LIMIT.toLocaleString('ja-JP')}件を超えます。期間や取引先で絞ってください`, 413);
       // 月を横に並べるときは、月の列を切り口の直後に置く（画面と同じ並び。右端まで送らなくても月が見える）
       columns = [...prep.f.dimensions.map((dim) => ({key: `dim_${dim}`, label: DIMENSIONS[dim].label, type: 'text'})),
-        ...out.months.map((month) => ({key: `m_${month}`, label: `${month}（${prep.f.monthBasis === 'royalty' ? 'ロイヤリティ計上額' : '計上額'}・${TAX_BASES[prep.f.taxBasis]}）`, type: 'yen'})),
+        ...out.months.map((month) => ({key: `m_${month}`, label: `${month}（${pivotAmountLabel(prep.pivotKey)}・${TAX_BASES[prep.f.taxBasis]}）`, type: 'yen'})),
         {key: '__count', label: '明細数', type: 'int'}, ...columns];
       rows = out.rows;
       totals = out.totals;
       total = out.total;
+      conditions = withPivotNote(conditions, out);
     } else {
       const state = createGroup(prep.keys, prep.index);
       const collected = [];
@@ -636,22 +721,22 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
         rows: definitionRows, notes: conditions.map(([k, v]) => `${k}: ${v}`)},
       {name: '_meta', hidden: true, titleBand: false, freezeCols: 0, columns: [{key: 'key', label: '項目', type: 'text'}, {key: 'value', label: '値', type: 'text'}],
         rows: [{key: '出力日時', value: dataAsOf}, {key: '組織', value: String(i.org_id)}, {key: '行数', value: String(rows.length)}, {key: '明細数', value: String(total)},
-          {key: '列', value: prep.selected.join(',')}, {key: '初期の列の版', value: INITIAL_CATALOG_VERSION}]},
+          {key: '列', value: prep.selected.join(',')}, {key: '初期の列の版', value: isV2Catalog(prep.index) ? SHEET_CATALOG_VERSION : INITIAL_CATALOG_VERSION}]},
     ];
     const bytes = encodeReportXlsx({sheets});
     return new Response(bytes, {headers: {'content-type': XLSX_TYPE, 'content-disposition': attachment(`売上集計シート_${stamp()}.xlsx`, 'sales-sheet.xlsx')}});
   }));
 
-  // 83列の順の CSV（明細・日付 YYYY/MM/DD・月 YYYY/MM・率は%の数・はい/いいえは 1/0）
+  // CSV（明細・日付 YYYY/MM/DD・月 YYYY/MM・率は%の数・はい/いいえは 1/0）。export.csv は辞書の順の全列（旧83列の順は廃止）、
+  // export-selected.csv は列セット・指定した列
   const exportCsv = (selectedColumns) => wrap(async (c) => {
     const i = c.get('identity');
     const no = denied(c, i);
     if (no) return no;
     const catalog = await loadCatalog(i.org_id);
     if (!catalog.length) return bad(c, '売上集計シートの列がまだ採用されていません', 409);
-    let legacy = catalog.filter((column) => column.legacy_position).sort((a, b) => a.legacy_position - b.legacy_position);
-    const prep = await prepare(i, {...c.req.query(), grain: 'detail', ...(selectedColumns ? {} : {columns: legacy.map((column) => column.column_key).join(',')})});
-    if (selectedColumns) legacy = prep.selected.map((key) => prep.index.get(key));
+    const prep = await prepare(i, {...c.req.query(), grain: 'detail', ...(selectedColumns ? {} : {columns: columnsOfSet(ALL_SET, catalog).join(',')})});
+    const csvColumns = prep.selected.map((key) => prep.index.get(key));
     if ((await names(i, prep.f)).denied) return bad(c, WORK_DENIED, 403);
     const format = (column, value) => {
       if (value === null || value === undefined) return '';
@@ -663,11 +748,11 @@ export function registerSalesSheetRoutes(app, {db, bad, body, permittedProjects,
     const lines = [];
     const result = await eachRow(i, prep, (ctx) => {
       const values = rowValues(ctx, prep.keys, prep.index);
-      lines.push({month: ctx.s.accounting_month, id: ctx.s.id, cells: legacy.map((column) => format(column, values[column.column_key]))});
+      lines.push({month: ctx.s.accounting_month, id: ctx.s.id, cells: csvColumns.map((column) => format(column, values[column.column_key]))});
     });
     if (result.tooMany) return bad(c, `条件に合う売上が${result.total.toLocaleString('ja-JP')}件あり、出力できる${EXPORT_LIMIT.toLocaleString('ja-JP')}件を超えます。期間や取引先で絞ってください`, 413);
     lines.sort((a, b) => b.month.localeCompare(a.month) || b.id - a.id);
-    const csv = toCsv(legacy.map((column) => column.label), lines.map((line) => line.cells));
+    const csv = toCsv(csvColumns.map((column) => column.label), lines.map((line) => line.cells));
     return new Response(`﻿${csv}`, {headers: {'content-type': 'text/csv; charset=utf-8', 'content-disposition': attachment(`売上集計シート_${selectedColumns ? '選択列' : '83列'}_${stamp()}.csv`, selectedColumns ? 'sales-sheet-selected.csv' : 'sales-sheet-83.csv')}});
   });
   app.get('/api/sales-sheet/export.csv', exportCsv(false));

@@ -1,0 +1,1978 @@
+{
+  "format": "expense-sheet-grain-snapshot",
+  "source": "scripts/expense-sheet-grain-fixtures.mjs で、統合前の main のコードと架空データ（seed-all-demo の sales・distribution・expenses の節と、この道具の追加。組織 DEMO-SALES）から作った。手で直さない",
+  "org": "DEMO-SALES",
+  "seedSteps": ["sales","distribution","expenses"],
+  "royaltyAsOf": "2026-09-25",
+  "roundTrip": {
+    "seed": {
+      "partner": {
+        "code": "DEMO-EXP-GRAIN-PAYEE",
+        "name": "経費の往復の支払先（架空）"
+      },
+      "incurredOn": "2026-09-14",
+      "category": "DEMO-EXP-promotion",
+      "tax": "DEMO-TAX-10",
+      "withholding": "DEMO-WH-MANUAL",
+      "distribution": "theatrical",
+      "invoices": {
+        "A": {
+          "code": "DEMO-GRAIN-INV-A",
+          "invoice_number": "DEMO-GRAIN-A（架空）",
+          "document_kind": "invoice",
+          "invoice_on": "2026-09-14",
+          "closing_on": "2026-09-30",
+          "due_on": "2026-10-31"
+        },
+        "B": {
+          "code": "DEMO-GRAIN-INV-B",
+          "invoice_number": null,
+          "document_kind": "receipt",
+          "invoice_on": "2026-09-20",
+          "closing_on": "2026-09-30",
+          "due_on": "2026-10-31"
+        }
+      },
+      "lines": [
+        {
+          "invoice": "A",
+          "description": "往復の明細1（架空）",
+          "recorded_on": "2026-09-14",
+          "actual_ex_tax": 12000,
+          "tax_amount": 1200,
+          "withholding_yen": 1000,
+          "work": true,
+          "product": true,
+          "distribution": true,
+          "quantity_x10000": 20000,
+          "unit_price_x10000": 60000000,
+          "specification": "B2・4色（架空）",
+          "memo": "往復のメモ（架空）",
+          "supplier_text": "架空の印刷所",
+          "source_client_name": "架空の取引先"
+        },
+        {
+          "invoice": "A",
+          "description": "往復の明細2（架空）",
+          "recorded_on": "2026-09-15",
+          "actual_ex_tax": 5000,
+          "tax_amount": 500,
+          "withholding_yen": 0,
+          "work": true
+        },
+        {
+          "invoice": "B",
+          "description": "往復の領収書（架空）",
+          "recorded_on": "2026-09-20",
+          "actual_ex_tax": 3000,
+          "tax_amount": 300,
+          "withholding_yen": 0,
+          "work": false
+        }
+      ]
+    },
+    "before": {
+      "legacy.csv": {
+        "status": 201,
+        "ready": 3,
+        "held": 0,
+        "excluded": 0,
+        "known_ex_tax": 20000,
+        "unknown": 0,
+        "issues": []
+      },
+      "legacy.xlsx": {
+        "status": 400,
+        "error": "経費入力シートがありません"
+      },
+      "basic.csv": {
+        "status": 400,
+        "error": "未対応の形式です。経費の22列または25列の雛形を使ってください"
+      },
+      "basic.xlsx": {
+        "status": 400,
+        "error": "経費入力シートがありません"
+      }
+    }
+  },
+  "unrelatedCategory": {
+    "invoice": "DEMO-GRAIN-UNRELATED",
+    "category": "未対応の費目（架空）",
+    "description": "費目の自由文が版と無関係（架空）"
+  },
+  "royaltyExpense": {
+    "work": "DEMO-W06",
+    "category": "パッケージ製作費",
+    "categoryCode": "DEMO-EXP-direct_cost",
+    "invoice": "DEMO-GRAIN-ROYALTY",
+    "recorded_on": "2026-09-10",
+    "actual_ex_tax": 400000,
+    "tax_amount": 40000,
+    "description": "ロイヤリティの控除に入る経費（架空）"
+  },
+  "sheet": {
+    "total": 145,
+    "totals": {
+      "actual_ex_tax": {
+        "known": 352259780,
+        "unknown": 0
+      },
+      "tax_amount": {
+        "known": 35221371,
+        "unknown": 0
+      },
+      "withholding_yen": {
+        "known": 5400,
+        "unknown": 0
+      },
+      "payable_yen": {
+        "known": 387475751,
+        "unknown": 0
+      },
+      "cash_due_yen": {
+        "known": 387395551,
+        "unknown": 0
+      }
+    },
+    "cashMismatch": 0,
+    "groups": [
+      {
+        "key": ["DEMO-EXP-COMMON","","","DEMO-PARTNER-20","DEMO-EXP-work_other_expense#1","2026-09"],
+        "count": 2,
+        "actual_ex_tax": 8500,
+        "tax_amount": 700,
+        "actual_inc_tax": 9200,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 8100
+      },
+      {
+        "key": ["DEMO-EXP-COMMON","","","DEMO-PARTNER-31","DEMO-EXP-work_other_expense#1","2026-02"],
+        "count": 1,
+        "actual_ex_tax": 1000,
+        "tax_amount": 100,
+        "actual_inc_tax": 1100,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-EXP-COMMON","","","DEMO-PARTNER-EOM","DEMO-EXP-work_other_expense#1","2024-02"],
+        "count": 1,
+        "actual_ex_tax": 1000,
+        "tax_amount": 100,
+        "actual_inc_tax": 1100,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-EXP-COMMON","","","DEMO-PARTNER-EOM","DEMO-EXP-work_other_expense#1","2026-09"],
+        "count": 6,
+        "actual_ex_tax": 73000,
+        "tax_amount": 7300,
+        "actual_inc_tax": 80300,
+        "withholding_yen": 3400,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 29100
+      },
+      {
+        "key": ["DEMO-EXP-COMMON","","","DEMO-PARTNER-EOM","DEMO-EXP-work_other_expense#1","2026-10"],
+        "count": 5,
+        "actual_ex_tax": 26000,
+        "tax_amount": 0,
+        "actual_inc_tax": 26000,
+        "withholding_yen": 1000,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 28000
+      },
+      {
+        "key": ["DEMO-EXP-COMMON","","","DEMO-PARTNER-EOM","DEMO-EXP-work_other_expense#1","2026-11"],
+        "count": 1,
+        "actual_ex_tax": 12000,
+        "tax_amount": 0,
+        "actual_inc_tax": 12000,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 12000
+      },
+      {
+        "key": ["DEMO-EXP-COMMON","","","DEMO-PARTNER-EOM","DEMO-EXP-work_other_expense#1","2026-12"],
+        "count": 1,
+        "actual_ex_tax": 1000,
+        "tax_amount": 100,
+        "actual_inc_tax": 1100,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-EXP-COMMON","","","DEMO-RNT-A","DEMO-EXP-work_other_expense#1","2026-10"],
+        "count": 1,
+        "actual_ex_tax": 6000,
+        "tax_amount": 0,
+        "actual_inc_tax": 6000,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 6000
+      },
+      {
+        "key": ["DEMO-P1","","","DEMO-EXP-GRAIN-PAYEE","DEMO-EXP-promotion#1","2026-09"],
+        "count": 1,
+        "actual_ex_tax": 3000,
+        "tax_amount": 300,
+        "actual_inc_tax": 3300,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W01","","DEMO-EXP-GRAIN-PAYEE","DEMO-EXP-promotion#1","2026-09"],
+        "count": 1,
+        "actual_ex_tax": 5000,
+        "tax_amount": 500,
+        "actual_inc_tax": 5500,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W01","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2024-10"],
+        "count": 1,
+        "actual_ex_tax": 258975,
+        "tax_amount": 25897,
+        "actual_inc_tax": 284872,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W01","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2024-11"],
+        "count": 2,
+        "actual_ex_tax": 2725712,
+        "tax_amount": 272570,
+        "actual_inc_tax": 2998282,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W01","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2024-06"],
+        "count": 1,
+        "actual_ex_tax": 33433905,
+        "tax_amount": 3343390,
+        "actual_inc_tax": 36777295,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W01","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2024-07"],
+        "count": 1,
+        "actual_ex_tax": 23239502,
+        "tax_amount": 2323950,
+        "actual_inc_tax": 25563452,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W01","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2024-11"],
+        "count": 1,
+        "actual_ex_tax": 2341353,
+        "tax_amount": 234135,
+        "actual_inc_tax": 2575488,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W01","","DEMO-EXP-PAYEE","DEMO-EXP-work_other_expense#1","2025-07"],
+        "count": 1,
+        "actual_ex_tax": 131670,
+        "tax_amount": 13167,
+        "actual_inc_tax": 144837,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W01","theatrical","DEMO-EXP-GRAIN-PAYEE","DEMO-EXP-promotion#1","2026-09"],
+        "count": 1,
+        "actual_ex_tax": 12000,
+        "tax_amount": 1200,
+        "actual_inc_tax": 13200,
+        "withholding_yen": 1000,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W02","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2024-11"],
+        "count": 1,
+        "actual_ex_tax": 278826,
+        "tax_amount": 27882,
+        "actual_inc_tax": 306708,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W02","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2024-12"],
+        "count": 2,
+        "actual_ex_tax": 1725749,
+        "tax_amount": 172574,
+        "actual_inc_tax": 1898323,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W02","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2024-07"],
+        "count": 1,
+        "actual_ex_tax": 6416846,
+        "tax_amount": 641684,
+        "actual_inc_tax": 7058530,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W02","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2024-08"],
+        "count": 1,
+        "actual_ex_tax": 5060502,
+        "tax_amount": 506050,
+        "actual_inc_tax": 5566552,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W02","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2024-12"],
+        "count": 1,
+        "actual_ex_tax": 697993,
+        "tax_amount": 69799,
+        "actual_inc_tax": 767792,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W02","","DEMO-EXP-PAYEE","DEMO-EXP-work_other_expense#1","2025-08"],
+        "count": 1,
+        "actual_ex_tax": 124143,
+        "tax_amount": 12414,
+        "actual_inc_tax": 136557,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W03","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2024-12"],
+        "count": 1,
+        "actual_ex_tax": 278657,
+        "tax_amount": 27865,
+        "actual_inc_tax": 306522,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W03","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-01"],
+        "count": 2,
+        "actual_ex_tax": 1832119,
+        "tax_amount": 183211,
+        "actual_inc_tax": 2015330,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W03","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2024-08"],
+        "count": 1,
+        "actual_ex_tax": 13968048,
+        "tax_amount": 1396804,
+        "actual_inc_tax": 15364852,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W03","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2024-09"],
+        "count": 1,
+        "actual_ex_tax": 10944375,
+        "tax_amount": 1094437,
+        "actual_inc_tax": 12038812,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W03","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-01"],
+        "count": 1,
+        "actual_ex_tax": 1246908,
+        "tax_amount": 124690,
+        "actual_inc_tax": 1371598,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W03","","DEMO-EXP-PAYEE","DEMO-EXP-work_other_expense#1","2025-09"],
+        "count": 1,
+        "actual_ex_tax": 120163,
+        "tax_amount": 12016,
+        "actual_inc_tax": 132179,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W04","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-01"],
+        "count": 1,
+        "actual_ex_tax": 304064,
+        "tax_amount": 30406,
+        "actual_inc_tax": 334470,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W04","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-02"],
+        "count": 2,
+        "actual_ex_tax": 2196102,
+        "tax_amount": 219609,
+        "actual_inc_tax": 2415711,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W04","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2024-09"],
+        "count": 1,
+        "actual_ex_tax": 24578516,
+        "tax_amount": 2457851,
+        "actual_inc_tax": 27036367,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W04","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2024-10"],
+        "count": 1,
+        "actual_ex_tax": 16958009,
+        "tax_amount": 1695800,
+        "actual_inc_tax": 18653809,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W04","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-02"],
+        "count": 1,
+        "actual_ex_tax": 1491799,
+        "tax_amount": 149179,
+        "actual_inc_tax": 1640978,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W04","","DEMO-EXP-PAYEE","DEMO-EXP-work_other_expense#1","2025-10"],
+        "count": 1,
+        "actual_ex_tax": 111085,
+        "tax_amount": 11108,
+        "actual_inc_tax": 122193,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W05","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-03"],
+        "count": 2,
+        "actual_ex_tax": 1645758,
+        "tax_amount": 164575,
+        "actual_inc_tax": 1810333,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W05","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2024-10"],
+        "count": 1,
+        "actual_ex_tax": 2802477,
+        "tax_amount": 280247,
+        "actual_inc_tax": 3082724,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W05","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2024-11"],
+        "count": 1,
+        "actual_ex_tax": 2011917,
+        "tax_amount": 201191,
+        "actual_inc_tax": 2213108,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W05","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-03"],
+        "count": 1,
+        "actual_ex_tax": 429841,
+        "tax_amount": 42984,
+        "actual_inc_tax": 472825,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W05","","DEMO-EXP-PAYEE","DEMO-EXP-work_other_expense#1","2025-11"],
+        "count": 1,
+        "actual_ex_tax": 126805,
+        "tax_amount": 12680,
+        "actual_inc_tax": 139485,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W06","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-03"],
+        "count": 1,
+        "actual_ex_tax": 305763,
+        "tax_amount": 30576,
+        "actual_inc_tax": 336339,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W06","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-04"],
+        "count": 2,
+        "actual_ex_tax": 1826850,
+        "tax_amount": 182684,
+        "actual_inc_tax": 2009534,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W06","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2024-11"],
+        "count": 1,
+        "actual_ex_tax": 8166250,
+        "tax_amount": 816625,
+        "actual_inc_tax": 8982875,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W06","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2024-12"],
+        "count": 1,
+        "actual_ex_tax": 5185072,
+        "tax_amount": 518507,
+        "actual_inc_tax": 5703579,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W06","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-04"],
+        "count": 1,
+        "actual_ex_tax": 812634,
+        "tax_amount": 81263,
+        "actual_inc_tax": 893897,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W06","","DEMO-EXP-PAYEE","DEMO-EXP-work_other_expense#1","2025-12"],
+        "count": 1,
+        "actual_ex_tax": 116546,
+        "tax_amount": 11654,
+        "actual_inc_tax": 128200,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P1","DEMO-W06","","DEMO-PARTNER-EOM","DEMO-EXP-direct_cost#1","2026-09"],
+        "count": 1,
+        "actual_ex_tax": 400000,
+        "tax_amount": 40000,
+        "actual_inc_tax": 440000,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W07","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-04"],
+        "count": 1,
+        "actual_ex_tax": 293890,
+        "tax_amount": 29389,
+        "actual_inc_tax": 323279,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W07","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-05"],
+        "count": 2,
+        "actual_ex_tax": 1855607,
+        "tax_amount": 185560,
+        "actual_inc_tax": 2041167,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W07","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2024-12"],
+        "count": 1,
+        "actual_ex_tax": 9914095,
+        "tax_amount": 991409,
+        "actual_inc_tax": 10905504,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W07","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-01"],
+        "count": 1,
+        "actual_ex_tax": 7012120,
+        "tax_amount": 701212,
+        "actual_inc_tax": 7713332,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W07","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-05"],
+        "count": 1,
+        "actual_ex_tax": 955771,
+        "tax_amount": 95577,
+        "actual_inc_tax": 1051348,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W07","","DEMO-EXP-PAYEE","DEMO-EXP-work_other_expense#1","2026-01"],
+        "count": 1,
+        "actual_ex_tax": 125919,
+        "tax_amount": 12591,
+        "actual_inc_tax": 138510,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W08","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-06"],
+        "count": 2,
+        "actual_ex_tax": 1553309,
+        "tax_amount": 155330,
+        "actual_inc_tax": 1708639,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W08","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-01"],
+        "count": 1,
+        "actual_ex_tax": 1991803,
+        "tax_amount": 199180,
+        "actual_inc_tax": 2190983,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W08","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-02"],
+        "count": 1,
+        "actual_ex_tax": 1222021,
+        "tax_amount": 122202,
+        "actual_inc_tax": 1344223,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W08","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-06"],
+        "count": 1,
+        "actual_ex_tax": 403369,
+        "tax_amount": 40336,
+        "actual_inc_tax": 443705,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W08","","DEMO-EXP-PAYEE","DEMO-EXP-work_other_expense#1","2026-02"],
+        "count": 1,
+        "actual_ex_tax": 131132,
+        "tax_amount": 13113,
+        "actual_inc_tax": 144245,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W09","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-07"],
+        "count": 2,
+        "actual_ex_tax": 1631242,
+        "tax_amount": 163123,
+        "actual_inc_tax": 1794365,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W09","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-02"],
+        "count": 1,
+        "actual_ex_tax": 4506515,
+        "tax_amount": 450651,
+        "actual_inc_tax": 4957166,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W09","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-03"],
+        "count": 1,
+        "actual_ex_tax": 3163583,
+        "tax_amount": 316358,
+        "actual_inc_tax": 3479941,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W09","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-07"],
+        "count": 1,
+        "actual_ex_tax": 566419,
+        "tax_amount": 56641,
+        "actual_inc_tax": 623060,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W09","","DEMO-EXP-PAYEE","DEMO-EXP-work_other_expense#1","2026-03"],
+        "count": 1,
+        "actual_ex_tax": 127125,
+        "tax_amount": 12712,
+        "actual_inc_tax": 139837,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W10","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-07"],
+        "count": 1,
+        "actual_ex_tax": 283313,
+        "tax_amount": 28331,
+        "actual_inc_tax": 311644,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W10","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-08"],
+        "count": 2,
+        "actual_ex_tax": 1824356,
+        "tax_amount": 182434,
+        "actual_inc_tax": 2006790,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W10","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-03"],
+        "count": 1,
+        "actual_ex_tax": 9766266,
+        "tax_amount": 976626,
+        "actual_inc_tax": 10742892,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W10","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-04"],
+        "count": 1,
+        "actual_ex_tax": 7264057,
+        "tax_amount": 726405,
+        "actual_inc_tax": 7990462,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W10","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-08"],
+        "count": 1,
+        "actual_ex_tax": 830812,
+        "tax_amount": 83081,
+        "actual_inc_tax": 913893,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W10","","DEMO-EXP-PAYEE","DEMO-EXP-work_other_expense#1","2026-04"],
+        "count": 1,
+        "actual_ex_tax": 118498,
+        "tax_amount": 11849,
+        "actual_inc_tax": 130347,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W11","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-09"],
+        "count": 2,
+        "actual_ex_tax": 1711809,
+        "tax_amount": 171180,
+        "actual_inc_tax": 1882989,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W11","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-04"],
+        "count": 1,
+        "actual_ex_tax": 1423687,
+        "tax_amount": 142368,
+        "actual_inc_tax": 1566055,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W11","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-05"],
+        "count": 1,
+        "actual_ex_tax": 1027360,
+        "tax_amount": 102736,
+        "actual_inc_tax": 1130096,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W11","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-09"],
+        "count": 1,
+        "actual_ex_tax": 388063,
+        "tax_amount": 38806,
+        "actual_inc_tax": 426869,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W11","","DEMO-EXP-PAYEE","DEMO-EXP-work_other_expense#1","2026-05"],
+        "count": 1,
+        "actual_ex_tax": 110478,
+        "tax_amount": 11047,
+        "actual_inc_tax": 121525,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W12","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-09"],
+        "count": 1,
+        "actual_ex_tax": 277495,
+        "tax_amount": 27749,
+        "actual_inc_tax": 305244,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W12","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-10"],
+        "count": 2,
+        "actual_ex_tax": 1958964,
+        "tax_amount": 195895,
+        "actual_inc_tax": 2154859,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W12","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-05"],
+        "count": 1,
+        "actual_ex_tax": 12814122,
+        "tax_amount": 1281412,
+        "actual_inc_tax": 14095534,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W12","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-06"],
+        "count": 1,
+        "actual_ex_tax": 9729353,
+        "tax_amount": 972935,
+        "actual_inc_tax": 10702288,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W12","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-10"],
+        "count": 1,
+        "actual_ex_tax": 1051238,
+        "tax_amount": 105123,
+        "actual_inc_tax": 1156361,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P2","DEMO-W12","","DEMO-EXP-PAYEE","DEMO-EXP-work_other_expense#1","2026-06"],
+        "count": 1,
+        "actual_ex_tax": 123300,
+        "tax_amount": 12330,
+        "actual_inc_tax": 135630,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W13","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-11"],
+        "count": 2,
+        "actual_ex_tax": 1719339,
+        "tax_amount": 171933,
+        "actual_inc_tax": 1891272,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W13","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-06"],
+        "count": 1,
+        "actual_ex_tax": 3307438,
+        "tax_amount": 330743,
+        "actual_inc_tax": 3638181,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W13","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-07"],
+        "count": 1,
+        "actual_ex_tax": 2483156,
+        "tax_amount": 248315,
+        "actual_inc_tax": 2731471,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W13","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-11"],
+        "count": 1,
+        "actual_ex_tax": 500305,
+        "tax_amount": 50030,
+        "actual_inc_tax": 550335,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W14","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-11"],
+        "count": 1,
+        "actual_ex_tax": 288301,
+        "tax_amount": 28830,
+        "actual_inc_tax": 317131,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W14","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2025-12"],
+        "count": 2,
+        "actual_ex_tax": 1640709,
+        "tax_amount": 164070,
+        "actual_inc_tax": 1804779,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W14","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-07"],
+        "count": 1,
+        "actual_ex_tax": 5333976,
+        "tax_amount": 533397,
+        "actual_inc_tax": 5867373,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W14","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-08"],
+        "count": 1,
+        "actual_ex_tax": 4069306,
+        "tax_amount": 406930,
+        "actual_inc_tax": 4476236,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W14","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-12"],
+        "count": 1,
+        "actual_ex_tax": 633114,
+        "tax_amount": 63311,
+        "actual_inc_tax": 696425,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W15","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2026-01"],
+        "count": 2,
+        "actual_ex_tax": 1652985,
+        "tax_amount": 165298,
+        "actual_inc_tax": 1818283,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W15","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-08"],
+        "count": 1,
+        "actual_ex_tax": 7683084,
+        "tax_amount": 768308,
+        "actual_inc_tax": 8451392,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W15","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-09"],
+        "count": 1,
+        "actual_ex_tax": 5103707,
+        "tax_amount": 510370,
+        "actual_inc_tax": 5614077,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W15","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2026-01"],
+        "count": 1,
+        "actual_ex_tax": 461667,
+        "tax_amount": 46166,
+        "actual_inc_tax": 507833,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W16","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2026-01"],
+        "count": 1,
+        "actual_ex_tax": 297174,
+        "tax_amount": 29717,
+        "actual_inc_tax": 326891,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W16","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2026-02"],
+        "count": 2,
+        "actual_ex_tax": 1610352,
+        "tax_amount": 161034,
+        "actual_inc_tax": 1771386,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W16","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-09"],
+        "count": 1,
+        "actual_ex_tax": 7789115,
+        "tax_amount": 778911,
+        "actual_inc_tax": 8568026,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W16","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-10"],
+        "count": 1,
+        "actual_ex_tax": 4828536,
+        "tax_amount": 482853,
+        "actual_inc_tax": 5311389,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W16","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2026-02"],
+        "count": 1,
+        "actual_ex_tax": 688944,
+        "tax_amount": 68894,
+        "actual_inc_tax": 757838,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W17","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2026-03"],
+        "count": 2,
+        "actual_ex_tax": 1727610,
+        "tax_amount": 172760,
+        "actual_inc_tax": 1900370,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W17","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-10"],
+        "count": 1,
+        "actual_ex_tax": 973776,
+        "tax_amount": 97377,
+        "actual_inc_tax": 1071153,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W17","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-11"],
+        "count": 1,
+        "actual_ex_tax": 754032,
+        "tax_amount": 75403,
+        "actual_inc_tax": 829435,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W17","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2026-03"],
+        "count": 1,
+        "actual_ex_tax": 391054,
+        "tax_amount": 39105,
+        "actual_inc_tax": 430159,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W18","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2026-03"],
+        "count": 1,
+        "actual_ex_tax": 265523,
+        "tax_amount": 26552,
+        "actual_inc_tax": 292075,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W18","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2026-04"],
+        "count": 2,
+        "actual_ex_tax": 1954021,
+        "tax_amount": 195402,
+        "actual_inc_tax": 2149423,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W18","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-11"],
+        "count": 1,
+        "actual_ex_tax": 10403689,
+        "tax_amount": 1040368,
+        "actual_inc_tax": 11444057,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W18","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-12"],
+        "count": 1,
+        "actual_ex_tax": 8611494,
+        "tax_amount": 861149,
+        "actual_inc_tax": 9472643,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P3","DEMO-W18","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2026-04"],
+        "count": 1,
+        "actual_ex_tax": 932625,
+        "tax_amount": 93262,
+        "actual_inc_tax": 1025887,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P4","DEMO-W19","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2026-05"],
+        "count": 2,
+        "actual_ex_tax": 1656176,
+        "tax_amount": 165617,
+        "actual_inc_tax": 1821793,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P4","DEMO-W19","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2025-12"],
+        "count": 1,
+        "actual_ex_tax": 3677204,
+        "tax_amount": 367720,
+        "actual_inc_tax": 4044924,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P4","DEMO-W19","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2026-01"],
+        "count": 1,
+        "actual_ex_tax": 2789234,
+        "tax_amount": 278923,
+        "actual_inc_tax": 3068157,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P4","DEMO-W19","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2026-05"],
+        "count": 1,
+        "actual_ex_tax": 547060,
+        "tax_amount": 54706,
+        "actual_inc_tax": 601766,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P4","DEMO-W20","","DEMO-EXP-PAYEE","DEMO-EXP-direct_cost#1","2026-06"],
+        "count": 2,
+        "actual_ex_tax": 1637612,
+        "tax_amount": 163760,
+        "actual_inc_tax": 1801372,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P4","DEMO-W20","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2026-01"],
+        "count": 1,
+        "actual_ex_tax": 2743963,
+        "tax_amount": 274396,
+        "actual_inc_tax": 3018359,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P4","DEMO-W20","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2026-02"],
+        "count": 1,
+        "actual_ex_tax": 2004275,
+        "tax_amount": 200427,
+        "actual_inc_tax": 2204702,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      },
+      {
+        "key": ["DEMO-P4","DEMO-W20","","DEMO-EXP-PAYEE","DEMO-EXP-promotion#1","2026-06"],
+        "count": 1,
+        "actual_ex_tax": 498699,
+        "tax_amount": 49869,
+        "actual_inc_tax": 548568,
+        "withholding_yen": 0,
+        "withholding_unknown": 0,
+        "cash_paid_yen": 0
+      }
+    ]
+  },
+  "payouts": {
+    "excluded": {
+      "unready": 0,
+      "withholding": 0,
+      "known_yen": 0
+    },
+    "rows": [
+      ["20日締めの支払先（架空）",1,1100,1100,0],
+      ["31日指定の支払先（架空）",1,1100,1100,0],
+      ["経費の往復の支払先（架空）",3,21000,22000,1000],
+      ["経費支払先（架空）",123,386882351,386882351,0],
+      ["月末締めの支払先（架空）",8,490000,491200,1200]
+    ]
+  },
+  "royalty": [
+    ["雨宮 硯（架空・脚本）","2025-06","reported",-469,0,null,null,null],
+    ["雨宮 硯（架空・脚本）","2026-06","reported",265464,264995,null,null,null],
+    [
+      "雨宮 硯（架空・脚本）",
+      "2027-06",
+      "open",
+      0,
+      0,
+      0,
+      0,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["音楽出版 潮騒レコーズ（架空）","2024-09","paid",296326,296326,null,null,null],
+    ["音楽出版 潮騒レコーズ（架空）","2024-12","paid",264660,264660,null,null,null],
+    ["音楽出版 潮騒レコーズ（架空）","2025-03","paid",284314,284314,null,null,null],
+    ["音楽出版 潮騒レコーズ（架空）","2025-06","paid",257505,257505,null,null,null],
+    ["音楽出版 潮騒レコーズ（架空）","2025-09","paid",239744,239744,null,null,null],
+    ["音楽出版 潮騒レコーズ（架空）","2025-12","paid",282871,282871,null,null,null],
+    ["音楽出版 潮騒レコーズ（架空）","2026-03","paid",239996,239996,null,null,null],
+    ["音楽出版 潮騒レコーズ（架空）","2026-06","paid",172947,172947,null,null,null],
+    [
+      "音楽出版 潮騒レコーズ（架空）",
+      "2026-09",
+      "open",
+      0,
+      0,
+      0,
+      0,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["音楽出版 楓舎（架空）","2024-11","paid",23549,23549,null,null,null],
+    ["音楽出版 楓舎（架空）","2024-12","paid",12560,12560,null,null,null],
+    ["音楽出版 楓舎（架空）","2025-01","paid",7346,7346,null,null,null],
+    ["音楽出版 楓舎（架空）","2025-02","paid",3971,3971,null,null,null],
+    ["音楽出版 楓舎（架空）","2025-03","paid",2884,2884,null,null,null],
+    ["音楽出版 楓舎（架空）","2025-04","paid",69806,69806,null,null,null],
+    ["音楽出版 楓舎（架空）","2025-05","paid",55083,55083,null,null,null],
+    ["音楽出版 楓舎（架空）","2025-06","paid",28179,28179,null,null,null],
+    ["音楽出版 楓舎（架空）","2025-07","paid",24625,24625,null,null,null],
+    ["音楽出版 楓舎（架空）","2025-08","paid",11152,11152,null,null,null],
+    ["音楽出版 楓舎（架空）","2025-09","paid",32288,32288,null,null,null],
+    ["音楽出版 楓舎（架空）","2025-10","paid",24512,24512,null,null,null],
+    ["音楽出版 楓舎（架空）","2025-11","paid",17817,17817,null,null,null],
+    ["音楽出版 楓舎（架空）","2025-12","paid",13276,13276,null,null,null],
+    ["音楽出版 楓舎（架空）","2026-01","paid",29995,29995,null,null,null],
+    ["音楽出版 楓舎（架空）","2026-02","paid",42185,42185,null,null,null],
+    ["音楽出版 楓舎（架空）","2026-03","paid",25268,25268,null,null,null],
+    ["音楽出版 楓舎（架空）","2026-04","paid",16860,16860,null,null,null],
+    ["音楽出版 楓舎（架空）","2026-05","paid",11890,11890,null,null,null],
+    ["音楽出版 楓舎（架空）","2026-06","reported",8920,8920,null,null,null],
+    ["音楽出版 楓舎（架空）","2026-07","reported",0,0,null,null,null],
+    ["音楽出版 楓舎（架空）","2026-08","created",0,0,null,null,null],
+    [
+      "音楽出版 楓舎（架空）",
+      "2026-09",
+      "open",
+      0,
+      0,
+      0,
+      0,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["音楽出版 風見堂（架空）","2024-12","paid",198636,198636,null,null,null],
+    ["音楽出版 風見堂（架空）","2025-06","paid",402330,402330,null,null,null],
+    ["音楽出版 風見堂（架空）","2025-12","paid",386229,386229,null,null,null],
+    ["音楽出版 風見堂（架空）","2026-06","paid",415650,415650,null,null,null],
+    [
+      "音楽出版 風見堂（架空）",
+      "2026-12",
+      "open",
+      0,
+      0,
+      0,
+      0,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["音楽出版 夜想館（架空）","2024-12","paid",204589,204589,null,null,null],
+    ["音楽出版 夜想館（架空）","2025-06","paid",119953,119953,null,null,null],
+    ["音楽出版 夜想館（架空）","2025-09","paid",105348,105348,null,null,null],
+    ["音楽出版 夜想館（架空）","2026-03","paid",252196,252196,null,null,null],
+    [
+      "音楽出版 夜想館（架空）",
+      "2026-09",
+      "open",
+      53342,
+      53342,
+      12,
+      0,
+      {
+        "royaltyYen": 53342,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 53342,
+        "minPaymentYen": 0,
+        "payableYen": 53342,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["仮名垣 詠（架空・脚本）","2024-09","reported",0,0,null,null,null],
+    ["仮名垣 詠（架空・脚本）","2024-12","reported",-17008,0,null,null,null],
+    ["仮名垣 詠（架空・脚本）","2025-03","paid",85782,68774,null,null,null],
+    ["仮名垣 詠（架空・脚本）","2025-06","paid",113645,113645,null,null,null],
+    ["仮名垣 詠（架空・脚本）","2025-09","paid",220012,220012,null,null,null],
+    ["仮名垣 詠（架空・脚本）","2025-12","paid",221927,221927,null,null,null],
+    ["仮名垣 詠（架空・脚本）","2026-03","paid",189267,189267,null,null,null],
+    ["仮名垣 詠（架空・脚本）","2026-06","overdue",204853,204853,null,null,null],
+    [
+      "仮名垣 詠（架空・脚本）",
+      "2026-09",
+      "open",
+      0,
+      0,
+      0,
+      2,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 2,
+        "holdSalesYen": 2483065
+      }
+    ],
+    ["架空コミックス（原作）","2024-12","paid",90274,90274,null,null,null],
+    ["架空コミックス（原作）","2025-06","paid",60873,60873,null,null,null],
+    ["架空コミックス（原作）","2025-12","paid",188425,188425,null,null,null],
+    ["架空コミックス（原作）","2026-06","reported",247884,247884,null,null,null],
+    [
+      "架空コミックス（原作）",
+      "2026-12",
+      "open",
+      0,
+      0,
+      0,
+      1,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 1,
+        "holdSalesYen": 2090464
+      }
+    ],
+    ["架空出版 原作部（原作）","2024-12","paid",26100,26100,null,null,null],
+    ["架空出版 原作部（原作）","2025-06","paid",276857,276857,null,null,null],
+    ["架空出版 原作部（原作）","2025-12","paid",639899,639899,null,null,null],
+    ["架空出版 原作部（原作）","2026-06","reported",587794,587794,null,null,null],
+    [
+      "架空出版 原作部（原作）",
+      "2026-12",
+      "open",
+      0,
+      0,
+      0,
+      0,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["架空文庫（原作）","2024-12","paid",1234740,1234740,null,null,null],
+    ["架空文庫（原作）","2025-03","paid",496211,496211,null,null,null],
+    ["架空文庫（原作）","2025-06","paid",465864,465864,null,null,null],
+    ["架空文庫（原作）","2025-09","paid",804341,804341,null,null,null],
+    ["架空文庫（原作）","2025-12","paid",339607,339607,null,null,null],
+    ["架空文庫（原作）","2026-03","paid",749272,749272,null,null,null],
+    ["架空文庫（原作）","2026-06","paid",277303,277303,null,null,null],
+    [
+      "架空文庫（原作）",
+      "2026-09",
+      "open",
+      0,
+      0,
+      0,
+      0,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["橘 文乃（架空・脚本）","2024-12","paid",151708,151708,null,null,null],
+    ["橘 文乃（架空・脚本）","2025-06","paid",763528,763528,null,null,null],
+    ["橘 文乃（架空・脚本）","2025-12","paid",509972,509972,null,null,null],
+    ["橘 文乃（架空・脚本）","2026-06","paid",342629,342629,null,null,null],
+    [
+      "橘 文乃（架空・脚本）",
+      "2026-12",
+      "open",
+      -9200,
+      0,
+      2,
+      0,
+      {
+        "royaltyYen": -9200,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": -9200,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": -9200,
+        "carryReason": "マイナスの残高（返品・調整など）を翌期へ繰り越します",
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["久遠 灯（架空・監督）","2024-12","reported",-21260,0,null,null,null],
+    ["久遠 灯（架空・監督）","2025-06","paid",251157,229897,null,null,null],
+    ["久遠 灯（架空・監督）","2025-12","paid",501193,501193,null,null,null],
+    ["久遠 灯（架空・監督）","2026-06","paid",215333,215333,null,null,null],
+    [
+      "久遠 灯（架空・監督）",
+      "2026-12",
+      "open",
+      0,
+      0,
+      0,
+      0,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["行間 絢（架空・脚本）","2024-12","paid",14600,14600,null,null,null],
+    ["行間 絢（架空・脚本）","2025-06","paid",168082,168082,null,null,null],
+    ["行間 絢（架空・脚本）","2025-12","paid",247445,247445,null,null,null],
+    ["行間 絢（架空・脚本）","2026-03","paid",11776,11776,null,null,null],
+    ["行間 絢（架空・脚本）","2026-06","paid",220225,220225,null,null,null],
+    [
+      "行間 絢（架空・脚本）",
+      "2026-12",
+      "open",
+      0,
+      0,
+      0,
+      9,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 9,
+        "holdSalesYen": 2468571
+      }
+    ],
+    ["汐見 遥人（架空・監督）","2024-12","reported",-466345,0,null,null,null],
+    ["汐見 遥人（架空・監督）","2025-06","reported",365205,0,null,null,null],
+    ["汐見 遥人（架空・監督）","2025-09","reported",11377,0,null,null,null],
+    ["汐見 遥人（架空・監督）","2025-12","paid",498855,409092,null,null,null],
+    ["汐見 遥人（架空・監督）","2026-03","paid",68184,68184,null,null,null],
+    ["汐見 遥人（架空・監督）","2026-06","paid",449941,449941,null,null,null],
+    [
+      "汐見 遥人（架空・監督）",
+      "2026-09",
+      "open",
+      0,
+      0,
+      0,
+      0,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    [
+      "汐見 遥人（架空・監督）",
+      "2026-12",
+      "open",
+      0,
+      0,
+      0,
+      0,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["宵町 律（架空・監督）","2024-12","reported",0,0,null,null,null],
+    ["宵町 律（架空・監督）","2025-06","reported",-585,0,null,null,null],
+    ["宵町 律（架空・監督）","2025-12","paid",202768,202183,null,null,null],
+    ["宵町 律（架空・監督）","2026-06","reported",191513,191513,null,null,null],
+    [
+      "宵町 律（架空・監督）",
+      "2026-12",
+      "open",
+      0,
+      0,
+      0,
+      0,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["朝霧 蒼（架空・監督）","2024-12","paid",203512,203512,null,null,null],
+    ["朝霧 蒼（架空・監督）","2025-06","paid",1022225,1022225,null,null,null],
+    ["朝霧 蒼（架空・監督）","2025-12","paid",700380,697080,null,null,null],
+    ["朝霧 蒼（架空・監督）","2026-06","paid",458130,458130,null,null,null],
+    [
+      "朝霧 蒼（架空・監督）",
+      "2026-12",
+      "open",
+      -12000,
+      0,
+      2,
+      0,
+      {
+        "royaltyYen": -12000,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": -12000,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": -12000,
+        "carryReason": "マイナスの残高（返品・調整など）を翌期へ繰り越します",
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["綴木 栞（架空・脚本）","2024-12","reported",0,0,null,null,null],
+    ["綴木 栞（架空・脚本）","2025-06","reported",278476,0,null,null,null],
+    ["綴木 栞（架空・脚本）","2025-12","paid",382734,661210,null,null,null],
+    ["綴木 栞（架空・脚本）","2026-06","paid",397439,397439,null,null,null],
+    [
+      "綴木 栞（架空・脚本）",
+      "2026-12",
+      "open",
+      0,
+      0,
+      0,
+      0,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 300000,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["灯野 綴（架空・原作）","2024-12","reported",818366,0,null,null,null],
+    ["灯野 綴（架空・原作）","2025-06","paid",479828,114808,null,null,null],
+    ["灯野 綴（架空・原作）","2025-12","paid",862046,586131,null,null,null],
+    ["灯野 綴（架空・原作）","2026-06","paid",781562,740863,null,null,null],
+    [
+      "灯野 綴（架空・原作）",
+      "2026-12",
+      "open",
+      0,
+      0,
+      0,
+      0,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["白峰 睦（架空・監督）","2024-09","reported",0,0,null,null,null],
+    ["白峰 睦（架空・監督）","2024-12","paid",20278,20278,null,null,null],
+    ["白峰 睦（架空・監督）","2025-03","paid",106903,106903,null,null,null],
+    ["白峰 睦（架空・監督）","2025-06","paid",131645,131645,null,null,null],
+    ["白峰 睦（架空・監督）","2025-07","reported",0,0,null,null,null],
+    ["白峰 睦（架空・監督）","2025-09","paid",246844,246844,null,null,null],
+    ["白峰 睦（架空・監督）","2025-12","paid",69013,69013,null,null,null],
+    ["白峰 睦（架空・監督）","2026-03","paid",250653,250653,null,null,null],
+    ["白峰 睦（架空・監督）","2026-06","paid",147073,147073,null,null,null],
+    [
+      "白峰 睦（架空・監督）",
+      "2026-09",
+      "open",
+      0,
+      0,
+      0,
+      0,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 0,
+        "minPaymentYen": 0,
+        "payableYen": 0,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["霧島 頁（架空・原作）","2024-12","paid",2836325,2836325,null,null,null],
+    ["霧島 頁（架空・原作）","2025-12","paid",2786833,2786833,null,null,null],
+    [
+      "霧島 頁（架空・原作）",
+      "2026-12",
+      "open",
+      552345,
+      552345,
+      25,
+      0,
+      {
+        "royaltyYen": 552345,
+        "adjustmentYen": 0,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 552345,
+        "minPaymentYen": 0,
+        "payableYen": 552345,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ],
+    ["鳴海 奏（架空・作曲）","2024-12","paid",153711,153711,null,null,null],
+    ["鳴海 奏（架空・作曲）","2025-06","paid",483861,483861,null,null,null],
+    ["鳴海 奏（架空・作曲）","2025-12","paid",428953,428953,null,null,null],
+    ["鳴海 奏（架空・作曲）","2026-06","paid",240401,240401,null,null,null],
+    [
+      "鳴海 奏（架空・作曲）",
+      "2026-12",
+      "open",
+      0,
+      50000,
+      1,
+      0,
+      {
+        "royaltyYen": 0,
+        "adjustmentYen": 50000,
+        "advanceRecoupedYen": 0,
+        "carriedInYen": 0,
+        "balanceYen": 50000,
+        "minPaymentYen": 0,
+        "payableYen": 50000,
+        "carriedOutYen": 0,
+        "carryReason": null,
+        "holdCount": 0,
+        "holdSalesYen": 0
+      }
+    ]
+  ],
+  "categories": [
+    ["P&A",40],
+    ["その他経費（架空）",1],
+    ["パッケージ製作費",21],
+    ["事務費",29],
+    ["宣伝費",20],
+    ["宣伝費（架空）",3],
+    ["未対応の費目（架空）",1],
+    ["海外素材費",11],
+    ["配信マスター制作費",20]
+  ],
+  "categoryMismatch": {
+    "checked": 145,
+    "matched": 4,
+    "mismatched": 141,
+    "viaAlias": 140,
+    "unrelated": 1,
+    "unready": 0
+  },
+  "imports": {
+    "old22": {
+      "preview": {
+        "ready": 1,
+        "held": 2,
+        "excluded": 0,
+        "known_ex_tax": 24000,
+        "unknown": 1,
+        "issues": [
+          [3,"支払先が見つかりません。支払先コードを確認してください"],
+          [4,"金額が未確認です"]
+        ]
+      },
+      "commit": {
+        "registered": 1,
+        "held": 2
+      },
+      "revise": {
+        "ready": 2,
+        "held": 1,
+        "excluded": 0,
+        "known_ex_tax": 24000,
+        "unknown": 1,
+        "issues": [
+          [4,"金額が未確認です"]
+        ]
+      }
+    },
+    "old25": {
+      "preview": {
+        "ready": 1,
+        "held": 1,
+        "excluded": 0,
+        "known_ex_tax": 14000,
+        "unknown": 0,
+        "issues": [
+          [3,"出金日は参照専用です。出金予定で別途記録してください"]
+        ]
+      },
+      "revise": {
+        "ready": 1,
+        "held": 1,
+        "excluded": 0,
+        "known_ex_tax": 14000,
+        "unknown": 0,
+        "issues": [
+          [3,"出金日は参照専用です。出金予定で別途記録してください"]
+        ]
+      }
+    }
+  },
+  "accountCheck": {
+    "preview": {
+      "ready": 3,
+      "held": 0,
+      "excluded": 0,
+      "known_ex_tax": 36000,
+      "unknown": 0,
+      "issues": []
+    },
+    "repreview": {
+      "ready": 3,
+      "held": 0,
+      "excluded": 0,
+      "known_ex_tax": 36000,
+      "unknown": 0,
+      "issues": []
+    },
+    "revise": {
+      "ready": 3,
+      "held": 0,
+      "excluded": 0,
+      "known_ex_tax": 36000,
+      "unknown": 0,
+      "issues": []
+    }
+  }
+}

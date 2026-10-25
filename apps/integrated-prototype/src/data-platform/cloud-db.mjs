@@ -33,6 +33,8 @@ const moduleShared = createPgSharedCache();
 
 // 開いた入口 → 後始末（開いたときだけ client.end()）
 const releases = new WeakMap();
+// 開いた入口（R2 の層をかぶせたもの）→ 中の PgDatabase（利用者を置く先）
+const sessions = new WeakMap();
 
 // pg の Client を、最初の問い合わせで開く口。PgDatabase には Client（Pool でない）として渡り、文を1つずつ順に流す
 function lazyClient({connectionString, Client, loadClient}) {
@@ -72,6 +74,7 @@ export function openCloudDatabase(env, ctx, {Client, loadClient, shared = module
   const connection = lazyClient({connectionString: env.HYPERDRIVE.connectionString, Client, loadClient});
   const inner = new PgDatabase(connection.queryable, {shared});
   const db = new R2LargeValueDatabase(inner, env.PRIVATE_ARTIFACTS, {maxBatchStatements: null, maxInlineValueBytes: D1_INLINE_VALUE_BYTES});
+  sessions.set(db, inner);
   releases.set(db, () => {
     const client = connection.opened();
     if (!client) return; // 問い合わせの無かった要求は接続を開いていない
@@ -79,6 +82,12 @@ export function openCloudDatabase(env, ctx, {Client, loadClient, shared = module
     ctx.waitUntil(inner.lock.then(() => client.end()).catch(() => {}));
   });
   return db;
+}
+
+// 行単位の権限（RLS。pg/rls.sql）に渡す利用者を置く（FR-CORE-DATA-053）。session は {userId} か {loginEmail}、null で外す。
+// postgres の入口だけに効き、d1 では何もしない（D1 に RLS は無い）。呼ぶのは Cloudflare Access で確かめたあとだけ（ブラウザの値を渡さない）
+export function setCloudDatabaseSession(db, session) {
+  sessions.get(db)?.setSession(session);
 }
 
 // 要求の終わりに呼ぶ。postgres で接続を開いていれば ctx.waitUntil(client.end())。d1 と、開いていない入口では何もしない

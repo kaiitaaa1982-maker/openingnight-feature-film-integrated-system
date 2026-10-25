@@ -6,6 +6,8 @@
 // 作品別PL（管理会計の試算）は同じ額を公開月に一括で費用にするので、月ごとの差額は作品別PLと一致しない。案件の予算は差し引かない。
 // 経費には流通の区分が無いので、流通別カードの経費は「流通別の記録なし」とし、作品の経費は「流通に紐づかない経費」の
 // カードにまとめる（カードの差額の和＝作品計の差額）。
+// 入金ベース（basis=cash。フェーズ1 #16）の行は accounting/work-pnl/work-pnl-cash-model.mjs が作る。売上明細の month は入金日の月、
+// 経費の month は出金日の月で、月はその month で数える（計上の経費の行は month を持たず、計上月 accounting_month で数える）。
 
 
 
@@ -15,23 +17,42 @@ const bigSum = (values) => {
   return Number(n);
 };
 
+// 経費の行を数える月（入金ベースの行は出金日の月 month、計上の行は計上月）
+export const expenseMonthOf = (expense) => expense.month ?? expense.accounting_month;
+
 // 期間の作品の経費のうち公開月一括の費用区分の額と説明。計算（差額＝売上−作品の全経費）は変えない
-export function productionCostOf(expenses = []) {
+export function productionCostOf(expenses = [], {basis = 'accrual'} = {}) {
   const rows = expenses.filter((expense) => expense.expense_recognition_timing === 'release_month_once');
   if (!rows.length) {
     return {status: 'none', amount: 0, count: 0, months: [], label: '制作費: この期間の経費なし',
       note: 'この期間に公開月一括の費用区分の経費はありません。案件の予算は差し引きません。'};
   }
   return {status: 'included', amount: bigSum(rows.map((row) => row.actual_ex_tax)), count: rows.length,
-    months: [...new Set(rows.map((row) => row.accounting_month))].sort(), label: '制作費（会計の費用区分）',
-    note: '費用区分で公開月一括を指定した経費を、計上月で差し引いています（経費に含む）。作品別PL（管理会計の試算）は同じ額を公開月に一括で費用にするため、月ごとの差額は作品別PLと一致しません。案件の予算は差し引きません。'};
+    months: [...new Set(rows.map(expenseMonthOf))].sort(), label: '制作費（会計の費用区分）',
+    note: basis === 'cash'
+      ? '費用区分で公開月一括を指定した経費を、出金した月で差し引いています（入金ベース。経費に含む）。作品別PL（計上）は同じ額を公開月に一括で費用にするため、月ごとの差額は作品別PLと一致しません。案件の予算は差し引きません。'
+      : '費用区分で公開月一括を指定した経費を、計上月で差し引いています（経費に含む）。作品別PL（管理会計の試算）は同じ額を公開月に一括で費用にするため、月ごとの差額は作品別PLと一致しません。案件の予算は差し引きません。'};
 }
 
 export const OUT_OF_SCOPE_NOTE = '支出の部（科目別の小計）と分配の部（分配方式・出資者別の支払状況）は、この帳票の範囲外です。分配は「製作委員会収支報告」「ロイヤリティ報告書」で確かめてください。';
 
 export const EXPENSE_ONLY_CARD = '流通に紐づかない経費';
 
-export function buildWorkPnl({lines = [], expenses = [], unallocatedExpenses = [], months = []}) {
+// 文書データの表で、複数の値（流通の取引区分・取引先）を1つの文字にまとめる区切り。画面はこの区切りで分けて1つずつ出す
+export const LIST_SEPARATOR = '、';
+export const splitList = (text) => (typeof text === 'string' && text !== '' ? text.split(LIST_SEPARATOR) : []);
+
+// 画面の「読み終わった」印（data-ready）の値。表示中の文書が今の条件（query）で読んだ応答のもので、
+// 送信中・誤り・応答の誤り（ok:false）のどれでもないときだけ、その文書の sourceHash を返す（それ以外は null）。
+// state: {body, query（その応答を読んだ条件）, loading, error, failure}
+export function workPnlReadyHash(state, query) {
+  if (!state || state.loading || state.error || state.failure) return null;
+  if (!query || state.query !== query) return null;
+  const hash = state.body?.document?.sourceHash;
+  return typeof hash === 'string' && hash !== '' ? hash : null;
+}
+
+export function buildWorkPnl({lines = [], expenses = [], unallocatedExpenses = [], months = [], basis = 'accrual'}) {
   const monthIndex = new Map(months.map((month, index) => [month, index]));
   const salesByMonth = months.map(() => []);
   const expenseByMonth = months.map(() => []);
@@ -53,8 +74,8 @@ export function buildWorkPnl({lines = [], expenses = [], unallocatedExpenses = [
     if (line.deal_label) group.deals.add(line.deal_label);
     if (line.partner_name) group.partners.add(line.partner_name);
   }
-  const inRangeExpenses = expenses.filter((expense) => monthIndex.has(expense.accounting_month));
-  for (const expense of inRangeExpenses) expenseByMonth[monthIndex.get(expense.accounting_month)].push(expense.actual_ex_tax);
+  const inRangeExpenses = expenses.filter((expense) => monthIndex.has(expenseMonthOf(expense)));
+  for (const expense of inRangeExpenses) expenseByMonth[monthIndex.get(expenseMonthOf(expense))].push(expense.actual_ex_tax);
 
   const distributions = [...groups.values()].map((group) => ({
     code: group.code, label: group.label, sales: bigSum(group.amounts), byMonth: group.byMonth.map(bigSum), lineCount: group.lineCount,
@@ -70,7 +91,7 @@ export function buildWorkPnl({lines = [], expenses = [], unallocatedExpenses = [
   });
   const totals = {sales: bigSum(monthly.map((row) => row.sales)), expense: bigSum(monthly.map((row) => row.expense))};
   totals.balance = totals.sales - totals.expense;
-  const productionCost = productionCostOf(inRangeExpenses);
+  const productionCost = productionCostOf(inRangeExpenses, {basis});
 
   const cards = distributions.map((d) => ({kind: 'distribution', code: d.code, label: d.label, sales: d.sales, expense: 0, expenseLinked: false,
     balance: d.sales, lineCount: d.lineCount, deals: d.deals, partners: d.partners}));
@@ -79,7 +100,7 @@ export function buildWorkPnl({lines = [], expenses = [], unallocatedExpenses = [
       balance: -totals.expense, lineCount: 0, expenseCount: inRangeExpenses.length, deals: [], partners: []});
   }
 
-  const unallocatedRows = unallocatedExpenses.filter((expense) => monthIndex.has(expense.accounting_month));
+  const unallocatedRows = unallocatedExpenses.filter((expense) => monthIndex.has(expenseMonthOf(expense)));
   const unallocated = {rows: unallocatedRows, total: bigSum(unallocatedRows.map((row) => row.actual_ex_tax)), count: unallocatedRows.length};
 
   const sum = (list, pick) => bigSum(list.map(pick));

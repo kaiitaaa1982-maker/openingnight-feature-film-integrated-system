@@ -162,6 +162,38 @@ test('SQLite と PostgreSQL で黙って意味が変わる形は、変換が止�
   }
 });
 
+test('移行の ALTER TABLE … ADD COLUMN は同じ列の ADD COLUMN（FK は最後）になり、SQLite が断る形とほかの ALTER は一覧で止まる', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'pg-ddl-alter-'));
+  try {
+    writeFileSync(join(dir, '0001_base.sql'), 'CREATE TABLE t (id INTEGER PRIMARY KEY, org TEXT);\nCREATE TABLE r (code TEXT PRIMARY KEY);\n');
+    writeFileSync(join(dir, '0002_add.sql'), [
+      'ALTER TABLE t ADD COLUMN amount_yen INTEGER CHECK(amount_yen IS NULL OR amount_yen>=0);',
+      'ALTER TABLE t ADD r_code TEXT REFERENCES r(code);',
+    ].join('\n'));
+    writeFileSync(join(dir, '0003_stop.sql'), [
+      'ALTER TABLE t RENAME TO u;',
+      'ALTER TABLE t ADD COLUMN x TEXT UNIQUE;',
+      'ALTER TABLE missing ADD COLUMN y TEXT;',
+      'ALTER TABLE t ADD COLUMN amount_yen INTEGER;',
+      'ALTER TABLE t ADD COLUMN z TEXT NOT NULL;',
+      'ALTER TABLE t ADD COLUMN w TEXT DEFAULT CURRENT_TIMESTAMP;',
+    ].join('\n'));
+    const result = convertMigrations({ dir });
+    assert.deepEqual(result.errors.filter((e) => e.startsWith('0002_add.sql')), []);
+    const stops = result.errors.filter((e) => e.startsWith('0003_stop.sql'));
+    assert.deepEqual(stops.map((e) => e.replace(/^0003_stop\.sql: /, '').split(':')[0]), ['t', 't.x', 'missing', 't.amount_yen', 't.z', 't.w'], stops.join('\n'));
+    assert.match(result.sql, /\nALTER TABLE t ADD COLUMN amount_yen bigint CHECK \(amount_yen IS NULL OR amount_yen >= 0\);\n/);
+    assert.match(result.sql, /\nALTER TABLE t ADD COLUMN r_code text COLLATE "C";\n/);
+    const fkAt = result.sql.indexOf('ALTER TABLE t ADD FOREIGN KEY (r_code) REFERENCES r (code);');
+    assert.ok(fkAt > result.sql.indexOf('-- ===== 外部キー'), '列の FK は表をすべて作ったあとに足す');
+    // 足した列は表の定義にも入り、照合（reconcile.sql）が金額の列として数える
+    assert.deepEqual(result.tableDefs.get('t').columns.map((c) => c.name), ['id', 'org', 'amount_yen', 'r_code']);
+    assert.equal(result.fingerprint.expected.foreignKeys, 1);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test('GLOB の形の CHECK は、SQLite の GLOB と同じ文字列を通す（dialect.md の形の CHECK）', () => {
   const sqlite = new DatabaseSync(':memory:');
   const patterns = new Set();
@@ -210,7 +242,7 @@ describe('SQLite と PostgreSQL の比較', () => {
   test('表・列（名前・NULL・既定値の有無・IDENTITY・型）・表ごとの CHECK の数・FK・索引（列と一意）が SQLite と一致する（FR-CORE-DATA-018）', async () => {
     const expected = sqliteSnapshot(ctx.sqlite);
     const actual = await postgresSnapshot(ctx.pg);
-    assert.equal(expected.tables.length, 258); // 分析の2表も移行0011に含む。アプリの追加DDLはない
+    assert.equal(expected.tables.length, 389); // 0055（現場の連絡帳）の3表を足した。 0054（プリプロの保管庫の置き場）の1表を足した。 0053（プリプロの手配・美術・撮影の方針）の3表を足した。 0052（調達）の13表を足した。 分析の2表も移行0011に含む。0012（案件の型・稼ぎ方・段階）の7表と、0013（受託制作の契約の版）の2表と、0014（予実の目標・計画の版と期間、行動の設定）の7表と、0015（予実の予測の版と活動記録）の4表と、0016（制作費の版）の1表と、0017（指標マスタ）の2表と、0018（予実の語を選ぶ設定と月の設定）の1表と、0019（稟議の版）の1表と、0021（1通の原本の条件の版・報告の取消の記録）の2表と、0023（検査の決まりの版・正解表・検査の結果・抜き取りの記録）の4表を足した。アプリの追加DDLはない
     const total = (snap) => Object.values(snap.checks).reduce((a, b) => a + b, 0);
     assert.ok(total(expected) > 800, `CHECK ${total(expected)}`);
     assert.ok(Object.values(expected.columns).flat().filter((c) => c.identity).length > 100, 'IDENTITY の列');

@@ -85,10 +85,12 @@ export async function seedKoubanDemo(db, {python = process.env.ON_PYTHON || (pro
     const missing = [...expected.keys()].filter((no) => !extracted.some((scene) => scene.sceneNo === no));
     if (missing.length) throw new Error(`${draft.file} から読み取れなかったシーンがあります: ${missing.join('、')}`);
     // 人が確かめて直す: 昼夜・予定尺、台詞の無い出演者を足す（場所・頁・内容は読み取りのまま）
-    const scenes = extracted.filter((scene) => expected.has(scene.sceneNo)).map((scene) => {
+    // 読み取りが印を付けた項目（補った・読めない）は、元データと見比べて確かめた（checked）。どのシーンかは読み取りの添字（extractionIndex）で結ぶ
+    const scenes = extracted.map((scene, index) => ({scene, index})).filter(({scene}) => expected.has(scene.sceneNo)).map(({scene, index}) => {
       const spec = expected.get(scene.sceneNo);
+      const checked = Object.entries(scene.fields || {}).filter(([, field]) => field?.status === 'inferred' || field?.status === 'missing').map(([key]) => key);
       return {sceneNo: scene.sceneNo, location: scene.location, dayNight: spec.dn, synopsis: scene.synopsis,
-        cast: spec.cast.map(shortOf), estimatedMinutes: spec.min, pageEighths: scene.pageEighths};
+        cast: spec.cast.map(shortOf), estimatedMinutes: spec.min, pageEighths: scene.pageEighths, extractionIndex: index, checked};
     });
     const review = await call('PUT', `/workflow/scripts/${uploaded.artifactId}/review`, {scenes});
     const keyOfLocation = new Map(scenes.map((scene) => [scene.location, expected.get(scene.sceneNo).loc]));

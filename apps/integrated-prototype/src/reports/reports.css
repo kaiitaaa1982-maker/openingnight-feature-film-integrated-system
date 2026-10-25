@@ -24,6 +24,7 @@
 
 /* 帳票本体 */
 .rp-report{display:grid;gap:14px}
+.rp-document{display:grid;gap:14px;min-width:0}
 .rp-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:12px}
 .rp-head h2{margin:0 0 4px}
 .rp-meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--ink-2);font-size:12.5px}

@@ -1,0 +1,26 @@
+/* 業務画面「MG 買付」。判定の1行・重要な数字・例外だけを目立たせ、ほかは沈める */
+/* 見た目は core の docs/design/integrated-system-visual.md に従う（黒・白・灰と赤の1色、角丸0・影なし）。赤は要確認と止まっていることだけ */
+.acq-mg { --ink: #111111; --paper: #ffffff; --soft: #f3f1ec; --sub: #5e5850; --faint: #6b655c; --rule: #cfc8ba; --red: #b3261e; }
+.acq-mg .acq-head { display: flex; align-items: end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.acq-mg .acq-head h2 { margin: 0; }
+.acq-mg .acq-verdict { font-weight: 700; display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.acq-mg .acq-verdict.ok { color: var(--ink); }
+.acq-mg .acq-verdict.ng { color: var(--red); }
+.acq-mg .acq-tag { font-size: 11px; font-weight: 400; border: 1px solid currentColor; border-radius: 0; padding: 0 6px; }
+.acq-mg .acq-nums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.acq-mg .acq-nums div { background: var(--soft); border-radius: 0; padding: 6px 8px; }
+.acq-mg .acq-nums span { display: block; font-size: 11px; color: var(--sub); }
+.acq-mg .acq-nums b { font-size: 15px; }
+.acq-mg .acq-exception { border-left: 3px solid var(--red); padding: 4px 8px; background: var(--paper); color: var(--red); }
+.acq-mg .acq-table { width: 100%; border-collapse: collapse; }
+.acq-mg .acq-table th, .acq-mg .acq-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--rule); }
+.acq-mg .acq-table th { background: var(--soft); }
+.acq-mg .acq-table tr.selected td { background: var(--soft); }
+.acq-mg .acq-ng { color: var(--red); }
+.acq-mg .acq-form { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.acq-mg .acq-form input, .acq-mg .acq-form select { min-width: 0; }
+.acq-mg .acq-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+.acq-mg .acq-grid label, .acq-mg .acq-contract-form > label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; }
+.acq-mg .acq-checks { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.acq-mg fieldset { border: 1px solid var(--rule); border-radius: 0; padding: 8px; }
+@media (max-width: 640px) { .acq-mg .acq-nums { grid-template-columns: repeat(2, minmax(0, 1fr)); } .acq-mg .acq-table { display: block; overflow-x: auto; } }

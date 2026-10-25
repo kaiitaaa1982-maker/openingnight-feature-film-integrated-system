@@ -15,7 +15,7 @@ test('report catalog ids are unique, every report has a way to open, and legacy 
     if (entry.component === 'annual') assert.ok(entry.axis, entry.id);
   }
   for (const target of Object.values(LEGACY_REPORT_MODES)) assert.ok(ids.includes(target), `legacy mode target ${target}`);
-  assert.deepEqual(featuredReports().map((e) => e.id), ['annual-sales', 'mg-sales', 'royalty', 'royalty-ledger', 'sales-sheet', 'committee-monthly']);
+  assert.deepEqual(featuredReports().map((e) => e.id), ['annual-sales', 'mg-sales', 'royalty', 'royalty-ledger', 'sales-sheet', 'work-pnl', 'committee-monthly', 'receipts']);
   assert.equal(reportById('no-such').id, 'annual-sales');
   assert.equal(reportsByCategory().reduce((n, c) => n + c.reports.length, 0), REPORT_CATALOG.length);
 });

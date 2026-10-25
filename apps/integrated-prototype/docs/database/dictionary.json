@@ -17,6 +17,162 @@
       "date": "2026-10-04",
       "author": "Codex（代表の依頼）",
       "note": "移行0011で集約した分析の状態・ジョブの2表を追加した（PG移行計画 #28）"
+    },
+    {
+      "version": "1.3",
+      "date": "2026-10-10",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0012で、案件の型・稼ぎ方・段階と確度・基準額・売上率（フェーズ1 #10）の参照表3つ・稼ぎ方ごとの段階の意味・段階の履歴・稼ぎ方の既定の売上率の版・区分マスタの7表と、案件の9列を足した"
+    },
+    {
+      "version": "1.4",
+      "date": "2026-10-11",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0013で、受託制作の契約の版（フェーズ1 #10b。総製作費・受託費率・受託費・節目の数）と、その支払いの節目の2表を足した"
+    },
+    {
+      "version": "1.5",
+      "date": "2026-10-11",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0014で、案件収支の予実の期間・目標の版・計画の版（ヘッダと稼ぎ方別の額）・採用の記録・設定の変数・設定の行（版）の7表（フェーズ1 #11）を足した"
+    },
+    {
+      "version": "1.6",
+      "date": "2026-10-11",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0015で、案件収支の予実の予測の版（案件ごとのヘッダ）・予測の行・活動記録・活動記録の取消の4表（フェーズ1 #13）を足した"
+    },
+    {
+      "version": "1.7",
+      "date": "2026-10-11",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0016で、制作費の版（成功報酬の線にする制作費。作品ごとの連番・追記だけ。フェーズ1 #5）の1表を足した"
+    },
+    {
+      "version": "1.8",
+      "date": "2026-10-11",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0017で、指標マスタの版（ヘッダ）と段（役×稼ぎ方×段の対応と出どころの状態）の2表（行動指標の計画 段B #9）を足し、設定の変数に行動指標の変数18行を足した"
+    },
+    {
+      "version": "1.9",
+      "date": "2026-10-11",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0018で、案件収支の予実の語を選ぶ設定と月の設定（採用するシナリオ・月別の表に入れる案件の範囲・締めた月）の版の1表（フェーズ1 #14）を足した"
+    },
+    {
+      "version": "1.10",
+      "date": "2026-10-11",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0019で、稟議の版（自社出資の申請・承認・却下・払込の4状態の版。行動指標の計画 段B #4）の1表を足した"
+    },
+    {
+      "version": "1.11",
+      "date": "2026-10-15",
+      "author": "Codex（代表の回答）",
+      "note": "移行0020で営業活動の明示結果欄を追加。未記録を推定せず、3値を通過率の分母と内訳へ、進んだを分子へ反映する"
+    },
+    {
+      "version": "1.12",
+      "date": "2026-10-18",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0021で、売上原本の1通の条件の版（取引先・報告の種類・対象期間・受領日・報告月・申告合計）と報告の取消の記録の2表（フォルダ型の画面の最初の一切れ U1）を足した。#131 の仮の 0019 を、0019（稟議）と 0020（営業活動の結果）のあとへ振り直した"
+    },
+    {
+      "version": "1.13",
+      "date": "2026-10-18",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0023で、検査の決まりの版・正解表・検査の結果・抜き取りの記録の4表（フォルダ型の画面 U2a 後半）を足した。0022 は別の枝が使うので、この枝では欠番のまま"
+    },
+    {
+      "version": "1.14",
+      "date": "2026-10-23",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0026で、支払う MG（買付分）のマスタの10表を足した。会社ルートの plans/2026-10-22-folder-mg-buy.md の香盤表 #3"
+    },
+    {
+      "version": "1.15",
+      "date": "2026-10-24",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0027で、支払う MG の支払の記録（acq_mg_payments）を足した"
+    },
+    {
+      "version": "1.16",
+      "date": "2026-10-24",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0041で、経費管理のフォルダの3表（置いた月・外した記録・月の締め）を足した。会社ルートの plans/2026-10-22-folder-keihi.md の表A・表B"
+    },
+    {
+      "version": "1.17",
+      "date": "2026-10-24",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0042〜0044で、製作委員会の契約の型・条件版の式の部品・日程の版・収支の台帳の10表を足した。会社ルートの plans/2026-10-23-committee-terms-ledger.md"
+    },
+    {
+      "version": "1.18",
+      "date": "2026-10-24",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0046で、製造の8表（商品・版・工程の記録・発注書・明細・段・納品・経費の結び）を足した"
+    },
+    {
+      "version": "1.19",
+      "date": "2026-10-24",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0047で、プロデュース管理の進行表の7表（チケットの版・着手と完了の記録・チェック項目・掲示板・関連する場所・テンプレートの版と行）を足した"
+    },
+    {
+      "version": "1.20",
+      "date": "2026-10-24",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0048で、ポストプロダクションの7表（編集の版・指摘・対応・工程のタスクと記録・納品物の行と状態の記録）を足した。0025〜0034 は先にマージする別の PR の番号"
+    },
+    {
+      "version": "1.21",
+      "date": "2026-10-24",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0049で、営業管理の1回の提案・提案で結んだウィンドウ・結果と自己評価・効いた要因・接点の言葉の5表を足した（0041 が先に入ったので、まだ main に無い移行を 0042 から振り直した）"
+    },
+    {
+      "version": "1.22",
+      "date": "2026-10-24",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0050で、企画の10表（企画の項目と体制・3段の試算・案件の担当者・原本の結び付き・素材と事実）を足した"
+    },
+    {
+      "version": "1.23",
+      "date": "2026-10-24",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0051で、撮影の結果・撮影日の記録の原本・日報の項目の3表（プロダクションの撮影の記録）を足した。原本は共通の原本の表（0025）を指す。0041 のあとに振り直した"
+    },
+    {
+      "version": "1.24",
+      "date": "2026-10-25",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0052で、調達（フォルダ台帳 F19）の13表を足した"
+    },
+    {
+      "version": "1.25",
+      "date": "2026-10-25",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0053で、プリプロの手配・美術の項目・シーンの撮影の方針の3表を足した"
+    },
+    {
+      "version": "1.26",
+      "date": "2026-10-25",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0054で、プリプロのプリプロの保管庫の置き場の1表を足した"
+    },
+    {
+      "version": "1.27",
+      "date": "2026-10-25",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0055で、プリプロの連絡帳の3表（スペース・連絡・既読と了解）を足した"
+    },
+    {
+      "version": "1.28",
+      "date": "2026-10-25",
+      "author": "Codex（代表の依頼）",
+      "note": "移行0056で、原本の場所の移動を追加のみの履歴として記録する表を足した"
     }
   ],
   "common": {
@@ -26,6 +182,186 @@
     "created_by": "作成した利用者（users）"
   },
   "tables": {
+    "acq_mg_contracts": {
+      "domain": "planning",
+      "name": "支払う MG の契約",
+      "description": "1行は、権利元へ払う MG（買付分）の契約1件。条件は条件版（acq_mg_term_versions）で持ち、変更・削除はできない。古い支払 MG（mg_outgoing_contracts）と配給委託の MG 型（settlement_contracts）から移した契約は、その元を指す。",
+      "domain_reason": "権利元へ支払う MG（買付分）は、受け取る MG とは別のマスタで持ち、権利調達（企画の領域）の流れに置くと決めたため（D-026・D-036 Q119）。会社ルートの plans/2026-10-22-folder-mg-buy.md",
+      "columns": {
+        "code": "契約の番号（組織の中で一意）",
+        "title": "契約の題",
+        "partner_id": "権利元（partners）",
+        "intake_case_id": "調達案件（rights_intake_cases）。受け方「買付」を足すまでは空を許す",
+        "legacy_settlement_contract_id": "移した元の配給委託の MG 型の契約（settlement_contracts）",
+        "legacy_outgoing_contract_id": "移した元の支払 MG の契約（mg_outgoing_contracts）"
+      }
+    },
+    "acq_mg_documents": {
+      "domain": "planning",
+      "name": "支払う MG の原本の結び付き",
+      "description": "1行は、契約（と条件版）に結んだ原本1つ（契約書・振込の控え・請求書）。原本は共通の原本の表（source_documents）を指す。",
+      "domain_reason": "権利元へ支払う MG（買付分）は、受け取る MG とは別のマスタで持ち、権利調達（企画の領域）の流れに置くと決めたため（D-026・D-036 Q119）。会社ルートの plans/2026-10-22-folder-mg-buy.md",
+      "columns": {
+        "contract_id": "契約（acq_mg_contracts）",
+        "term_version_id": "条件版（acq_mg_term_versions）",
+        "source_document_id": "原本（source_documents）",
+        "kind": "原本の種類（contract・payment_proof・invoice）",
+        "reason": "結んだ理由"
+      }
+    },
+    "acq_mg_payment_schedule": {
+      "domain": "planning",
+      "name": "MG の支払予定",
+      "description": "1行は、MG を分けて払う回1つ（署名・納品・公開・日付のきっかけと額）。出金予定と予実が読む。",
+      "domain_reason": "権利元へ支払う MG（買付分）は、受け取る MG とは別のマスタで持ち、権利調達（企画の領域）の流れに置くと決めたため（D-026・D-036 Q119）。会社ルートの plans/2026-10-22-folder-mg-buy.md",
+      "columns": {
+        "term_version_id": "条件版（acq_mg_term_versions）",
+        "installment": "支払の回",
+        "trigger_kind": "きっかけ（signing・delivery・release・date）",
+        "due_on": "予定日",
+        "amount": "額"
+      }
+    },
+    "acq_mg_payments": {
+      "domain": "planning",
+      "name": "支払うMGの支払",
+      "description": "1行は、権利元へ払った MG の前払か超過の分配額の支払1回。円の額は実際に払った額。直しは取消の行で、変更・削除はできない。",
+      "domain_reason": "支払う MG の支払は、足すだけの移行の決まりで rights_payment_events を作り直せないため、買付分の表として別に持つ（代表の決定 2026-10-24）。会社ルートの plans/2026-10-22-folder-mg-buy.md",
+      "columns": {
+        "contract_id": "契約（acq_mg_contracts）",
+        "term_version_id": "条件版（acq_mg_term_versions）",
+        "kind": "種類（mg_advance＝MG の前払、distribution＝超過の分配額）",
+        "installment": "支払予定の回（MG の前払）",
+        "statement_id": "分配報告書（acq_mg_statements。分配額の支払）",
+        "partner_id": "権利元（partners）",
+        "amount_yen": "実際に払った円の額",
+        "paid_on": "支払日",
+        "reference": "振込などの参照（組織の中で一意）",
+        "currency": "支払の通貨（3字）",
+        "foreign_amount": "外貨の額（通貨の最小単位の整数）",
+        "fx_rate_micro": "レート（100万倍の整数）",
+        "fx_rate_on": "レートの日",
+        "reverses_payment_id": "取り消した元の支払",
+        "reason": "理由"
+      }
+    },
+    "acq_mg_report_links": {
+      "domain": "planning",
+      "name": "売上報告と支払う MG の結び付け",
+      "description": "1行は、売上報告×作品を条件版へ結ぶ（入れる・外す）判断1つ。作品と期間で1つに決まれば自動、決まらなければ人が理由を書く。直すときは前の行を指す行を足す。",
+      "domain_reason": "権利元へ支払う MG（買付分）は、受け取る MG とは別のマスタで持ち、権利調達（企画の領域）の流れに置くと決めたため（D-026・D-036 Q119）。会社ルートの plans/2026-10-22-folder-mg-buy.md",
+      "columns": {
+        "report_id": "売上報告（report_imports）",
+        "work_id": "作品（works）",
+        "term_version_id": "条件版（acq_mg_term_versions）",
+        "report_basis": "報告の額の基礎（gross＝控除前、net＝控除後）",
+        "decided_by": "決め方（auto・human）",
+        "decision": "判断（include・exclude）",
+        "reason": "理由",
+        "replaces_link_id": "直した元の結び付け"
+      }
+    },
+    "acq_mg_statements": {
+      "domain": "planning",
+      "name": "支払う MG の分配報告書",
+      "description": "1行は、締め月の分配報告書の発行か取消1つ。発行した時点の回収の値と本体・ハッシュを写して残す。",
+      "domain_reason": "権利元へ支払う MG（買付分）は、受け取る MG とは別のマスタで持ち、権利調達（企画の領域）の流れに置くと決めたため（D-026・D-036 Q119）。会社ルートの plans/2026-10-22-folder-mg-buy.md",
+      "columns": {
+        "term_version_id": "条件版（acq_mg_term_versions）",
+        "close_month": "締め月",
+        "kind": "種類（issue＝発行、void＝取消）",
+        "status": "回収の状態（recouping・recouped・buyout・hold）",
+        "recouped": "回収累計",
+        "balance": "残高",
+        "overage": "超過",
+        "distribution": "分配額",
+        "body_json": "報告書の本体",
+        "body_sha256": "本体のハッシュ",
+        "issued_on": "発行日（取消は取消日）",
+        "voids_statement_id": "取り消した報告書",
+        "reason": "取消の理由"
+      }
+    },
+    "acq_mg_term_deductions": {
+      "domain": "planning",
+      "name": "分配の前に引く費目",
+      "description": "1行は、条件版で権利元への分配の前に引くと契約に書かれた費目1つと、その上限（FR-PLAN-ACQ-040）。",
+      "domain_reason": "権利元へ支払う MG（買付分）は、受け取る MG とは別のマスタで持ち、権利調達（企画の領域）の流れに置くと決めたため（D-026・D-036 Q119）。会社ルートの plans/2026-10-22-folder-mg-buy.md",
+      "columns": {
+        "term_version_id": "条件版（acq_mg_term_versions）",
+        "category": "費目",
+        "cap_amount": "上限の額",
+        "cap_bps": "上限の率（MG の額に対する bp）",
+        "source_ref": "根拠の契約の条項"
+      }
+    },
+    "acq_mg_term_media_allocations": {
+      "domain": "planning",
+      "name": "媒体ごとの MG の配分",
+      "description": "1行は、媒体ごとに配分する契約の、媒体（売上集計シートの流通のまとまり）1つの配分額。",
+      "domain_reason": "権利元へ支払う MG（買付分）は、受け取る MG とは別のマスタで持ち、権利調達（企画の領域）の流れに置くと決めたため（D-026・D-036 Q119）。会社ルートの plans/2026-10-22-folder-mg-buy.md",
+      "columns": {
+        "term_version_id": "条件版（acq_mg_term_versions）",
+        "media": "媒体（flat・mg・rs・rss・vod）",
+        "amount": "配分額"
+      }
+    },
+    "acq_mg_term_phases": {
+      "domain": "planning",
+      "name": "分配報告の周期",
+      "description": "1行は、条件版の分配報告の周期の区間1つ（ロイヤリティ・製作委員会と同じ表し方。D-029 決定1）。",
+      "domain_reason": "権利元へ支払う MG（買付分）は、受け取る MG とは別のマスタで持ち、権利調達（企画の領域）の流れに置くと決めたため（D-026・D-036 Q119）。会社ルートの plans/2026-10-22-folder-mg-buy.md",
+      "columns": {
+        "term_version_id": "条件版（acq_mg_term_versions）",
+        "phase_order": "区間の順番",
+        "starts_month": "区間の開始月",
+        "ends_month": "区間の終了月",
+        "cycle_kind": "サイクルの種類",
+        "anchor_month": "基準月",
+        "custom_close_months": "任意の締め月の列挙",
+        "first_close_immediate": "初月に即締めるか",
+        "report_offset_months": "締めから報告までの月数",
+        "report_day": "報告の日（空は月末）",
+        "payment_offset_months": "締めから支払までの月数",
+        "payment_day": "支払の日（空は月末）"
+      }
+    },
+    "acq_mg_term_versions": {
+      "domain": "planning",
+      "name": "支払う MG の条件版",
+      "description": "1行は、支払う MG の契約の条件の版1つ。契約ごとの連番で、直すときは新しい版を足す。回収の値は持たず、売上明細から毎回計算する（FR-PLAN-ACQ-011）。",
+      "domain_reason": "権利元へ支払う MG（買付分）は、受け取る MG とは別のマスタで持ち、権利調達（企画の領域）の流れに置くと決めたため（D-026・D-036 Q119）。会社ルートの plans/2026-10-22-folder-mg-buy.md",
+      "columns": {
+        "contract_id": "契約（acq_mg_contracts）",
+        "version_no": "契約ごとの版の番号",
+        "consideration": "対価の型（mg＝MG、buyout＝買切）",
+        "currency": "契約の通貨（3字）",
+        "mg_amount": "MG の額（契約の通貨の整数）",
+        "starts_on": "契約開始日",
+        "ends_on": "契約終了日",
+        "recoup_basis": "回収の基礎（platform_net＝PF の控除後、after_fee＝手数料の控除後）",
+        "platform_rate_bps": "PF の率（bp）",
+        "agency_fee_bps": "手数料の率（bp）",
+        "overage_enabled": "超過後の分配の有無（空＝未登録で保留）",
+        "overage_rate_bps": "超過のうち権利元へ払う率（bp）",
+        "pooling": "回収のまとめ方（all_media＝全媒体まとめて、per_media＝媒体ごとに配分）",
+        "shortfall_from_other_media": "媒体の不足を他の媒体で埋めてよいか",
+        "multi_work": "作品をまたぐときの分け方（single・actual＝実績ベース・hold_until_total＝全体の超過まで分配しない）",
+        "hold_agreement_ref": "全体の超過まで分配しない約束の根拠（契約書か合意の記録の参照）",
+        "reason": "版を足した理由"
+      }
+    },
+    "acq_mg_term_works": {
+      "domain": "planning",
+      "name": "支払う MG の対象の作品",
+      "description": "1行は、条件版の対象の作品1つ。作品ごとの額は、先に決めた契約だけ持つ。",
+      "domain_reason": "権利元へ支払う MG（買付分）は、受け取る MG とは別のマスタで持ち、権利調達（企画の領域）の流れに置くと決めたため（D-026・D-036 Q119）。会社ルートの plans/2026-10-22-folder-mg-buy.md",
+      "columns": {
+        "term_version_id": "条件版（acq_mg_term_versions）",
+        "work_id": "作品（works）",
+        "preset_amount": "先に決めた作品ごとの額"
+      }
+    },
     "ai_usage": {
       "domain": "admin",
       "name": "AIの利用回数",
@@ -2320,14 +2656,23 @@
     "projects": {
       "domain": "planning",
       "name": "案件",
-      "description": "案件1件。作品は案件にぶら下がる。案件の画面や一括登録で作り、作ったあとに書き換える画面・API は無い。予算は財務の権限がある人だけが見られる",
+      "description": "案件1件。作品は案件にぶら下がる（作品を持たない案件もある）。案件の画面や一括登録で作り、作ったあとに書き換える画面・API は無い。予算は財務の権限がある人だけが見られる。型・稼ぎ方・基準額・売上率・相手などは移行0012で足した列で、既存の案件は NULL（未登録）のまま。足した列は既存の案件の API（bootstrap・/api/projects）が返さない。段階は段階の履歴の最新の行から、確度は段階から導くので列に持たない",
       "domain_reason": "案件・作品の登録は企画と決めたため（D-028）。案件は複数の作品を持つ企画になりうる。",
       "columns": {
         "code": "案件コード（組織内で一意）",
         "title": "案件名",
         "status": "状態（企画中・進行中・完了・休止中の4つ）",
         "budget_yen": "予算（円）。税込か税抜かは未確認",
-        "version": "行の版。いまは案件を書き換える経路が無いので、1のまま"
+        "version": "行の版。いまは案件を書き換える経路が無いので、1のまま",
+        "project_type": "案件の型（現場受託・製作・買付・受託配給・受託開発・受託制作の6つ。ontology の案件の型）。登録のあと変えない。NULL は未登録の既存の案件",
+        "earning_type": "稼ぎ方（earning_types）。型と対応表の組だけを許す。現場受託・受託開発の型は持たない",
+        "base_amount_yen": "基準額（円・税別）。中身は稼ぎ方で決まる（制作受託は総製作費、ほかは権利売上の見込み）",
+        "revenue_rate_bps": "案件の売上率（bp）。空なら稼ぎ方の既定の売上率（earning_type_rate_versions の最新の版）。制作受託は持たない（受託の契約の版の受託費率を使う）",
+        "counterparty_name": "相手（取引先・発注元・権利元）の名前",
+        "key_person": "キーパーソン",
+        "started_on": "始めた日（YYYY-MM-DD）",
+        "planning_folder": "企画フォルダ（参照の文字）",
+        "note": "メモ"
       }
     },
     "receipt_plan_decisions": {
@@ -2946,6 +3291,7 @@
         "partner_id": "相手の取引先（partners。営業案件から写す）",
         "occurred_on": "活動した日",
         "activity_type": "活動の種類（連絡・提案・交渉・メモ）",
+        "result": "記録した結果（進んだ・保留・失注）。未記録はNULLのまま保ち、商談の状態から推定しない。通過率の分母は3値の件数、分子は進んだの件数",
         "summary": "活動の内容",
         "next_action": "次にすること",
         "next_due_on": "次にすることの期限"
@@ -3958,6 +4304,1870 @@
         "manifest_hash": "検証したverification.jsonのSHA-256",
         "error": "失敗または期限切れの理由",
         "finished_at": "終了日時（UTCのISO日時）"
+      }
+    },
+    "earning_types": {
+      "domain": "planning",
+      "name": "稼ぎ方",
+      "description": "稼ぎ方の参照表（買付・販売委託・自社出資・製作委員会・制作受託の5つ）。コードの正本で、CHECK にせず行で持つ。案件の型との組・利益の源泉・基準額の中身・使う率の出どころを、要件（案件収支の予実）の対応表どおりに持つ。行は移行で入れ、型との組・利益の源泉・基準額の中身・使う率の出どころは足したあと変えない（トリガー earning_types_fixed。変えるときは移行で）",
+      "domain_reason": "案件の登録は企画と決めたため（D-028）。稼ぎ方は案件に付ける属性（フェーズ1 #10）。",
+      "columns": {
+        "code": "稼ぎ方のコード（acquisition・consignment・own_investment・committee・contract_work）",
+        "label": "稼ぎ方の名前",
+        "project_type": "組になる案件の型（projects.project_type と同じ6つのどれか）",
+        "profit_source": "利益の源泉の番号（1 制作受託・2 自社出資・3 製作委員会・4 買付・5 販売委託）",
+        "base_amount_kind": "基準額の中身（rights_revenue＝権利売上の見込み・production_cost＝制作費）",
+        "rate_source": "使う率の出どころ（project＝案件の売上率か組織の既定・contract＝受託の契約の版の受託費率）",
+        "sort_order": "並び順"
+      }
+    },
+    "action_steps": {
+      "domain": "planning",
+      "name": "行動のステップ",
+      "description": "行動のステップの参照表。親の無い行が集計の3つ（面談・提案・契約）で、細目の段（ontology の行動の段）は親を持つ行として種で足す。2段まで。コードと親は足したあと変えない",
+      "domain_reason": "案件の行動（活動記録）の語の正本を、案件の登録と同じ企画に置いた（フェーズ1 #10）。",
+      "columns": {
+        "code": "ステップのコード（meeting・proposal・contract と、種で足す細目）",
+        "label": "ステップの名前",
+        "parent_code": "畳む先のステップ（action_steps。親の無い行は NULL）",
+        "sort_order": "並び順"
+      }
+    },
+    "project_stages": {
+      "domain": "planning",
+      "name": "案件の段階",
+      "description": "案件の段階の参照表（10段階＋見送り。営業ヨミ表の型）。確度は段階から導き、案件に手で入れさせない。行は移行で入れ、確度・ステップ・理由の要否は足したあと変えない（トリガー project_stages_fixed。変えるときは移行で）",
+      "domain_reason": "案件の段階は案件の属性のため（フェーズ1 #10。D-039 の 2026-10-08 の追記）。",
+      "columns": {
+        "code": "段階のコード",
+        "label": "段階の名前",
+        "yomi": "営業ヨミ表の番号（1〜10。見送りは NULL）",
+        "probability_bps": "確度（bp。見送り 0・企画メモ 1000 〜 契約済み 10000）",
+        "definition": "段階の定義（共通）",
+        "step_code": "対応する行動のステップ（action_steps。面談済み・提案済み・契約済みだけ）",
+        "requires_reason": "入るときに理由が要る段階か（1＝見送り）",
+        "sort_order": "並び順"
+      }
+    },
+    "project_stage_meanings": {
+      "domain": "planning",
+      "name": "案件の段階の稼ぎ方ごとの意味",
+      "description": "段階ごとの、稼ぎ方ごとの意味（営業ヨミ表のステータス表の稼ぎ方の列）。行は種で足す",
+      "domain_reason": "段階の参照表の付属のため。",
+      "columns": {
+        "stage_code": "段階（project_stages）",
+        "earning_type": "稼ぎ方（earning_types）",
+        "meaning": "その稼ぎ方での段階の意味"
+      }
+    },
+    "project_stage_events": {
+      "domain": "planning",
+      "name": "案件の段階の履歴",
+      "description": "案件の段階を変えた記録（追記だけ。変更・削除は DB が断る）。案件ごとの連番の最新の行が、いまの段階。前の段階は直前の行の段階と同じでなければ断り、入った日は直前の行より前にしない。見送りに入るときは理由が要る",
+      "domain_reason": "案件の段階は案件の属性のため（フェーズ1 #10）。通過率は行動指標の計画がこの表を読む。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "seq": "案件ごとの連番（1から）",
+        "stage_code": "入った段階（project_stages）",
+        "previous_stage_code": "前の段階（project_stages。最初の行は NULL）",
+        "entered_on": "その段階に入った日（YYYY-MM-DD）",
+        "evidence": "言質（相手が言ったこと）",
+        "reason": "理由（見送りでは必須）",
+        "created_by": "記録した利用者（memberships）"
+      }
+    },
+    "earning_type_rate_versions": {
+      "domain": "planning",
+      "name": "稼ぎ方の既定の売上率（版）",
+      "description": "組織ごと・稼ぎ方ごとの既定の売上率の版。版を足して残し、最新の version_no が有効。前提の数字なので状態を必ず持つ。移行では行を入れず、種か設定で足す。制作受託（受託の契約の版の率を使う稼ぎ方）には持たない。既定の売上率の置き場はこの表だけで、フェーズ1 #11 の設定の行（variable_key・scope=earning_type）に同じ値を持たせない",
+      "domain_reason": "案件の売上率の既定のため、案件と同じ企画に置いた（フェーズ1 #10）。",
+      "columns": {
+        "earning_type": "稼ぎ方（earning_types）",
+        "version_no": "組織×稼ぎ方ごとの版の連番",
+        "revenue_rate_bps": "既定の売上率（bp）",
+        "status": "状態（confirmed 確認済み・director_reported 監督申告・press_reported 報道値・provisional 仮置き）",
+        "basis": "根拠"
+      }
+    },
+    "cashflow_categories": {
+      "domain": "planning",
+      "name": "入出金の区分",
+      "description": "案件の入金・出金の区分マスタ（入金4・出金5）。入出金と「売上の元になるか」を区分で決め、金額は正で持って符号は区分で決める。出金は売上の元にならない。移行では行を入れず、組織ごとに種かアプリで足す。入出金と売上の元は足したあと変えない",
+      "domain_reason": "要確認: 区分は案件収支の予実（売上）の予測・実績が使うが、フェーズ1 #10 で案件の区分マスタとして企画に置いた。",
+      "columns": {
+        "code": "区分のコード（組織内で一意）",
+        "label": "区分の名前（組織内で一意）",
+        "direction": "入出金（in＝入金・out＝出金）",
+        "counts_as_revenue": "売上の元になるか（1＝なる。出金は 0 だけ）",
+        "sort_order": "並び順"
+      }
+    },
+    "contract_production_versions": {
+      "domain": "planning",
+      "name": "受託制作の契約（版）",
+      "description": "型「受託制作」の案件の契約の版（追記だけ。変更・削除は DB が断る）。案件ごとの連番の最新の version_no が有効。総製作費（税別）・受託費率（1000〜1500 bp、既定 1000）と、受託費＝総製作費×受託費率を truncate した整数円を持ち、受託費が式どおりかを表の CHECK で確かめる。受託費は自社の売上で、制作予備費とは別の値。売上の4区分は持たず、案件の型・稼ぎ方・この版から導く（U-9 の答え）。版の番号が最新の次でない書き込み（古い画面）と、型が受託制作でない案件への版は断る",
+      "domain_reason": "受託費率は案件の編集の1項目として持つ（行動指標の計画 M-4 A）ので、案件と同じ企画に置いた（フェーズ1 #10b）。",
+      "columns": {
+        "project_id": "案件（projects。型は受託制作だけ）",
+        "version_no": "案件ごとの版の連番（1から）",
+        "budget_yen": "総製作費（税別。1円〜1兆円）",
+        "markup_bps": "受託費率（bp。1000〜1500、既定 1000）",
+        "fee_yen": "受託費（総製作費×受託費率を truncate した整数円）",
+        "milestone_count": "支払いの節目の行の数（1〜60）",
+        "contract_reference": "契約書（PDF）の参照",
+        "note": "メモ"
+      }
+    },
+    "investment_approval_versions": {
+      "domain": "planning",
+      "name": "稟議（版）",
+      "description": "自社出資の稟議の版（追記だけ。変更・削除・同じ番号の入れ直しは DB が断り、最初の版も消せない）。稼ぎ方が自社出資の案件ごとに稟議の番号を振り、稟議ごとに版の連番を足す。いまの状態（申請中・承認済み・却下・払込）は最新の版から読むたびに導く。版1は申請で、申請のあとは申請し直し・承認・却下、却下のあとは申請し直し、承認と払込のあとは払込だけ。承認と却下の額は直前の申請の額のまま。払込は払った日と額を持ち、承認の前には入れられず、累計は承認の額まで。申請と承認は同じ人でよく、各版の記録した人と日時が残る。払込は会社への利益額が払った月に引き、出資の回収の出資額になる",
+      "domain_reason": "稟議は自社出資の案件の企画の決裁なので、案件と同じ企画に置いた（行動指標の計画 K2-1 の置き場 planning/investment-approval/。読み書きは src/planning/planning-store.mjs）。",
+      "columns": {
+        "project_id": "案件（projects。稼ぎ方は自社出資だけ）",
+        "approval_no": "案件ごとの稟議の番号（1から）",
+        "version_no": "稟議ごとの版の連番（1から。版1は申請）",
+        "status": "版の種類（applied 申請・approved 承認・rejected 却下・paid 払込）",
+        "amount_yen": "額（申請・承認・却下は稟議の出資額、払込はその回に払った額。消費税の不課税の整数円。1円〜1兆円）",
+        "basis_reference": "根拠の参照（申請は企画書・試算など、却下は理由。申請と却下では必須）",
+        "paid_on": "払った日（YYYY-MM-DD。払込の版だけ）",
+        "note": "メモ",
+        "created_by": "記録した利用者（memberships。申請者・承認者・払込を記録した人）"
+      }
+    },
+    "contract_production_milestones": {
+      "domain": "planning",
+      "name": "受託制作の契約の支払いの節目",
+      "description": "受託制作の契約の版の子の行（追記だけ）。連番の順に月初の日が進み、最後の行で割合の和がちょうど 10000 になる（DB のトリガーが断る）。節目ごとの制作費と受託費（純額）は、総製作費と受託費をこの割合で最大剰余法に配って出す（保存しない）",
+      "domain_reason": "契約の版の子の行なので、版と同じ企画に置いた（フェーズ1 #10b）。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "version_no": "契約の版（contract_production_versions）",
+        "seq": "版の中の連番（1から。月の順）",
+        "due_on": "支払いの節目の月（月初の日。YYYY-MM-01）",
+        "share_bps": "総製作費のうちこの節目の割合（bp。版の中の和が 10000）"
+      }
+    },
+    "yojitsu_periods": {
+      "domain": "revenue",
+      "name": "予実の期間",
+      "description": "組織ごとの1〜5年目の期間（追記だけ。変更・削除は DB が断る）。各年目は月初の日に始まる12か月で、年目の順に足し、n年目は n−1年目のちょうど12か月後に始まる（DB のトリガーが断る）。通算（5年）は持たない。目標・計画の版がこの期間を指す",
+      "domain_reason": "案件収支の予実（YOJITSU）は売上の工程で、読み書きは src/revenue/revenue-store.mjs が持つ（フェーズ1 #11。K-2）。",
+      "columns": {
+        "year_no": "年目（1〜5）",
+        "starts_on": "始まりの月初の日（YYYY-MM-01）"
+      }
+    },
+    "yojitsu_target_versions": {
+      "domain": "revenue",
+      "name": "予実の目標（版）",
+      "description": "年の目標の版（追記だけ。変更・削除は DB が断る）。期間×種類（本人・会社）×範囲（全体・制作の取り分）ごとの連番の最新の version_no が有効。根拠が額なら額を持ち、人件費×倍率なら額を持たず倍率を持つ（報酬の行の12か月の合計×倍率を読むたびに計算する。報酬の表が無い間は未接続）。額は owner 本人にだけ返し、表はデータ一覧・一括出力・帳票の対象外（代表の報酬が割り戻せる）",
+      "domain_reason": "案件収支の予実（YOJITSU）は売上の工程で、読み書きは src/revenue/revenue-store.mjs が持つ（フェーズ1 #11。K-2）。",
+      "columns": {
+        "period_id": "期間（yojitsu_periods）",
+        "target_kind": "種類（self 本人・company 会社）",
+        "target_scope": "範囲（all 全体・production_share 制作の取り分）",
+        "version_no": "期間×種類×範囲ごとの版の連番（1から）",
+        "basis_kind": "根拠の種類（amount 額・labor_cost_multiple 人件費×倍率）",
+        "amount_yen": "目標の額（税別。根拠が人件費×倍率なら NULL）",
+        "multiplier_x100": "倍率（100倍の整数。根拠が人件費×倍率のときだけ。既定は本人 300・会社 200）",
+        "source1_yen": "源泉1（制作受託）の目標（税別。NULL 可）",
+        "source2_yen": "源泉2（自社出資）の目標（税別。NULL 可）",
+        "source3_yen": "源泉3（製作委員会）の目標（税別。NULL 可）",
+        "source4_yen": "源泉4（買付）の目標（税別。NULL 可）",
+        "source5_yen": "源泉5（販売委託）の目標（税別。NULL 可）",
+        "unit": "単位（period_total 期間の合計・monthly 毎月）",
+        "basis": "根拠の文",
+        "status": "状態（confirmed 確認済み・provisional 仮置き）",
+        "decided_on": "決めた日（YYYY-MM-DD）",
+        "decided_by": "決めた人の名前（owner とは別）",
+        "owner_user_id": "額を読める本人（memberships）",
+        "created_by": "記録した利用者（memberships）"
+      }
+    },
+    "yojitsu_plan_versions": {
+      "domain": "revenue",
+      "name": "予実の計画（版）",
+      "description": "計画の版のヘッダ（追記だけ。変更・削除は DB が断る）。期間ごとの連番。稼ぎ方別の額は yojitsu_plan_amounts に持ち、earning_type_count はその行の数。有効な計画は列に持たず、期間ごとの最新の採用の記録（plan_adoptions）が指す版。第1版の額は目標（会社）の仮置きで owner 本人にだけ返す。表はデータ一覧・一括出力・帳票の対象外",
+      "domain_reason": "案件収支の予実（YOJITSU）は売上の工程で、読み書きは src/revenue/revenue-store.mjs が持つ（フェーズ1 #11。K-2）。",
+      "columns": {
+        "period_id": "期間（yojitsu_periods）",
+        "version_no": "期間ごとの版の連番（1から）",
+        "owner_user_id": "額を読める本人（memberships）",
+        "earning_type_count": "稼ぎ方別の額の行の数（1〜20）",
+        "status": "状態（confirmed 確認済み・provisional 仮置き）",
+        "basis": "根拠の文",
+        "created_on": "作った日（YYYY-MM-DD）",
+        "created_by": "記録した利用者（memberships）"
+      }
+    },
+    "yojitsu_plan_amounts": {
+      "domain": "revenue",
+      "name": "予実の計画の稼ぎ方別の額",
+      "description": "計画の版の子の行（追記だけ。変更・削除は DB が断る）。稼ぎ方ごとに1行で、行の数がヘッダの earning_type_count を超えたら断る。表はデータ一覧・一括出力・帳票の対象外",
+      "domain_reason": "案件収支の予実（YOJITSU）は売上の工程で、読み書きは src/revenue/revenue-store.mjs が持つ（フェーズ1 #11。K-2）。",
+      "columns": {
+        "plan_version_id": "計画の版（yojitsu_plan_versions）",
+        "earning_type": "稼ぎ方（earning_types）",
+        "amount_yen": "計画の額（税別・年の額）"
+      }
+    },
+    "plan_adoptions": {
+      "domain": "revenue",
+      "name": "計画の採用の記録",
+      "description": "計画の版を採用した記録（追記だけ。変更・削除は DB が断る）。期間ごとの連番の最新の行が指す版が有効な計画。第1版も1行書き、「戻す」は古い版を指す行を足すだけ。指せるのは子表のそろった同じ期間の版で、採用した日は前の行より前にしない。シナリオとの結びは持たない。表はデータ一覧・一括出力・帳票の対象外",
+      "domain_reason": "案件収支の予実（YOJITSU）は売上の工程で、読み書きは src/revenue/revenue-store.mjs が持つ（フェーズ1 #11。K-2）。",
+      "columns": {
+        "period_id": "期間（yojitsu_periods。指す版と同じ期間）",
+        "seq": "期間ごとの連番（1から）",
+        "plan_version_id": "採用した計画の版（yojitsu_plan_versions）",
+        "adopted_on": "採用した日（YYYY-MM-DD）",
+        "created_by": "記録した利用者（memberships）"
+      }
+    },
+    "yojitsu_variables": {
+      "domain": "revenue",
+      "name": "予実の設定の変数",
+      "description": "設定の行の変数の参照表（組織に依らない）。値の列の種類とステップごとに持つかを決める。移行 0014 で行動の率（次の段へ進む率）・1件あたりの額・着地に数える確度・窓口の支払いの間の4行を、移行 0017 で行動指標の変数（窓口の売上の倍率・1件の時間・通る確率・通過率を測る期間など18行。行動指標の計画 段B #9）を入れる。稼ぎ方の既定の売上率は持たない（earning_type_rate_versions だけが持つ）。値の種類とステップの要否は変えられない",
+      "domain_reason": "案件収支の予実（YOJITSU）は売上の工程で、読み書きは src/revenue/revenue-store.mjs が持つ（フェーズ1 #11。K-2）。",
+      "columns": {
+        "code": "変数のコード",
+        "label": "表示の名前",
+        "value_kind": "値の列の種類（bps・x100・months・yen）",
+        "per_step": "ステップごとに持つか（1＝範囲は稼ぎ方×ステップだけ）",
+        "sort_order": "並び順"
+      }
+    },
+    "yojitsu_setting_versions": {
+      "domain": "revenue",
+      "name": "予実の設定（版）",
+      "description": "行動の率と1件あたりの額などの設定の行（追記だけ。変更・削除は DB が断る）。変数×範囲ごとの連番の最新の version_no が有効。範囲で使う列だけが埋まり、値の列は bps・x100・months・yen のうちちょうど1つで、変数の値の種類と同じ。前提の数字なので状態を必ず持つ。移行では値の行を入れず、種か設定で足す",
+      "domain_reason": "案件収支の予実（YOJITSU）は売上の工程で、読み書きは src/revenue/revenue-store.mjs が持つ（フェーズ1 #11。K-2）。",
+      "columns": {
+        "variable_key": "変数（yojitsu_variables）",
+        "scope": "範囲（all・earning_type・earning_type_step・project・channel）",
+        "earning_type": "稼ぎ方（earning_types。範囲が稼ぎ方・稼ぎ方×ステップのとき）",
+        "step": "ステップ（action_steps。範囲が稼ぎ方×ステップのとき。率はその段から次の段へ）",
+        "project_id": "案件（projects。範囲が案件のとき）",
+        "channel_code": "窓口のコード（範囲が窓口のとき。参照先は未決）",
+        "version_no": "変数×範囲ごとの版の連番（1から）",
+        "value_bps": "値（bp）",
+        "value_x100": "値（100倍の整数）",
+        "value_months": "値（月数。0〜120）",
+        "value_yen": "値（円・税別）",
+        "status": "状態（confirmed 確認済み・director_reported 監督申告・press_reported 報道値・provisional 仮置き）",
+        "basis": "根拠・1件あたりの中身の文",
+        "created_by": "記録した利用者（memberships）"
+      }
+    },
+    "kpi_metric_versions": {
+      "domain": "revenue",
+      "name": "指標マスタ（版）",
+      "description": "指標マスタの版のヘッダ（追記だけ。変更・削除は DB が断る）。組織ごとの連番で、最新の version_no の版が有効。段の行は kpi_metric_steps に持ち、step_count はその行の数（行が足りない版は有効にしない）。段の率・1件の時間・1件の額などの値は持たず、設定の行（yojitsu_setting_versions）だけに持つ",
+      "domain_reason": "行動指標（KPI）は売上の工程で、読み書きは src/revenue/revenue-store.mjs が持つ（行動指標の計画 段B #9。K2-1）。",
+      "columns": {
+        "version_no": "組織ごとの版の連番（1から）",
+        "step_count": "段の行の数（1〜200）",
+        "basis": "版を足した理由の文",
+        "created_on": "作った日（YYYY-MM-DD）",
+        "created_by": "記録した利用者（memberships）"
+      }
+    },
+    "kpi_metric_steps": {
+      "domain": "revenue",
+      "name": "指標マスタの段",
+      "description": "指標マスタの版の子の行（追記だけ。変更・削除は DB が断る）。役×稼ぎ方ごとに段を seq の順に並べ、段は行動のステップの参照表のコード（細目は親のステップへ畳んで数える）。稼ぎ方×段は版の中で1回だけ。対応の出どころの状態を必ず持つ。行の数がヘッダの step_count を超えたら断る",
+      "domain_reason": "行動指標（KPI）は売上の工程で、読み書きは src/revenue/revenue-store.mjs が持つ（行動指標の計画 段B #9。K2-1）。",
+      "columns": {
+        "metric_version_id": "指標マスタの版（kpi_metric_versions）",
+        "role": "役（producer プロデューサー・sales_sourcing 営業（仕入れ）・sales_selling 営業（売り））",
+        "earning_type": "稼ぎ方（earning_types）",
+        "seq": "役×稼ぎ方の中の段の順（1から）",
+        "step": "段（action_steps。細目の段は親のステップへ畳む）",
+        "status": "対応の出どころの状態（confirmed 確認済み・director_reported 監督申告・press_reported 報道値・provisional 仮置き）",
+        "basis": "出どころの文"
+      }
+    },
+    "yojitsu_forecast_versions": {
+      "domain": "revenue",
+      "name": "予実の予測（版）",
+      "description": "案件×月の予測の版のヘッダ（追記だけ。変更・削除は DB が断る）。案件ごとの連番で、最新の version_no の版が有効（前の版の行は「予測に使う＝いいえ」と読む。行が line_count に満たない版は有効にしない）。版は案件の予測の全部の行を持ち、行は yojitsu_forecast_lines。試算の写しは元のファイルの SHA-256 を持ち、同じ写しを二度取り込まない",
+      "domain_reason": "案件収支の予実（YOJITSU）は売上の工程で、読み書きは src/revenue/revenue-store.mjs が持つ（フェーズ1 #13。K-2）。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "version_no": "案件ごとの版の連番（1から）",
+        "label": "版の名前（例: 試算の写し 2026-10-20）",
+        "source_kind": "出所の種類（trial_import 試算の写し・manual 手入力・initiative 施策の既定の予測行）",
+        "source": "出所の文",
+        "source_sha256": "試算の写しの元のファイルの SHA-256（小文字の16進64桁。試算の写しだけ）",
+        "line_count": "行の数（1〜3824。1つの版が D1 の1回の batch に収まる数。行は版と同じ batch で行の番号の順に足す）",
+        "created_on": "作った日（YYYY-MM-DD）",
+        "created_by": "記録した利用者（memberships）"
+      }
+    },
+    "yojitsu_forecast_lines": {
+      "domain": "revenue",
+      "name": "予実の予測の行",
+      "description": "予測の版の行（追記だけ。変更・削除は DB が断る）。シナリオ（even・good・MAX・単一）×月（月初の日）×区分（区分マスタ）の金額。金額は税別の正の整数で、符号は区分の入出金で決める。予測に使う印は版の中の印で、有効な版の印が 1 の行だけを予測に使う",
+      "domain_reason": "案件収支の予実（YOJITSU）は売上の工程で、読み書きは src/revenue/revenue-store.mjs が持つ（フェーズ1 #13。K-2）。",
+      "columns": {
+        "project_id": "案件（yojitsu_forecast_versions の案件）",
+        "version_no": "版（yojitsu_forecast_versions）",
+        "line_no": "版の中の行の番号（1〜版の line_count の連番。最後の番号の次だけ足せる）",
+        "scenario": "シナリオ（even・good・max〈MAX〉・single〈単一〉。試算のケース）",
+        "forecast_month": "月（月初の日。YYYY-MM-01）",
+        "category_id": "区分（cashflow_categories）",
+        "item": "項目",
+        "counterparty": "相手",
+        "amount_yen": "金額（円・税別。正の整数）",
+        "status": "状態（confirmed 確認済み・director_reported 監督申告・press_reported 報道値・provisional 仮置き）",
+        "use_for_forecast": "予測に使う印（1 使う・0 使わない。前の版の行は印に関わらず使わない）"
+      }
+    },
+    "yojitsu_activity_records": {
+      "domain": "revenue",
+      "name": "予実の活動記録",
+      "description": "案件の行動の記録（追記だけ。変更・削除は DB が断り、直しは取消の行 yojitsu_activity_cancellations を足す）。行の中身は記録した人の本人にだけ返し、ほかの人には件数だけを返す。ステップは行動のステップの参照表の段で、親の step（面談・提案・契約）へ畳んで数える。取り込んだ営業の活動は source_sales_activity_id で1回だけ。表はデータ一覧・一括出力の対象外",
+      "domain_reason": "案件収支の予実（YOJITSU）は売上の工程で、読み書きは src/revenue/revenue-store.mjs が持つ（フェーズ1 #13。K-2）。",
+      "columns": {
+        "project_id": "案件（projects。必須）",
+        "occurred_on": "日付（YYYY-MM-DD）",
+        "earning_type": "稼ぎ方（earning_types。空なら案件の稼ぎ方で数える）",
+        "step": "ステップ（action_steps の段。空は数えない）",
+        "counterparty": "相手",
+        "summary": "したこと",
+        "deliverable": "成果物（携わった案件数の元）",
+        "next_action": "次の一手",
+        "next_due_on": "次の一手の期日（YYYY-MM-DD）",
+        "result": "結果（advanced 進んだ・on_hold 保留・lost 失注）",
+        "work_id": "作品（works。案件の作品。作品の無い段は空）",
+        "source_sales_activity_id": "取り込んだ営業の活動（sales_activities。組織の中で1回だけ）",
+        "created_by": "記録した利用者（memberships。この人にだけ行の中身を返す）"
+      }
+    },
+    "yojitsu_activity_cancellations": {
+      "domain": "revenue",
+      "name": "予実の活動記録の取消",
+      "description": "活動記録の取消（追記だけ。1行に1回）。取り消せるのは記録した人だけで、取り消した行は数えない。表はデータ一覧・一括出力の対象外",
+      "domain_reason": "案件収支の予実（YOJITSU）は売上の工程で、読み書きは src/revenue/revenue-store.mjs が持つ（フェーズ1 #13。K-2）。",
+      "columns": {
+        "activity_id": "取り消した活動記録（yojitsu_activity_records）",
+        "cancelled_on": "取り消した日（YYYY-MM-DD）",
+        "reason": "理由",
+        "created_by": "取り消した利用者（memberships。活動記録を記録した人）"
+      }
+    },
+    "production_cost_versions": {
+      "domain": "expenses",
+      "name": "制作費の版",
+      "description": "成功報酬の線（閾値）にする制作費の版（追記だけ。変更・削除・同じ番号の入れ直しは DB が断る）。作品ごとの連番で、最新の version_no の版がその時点の制作費。額は税抜の整数円で、版の無い作品は「制作費の版なし」（0円で埋めない）。根拠は3種類: 出資額から作る最初の版（作品の費用の最新の版の確定した自社の出資額か、委員会の契約の最新の条件版の出資額の合計をトリガーが照らす。委員会は税の区分が不明）、出資の記録が無い作品の最初の版を契約書から手で入れる版（契約書の参照・締結日・相手・額が必須。税込の契約は税抜に戻した額と戻し方）、追加の契約で委員会・自社の払う額が増えたときの追加の版（前の版の額＋追加額。負担の種別は出資者の追加出資か借入）。内訳（制作費・P&A）は2つの和が版の額",
+      "domain_reason": "制作費と実費（PCOST）は経費の領域の工程（問いの一覧 Q30）で、読み書きは src/expenses/expenses-store.mjs が持つ（フェーズ1 #5。K-2）。",
+      "columns": {
+        "work_id": "作品（works）",
+        "version_no": "作品ごとの版の連番（1から）",
+        "source_kind": "根拠の種類（investment 出資額から・contract 契約書から手入力・additional_contract 追加の契約）",
+        "amount_yen": "制作費（税抜の整数円。1円〜1兆円。成功報酬の線の元の額）",
+        "tax_basis": "版の額の税の区分（ex_tax 税抜・unknown 不明。不明は委員会の条件版から作った版で、成功報酬の判定は保留）",
+        "production_part_yen": "内訳の制作費（出資が P&A を含む作品だけ。P&A と2つで和が版の額）",
+        "pa_part_yen": "内訳の P&A（出資が P&A を含む作品だけ）",
+        "work_finance_revision": "参照した作品の費用の版（work_finance_versions。自社の出資額から作った版だけ）",
+        "committee_term_version_id": "参照した委員会の条件版（committee_term_versions。委員会の出資額から作った版だけ）",
+        "contract_reference": "契約書の参照（契約書から手入力した版と追加の版）",
+        "contract_signed_on": "契約の締結日（YYYY-MM-DD）",
+        "counterparty_partner_id": "契約の相手（partners）",
+        "contract_amount_yen": "契約書に書かれた額（税込のこともある。追加の版は追加の契約の額）",
+        "contract_tax_basis": "契約書の額の税の区分（ex_tax 税抜・inc_tax 税込）",
+        "tax_conversion": "税込の契約を税抜に戻した戻し方",
+        "added_yen": "追加の版で足した額（税抜。前の版の額＋この額が版の額）",
+        "burden_type": "追加の契約の負担の種別（investor_additional 出資者の追加出資・borrowing 借入。制作会社の負担では版を足さない）",
+        "note": "メモ（出資額から作った版は会計の専門家の確認の前の仮置きを残す）",
+        "created_by": "記録した利用者（memberships）"
+      }
+    },
+    "yojitsu_choice_versions": {
+      "domain": "revenue",
+      "name": "予実の語と月の設定（版）",
+      "description": "値の列（bps・x100・months・yen）に入らない予実の設定の版（追記だけ。変更・削除は DB が断る）。組織×設定ごとの連番で、最新の version_no が有効。採用するシナリオ（予実の4段の着地予測・確度加重予測が読む）・月別の表に入れる案件の範囲・締めた月の3つ。数の設定は yojitsu_setting_versions",
+      "domain_reason": "案件収支の予実（YOJITSU）は売上の工程で、読み書きは src/revenue/revenue-store.mjs が持つ（フェーズ1 #14。K-2）。",
+      "columns": {
+        "choice_key": "設定（adopted_scenario 採用するシナリオ・monthly_scope 月別の表に入れる案件の範囲・closed_month 締めた月）",
+        "version_no": "組織×設定ごとの版の連番（1から）",
+        "value_code": "語の設定の値（採用するシナリオは even・good・max・single、月別の表の範囲は all 企画中も含む・landing 着地・contracted 契約済み）。締めた月は空",
+        "value_month": "締めた月（月初の日 YYYY-MM-01）。語の設定は空",
+        "basis": "根拠の文",
+        "created_by": "記録した利用者（memberships）"
+      }
+    },
+    "sales_source_file_terms": {
+      "domain": "revenue",
+      "name": "売上原本の1通の条件（版）",
+      "description": "受け取った原本1通の条件（取引先・報告の種類・対象期間・受領日・報告月・申告合計）の版1つを表す。原本ごとの連番で、最新の版がその時点の条件（状態の列は持たない）。置き場所を誤ったときは理由を書いて次の版を足し、分割の登録を始めた原本には足せない。変更・削除は DB が断る。分からない値は空（未検証）のまま持つ",
+      "domain_reason": "売上報告の1通を受け取る売上の工程（報告の受け取りと取込 INTAKE、フォルダからの受け取り FOLDER）で作るため。FR-REV-INTAKE-006・023・051",
+      "columns": {
+        "file_id": "原本（sales_source_files）",
+        "version_no": "版番号（原本ごとに1から連番）",
+        "partner_id": "1通を送ってきた取引先（partners）",
+        "kind": "報告の種類（劇場・配信・パッケージ・放送・その他・宣伝。report_imports と同じ語）",
+        "period_from": "対象期間の始まり（YYYY-MM-DD）。分からなければ空（終わりと2つとも空）",
+        "period_to": "対象期間の終わり（YYYY-MM-DD。始まり以後）。分からなければ空",
+        "received_on": "受領日（1通を受け取った日）。人が入れるまで空で、読み手は原本を取り込んだ日時で代え、代えたことを示す",
+        "report_month": "報告書の上の報告月（YYYY-MM）。受領日から埋めない。原本の欄か人が入れた月だけ。無ければ空（未検証）",
+        "declared_row_count": "原本に書かれた件数（申告合計）。書かれていなければ空",
+        "declared_amount_ex_tax": "原本に書かれた税抜の合計（円）。書かれていなければ空",
+        "declared_tax_amount": "原本に書かれた税額の合計（円）。書かれていなければ空",
+        "declared_amount_inc_tax": "原本に書かれた税込の合計（円）。3つの額がそろえば 税込＝税抜＋税額",
+        "reason": "この版を足した理由（置いたフォルダ・置き場所の直しなど）",
+        "created_by": "版を足した利用者（memberships）"
+      }
+    },
+    "report_voids": {
+      "domain": "revenue",
+      "name": "報告の取消の記録",
+      "description": "登録済みの報告1件を取り違えのために取り消した記録（理由・誰が・いつ）を表す。同じ書き込みで報告（report_imports）を取消（void）にしたあとにだけ足せ、報告ごとに1つ。請求済みの報告は取り消せない（既存のトリガー）。変更・削除は DB が断る",
+      "domain_reason": "売上の報告を登録する工程（報告の受け取りと取込 INTAKE）の取消で作るため。FR-REV-INTAKE-053",
+      "columns": {
+        "report_id": "取り消した報告（report_imports）",
+        "reason": "取消の理由（取り違えの内容）",
+        "created_by": "取り消した利用者（memberships）"
+      }
+    },
+    "report_check_versions": {
+      "domain": "revenue",
+      "name": "検査の決まり（版）",
+      "description": "取引先×報告の種類ごとの検査の決まりの版（追記だけ。変更・削除は DB が断る）。指す列対応の版・検算の決まり・見出しの列名・取り込まない行の規則・税抜・税額・税込の列名・商品で分けるか・版の理由を持つ。連番は取引先×報告の種類ごと。指す列対応の版は、同じ組織・同じ取引先・同じ報告の種類のものだけ。正答率の列は持たない",
+      "domain_reason": "フォルダからの受け取り（FOLDER）の変換の型を、売上の報告の列対応の上に足すため。FR-REV-FOLDER-009",
+      "columns": {
+        "partner_id": "型の取引先（partners）",
+        "kind": "報告の種類（劇場・配信・パッケージ・放送・その他・宣伝。列対応の profile と同じ語に、宣伝を足したもの）",
+        "version_no": "取引先×報告の種類ごとの版の連番（1から）",
+        "mapping_version_id": "指す列対応の版（report_mapping_versions。同じ取引先と報告の種類）",
+        "checks_json": "検算の決まり（JSON の配列。空でもよい。中身は既存の CHECK_TYPES）",
+        "header_columns_json": "見出しの一致に使う列名（JSON の配列。順も一致させる。1つ以上）",
+        "skip_rules_json": "取り込まない行の規則（JSON の配列。1件の形は未決なので、この列は中身を解釈しない）",
+        "money_columns_json": "税抜・税額・税込の列名（JSON のオブジェクト。amountExTax・taxAmount・amountIncTax）",
+        "split_by_product": "商品で分ける型なら 1、分けない型なら 0",
+        "reason": "この版を足した理由",
+        "created_by": "版を足した利用者（memberships）"
+      }
+    },
+    "report_check_cases": {
+      "domain": "revenue",
+      "name": "検査の正解表",
+      "description": "検査の決まりの版ごとの正解表の1行（追記だけ。変更・削除は DB が断る）。架空の原本と、7つの検査の期待する合否。出どころは種（ふつうの通・端数のある通・取り込まない行のある通）か人の直し。実在の原本は入れない（fictional は 1 だけ）。人の直しを足せるのは、代表（role が admin で在籍が有効）か財務担当（permission が edit で、在籍と権限の期限が切れていない）だけ。種の行はこの止めの対象外",
+      "domain_reason": "フォルダからの受け取り（FOLDER）の型の正答率を、架空の原本で確かめるため。FR-REV-FOLDER-009",
+      "columns": {
+        "check_version_id": "検査の決まりの版（report_check_versions）",
+        "origin": "出どころ（normal ふつうの通・fractional 端数のある通・excluded 取り込まない行のある通・human_fix 人の直し）",
+        "fictional": "架空である印（1 だけ。実在の原本は入れない）",
+        "input_json": "架空の原本と登録予定（JSON のオブジェクト。検査の純関数の入力）",
+        "expected_json": "7つの検査の期待する合否（JSON のオブジェクト。キーは検査の名前、値は真偽）",
+        "reason": "この行を足した理由",
+        "created_by": "行を足した利用者（memberships）"
+      }
+    },
+    "source_check_runs": {
+      "domain": "revenue",
+      "name": "検査の結果（回）",
+      "description": "原本1通の検査の結果を回ごとに残す（追記だけ。変更・削除は DB が断る）。原本ごとの連番。再検査は新しい回を足すだけで、登録（sales_source_commits）は書き換えない。判定の語は5つ。合否の数と正解表の件数を、その回の値として持つ。判定の語と合否の数が食い違う行は DB では止めない（純関数の戻りを書くのは受け口）",
+      "domain_reason": "フォルダからの受け取り（FOLDER）で、1通の検査を回ごとに残すため。FR-REV-FOLDER-008",
+      "columns": {
+        "file_id": "原本（sales_source_files）",
+        "check_version_id": "使った検査の決まりの版（report_check_versions）",
+        "run_no": "原本ごとの回の連番（1から）",
+        "checks_passed": "合った検査の数（0以上。checks_total 以下）",
+        "checks_total": "検査の項目数（0以上）",
+        "judgment": "判定の語（auto 自動で確定・human 人の確認・human_record 人の確認（実績が足りない）・shape 形が違う・unread 人が読む）",
+        "golden_matched": "正解表のうち一致した件数",
+        "golden_total": "正解表の件数（0件は正答率100%にしない）"
+      }
+    },
+    "source_sampling_reviews": {
+      "domain": "revenue",
+      "name": "抜き取りの記録",
+      "description": "人が見た1通の抜き取りの記録（追記だけ。変更・削除は DB が断る）。結果は直し無し・型の誤り・原本の誤りの3つ。型の誤りを足しても、検査の決まりの新しい版は自動では作らない。実績の通数は数える列を持たず、検査の回とこの記録から読むたびに導く",
+      "domain_reason": "フォルダからの受け取り（FOLDER）で、人が見た通から実績を導くため。FR-REV-FOLDER-013",
+      "columns": {
+        "check_run_id": "見た検査の回（source_check_runs）",
+        "result": "結果（clean 直し無し・type_error 型の誤り・source_error 原本の誤り）",
+        "reason": "記録の理由",
+        "created_by": "記録した利用者（memberships）"
+      }
+    },
+    "budget_versions": {
+      "domain": "planning",
+      "name": "予算書（版）",
+      "description": "案件の予算書の版（追記だけ。変更・削除・同じ番号の入れ直しは DB が断る）。案件ごとの連番。合計の列は持たず、行と制作管理費・予備費（計画）・税率から読むたびに導く。理由は必須",
+      "domain_reason": "予算書は案件の企画の工程（フォルダ原案の 企画 › 予算書作成）なので企画の領域に置く（置き場 src/planning/budget/。要件 docs/requirements/planning/budget-book.md）。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "version_no": "案件ごとの版の連番（1から）",
+        "source_kind": "出どころ（file 予算書 xlsx から／screen 画面で作った／copy 前の版の写し）",
+        "source_file_name": "読んだ予算書のファイル名（file のときだけ。原本そのものは共通の原本の表が入ってから結ぶ）",
+        "previous_version_id": "もとにした前の版（copy は必須）",
+        "tax_rate_bps": "消費税率（bps。1000＝10%。総合計に1回だけ掛けて切り捨て）",
+        "management_fee_yen": "制作管理費（税抜の整数円。明細から導けない入力値）",
+        "contingency_yen": "予備費（計画）（税抜の整数円。制作費の版の制作予備費とは別）",
+        "sheet_created_on": "予算書に書かれた作成日（YYYY-MM-DD）",
+        "header_notes": "予算書の見出しの項目（準備期間・撮影日数・完成の予定・人数）。参考の文で、合計には使わない",
+        "title": "題（例「ドラフト rev3」）",
+        "reason": "版を足した理由（必須）",
+        "created_by": "版を足した利用者（memberships）"
+      }
+    },
+    "budget_version_lines": {
+      "domain": "planning",
+      "name": "予算書の行",
+      "description": "予算書の版の明細の行（追記だけ。確定した版には足せない）。区分は A〜K の11区分（実費の行と同じコード）。個人名・事務所名は持たない",
+      "domain_reason": "予算書は案件の企画の工程（フォルダ原案の 企画 › 予算書作成）なので企画の領域に置く（置き場 src/planning/budget/。要件 docs/requirements/planning/budget-book.md）。",
+      "columns": {
+        "project_id": "案件（版と同じ）",
+        "version_id": "版（budget_versions）",
+        "category_code": "費目の大分類（A 企画費〜K プリント・制作諸費）",
+        "line_no": "区分の中の行番号（1から）",
+        "work_id": "作品（任意。案件の作品だけ）",
+        "department_id": "部署（任意。部署の一覧が入るまで外部キーは無い）",
+        "name": "費目名（例「助監督」「食費」）。役割まで書き、個人名は書かない",
+        "unit_price_yen": "単価（税抜の整数円。一式の行は空）",
+        "qty_milli": "数量（千分の一の整数。2.5 は 2500。一式の行は空）",
+        "unit": "単位（日・人・式など）",
+        "amount_ex_tax_yen": "税抜額（整数円。単価×数量と一致しなくてよい）",
+        "confirmed_source": "確定の印（none 無し／manual 画面で付けた／fill 予算書のセルの黄色から起こした）",
+        "payment_month": "支払予定月（YYYY-MM。任意。案件収支の予実が月ごとに足して読む）",
+        "source_cell": "予算書で読んだセルの位置（例 B12）",
+        "note": "メモ"
+      }
+    },
+    "budget_check_runs": {
+      "domain": "planning",
+      "name": "予算書の検査の結果（回）",
+      "description": "予算書の版の検査の結果を回ごとに残す（追記だけ）。最新の回が例外ありの版は確定できない",
+      "domain_reason": "予算書は案件の企画の工程（フォルダ原案の 企画 › 予算書作成）なので企画の領域に置く（置き場 src/planning/budget/。要件 docs/requirements/planning/budget-book.md）。",
+      "columns": {
+        "project_id": "案件（版と同じ）",
+        "version_id": "版（budget_versions）",
+        "run_no": "版ごとの回の連番",
+        "verdict": "判定（draft_ok 例外なし／exceptions 例外あり）",
+        "passed": "合った検査の数",
+        "failed": "落ちた検査の数（draft_ok は0、exceptions は1以上）",
+        "checks_json": "検査ごとの結果（キー・合否・原本の額・導いた額・セルの位置）",
+        "created_by": "検査した利用者（memberships）"
+      }
+    },
+    "budget_fixes": {
+      "domain": "planning",
+      "name": "予算書の確定の記録",
+      "description": "予算書の版の確定と取り消しの記録（追記だけ）。いまの確定版は最後の行から導く（fix ならその版、void なら確定版なし）。確定は最新の検査が例外なしの版だけ、取り消しはいまの確定版だけ",
+      "domain_reason": "予算書は案件の企画の工程（フォルダ原案の 企画 › 予算書作成）なので企画の領域に置く（置き場 src/planning/budget/。要件 docs/requirements/planning/budget-book.md）。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "seq": "案件ごとの記録の連番",
+        "action": "fix 確定／void 取り消し",
+        "version_id": "確定した版・取り消した版",
+        "reason": "理由（必須）",
+        "created_by": "確定・取り消しをした利用者（memberships）"
+      }
+    },
+    "source_documents": {
+      "domain": "core",
+      "name": "共通の原本",
+      "description": "業務を問わず受け取った原本を1通1行で持つ（追加のみ。変更・削除は DB が断る）。同じ組織で同じ中身（SHA-256）は1行だけ。中身は元の大きさ 12MB まで inline（base64）で持ち、それより大きい映像などは external で名前・大きさ・ハッシュ・外の置き場の名前だけを持つ。業務の表は原本を持たず、この表の ID を指す結び付きの表を業務ごとに持つ",
+      "domain_reason": "全業務が原本を指す共通の土台のため（会社ルートの plans/2026-10-22-folder-parallel-design.md の X-1・X-7。FR-CORE-DATA-056〜060）",
+      "columns": {
+        "kind": "原本の種類（売上報告書・契約書・見積・請求書・領収書・口座の明細・香盤・台本・予算書・企画書・納品ガイド・映像・画像・音声・その他）",
+        "file_name": "受け取ったときのファイル名（1〜240字）",
+        "media_type": "中身の形式（MIME。無ければ空）",
+        "byte_length": "元の中身の大きさ（バイト）",
+        "sha256": "元の中身の SHA-256（16進64字・小文字。組織の中で一意）",
+        "storage": "中身の置き方（inline は表に base64 で持つ、external は外の置き場の名前だけ）",
+        "content_base64": "inline のときの中身（base64。Worker では大きな値を R2 の層が R2 へ逃がす）",
+        "external_location": "external のときの外の置き場の名前",
+        "received_on": "受けた日（業務の基準日に使う YYYY-MM-DD。登録した時刻とは別）",
+        "received_by": "受け取った利用者（memberships）",
+        "legacy_table": "指している既存の原本の表（sales_source_files・expense_source_files・workflow_raw_artifacts。無ければ空）",
+        "legacy_id": "指している既存の原本の表の行の ID（legacy_table と組で持つ）"
+      }
+    },
+    "budget_templates": {
+      "domain": "planning",
+      "name": "予算書の型",
+      "description": "予算書の型（テンプレ。追記だけ）。組織ごとに名前で区別し、名前は変えない。費目は型の版が持つ",
+      "domain_reason": "予算書の型と内訳は予算書作成（企画の領域）の一部なので企画の領域に置く（置き場 src/planning/budget/。要件 docs/requirements/planning/budget-book.md）。",
+      "columns": {
+        "name": "型の名前（組織の中で一意。例「Vシネ 2〜3本撮り」）",
+        "created_by": "型を作った利用者（memberships）"
+      }
+    },
+    "budget_template_versions": {
+      "domain": "planning",
+      "name": "予算書の型（版）",
+      "description": "予算書の型の版（追記だけ。型ごとの連番）。費目は版ごとに持ち、前の版は残る",
+      "domain_reason": "予算書の型と内訳は予算書作成（企画の領域）の一部なので企画の領域に置く（置き場 src/planning/budget/。要件 docs/requirements/planning/budget-book.md）。",
+      "columns": {
+        "template_id": "型（budget_templates）",
+        "version_no": "型ごとの版の連番（1から）",
+        "source_kind": "出どころ（file 予算書 xlsx／budget 案件の予算書の版／screen 画面・型にも足す）",
+        "source_file_name": "読んだ予算書のファイル名（file のときだけ）",
+        "source_project_id": "もとにした案件（budget のときだけ）",
+        "source_budget_version_id": "もとにした予算書の版（budget のときだけ）",
+        "reason": "版を足した理由（必須）",
+        "created_by": "版を足した利用者（memberships）"
+      }
+    },
+    "budget_template_items": {
+      "domain": "planning",
+      "name": "予算書の型の費目",
+      "description": "予算書の型の版の費目（追記だけ）。区分は A〜K。額は持たず、単価・数量・単位と、内訳を持つ費目の内訳のシートの名前を持つ",
+      "domain_reason": "予算書の型と内訳は予算書作成（企画の領域）の一部なので企画の領域に置く（置き場 src/planning/budget/。要件 docs/requirements/planning/budget-book.md）。",
+      "columns": {
+        "template_version_id": "型の版（budget_template_versions）",
+        "category_code": "費目の大分類（A〜K）",
+        "line_no": "区分の中の行番号（1から）",
+        "name": "費目名（同じ区分に同じ名前を置かない）",
+        "unit": "単位",
+        "unit_price_yen": "既定の単価（税抜の整数円。任意）",
+        "qty_milli": "既定の数量（千分の一の整数。任意）",
+        "breakdown_sheet": "内訳を持つ費目の内訳のシートの名前（例「キャスト」。内訳の無い費目は空）",
+        "note": "メモ"
+      }
+    },
+    "budget_version_templates": {
+      "domain": "planning",
+      "name": "予算書の版の型",
+      "description": "予算書の版がどの型の版から作られたか（追記だけ。1つの版に1つまで）",
+      "domain_reason": "予算書の型と内訳は予算書作成（企画の領域）の一部なので企画の領域に置く（置き場 src/planning/budget/。要件 docs/requirements/planning/budget-book.md）。",
+      "columns": {
+        "project_id": "案件（版と同じ）",
+        "version_id": "予算書の版（budget_versions）",
+        "template_version_id": "もとにした型の版（budget_template_versions）"
+      }
+    },
+    "budget_line_items": {
+      "domain": "planning",
+      "name": "予算書の行の内訳",
+      "description": "予算書の行の内訳（キャストリストの役ごとなど。追記だけ。確定した版には足せない）。行の金額は内訳の和。役者名・事務所名は持たず、キャスト一覧を参照で指す",
+      "domain_reason": "予算書の型と内訳は予算書作成（企画の領域）の一部なので企画の領域に置く（置き場 src/planning/budget/。要件 docs/requirements/planning/budget-book.md）。",
+      "columns": {
+        "project_id": "案件（版と同じ）",
+        "version_id": "予算書の版（budget_versions）",
+        "category_code": "行の区分（A〜K）",
+        "line_no": "行の区分の中の行番号",
+        "item_no": "行の中の内訳の番号（1から）",
+        "breakdown_sheet": "内訳のシートの名前（例「キャスト」。xlsx に書き出すときのシート）",
+        "label": "役名・名目（例「主演」「その他 7役」）",
+        "qty_milli": "数量・日数（千分の一の整数。任意）",
+        "unit_price_yen": "単価・日額（税抜の整数円。任意）",
+        "amount_ex_tax_yen": "金額（税抜の整数円）",
+        "casting_ref": "キャスト一覧（プリプロ）の参照。役者名・事務所はそちらから表示する",
+        "source_cell": "予算書で読んだセルの位置（例 キャスト!E3）",
+        "note": "メモ"
+      }
+    },
+    "expense_file_placements": {
+      "domain": "expenses",
+      "name": "経費の原本を置いた月",
+      "description": "経費管理のフォルダで、受け取った原本をどの月に置いたかの記録1件。1つの原本に有効な置き場所は1つで、置き直すときは外した記録を足してから新しい行を足す。",
+      "domain_reason": "経費管理のフォルダに原本を置く手順で作る。",
+      "columns": {
+        "file_id": "置いた原本（expense_source_files）",
+        "placed_month": "置いた月（YYYY-MM。計上月のフォルダ）",
+        "reason": "置いた理由"
+      }
+    },
+    "expense_file_placement_voids": {
+      "domain": "expenses",
+      "name": "経費の原本を外した記録",
+      "description": "経費の原本ではない、または別の月へ置き直したので、置き場所を外した記録1件。原本は消さない。",
+      "domain_reason": "経費管理のフォルダで原本を外す・置き直す手順で作る。",
+      "columns": {
+        "placement_id": "外した置き場所（expense_file_placements）",
+        "reason": "外した理由"
+      }
+    },
+    "expense_month_closures": {
+      "domain": "expenses",
+      "name": "経費の月の締め",
+      "description": "その月の経費の受領が揃ったという締め、または開け直しの記録1件。最新の行が今の状態。会計の締めではない。",
+      "domain_reason": "経費管理のフォルダで月を締める手順で作る。",
+      "columns": {
+        "month": "締めた月（YYYY-MM）",
+        "kind": "締め（close）か開け直し（reopen）",
+        "file_count": "締めた時点の原本と登録済みの明細の数（確かめ用）",
+        "reason": "締めた理由"
+      }
+    },
+    "committee_term_templates": {
+      "domain": "settlement",
+      "name": "委員会の契約の型（版）",
+      "description": "製作委員会の契約の型（条件版の下書き）。型ごとの連番で追加だけ。中身は条件版の入力と同じ形の JSON。型を直すときは版を足し、前の版は消さない",
+      "domain_reason": "製作委員会の契約の式・日程・台帳は精算が受け持つ（置き場 src/committee/ledger/。要件 docs/requirements/settlement/committee.md）。",
+      "columns": {
+        "code": "型のコード（組織の中で一意）",
+        "version_no": "型ごとの版の番号（1から）",
+        "previous_id": "前の版（committee_term_templates）",
+        "name": "型の名前",
+        "body_json": "型の中身（条件版の入力と同じ形の JSON）",
+        "reason": "版を足した理由"
+      }
+    },
+    "committee_term_version_templates": {
+      "domain": "settlement",
+      "name": "委員会の条件版と型の結び付き",
+      "description": "条件版をどの型の版から写したか。1条件版に1行。変更・削除はしない",
+      "domain_reason": "製作委員会の契約の式・日程・台帳は精算が受け持つ（置き場 src/committee/ledger/。要件 docs/requirements/settlement/committee.md）。",
+      "columns": {
+        "term_version_id": "委員会の条件版（committee_term_versions）",
+        "template_id": "写した型の版（committee_term_templates）"
+      }
+    },
+    "committee_term_businesses": {
+      "domain": "settlement",
+      "name": "委員会の事業化権利（条件版）",
+      "description": "条件版×事業化権利ごとの業務担当者（窓口）。事業化権利の語は契約書の別紙の型",
+      "domain_reason": "製作委員会の契約の式・日程・台帳は精算が受け持つ（置き場 src/committee/ledger/。要件 docs/requirements/settlement/committee.md）。",
+      "columns": {
+        "term_version_id": "委員会の条件版（committee_term_versions）",
+        "business_code": "事業化権利（劇場・ビデオグラム・自動公衆送信・テレビ放送 など）",
+        "display_order": "並び順",
+        "operator_partner_id": "業務担当者の取引先（partners）",
+        "clause_reference": "契約書の条項（例 第11条）"
+      }
+    },
+    "committee_term_business_steps": {
+      "domain": "settlement",
+      "name": "委員会の事業の式の段",
+      "description": "事業ごとの式の段。並べた順（step_no）が計算の順。経費・二次使用料・窓口手数料のどれか",
+      "domain_reason": "製作委員会の契約の式・日程・台帳は精算が受け持つ（置き場 src/committee/ledger/。要件 docs/requirements/settlement/committee.md）。",
+      "columns": {
+        "term_version_id": "委員会の条件版",
+        "business_code": "事業化権利（committee_term_businesses）",
+        "step_no": "段の番号（計算の順）",
+        "kind": "expense 経費／secondary_royalty 二次使用料／agent_fee 窓口手数料",
+        "expense_label": "経費の区分の名前（経費の段だけ）",
+        "holder_role": "著作権者の役（二次使用料の段だけ。original・director・screenplay・music・other）",
+        "deduct_expenses": "二次使用料の基礎から、それより前の段の経費を引くか（1 引く・0 引かない）",
+        "fee_rate_bps": "窓口手数料の率（bp）",
+        "fee_base": "窓口手数料の基礎（income 収入／remaining その段の時点の残り）"
+      }
+    },
+    "committee_term_committee_steps": {
+      "domain": "settlement",
+      "name": "委員会全体の式の段",
+      "description": "委員会全体の式の段。並べた順が計算の順。委員会経費・幹事手数料・成功報酬のどれか",
+      "domain_reason": "製作委員会の契約の式・日程・台帳は精算が受け持つ（置き場 src/committee/ledger/。要件 docs/requirements/settlement/committee.md）。",
+      "columns": {
+        "term_version_id": "委員会の条件版",
+        "step_no": "段の番号（計算の順）",
+        "kind": "overhead 委員会経費／manager_fee 幹事手数料／success_fee 成功報酬",
+        "overhead_label": "委員会経費の区分の名前",
+        "recipient_partner_id": "手数料・報酬の受取人の取引先（partners）",
+        "rate_bps": "率（bp）",
+        "fee_base": "幹事手数料の基礎（a 配分金合計／remaining その段の時点の残り）",
+        "threshold_kind": "成功報酬の閾値（total_budget 総事業費／investment_total 出資金の総額）",
+        "success_mode": "成功報酬の掛け方（excess 累計で超えた分×率／after_recoup 回収後は A×率）",
+        "crossing_rule": "回収後のとき、閾値に届く回の扱い（whole_period A の全体／excess_part 超えた分だけ）"
+      }
+    },
+    "committee_term_budget_lines": {
+      "domain": "settlement",
+      "name": "委員会の総事業費の内訳",
+      "description": "総事業費の内訳（製作費・P&A・製作予備費・その他）。出資金の総額の内訳で、収支（D−E）では E を1回だけ引く",
+      "domain_reason": "製作委員会の契約の式・日程・台帳は精算が受け持つ（置き場 src/committee/ledger/。要件 docs/requirements/settlement/committee.md）。",
+      "columns": {
+        "term_version_id": "委員会の条件版",
+        "line_no": "行の番号",
+        "item": "production 製作費／pa P&A／contingency 製作予備費／other その他",
+        "label": "行の名前（その他は必須）",
+        "amount_yen": "額（円）",
+        "tax_basis": "税の区分（ex_tax 税抜／inc_tax 税込）"
+      }
+    },
+    "committee_schedule_versions": {
+      "domain": "settlement",
+      "name": "委員会の日程の版",
+      "description": "契約ごとの報告と分配の日程の版。条件版とは別に持ち、日程だけを変えるときに版を足す。基準日から年を数える",
+      "domain_reason": "製作委員会の契約の式・日程・台帳は精算が受け持つ（置き場 src/committee/ledger/。要件 docs/requirements/settlement/committee.md）。",
+      "columns": {
+        "contract_id": "製作委員会の契約（committee_contracts）",
+        "version_no": "契約ごとの版の番号（1から）",
+        "effective_from": "適用開始日",
+        "base_kind": "基準の種類（release 公開日・first_sales 初回の売上・contract 契約日・other）",
+        "base_date": "基準日",
+        "reason": "版を足した理由",
+        "source_reference": "根拠（連絡のメール・覚書など）"
+      }
+    },
+    "committee_schedule_version_phases": {
+      "domain": "settlement",
+      "name": "委員会の日程のフェーズ",
+      "description": "日程の版×段×フェーズ。段は to_manager（業務担当者→幹事）と to_members（幹事→当事者）。回は表に持たず式から導く",
+      "domain_reason": "製作委員会の契約の式・日程・台帳は精算が受け持つ（置き場 src/committee/ledger/。要件 docs/requirements/settlement/committee.md）。",
+      "columns": {
+        "schedule_version_id": "委員会の日程の版（committee_schedule_versions）",
+        "phase_no": "フェーズの番号",
+        "tier": "段（to_manager 業務担当者→幹事／to_members 幹事→当事者）",
+        "from_year": "基準日から数えた始まりの年（1年目から）",
+        "to_year": "終わりの年（空は続く）",
+        "close_months": "締めの月（12文字の 0/1。1月が先頭）",
+        "report_offset_months": "報告: 締め月から何か月後の末日",
+        "pay_from": "支払の数え始め（close 締め／report 報告）",
+        "pay_offset_months": "支払: 数え始めから何か月後の末日",
+        "carry_under_yen": "配分の繰越の下限額（円。空は繰り越さない）",
+        "holiday_rule": "支払日が休業日のとき（previous_business_day 前の営業日／none そのまま）"
+      }
+    },
+    "committee_round_overrides": {
+      "domain": "settlement",
+      "name": "委員会の回だけの変更",
+      "description": "その回だけの変更（報告日・支払日・回を飛ばす）。追加だけで、同じ回×項目は後の行が効く。理由は必須",
+      "domain_reason": "製作委員会の契約の式・日程・台帳は精算が受け持つ（置き場 src/committee/ledger/。要件 docs/requirements/settlement/committee.md）。",
+      "columns": {
+        "contract_id": "製作委員会の契約（committee_contracts）",
+        "tier": "段（to_manager／to_members）",
+        "close_on": "回の締め日",
+        "field": "変える項目（report_on 報告日／pay_on 支払日／skip 回を飛ばす）",
+        "value_on": "変更後の日（飛ばすときは空）",
+        "reason": "理由",
+        "source_reference": "根拠"
+      }
+    },
+    "committee_ledger_entries": {
+      "domain": "settlement",
+      "name": "委員会の収支の台帳",
+      "description": "委員会の収支を、回×事業化権利×区分×項目×相手の行として追加だけで積む。累計の列は持たず、収支報告書と相手ごとの累計は行の和で導く。直しは符号違いの取消の行",
+      "domain_reason": "製作委員会の契約の式・日程・台帳は精算が受け持つ（置き場 src/committee/ledger/。要件 docs/requirements/settlement/committee.md）。",
+      "columns": {
+        "contract_id": "製作委員会の契約（committee_contracts）",
+        "tier": "段（to_manager／to_members）",
+        "close_on": "回の締め日",
+        "business_code": "事業化権利（委員会全体の行は空）",
+        "section": "区分（income 収入・expense 支出・secondary_royalty 権利処理費・agent_fee 業務手数料・other_income その他収入・overhead 委員会経費・manager_fee 幹事手数料・success_fee 成功報酬・member_distribution 当事者への配分）",
+        "item": "項目の名前",
+        "counterparty_partner_id": "相手の取引先（業務担当者・著作権者・当事者・受取人。partners）",
+        "holder_role": "著作権者の役（権利処理費の行だけ）",
+        "amount_yen": "額（税抜の円。取消の行は符号違い）",
+        "source_kind": "出どころ（computed 計算した／received 届いた報告書／manual 人が入れた）",
+        "source_reference": "出どころの参照",
+        "reverses_id": "取り消す行（committee_ledger_entries）",
+        "reason": "取消の理由"
+      }
+    },
+    "bank_accounts": {
+      "domain": "accounting",
+      "name": "口座",
+      "description": "口座（追記だけ）。現預金の科目（gl_accounts）の補助で、入出金の履歴と銀行の明細との照合の単位。口座番号は下4桁だけ持つ",
+      "domain_reason": "入出金の履歴と仕訳は会計の芯なので会計の領域に置く（置き場 src/accounting/cashbook/。会社ルートの plans/2026-10-22-folder-cashflow.md の「最優先」）。",
+      "columns": {
+        "label": "口座の表示名（組織の中で一意）",
+        "bank_name": "銀行の名前",
+        "last4": "口座番号の下4桁（全桁は持たない）",
+        "gl_account_id": "口座が属する現預金の科目（gl_accounts）",
+        "opened_on": "履歴を始める日（開始残高の仕訳の日付）",
+        "created_by": "口座を足した利用者（memberships）"
+      }
+    },
+    "bank_statement_imports": {
+      "domain": "accounting",
+      "name": "取り込んだ銀行の明細",
+      "description": "取り込んだ明細の1通（追記だけ）。同じ明細は組織×ハッシュで二重に受け取らない。原本の文字を持つ（共通の原本の表へ寄せるのは次の切れ）",
+      "domain_reason": "入出金の履歴と仕訳は会計の芯なので会計の領域に置く（置き場 src/accounting/cashbook/。会社ルートの plans/2026-10-22-folder-cashflow.md の「最優先」）。",
+      "columns": {
+        "bank_account_id": "口座（bank_accounts）",
+        "raw_sha256": "原本の文字の SHA-256",
+        "file_name": "ファイル名",
+        "parser": "読み取り器の名前と版",
+        "original_text": "原本の CSV の文字",
+        "line_count": "読めた行の数",
+        "new_line_count": "新しく足した行の数（重なる行を除く）",
+        "created_by": "取り込んだ利用者（memberships）"
+      }
+    },
+    "bank_statement_lines": {
+      "domain": "accounting",
+      "name": "銀行の明細の行",
+      "description": "明細の行（追記だけ）。口座の中で同じ取引（日・向き・額・取引後の残高・同じ組の何番目か）は1行だけで、期間の重なる明細を二重に数えない",
+      "domain_reason": "入出金の履歴と仕訳は会計の芯なので会計の領域に置く（置き場 src/accounting/cashbook/。会社ルートの plans/2026-10-22-folder-cashflow.md の「最優先」）。",
+      "columns": {
+        "bank_account_id": "口座（bank_accounts）",
+        "import_id": "最初に取り込んだ明細（bank_statement_imports）",
+        "line_no": "明細の中の行番号",
+        "value_date": "取引日（YYYY-MM-DD）",
+        "direction": "向き（in 入金／out 出金）",
+        "amount_yen": "額（正の整数の円）",
+        "balance_after_yen": "取引後の残高（明細に無ければ空）",
+        "description": "摘要（振込名義など）",
+        "dedupe_key": "重なりを判定する鍵"
+      }
+    },
+    "journal_entries": {
+      "domain": "accounting",
+      "name": "仕訳",
+      "description": "仕訳の見出し（追記だけ）。行の数を持ち、行がそろった時点で借方計＝貸方計を DB が確かめる。取消は逆の仕訳を足す（1つの仕訳に取消は1回）。明細の行から作る有効な仕訳は1行に1本",
+      "domain_reason": "入出金の履歴と仕訳は会計の芯なので会計の領域に置く（置き場 src/accounting/cashbook/。会社ルートの plans/2026-10-22-folder-cashflow.md の「最優先」）。",
+      "columns": {
+        "entry_date": "計上日（入出金はお金が動いた日）",
+        "source_kind": "出どころ（opening 開始残高／bank_line 明細の行／manual 手入力）",
+        "bank_statement_line_id": "出どころの明細の行（bank_line のときだけ）",
+        "reverses_entry_id": "取り消す元の仕訳（取消のときだけ）",
+        "line_count": "行の数（2〜50）",
+        "memo": "摘要",
+        "created_by": "仕訳を足した利用者（memberships）"
+      }
+    },
+    "journal_lines": {
+      "domain": "accounting",
+      "name": "仕訳の行",
+      "description": "仕訳の行（追記だけ）。科目・借方か貸方・額。口座を持つ行は、その口座の現預金の科目でなければならない。入出金の履歴はこの行（口座を持つ行）から導く",
+      "domain_reason": "入出金の履歴と仕訳は会計の芯なので会計の領域に置く（置き場 src/accounting/cashbook/。会社ルートの plans/2026-10-22-folder-cashflow.md の「最優先」）。",
+      "columns": {
+        "entry_id": "仕訳（journal_entries）",
+        "line_no": "仕訳の中の行番号",
+        "account_id": "科目（gl_accounts）",
+        "side": "借方（debit）か貸方（credit）",
+        "amount_yen": "額（正の整数の円）",
+        "bank_account_id": "口座（現預金の行だけ）",
+        "memo": "行の摘要"
+      }
+    },
+    "mfg_products": {
+      "domain": "sales",
+      "name": "製造の商品",
+      "description": "製造する商品（SKU）の入れ物。作品と出どころだけを持ち、名前・形・発売日は版に持つ（追記だけ）",
+      "domain_reason": "製造はビデオグラム・印刷物を作って流通へ出す工程なので営業の領域に置く（置き場 src/manufacturing/。会社ルートの plans/2026-10-24-folder-seizou.md）。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "source_kind": "出どころ（procure 調達／mg_buy MG_買付分／own 自社の企画）",
+        "source_ref": "出どころの記録の番号（調達の引き渡しなど。任意）"
+      }
+    },
+    "mfg_product_versions": {
+      "domain": "sales",
+      "name": "製造の商品（版）",
+      "description": "商品の版。発売日・名前・枚数が変わったら版を足す（上書きしない）。逆算の型は発売日が25日なら day25、ほかは offset",
+      "domain_reason": "製造はビデオグラム・印刷物を作って流通へ出す工程なので営業の領域に置く（置き場 src/manufacturing/。会社ルートの plans/2026-10-24-folder-seizou.md）。",
+      "columns": {
+        "product_id": "商品（mfg_products）",
+        "version_no": "商品ごとの版の連番",
+        "name": "商品名",
+        "channel": "形（sell セル／rental レンタル／print 印刷物／other）",
+        "media": "媒体（dvd／bd／print／other）",
+        "edition_label": "版の名前（豪華版など）",
+        "episode_from": "話の範囲の始め",
+        "episode_to": "話の範囲の終わり",
+        "release_on": "発売日",
+        "schedule_rule": "逆算の型（day25 発売月の n か月前の d 日／offset 発売日の n 日前）",
+        "planned_qty": "予定の枚数",
+        "note": "メモ",
+        "reason": "版を足した理由"
+      }
+    },
+    "mfg_step_events": {
+      "domain": "sales",
+      "name": "製造の工程の記録",
+      "description": "工程ごとの依頼・承認・済・〆切の直し・取消の記録（追記だけ）。予定日は記録せず、型と発売日から導く",
+      "domain_reason": "製造はビデオグラム・印刷物を作って流通へ出す工程なので営業の領域に置く（置き場 src/manufacturing/。会社ルートの plans/2026-10-24-folder-seizou.md）。",
+      "columns": {
+        "product_id": "商品（mfg_products）",
+        "step_key": "工程の鍵（src/manufacturing/mfg-model.mjs の MFG_STEPS）",
+        "kind": "requested 依頼／approved 承認／done 済／planned 〆切を直す／void 取消",
+        "on_date": "日付（取消のときは空）",
+        "voids_event_id": "取消す記録（mfg_step_events）",
+        "note": "メモ・取消の理由"
+      }
+    },
+    "mfg_purchase_orders": {
+      "domain": "sales",
+      "name": "製造の発注書",
+      "description": "製造の発注書（オーサリング・デザイン・製造・印刷物・見本盤の発送）。直すときは取消して新しく作る",
+      "domain_reason": "製造はビデオグラム・印刷物を作って流通へ出す工程なので営業の領域に置く（置き場 src/manufacturing/。会社ルートの plans/2026-10-24-folder-seizou.md）。",
+      "columns": {
+        "product_id": "商品（mfg_products）",
+        "po_no": "発注の番号（組織の通し番号）",
+        "po_kind": "種類（authoring／design／manufacture／print／sample）",
+        "partner_id": "取引先（partners。任意）",
+        "partner_label": "取引先に登録していない会社の名前",
+        "deliver_to": "納品先",
+        "due_on": "納期",
+        "note": "メモ"
+      }
+    },
+    "mfg_purchase_order_lines": {
+      "domain": "sales",
+      "name": "製造の発注書の明細",
+      "description": "発注書の明細。税抜の額は数量×単価（銭）を丸めずに1円で割り切れるものだけ（金額は予測。請求の実額は経費の明細の行）",
+      "domain_reason": "製造はビデオグラム・印刷物を作って流通へ出す工程なので営業の領域に置く（置き場 src/manufacturing/。会社ルートの plans/2026-10-24-folder-seizou.md）。",
+      "columns": {
+        "po_id": "発注書（mfg_purchase_orders）",
+        "line_no": "明細の行番号",
+        "item": "品目",
+        "spec": "仕様",
+        "qty": "数量",
+        "unit_price_x100": "単価（銭。円の100倍）",
+        "amount_ex_tax_yen": "税抜の額（円）"
+      }
+    },
+    "mfg_po_events": {
+      "domain": "sales",
+      "name": "製造の発注書の段",
+      "description": "発注書の段（見積の依頼・見積・発注・請求・支払・取消）の記録（追記だけ）。取消した発注書には段を足さない",
+      "domain_reason": "製造はビデオグラム・印刷物を作って流通へ出す工程なので営業の領域に置く（置き場 src/manufacturing/。会社ルートの plans/2026-10-24-folder-seizou.md）。",
+      "columns": {
+        "po_id": "発注書（mfg_purchase_orders）",
+        "kind": "quote_requested／quoted／ordered／invoiced／paid／void",
+        "on_date": "日付",
+        "amount_ex_tax_yen": "見積の額（税抜の円。見積のとき）",
+        "note": "メモ・取消の理由"
+      }
+    },
+    "mfg_receipts": {
+      "domain": "sales",
+      "name": "製造の納品と検品",
+      "description": "明細ごとの納品と検品の記録（追記だけ）。不合格は理由が必須",
+      "domain_reason": "製造はビデオグラム・印刷物を作って流通へ出す工程なので営業の領域に置く（置き場 src/manufacturing/。会社ルートの plans/2026-10-24-folder-seizou.md）。",
+      "columns": {
+        "po_line_id": "発注書の明細（mfg_purchase_order_lines）",
+        "received_on": "納品の日",
+        "qty": "納品の数量",
+        "defect_qty": "不良の数",
+        "result": "pass 合／fail 否",
+        "note": "メモ・不合格の理由"
+      }
+    },
+    "mfg_po_expenses": {
+      "domain": "sales",
+      "name": "製造の明細と経費の結び",
+      "description": "発注書の明細と経費の明細の行（expenses）の結び。外すときは理由つきの行を足す。金額は持たず経費から読む",
+      "domain_reason": "製造はビデオグラム・印刷物を作って流通へ出す工程なので営業の領域に置く（置き場 src/manufacturing/。会社ルートの plans/2026-10-24-folder-seizou.md）。",
+      "columns": {
+        "po_line_id": "発注書の明細（mfg_purchase_order_lines）",
+        "expense_id": "経費の明細の行（expenses）",
+        "action": "link 結ぶ／unlink 外す",
+        "reason": "外した理由"
+      }
+    },
+    "produce_tasks": {
+      "domain": "planning",
+      "name": "進行表のチケット（版）",
+      "description": "進行表のチケットの版（追記だけ）。直すたびに同じ task_uid で版を足し、最新の版が有効。やめたものは retired=1 の版。状態の列は持たず、予定と記録から導く",
+      "domain_reason": "プロデュース管理（フォルダ原案 F02）の進行表は、案件の企画から納品までの進行を扱うので企画の領域に置く（置き場 src/planning/produce/。要件 docs/requirements/planning/produce-progress.md）。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（任意。案件の作品だけ）",
+        "task_uid": "チケットの番号（版を通して同じ。組織の中で一意）",
+        "version_no": "チケットごとの版の連番（1から）",
+        "kind": "種類（work 作業／check チェック期間／milestone 節目。節目は1日）",
+        "phase": "段（script 企画・脚本／prep 準備／shoot 撮影／post ポスプロ／delivery 完成・納品／finance 資金・契約）",
+        "title": "チケットの名前",
+        "role": "役（producer P／line_producer LP）",
+        "assignee_label": "担当の呼び名（任意。利用者のアカウントではない）",
+        "checkers": "チェックする人の呼び名（チェック期間のとき。・で区切る）",
+        "planned_start": "予定の開始日（YYYY-MM-DD）",
+        "planned_end": "予定の終了日（YYYY-MM-DD。節目は開始と同じ）",
+        "milestone_code": "節目のコード（任意。初号・納品などは上の箱の日数に使う）",
+        "template_label": "作ったテンプレートの名前（自分で足したチケットは空）",
+        "retired": "やめた版（1）",
+        "reason": "直した理由（2版目から必須）"
+      }
+    },
+    "produce_task_events": {
+      "domain": "planning",
+      "name": "進行表の着手・完了の記録",
+      "description": "チケットの着手・完了・戻すの記録（追記だけ）。完了は最後の完了が最後の戻すより後のとき",
+      "domain_reason": "プロデュース管理（フォルダ原案 F02）の進行表は、案件の企画から納品までの進行を扱うので企画の領域に置く（置き場 src/planning/produce/。要件 docs/requirements/planning/produce-progress.md）。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "task_uid": "チケットの番号（版を通して同じ。組織の中で一意）",
+        "kind": "記録の種類（started 着手／done 完了／reopened 完了を戻す）",
+        "on_date": "その日（YYYY-MM-DD）",
+        "note": "ひとこと（任意）"
+      }
+    },
+    "produce_task_checks": {
+      "domain": "planning",
+      "name": "進行表のチェック項目",
+      "description": "チケットのチェック項目（追記だけ）。入れる・外すたびに同じ check_uid で行を足し、最新の行が有効",
+      "domain_reason": "プロデュース管理（フォルダ原案 F02）の進行表は、案件の企画から納品までの進行を扱うので企画の領域に置く（置き場 src/planning/produce/。要件 docs/requirements/planning/produce-progress.md）。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "task_uid": "チケットの番号（版を通して同じ。組織の中で一意）",
+        "check_uid": "チケットの中のチェック項目の番号",
+        "label": "チェック項目の文",
+        "checked": "チェックが入っているか（1）"
+      }
+    },
+    "produce_task_posts": {
+      "domain": "planning",
+      "name": "進行表の掲示板",
+      "description": "チケットの掲示板の書き込み（追記だけ。直すときは新しい書き込みで書く）",
+      "domain_reason": "プロデュース管理（フォルダ原案 F02）の進行表は、案件の企画から納品までの進行を扱うので企画の領域に置く（置き場 src/planning/produce/。要件 docs/requirements/planning/produce-progress.md）。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "task_uid": "チケットの番号（版を通して同じ。組織の中で一意）",
+        "speaker_label": "発言者の呼び名（P・監督・編集など。利用者のアカウントではない）",
+        "body": "書き込み"
+      }
+    },
+    "produce_task_links": {
+      "domain": "planning",
+      "name": "進行表の関連する場所",
+      "description": "チケットから移る業務の画面・書類へのリンク（追記だけ。写しは持たない）。外すのは removed=1 の行",
+      "domain_reason": "プロデュース管理（フォルダ原案 F02）の進行表は、案件の企画から納品までの進行を扱うので企画の領域に置く（置き場 src/planning/produce/。要件 docs/requirements/planning/produce-progress.md）。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "task_uid": "チケットの番号（版を通して同じ。組織の中で一意）",
+        "link_uid": "チケットの中のリンクの番号",
+        "label": "リンクの名前",
+        "target": "リンク先（?p= で始まる画面か https:// の場所）",
+        "is_fallback": "仮の書類か（1。スクリプター記録が無いときのコンテなど）",
+        "removed": "外した行（1）"
+      }
+    },
+    "produce_task_templates": {
+      "domain": "planning",
+      "name": "進行表のテンプレート（版）",
+      "description": "組織で使い回す進行表のテンプレートの版（追記だけ）。標準の進行はコードの定数に持ち、ここには利用者が残したものだけが入る",
+      "domain_reason": "プロデュース管理（フォルダ原案 F02）の進行表は、案件の企画から納品までの進行を扱うので企画の領域に置く（置き場 src/planning/produce/。要件 docs/requirements/planning/produce-progress.md）。",
+      "columns": {
+        "template_uid": "テンプレートの番号（版を通して同じ）",
+        "version_no": "テンプレートごとの版の連番（1から）",
+        "name": "テンプレートの名前",
+        "anchor_kind": "起点（crank_in クランクイン／project_start 最初の開始日）",
+        "retired": "やめた版（1）",
+        "reason": "直した理由（2版目から必須）"
+      }
+    },
+    "produce_task_template_items": {
+      "domain": "planning",
+      "name": "進行表のテンプレートの行",
+      "description": "テンプレートの版の行（追記だけ）。起点からの日数で持つ",
+      "domain_reason": "プロデュース管理（フォルダ原案 F02）の進行表は、案件の企画から納品までの進行を扱うので企画の領域に置く（置き場 src/planning/produce/。要件 docs/requirements/planning/produce-progress.md）。",
+      "columns": {
+        "template_id": "テンプレートの版（produce_task_templates）",
+        "sort_no": "並び順（1から）",
+        "kind": "種類（work・check・milestone）",
+        "phase": "段（チケットと同じ6つ）",
+        "title": "名前",
+        "role": "役（producer・line_producer）",
+        "checkers": "チェックする人の呼び名（任意）",
+        "start_offset_days": "起点からの開始の日数",
+        "end_offset_days": "起点からの終了の日数",
+        "milestone_code": "節目のコード（任意）",
+        "links_json": "既定の関連する場所（JSON の配列）"
+      }
+    },
+    "post_cuts": {
+      "domain": "production",
+      "name": "編集の版",
+      "description": "作品・話ごとに積む編集の版（途中・確定・完成）。視聴のリンク（Vimeo の非公開リンクなど。https だけ）を持つ。足すだけ",
+      "domain_reason": "ポストプロダクションは制作の工程（フォルダ原案の F05。置き場 src/production/post/。要件 docs/requirements/production/post-production.md）なので制作の領域に置く。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "episode_no": "話の番号（シリーズのとき。無ければ空）",
+        "variant": "出し先の版（地上波版・配信版など。任意）",
+        "label": "版の名前（v3 など）",
+        "kind": "work 途中／locked 確定（ピクチャーロック）／final 完成",
+        "delivered_on": "上がった日",
+        "runtime_seconds": "尺（秒）",
+        "review_url": "視聴のリンク（https。合言葉は持たない）",
+        "created_by": "版を足した利用者（memberships）"
+      }
+    },
+    "post_notes": {
+      "domain": "production",
+      "name": "ポスプロの指摘",
+      "description": "版を見て出た指示の構造化されたメモ（TC・観点・誰から・担当・内容）。人の名前は持たない。足すだけ",
+      "domain_reason": "ポストプロダクションは制作の工程（フォルダ原案の F05。置き場 src/production/post/。要件 docs/requirements/production/post-production.md）なので制作の領域に置く。",
+      "columns": {
+        "work_id": "作品（works）",
+        "cut_id": "見た版（post_cuts）",
+        "tc_in_seconds": "TC のイン（秒）",
+        "tc_out_seconds": "TC のアウト（秒。任意。イン以降）",
+        "viewpoint": "観点（つながり・バレなど）",
+        "from_role": "誰から（立場の語）",
+        "assignee": "担当（編集・整音など）",
+        "body": "指示の内容",
+        "created_by": "メモを残した利用者（memberships）"
+      }
+    },
+    "post_note_actions": {
+      "domain": "production",
+      "name": "指摘への対応",
+      "description": "指摘への対応の記録（直した・見送り・保留・戻す）。指摘の今の状態は最後の行から導く。見送りは理由が必須。足すだけ",
+      "domain_reason": "ポストプロダクションは制作の工程（フォルダ原案の F05。置き場 src/production/post/。要件 docs/requirements/production/post-production.md）なので制作の領域に置く。",
+      "columns": {
+        "work_id": "作品（works）",
+        "note_id": "指摘（post_notes）",
+        "result": "fixed 直した／skipped 見送り／hold 保留／reopen 戻す",
+        "fixed_cut_id": "直した版（post_cuts。任意）",
+        "reason": "理由（見送りは必須）",
+        "created_by": "対応した利用者（memberships）"
+      }
+    },
+    "post_tasks": {
+      "domain": "production",
+      "name": "ポスプロの工程のタスク",
+      "description": "工程（編集・音・カラコレ・試写・完成試写・その他）ごとのタスク。済み・期日の変更は post_task_events から導く。足すだけ",
+      "domain_reason": "ポストプロダクションは制作の工程（フォルダ原案の F05。置き場 src/production/post/。要件 docs/requirements/production/post-production.md）なので制作の領域に置く。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "phase": "edit 編集／sound 音／color カラコレ／screening 試写／final_screening 完成試写／delivery 納品物／other その他",
+        "episode_no": "話の番号（任意）",
+        "name": "タスクの名前",
+        "due_on": "最初の期日（任意）",
+        "assignee": "担当（会社か立場。任意）",
+        "created_by": "タスクを足した利用者（memberships）"
+      }
+    },
+    "post_task_events": {
+      "domain": "production",
+      "name": "タスクの記録",
+      "description": "タスクの済み・戻す・期日の変更の記録。今の状態は行の順に読んで導く。足すだけ",
+      "domain_reason": "ポストプロダクションは制作の工程（フォルダ原案の F05。置き場 src/production/post/。要件 docs/requirements/production/post-production.md）なので制作の領域に置く。",
+      "columns": {
+        "work_id": "作品（works）",
+        "task_id": "タスク（post_tasks）",
+        "kind": "done 済み／undone 戻す／due 期日の変更",
+        "due_on": "新しい期日（due のときだけ）",
+        "on_date": "記録した日（日本時間）",
+        "created_by": "記録した利用者（memberships）"
+      }
+    },
+    "post_deliverable_items": {
+      "domain": "production",
+      "name": "納品物の行",
+      "description": "契約の納入の条項・取引先の納品ガイド・手で足した納品物の行。委員会の契約の条件版と、取引先への納品（sales_deliverables）を指せる。足すだけ",
+      "domain_reason": "ポストプロダクションは制作の工程（フォルダ原案の F05。置き場 src/production/post/。要件 docs/requirements/production/post-production.md）なので制作の領域に置く。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "source_kind": "contract 契約の納入の条項／guide 取引先の納品ガイド／manual 手で足した",
+        "committee_contract_id": "委員会の契約（committee_contracts。任意）",
+        "committee_term_version_id": "委員会の契約の条件版（committee_term_versions。任意）",
+        "sales_deliverable_id": "取引先への納品（sales_deliverables。任意）",
+        "section": "区分（本編・その他）",
+        "name": "物件の名前",
+        "episode_no": "話の番号（任意）",
+        "spec": "仕様（任意）",
+        "owner": "持ち主の業務（ポスプロ・プロダクション・契約）",
+        "created_by": "行を足した利用者（memberships）"
+      }
+    },
+    "post_deliverable_events": {
+      "domain": "production",
+      "name": "納品物の状態の記録",
+      "description": "納品物の状態（未・制作中・確認中・要再納品・納品済み）の記録。今の状態は最後の行から導く。足すだけ",
+      "domain_reason": "ポストプロダクションは制作の工程（フォルダ原案の F05。置き場 src/production/post/。要件 docs/requirements/production/post-production.md）なので制作の領域に置く。",
+      "columns": {
+        "work_id": "作品（works）",
+        "item_id": "納品物の行（post_deliverable_items）",
+        "status": "pending 未／making 制作中／in_review 確認中／redo 要再納品／delivered 納品済み",
+        "on_date": "その状態になった日",
+        "note": "メモ（任意）",
+        "created_by": "記録した利用者（memberships）"
+      }
+    },
+    "sales_proposals": {
+      "domain": "sales",
+      "name": "営業の1回の提案",
+      "description": "取引先×作品の営業案件への1回の提案（追記だけ）。条件を変えて出し直したら別の行。解禁日までの日数は結んだウィンドウの開始日から読むたびに出す。MG の提案も1行持ち、MG の中身は MG_販売分の表がこの ID を指す",
+      "domain_reason": "営業管理（フォルダ原案の 営業管理）の記録なので営業の領域に置く（置き場 src/sales-ops/proposals/。会社ルートの plans/2026-10-22-folder-eigyo.md の表5〜8）。",
+      "columns": {
+        "opportunity_id": "営業案件（sales_opportunities）",
+        "proposed_on": "提案日",
+        "settlement_method": "精算の方法（unverified 未確認／FLAT 固定額／MG／RS 料率／other）",
+        "amount_ex_tax": "提案した金額（税抜・円）。RS と、案を並べる MG では NULL",
+        "rate_bps": "提案した料率（bps。5000＝50%）。FLAT では NULL",
+        "term_start": "提案した許諾期間の開始",
+        "term_end": "提案した許諾期間の終了",
+        "exclusivity": "独占（unknown 未確認／exclusive 独占／nonexclusive 非独占）",
+        "material_snapshot_id": "提案に使った営業資料の版（sales_material_snapshots）",
+        "pitch_note": "提案の内容（自由文）",
+        "created_by": "記録した利用者（memberships）"
+      }
+    },
+    "sales_proposal_windows": {
+      "domain": "sales",
+      "name": "提案で結んだウィンドウ",
+      "description": "1回の提案が対象にした全作品のウィンドウ（作品×種別×地域の1窓口）。追記だけ",
+      "domain_reason": "営業管理（フォルダ原案の 営業管理）の記録なので営業の領域に置く（置き場 src/sales-ops/proposals/。会社ルートの plans/2026-10-22-folder-eigyo.md の表5〜8）。",
+      "columns": {
+        "proposal_id": "提案（sales_proposals）",
+        "window_id": "全作品のウィンドウ（work_release_windows）"
+      }
+    },
+    "sales_proposal_reviews": {
+      "domain": "sales",
+      "name": "提案の結果と自己評価",
+      "description": "提案の結果と、代表が付ける自己評価（点数・効いたこと・足りなかったこと）。追記だけで、提案ごとの最新の行が今の評価。採用なら契約を指せる",
+      "domain_reason": "営業管理（フォルダ原案の 営業管理）の記録なので営業の領域に置く（置き場 src/sales-ops/proposals/。会社ルートの plans/2026-10-22-folder-eigyo.md の表5〜8）。",
+      "columns": {
+        "proposal_id": "提案（sales_proposals）",
+        "reviewed_on": "評価した日",
+        "outcome": "結果（adopted 採用／adopted_changed 条件を変えて採用／rejected 不採用／no_answer 返事なし／withdrawn 取り下げ）",
+        "score": "自己評価の点数（1〜5）",
+        "worked": "効いたこと（自由文）",
+        "missed": "足りなかったこと（自由文）",
+        "agreement_id": "採用で結んだ販売契約（sales_agreements）",
+        "created_by": "評価した利用者（memberships）"
+      }
+    },
+    "sales_proposal_review_factors": {
+      "domain": "sales",
+      "name": "提案の効いた要因",
+      "description": "自己評価ごとの効いた要因（要因1つにつき1行。プラスかマイナス）。採用と不採用で要因を数えるために使う。追記だけ",
+      "domain_reason": "営業管理（フォルダ原案の 営業管理）の記録なので営業の領域に置く（置き場 src/sales-ops/proposals/。会社ルートの plans/2026-10-22-folder-eigyo.md の表5〜8）。",
+      "columns": {
+        "review_id": "自己評価（sales_proposal_reviews）",
+        "factor": "要因（material 資料／price 金額／term 期間／timing 解禁までのタイミング／exclusivity 独占／relationship 関係／title_strength 作品の力／competition 他社の状況／other）",
+        "effect": "plus 効いた／minus 足を引っ張った"
+      }
+    },
+    "sales_activity_notes": {
+      "domain": "sales",
+      "name": "接点の言葉",
+      "description": "営業活動ごとの言葉の記録（事実・相手の言葉・自分の読みを分ける）と、本人が付ける関係の温度（−2〜+2）。追記だけ。sales_activities の列は増やさない",
+      "domain_reason": "営業管理（フォルダ原案の 営業管理）の記録なので営業の領域に置く（置き場 src/sales-ops/proposals/。会社ルートの plans/2026-10-22-folder-eigyo.md の表5〜8）。",
+      "columns": {
+        "activity_id": "営業活動（sales_activities）",
+        "note_kind": "種類（fact 事実／their_words 相手の言葉／my_read 自分の読み）",
+        "body": "言葉",
+        "tone": "関係の温度（−2〜+2。付けないときは NULL）",
+        "created_by": "記録した利用者（memberships）"
+      }
+    },
+    "planning_documents": {
+      "domain": "planning",
+      "name": "企画の原本の結び付き",
+      "description": "案件と共通の原本（source_documents）の結び付き。種類は企画書・試算・素材。企画書は役（下書き／提出版）と提出先・提出日を持つ。追加のみ",
+      "domain_reason": "企画はフォルダ原案の F01（会社ルートの plans/2026-10-22-folder-kikaku.md）。置き場 src/planning/kikaku/、移行 0050。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "document_id": "共通の原本（source_documents）",
+        "kind": "deck 企画書／trial 試算／material 素材",
+        "role": "企画書の役（draft 下書き／submitted 提出版）",
+        "submitted_to": "提出先",
+        "submitted_on": "提出日（YYYY-MM-DD）",
+        "note": "メモ"
+      }
+    },
+    "planning_profile_versions": {
+      "domain": "planning",
+      "name": "企画の項目（版）",
+      "description": "企画の言葉の版（作業題・起点・ログライン・あらすじ・形式・本数・予定の公開年・提出先）。案件ごとの連番で追加のみ",
+      "domain_reason": "企画はフォルダ原案の F01（会社ルートの plans/2026-10-22-folder-kikaku.md）。置き場 src/planning/kikaku/、移行 0050。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "revision": "案件ごとの版の連番",
+        "working_title": "作業題",
+        "origin": "起点（source 原作／cast キャスト／concept コンセプト／sequel 続編／other その他）",
+        "logline": "ログライン",
+        "synopsis_short": "あらすじ（短）",
+        "synopsis_long": "あらすじ（長）",
+        "format": "形式",
+        "episode_count": "本数",
+        "planned_release_year": "予定の公開年（公開前のフォルダは未公開に置き、この年は列に出すだけ）",
+        "submit_to": "提出先",
+        "reason": "版の理由"
+      }
+    },
+    "planning_profile_people": {
+      "domain": "planning",
+      "name": "企画の体制の候補",
+      "description": "企画の項目の版ごとの体制の候補（監督・脚本・主演など）。状態は候補・交渉中・確定。追加のみ",
+      "domain_reason": "企画はフォルダ原案の F01（会社ルートの plans/2026-10-22-folder-kikaku.md）。置き場 src/planning/kikaku/、移行 0050。",
+      "columns": {
+        "version_id": "企画の項目の版（planning_profile_versions）",
+        "position": "並び",
+        "role": "役割（director・writer・lead・support・producer・studio・other）",
+        "name": "名前",
+        "status": "candidate 候補／negotiating 交渉中／confirmed 確定"
+      }
+    },
+    "planning_trial_versions": {
+      "domain": "planning",
+      "name": "試算（版）",
+      "description": "売上試算の3段の型（表紙→流通の大別→流通の詳細）の版。持つのは入力だけで、売上・権利元収入・回収率・±0 の月は保存せず毎回計算する。案件ごとの連番で追加のみ",
+      "domain_reason": "企画はフォルダ原案の F01（会社ルートの plans/2026-10-22-folder-kikaku.md）。置き場 src/planning/kikaku/、移行 0050。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "revision": "案件ごとの版の連番",
+        "cost_total_yen": "製作費（税抜・円）",
+        "first_month": "回収スケジュールの起点の月（YYYY-MM）",
+        "source_kind": "screen 画面／template 型から／copy 写し／file 原本から",
+        "document_id": "読んだ原本（source_documents）",
+        "reason": "版の理由"
+      }
+    },
+    "planning_trial_rates": {
+      "domain": "planning",
+      "name": "試算の率",
+      "description": "試算の版ごとの、販売の型ごとの率と単価（先方の取り分・窓口とライツの手数料・原作の印税・監督と脚本の印税・製造単価）。根拠の数字は版ごとに変えられる",
+      "domain_reason": "企画はフォルダ原案の F01（会社ルートの plans/2026-10-22-folder-kikaku.md）。置き場 src/planning/kikaku/、移行 0050。",
+      "columns": {
+        "version_id": "試算の版",
+        "type_code": "販売の型（THEA 劇場配給・EVNT イベント上映・PVOD・EST・TVOD・SVOD・AVOD・BIZ 業務用・BCST 放送・SELL セル・RENT レンタル・OVS 海外・GOOD 商品化）",
+        "share_bps": "先方の取り分（劇場・PF・仕切り）の率（bp）",
+        "fee_bps": "窓口・ライツ手数料の率（bp）",
+        "original_royalty_bps": "原作の印税の率（bp）",
+        "creator_royalty_bps": "監督・脚本の印税の率（bp。作り手への印税）",
+        "unit_cost_yen": "製造単価（1枚・円）",
+        "source": "出典"
+      }
+    },
+    "planning_trial_lines": {
+      "domain": "planning",
+      "name": "試算の詳細の行",
+      "description": "流通の詳細の1行＝1取引先×1窓口。開始月と回収の月数から回収スケジュールを導く。数量か額は even・good・max の3列",
+      "domain_reason": "企画はフォルダ原案の F01（会社ルートの plans/2026-10-22-folder-kikaku.md）。置き場 src/planning/kikaku/、移行 0050。",
+      "columns": {
+        "version_id": "試算の版",
+        "line_no": "行の番号",
+        "type_code": "販売の型",
+        "partner_name": "取引先（名前）",
+        "window_label": "窓口（独占・先行・開放など）",
+        "start_month": "開始月（YYYY-MM）",
+        "months": "回収の月数",
+        "calc": "unit 単価×数量／fixed 固定額",
+        "unit_price_yen": "単価（円）",
+        "even_value": "even の数量か額",
+        "good_value": "good の数量か額",
+        "max_value": "MAX の数量か額",
+        "source": "出典",
+        "previous_sales_yen": "前作実績の売上（円）"
+      }
+    },
+    "planning_trial_investments": {
+      "domain": "planning",
+      "name": "試算の出資",
+      "description": "試算の版ごとの出資（出金）の月と額。±0 になる月は最後の出資の月以降で数える",
+      "domain_reason": "企画はフォルダ原案の F01（会社ルートの plans/2026-10-22-folder-kikaku.md）。置き場 src/planning/kikaku/、移行 0050。",
+      "columns": {
+        "version_id": "試算の版",
+        "seq": "連番",
+        "month": "出資の月（YYYY-MM）",
+        "amount_yen": "額（円）"
+      }
+    },
+    "project_owner_versions": {
+      "domain": "planning",
+      "name": "案件の担当者（版）",
+      "description": "案件の担当者（利用者）の版。担当を替えるときは版を足す。今の担当は開始日が今日以前の最新の版。予実が「担当の案件」を読む",
+      "domain_reason": "企画はフォルダ原案の F01（会社ルートの plans/2026-10-22-folder-kikaku.md）。置き場 src/planning/kikaku/、移行 0050。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "revision": "案件ごとの版の連番",
+        "user_id": "担当者（memberships）",
+        "started_on": "担当の開始日",
+        "reason": "理由"
+      }
+    },
+    "planning_materials": {
+      "domain": "planning",
+      "name": "企画の素材",
+      "description": "企画書のための素材（類似作・市場・自社の実績・キャスト・監督・世界観の文献・物語の構造・題名・申告）。判定の印（確・推・不明）と出典を持つ。原本があれば共通の原本を指す",
+      "domain_reason": "企画はフォルダ原案の F01（会社ルートの plans/2026-10-22-folder-kikaku.md）。置き場 src/planning/kikaku/、移行 0050。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "kind": "素材の種類",
+        "title": "素材の名前",
+        "label": "判定（confirmed 確／probable 推／unknown 不明）",
+        "source": "出典",
+        "url": "URL",
+        "document_id": "共通の原本（source_documents）",
+        "acquired_on": "取得日"
+      }
+    },
+    "planning_facts": {
+      "domain": "planning",
+      "name": "企画の事実（抜き出し）",
+      "description": "素材から抜き出した事実（AI と壁打ちした下書きと、人が確定した行）。確定は新しい行で前の行を指す（下書きの行は消さない）。結ぶページ（企画書の32枚の番号）で準備ボードの揃いを出す",
+      "domain_reason": "企画はフォルダ原案の F01（会社ルートの plans/2026-10-22-folder-kikaku.md）。置き場 src/planning/kikaku/、移行 0050。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "material_id": "素材（planning_materials）",
+        "body": "事実の文",
+        "value_int": "数値（任意）",
+        "label": "判定（確・推・不明）",
+        "target": "入る先（deck_text 企画書の文／trial 試算の前提／team 体制の候補／case 事例）",
+        "pages": "結ぶページの番号（カンマ区切り）",
+        "state": "ai_draft 下書き／human_confirmed 確定",
+        "previous_id": "確定のときに指す下書きの行"
+      }
+    },
+    "shooting_scene_results": {
+      "domain": "production",
+      "name": "撮影の結果",
+      "description": "撮影日×シーンごとの撮影の結果（撮影完了・一部・順延・欠番。追記だけ）。いまの結果は連番の最も大きい行。割当の ID は保存のたびに変わるので撮影日とシーンに結ぶ。day_scene_assignments.outcome は読むだけの写しとし、こちらを正本にする",
+      "domain_reason": "撮影の記録は撮影期の工程（フォルダ原案の プロダクション F04）なので制作の領域に置く（置き場 src/production/shoot-records/。会社ルートの計画 plans/2026-10-22-folder-prod.md）。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "shooting_day_id": "撮影日（shooting_days）",
+        "scene_id": "シーン（scenes）",
+        "seq": "撮影日×シーンごとの連番",
+        "result": "shot 撮影完了／partial 一部／postponed 順延／dropped 欠番",
+        "postponed_to_day_id": "順延の移し先の撮影日（同じ作品の別の日。無ければ未割当）",
+        "actual_start": "実績の開始（HH:MM）",
+        "actual_end": "実績の終了（HH:MM）",
+        "note": "メモ",
+        "created_by": "記録した利用者（memberships）"
+      }
+    },
+    "shooting_day_records": {
+      "domain": "production",
+      "name": "撮影日の記録の原本",
+      "description": "撮影日×種類（日々スケの確定版・5部署の日報・スクリプター記録）ごとの原本の記録（追記だけ）。原本そのものは共通の原本の表（source_documents）に置き、この表はその ID を指す。「不要」は理由つきの行で残す",
+      "domain_reason": "撮影の記録は撮影期の工程（フォルダ原案の プロダクション F04）なので制作の領域に置く（置き場 src/production/shoot-records/。会社ルートの計画 plans/2026-10-22-folder-prod.md）。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "shooting_day_id": "撮影日（shooting_days）",
+        "kind": "schedule 日々スケ／ad 助監督部／art 美術部／camera 撮影部／sound 録音部／production 制作部／script スクリプター",
+        "seq": "撮影日×種類ごとの連番",
+        "status": "placed 置いた／not_needed 不要",
+        "source_document_id": "置いた原本（source_documents）",
+        "reason": "不要の理由",
+        "created_by": "置いた利用者（memberships）"
+      }
+    },
+    "shooting_day_report_items": {
+      "domain": "production",
+      "name": "日報の項目",
+      "description": "部署の日報の項目（申し送り・問題・事故とけが・経費の手がかり・そのほか。数字は持たない。追記だけ）。直しと取り下げは前の行を指す新しい行。事故・けがは書ける人だけが読める",
+      "domain_reason": "撮影の記録は撮影期の工程（フォルダ原案の プロダクション F04）なので制作の領域に置く（置き場 src/production/shoot-records/。会社ルートの計画 plans/2026-10-22-folder-prod.md）。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "shooting_day_id": "撮影日（shooting_days）",
+        "department": "ad 助監督部／art 美術部／camera 撮影部／sound 録音部／production 制作部",
+        "item_type": "handover 申し送り／problem 問題／incident 事故・けが／expense_hint 経費の手がかり／other そのほか",
+        "status": "active いまの項目／withdrawn 取り下げ",
+        "body": "本文",
+        "scene_id": "関わるシーン（任意）",
+        "record_id": "読み取った日報の原本（任意）",
+        "replaces_id": "直した・取り下げた前の項目",
+        "created_by": "書いた利用者（memberships）"
+      }
+    },
+    "chotatsu_cases": {
+      "domain": "planning",
+      "name": "調達の案件",
+      "description": "MG を払わずに販売権を調達する1件の芯（番号だけ。変えない）。題・権利元・発売予定などは版に持つ",
+      "domain_reason": "調達は権利の取得の業務（フォルダ台帳 F19。会社ルートの plans/2026-10-24-folder-chotatsu.md）。調達案件・配給委託の契約と同じ企画の領域に置く（置き場 src/acquisition/chotatsu/）。",
+      "columns": {
+        "case_code": "案件の番号（組織の中で一意。CH-0001 の形）"
+      }
+    },
+    "chotatsu_case_versions": {
+      "domain": "planning",
+      "name": "調達の案件の版",
+      "description": "案件の題・権利元・配給・媒体・作品・起点・劇場公開日・提案できる期間・発売予定月と枠の版（追記だけ。最後の版がいま）",
+      "domain_reason": "調達は権利の取得の業務（フォルダ台帳 F19。会社ルートの plans/2026-10-24-folder-chotatsu.md）。調達案件・配給委託の契約と同じ企画の領域に置く（置き場 src/acquisition/chotatsu/）。",
+      "columns": {
+        "case_id": "調達の案件",
+        "version_no": "案件ごとの版の連番",
+        "title": "題（仮題可）",
+        "holder_partner_id": "権利元（partners）",
+        "distributor_partner_id": "劇場の配給会社（partners）",
+        "media_family": "媒体のまとまり（videogram・digital・broadcast・overseas・other）",
+        "work_id": "作品（契約までは空でよい）",
+        "origin": "起点（self 自分／sales_activity 営業の活動記録）",
+        "sales_activity_id": "起点の営業の活動記録（sales_activities）",
+        "theatrical_release_on": "劇場公開日（YYYY-MM-DD）",
+        "offer_from": "提案できる期間の始まり（YYYY-MM-DD）",
+        "offer_until": "提案できる期間の終わり（YYYY-MM-DD）",
+        "release_month": "発売予定月（YYYY-MM）",
+        "release_slot": "発売の枠（day25 25日／first_wed 第1水曜／other）",
+        "note": "メモ",
+        "reason": "版を足した理由"
+      }
+    },
+    "chotatsu_stage_events": {
+      "domain": "planning",
+      "name": "調達の段の出来事",
+      "description": "見送り（dropped）・MG_買付分へ移した（moved_to_mg）・その取消（void）と、希望の登録（done）の記録（追記だけ）。閉じた案件には取消のほかを足せない",
+      "domain_reason": "調達は権利の取得の業務（フォルダ台帳 F19。会社ルートの plans/2026-10-24-folder-chotatsu.md）。調達案件・配給委託の契約と同じ企画の領域に置く（置き場 src/acquisition/chotatsu/）。",
+      "columns": {
+        "case_id": "調達の案件",
+        "seq": "案件ごとの連番",
+        "stage": "段（wish・estimate・agreement・ringi・contract・materials・handoff）",
+        "event": "出来事（done・void・dropped・moved_to_mg）",
+        "voids_seq": "取り消した出来事の seq（void のとき）",
+        "on_date": "出来事の日（YYYY-MM-DD）",
+        "reason": "理由（取消・見送り・移すときは必須）"
+      }
+    },
+    "chotatsu_estimates": {
+      "domain": "planning",
+      "name": "調達の試算の版",
+      "description": "試算と仕様案（形態・組数・特典・予定価格・1枚の売上・数量の見込み・権利料の条件案・宣伝案）の版（追記だけ）。MG の型は持たない。粗利の見込みは表に持たず計算する",
+      "domain_reason": "調達は権利の取得の業務（フォルダ台帳 F19。会社ルートの plans/2026-10-24-folder-chotatsu.md）。調達案件・配給委託の契約と同じ企画の領域に置く（置き場 src/acquisition/chotatsu/）。",
+      "columns": {
+        "case_id": "調達の案件",
+        "version_no": "案件ごとの版の連番",
+        "format": "形態（sell_dvd・sell_bd・sell_dvd_bd・rental_dvd・rental_bd・digital・other）",
+        "set_count": "組数",
+        "bonus_note": "特典",
+        "list_price_ex_tax_yen": "予定価格（税抜・円）",
+        "unit_revenue_ex_tax_yen": "1枚の当社の売上（税抜・円）",
+        "quantity": "数量の見込み",
+        "royalty_kind": "権利料の型（rate 率／per_unit 1枚あたり／none 無し）",
+        "royalty_rate_bps": "権利料の率（bp）",
+        "royalty_per_unit_yen": "1枚あたりの権利料（円）",
+        "promotion_note": "宣伝案",
+        "reason": "版を足した理由"
+      }
+    },
+    "chotatsu_estimate_lines": {
+      "domain": "planning",
+      "name": "調達の試算の見積の行",
+      "description": "試算の版の見積の行（経費の種類で書く。見積は経費の行に入れない）",
+      "domain_reason": "調達は権利の取得の業務（フォルダ台帳 F19。会社ルートの plans/2026-10-24-folder-chotatsu.md）。調達案件・配給委託の契約と同じ企画の領域に置く（置き場 src/acquisition/chotatsu/）。",
+      "columns": {
+        "case_id": "調達の案件",
+        "estimate_id": "試算の版",
+        "line_no": "版の中の行の番号",
+        "expense_type": "経費の種類（経費管理の一覧と同じ語）",
+        "name": "名前",
+        "amount_ex_tax_yen": "額（税抜・円）",
+        "source_document_id": "見積の原本（source_documents）"
+      }
+    },
+    "chotatsu_agreements": {
+      "domain": "planning",
+      "name": "調達の合意",
+      "description": "権利元と合意した試算の版と合意の日（いまはメールの原本を置く）",
+      "domain_reason": "調達は権利の取得の業務（フォルダ台帳 F19。会社ルートの plans/2026-10-24-folder-chotatsu.md）。調達案件・配給委託の契約と同じ企画の領域に置く（置き場 src/acquisition/chotatsu/）。",
+      "columns": {
+        "case_id": "調達の案件",
+        "estimate_id": "合意した試算の版",
+        "agreed_on": "合意の日（YYYY-MM-DD）",
+        "source_document_id": "合意の原本（source_documents）"
+      }
+    },
+    "chotatsu_ringi": {
+      "domain": "planning",
+      "name": "調達の稟議",
+      "description": "販売稟議書の結果（承認・差し戻し・否決）と日、稟議にかけた試算の版。承認の流れは持たない（最後の行がいまの結果）",
+      "domain_reason": "調達は権利の取得の業務（フォルダ台帳 F19。会社ルートの plans/2026-10-24-folder-chotatsu.md）。調達案件・配給委託の契約と同じ企画の領域に置く（置き場 src/acquisition/chotatsu/）。",
+      "columns": {
+        "case_id": "調達の案件",
+        "estimate_id": "稟議にかけた試算の版",
+        "result": "結果（approved・returned・rejected）",
+        "result_on": "結果の日（YYYY-MM-DD）",
+        "source_document_id": "稟議書の原本（source_documents）",
+        "note": "メモ"
+      }
+    },
+    "chotatsu_contracts": {
+      "domain": "planning",
+      "name": "調達の契約",
+      "description": "契約の段で作った調達案件（rights_intake_cases。受け方 entrusted）と配給委託の契約（settlement_contracts の commission）を指す",
+      "domain_reason": "調達は権利の取得の業務（フォルダ台帳 F19。会社ルートの plans/2026-10-24-folder-chotatsu.md）。調達案件・配給委託の契約と同じ企画の領域に置く（置き場 src/acquisition/chotatsu/）。",
+      "columns": {
+        "case_id": "調達の案件",
+        "intake_case_id": "作った調達案件（rights_intake_cases）",
+        "work_id": "作品",
+        "settlement_contract_id": "作った配給委託の契約（settlement_contracts）",
+        "signed_on": "締結日（YYYY-MM-DD）",
+        "signed_document_id": "締結版の契約書の原本（source_documents）"
+      }
+    },
+    "chotatsu_materials": {
+      "domain": "planning",
+      "name": "調達の素材の受領",
+      "description": "素材（本編マスター・確認用・予告編・特典映像・音楽素材・メインアート・ロゴ・場面写真・ポスター・作品情報）の受領と検品の記録（追記だけ。種類ごとに最後の行がいま）",
+      "domain_reason": "調達は権利の取得の業務（フォルダ台帳 F19。会社ルートの plans/2026-10-24-folder-chotatsu.md）。調達案件・配給委託の契約と同じ企画の領域に置く（置き場 src/acquisition/chotatsu/）。",
+      "columns": {
+        "case_id": "調達の案件",
+        "seq": "案件ごとの連番",
+        "material_kind": "素材の種類",
+        "required": "製造に要るか（1 要る／0 要らない）",
+        "received_on": "受領日（YYYY-MM-DD）",
+        "check_result": "検品の結果（pending 未・ok 済・ng）",
+        "source_document_id": "素材の原本（source_documents）",
+        "note": "メモ"
+      }
+    },
+    "chotatsu_handoffs": {
+      "domain": "planning",
+      "name": "調達から製造への引き渡し",
+      "description": "製造へ渡す行（予告で作る）。作品・調達案件・許された形・地域・権利期間の終わり・試算の版・発売の枠と月。製造は読むだけ",
+      "domain_reason": "調達は権利の取得の業務（フォルダ台帳 F19。会社ルートの plans/2026-10-24-folder-chotatsu.md）。調達案件・配給委託の契約と同じ企画の領域に置く（置き場 src/acquisition/chotatsu/）。",
+      "columns": {
+        "case_id": "調達の案件",
+        "handoff_no": "案件ごとの連番",
+        "work_id": "作品",
+        "intake_case_id": "調達案件（rights_intake_cases）",
+        "estimate_id": "引き渡す試算の版（仕様案と予定枚数）",
+        "allowed_formats": "許された形（JSON の配列）",
+        "territory": "地域",
+        "rights_end": "権利期間の終わり（YYYY-MM-DD）",
+        "release_slot": "発売の枠（day25・first_wed・other）",
+        "release_month": "発売予定月（YYYY-MM）"
+      }
+    },
+    "chotatsu_handoff_events": {
+      "domain": "planning",
+      "name": "調達から製造への引き渡しの段",
+      "description": "引き渡しの段（notice 予告 → received 受領、void 取消）の記録（追記だけ）",
+      "domain_reason": "調達は権利の取得の業務（フォルダ台帳 F19。会社ルートの plans/2026-10-24-folder-chotatsu.md）。調達案件・配給委託の契約と同じ企画の領域に置く（置き場 src/acquisition/chotatsu/）。",
+      "columns": {
+        "handoff_id": "引き渡しの行",
+        "seq": "引き渡しごとの連番",
+        "event": "段（notice・received・void）",
+        "reason": "理由（取消のときは必須）"
+      }
+    },
+    "chotatsu_documents": {
+      "domain": "planning",
+      "name": "調達の原本の結び付き",
+      "description": "調達の案件と共通の原本の表（source_documents）の結び付き（追記だけ）",
+      "domain_reason": "調達は権利の取得の業務（フォルダ台帳 F19。会社ルートの plans/2026-10-24-folder-chotatsu.md）。調達案件・配給委託の契約と同じ企画の領域に置く（置き場 src/acquisition/chotatsu/）。",
+      "columns": {
+        "case_id": "調達の案件",
+        "source_document_id": "原本（source_documents）",
+        "doc_kind": "原本の種類（estimate・agreement・ringi・contract_draft・contract・materials・other）"
+      }
+    },
+    "chotatsu_case_expenses": {
+      "domain": "planning",
+      "name": "調達の経費の結び付き",
+      "description": "調達の案件と経費の明細の行（expenses）の結び付き（請求と支払が起きた実績だけ。追記だけ）",
+      "domain_reason": "調達は権利の取得の業務（フォルダ台帳 F19。会社ルートの plans/2026-10-24-folder-chotatsu.md）。調達案件・配給委託の契約と同じ企画の領域に置く（置き場 src/acquisition/chotatsu/）。",
+      "columns": {
+        "case_id": "調達の案件",
+        "expense_id": "経費の明細の行（expenses）",
+        "estimate_line_id": "対応する試算の見積の行"
+      }
+    },
+    "production_arrangement_versions": {
+      "domain": "production",
+      "name": "手配の版",
+      "description": "撮影機材・特機・照明・録音機材・トラック・ロケバス・車両とドライバーの手配。手配の識別子ごとの連番で追記だけ。いまの手配は最新の版。金額は持たない（経費の行で持つ）。",
+      "domain_reason": "プリプロダクション（フォルダ台帳 F03）の業務。撮影日・シーンと同じ制作の領域に置く（置き場 src/preprod/。会社ルートの plans/2026-10-22-folder-preprod.md）。",
+      "columns": {
+        "work_id": "作品（works）",
+        "version_no": "版の番号（識別子ごとの連番）",
+        "note": "メモ",
+        "arrangement_key": "手配の識別子（版をまたいで同じ）",
+        "kind": "種類",
+        "partner_id": "取引先（partners。任意）",
+        "item": "品目",
+        "quantity": "数量",
+        "unit": "単位",
+        "capacity": "定員（車両）",
+        "starts_on": "使う期間の開始日",
+        "ends_on": "使う期間の終了日",
+        "deadline_on": "手配の締切",
+        "state": "状態（仮押さえ・確定・取消）"
+      }
+    },
+    "scene_art_item_versions": {
+      "domain": "production",
+      "name": "美術の項目の版",
+      "description": "飾り・小道具・作り物の項目。項目の識別子ごとの連番で追記だけ。シーンは任意。",
+      "domain_reason": "プリプロダクション（フォルダ台帳 F03）の業務。撮影日・シーンと同じ制作の領域に置く（置き場 src/preprod/。会社ルートの plans/2026-10-22-folder-preprod.md）。",
+      "columns": {
+        "work_id": "作品（works）",
+        "version_no": "版の番号（識別子ごとの連番）",
+        "note": "メモ",
+        "item_key": "項目の識別子（版をまたいで同じ）",
+        "scene_id": "シーン（任意）",
+        "kind": "種類（飾り・小道具・作り物）",
+        "content": "中身",
+        "owner_label": "担当",
+        "delivery_on": "搬入の日",
+        "state": "状態（未決・手配中・済・取消）"
+      }
+    },
+    "scene_shoot_plan_versions": {
+      "domain": "production",
+      "name": "シーンの撮影の方針の版",
+      "description": "シーンごとの撮影の手法と要る機材のメモ。シーンごとの連番で追記だけ。",
+      "domain_reason": "プリプロダクション（フォルダ台帳 F03）の業務。撮影日・シーンと同じ制作の領域に置く（置き場 src/preprod/。会社ルートの plans/2026-10-22-folder-preprod.md）。",
+      "columns": {
+        "work_id": "作品（works）",
+        "version_no": "版の番号（識別子ごとの連番）",
+        "note": "メモ",
+        "scene_id": "シーン",
+        "methods": "撮影の手法",
+        "equipment": "要る機材（手配の品目を書くと噛み合いを確かめる）"
+      }
+    },
+    "preprod_document_placements": {
+      "domain": "production",
+      "name": "プリプロの保管庫の置き場",
+      "description": "共通の原本（source_documents）を、どの作品のどの種類の置き場に置いたかの記録。追記だけで、いまの置き場は原本×作品ごとの最新の行。",
+      "domain_reason": "プリプロダクション（フォルダ台帳 F03）の業務。撮影日・シーンと同じ制作の領域に置く（置き場 src/preprod/。会社ルートの plans/2026-10-22-folder-preprod.md）。",
+      "columns": {
+        "work_id": "作品（works）",
+        "note": "メモ",
+        "document_id": "原本（source_documents）",
+        "category": "置き場の種類",
+        "episode": "話",
+        "dated_on": "日付",
+        "origin_path": "元の置き場（落としたフォルダの名前）",
+        "shooting_day_id": "撮影日（任意）",
+        "scene_id": "シーン（任意）",
+        "placed_by": "置いた人"
+      }
+    },
+    "notebook_spaces": {
+      "domain": "production",
+      "name": "連絡帳のスペース",
+      "description": "作品ごとの連絡のスペース（全体・部署・任意の組）。追記だけ。",
+      "domain_reason": "プリプロダクション（フォルダ台帳 F03）の業務。撮影日・シーンと同じ制作の領域に置く（置き場 src/preprod/。会社ルートの plans/2026-10-22-folder-preprod.md）。",
+      "columns": {
+        "work_id": "作品（works）",
+        "kind": "種類（全体・部署・組）",
+        "name": "名前"
+      }
+    },
+    "notebook_posts": {
+      "domain": "production",
+      "name": "連絡帳の連絡",
+      "description": "型（定型の連絡）・欄の値・本文・添付・デザインを持つ連絡。追記だけで、直すときは訂正の連絡を出す。",
+      "domain_reason": "プリプロダクション（フォルダ台帳 F03）の業務。撮影日・シーンと同じ制作の領域に置く（置き場 src/preprod/。会社ルートの plans/2026-10-22-folder-preprod.md）。",
+      "columns": {
+        "work_id": "作品（works）",
+        "body": "本文",
+        "space_id": "スペース",
+        "template": "型",
+        "title": "題",
+        "fields_json": "欄の名前と値",
+        "attachments_json": "添付（source_documents の ID）",
+        "design": "デザイン",
+        "needs_ack": "了解を求めるか",
+        "corrects_post_id": "訂正元の連絡",
+        "posted_by": "出した人"
+      }
+    },
+    "notebook_receipts": {
+      "domain": "production",
+      "name": "連絡帳の既読と了解",
+      "description": "連絡×人×種類（既読・了解）で1行。追記だけ。",
+      "domain_reason": "プリプロダクション（フォルダ台帳 F03）の業務。撮影日・シーンと同じ制作の領域に置く（置き場 src/preprod/。会社ルートの plans/2026-10-22-folder-preprod.md）。",
+      "columns": {
+        "post_id": "連絡",
+        "user_id": "人",
+        "kind": "種類（既読・了解）"
+      }
+    },
+    "source_document_moves": {
+      "domain": "core",
+      "name": "原本の場所の移動",
+      "description": "external 原本の場所の移動を追記する履歴。原本の行は変えない。最大のIDの移動先を現在地として読み、原本の最初の場所も残す。変更・削除・inline 原本の移動はDBが断る",
+      "domain_reason": "全業務で共有する原本の場所を保持するため（FR-CORE-DATA-062〜064）",
+      "columns": {
+        "document_id": "場所が動いた原本（同じ組織の source_documents）",
+        "from_location": "移動前の現在の場所（1〜500字）",
+        "to_location": "移動先の場所（1〜500字。移動前と異なる）",
+        "moved_at": "移動を記録した日時（UTC）",
+        "moved_by": "移動を記録した利用者（同じ組織の所属者）",
+        "reason": "移動の理由（任意・500字まで）"
       }
     }
   }

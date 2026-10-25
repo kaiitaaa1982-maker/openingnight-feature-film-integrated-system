@@ -2,7 +2,7 @@
 // 画面の移動は pushState（戻るで前の画面へ）、条件の変更は replaceState（履歴を増やさない）。
 // React に依存しない純粋なストア。ブラウザ以外（試験）では env を差し替える。
 import {normalizePage} from '../navigation.mjs';
-import {pageOfSlug, slugOf, HOME_PAGE} from './nav-model.mjs';
+import {pageOfSlug, slugOf, HOME_PAGE, FOLDER_HOME_PAGE} from './nav-model.mjs';
 
 const RESERVED = new Set(['p', 'work']);
 
@@ -45,7 +45,7 @@ export function parseLocation(search = '') {
 
 export function buildSearch({page, workId, params = {}} = {}) {
   const sp = new URLSearchParams();
-  sp.set('p', slugOf(page || HOME_PAGE));
+  sp.set('p', slugOf(page || FOLDER_HOME_PAGE));
   if (positiveId(workId)) sp.set('work', String(workId));
   for (const key of Object.keys(params).sort()) {
     const value = params[key];
@@ -55,7 +55,7 @@ export function buildSearch({page, workId, params = {}} = {}) {
   return `?${sp.toString()}`;
 }
 
-// URL に画面がないとき（ブックマーク前の利用者）は、従来の localStorage の値を初期値に使う。
+// 旧記録の読み取り。初回の画面には使わず、対象作品だけを引き継ぐ。
 export function legacyInitial(storage) {
   const read = (key) => { try { return storage?.getItem?.(key) ?? null; } catch { return null; } };
   const raw = read('on-page');
@@ -65,7 +65,7 @@ export function legacyInitial(storage) {
 export function initialLocation(search, storage) {
   const fromUrl = parseLocation(search);
   const legacy = legacyInitial(storage);
-  return {page: fromUrl.page || legacy.page || HOME_PAGE, workId: fromUrl.workId ?? legacy.workId, params: fromUrl.params};
+  return {page: fromUrl.page || FOLDER_HOME_PAGE, workId: fromUrl.workId ?? legacy.workId, params: fromUrl.params};
 }
 
 function sameState(a, b) {

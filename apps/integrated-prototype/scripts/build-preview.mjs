@@ -27,6 +27,7 @@ import {REPORT_CATALOG} from '../src/reports/report-catalog.mjs';
 import {PROPOSAL_BASES, shiftMonth} from '../src/sales-ops/release-proposal-model.mjs';
 import {PREVIEW_COMPUTED_SOURCES} from '../src/preview/computed-posts.mjs';
 import {fiscalSettingFrom, fiscalYearOf, fiscalYearRange} from '../src/ui/condition-model.mjs';
+import {SET_LABELS as EXPENSE_SET_LABELS} from '../src/expense-sheet/sheet-model.mjs';
 
 const appRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export const FILE_LIMIT_BYTES = 16_000_000;
@@ -39,6 +40,8 @@ export const PROPOSAL_MONTHS_AFTER = 5;
 // 画面が条件しだいで読む GET で、いつも記録に入れておくもの。組織ごとの機能の判定（デモ資料・売上集計シートの「組織を切り替えて…」の案内）は、
 // 今の組織に香盤のデモがあり売上集計シートも採用済みなら画面が読まないが、記録には入れておく（restrictOrgs で記録する組織だけに絞る）
 export const PREVIEW_ALWAYS_GETS = Object.freeze(['/api/session/org-features']);
+// 巡回しない画面。入力の値から保存しない POST で毎回計算するので、記録できる GET の応答が無い（プレビューは POST を通さず、画面が「プレビューでは計算できません」と出す）
+export const PREVIEW_UNRECORDED_PAGES = Object.freeze(['シナリオの比較', 'フォルダ']);
 const ALLOWED_EMAIL_TLDS = ['.invalid', '.example', '.test', '.localhost'];
 
 export function parseArgs(argv) {
@@ -124,7 +127,7 @@ export function seedLocations({works = [], role = 'admin', worksLimit = 'all', y
     if (search) seeds.push({label, search});
   };
   for (const item of navItems()) {
-    if (hidden.has(item.page) || item.redirect || item.hidden) continue;
+    if (hidden.has(item.page) || item.redirect || item.hidden || PREVIEW_UNRECORDED_PAGES.includes(item.page)) continue;
     if (item.scope === 'work' && picked.length) for (const work of picked) add(`画面:${item.label}`, {p: item.slug, work: work.id});
     else add(`画面:${item.label}`, {p: item.slug, work: firstWork});
   }
@@ -287,7 +290,8 @@ export function requiredPreviewApiUrls(responses) {
     const q=new URLSearchParams(key.slice(key.indexOf('?')+1)),asOf=q.get('asOf');if(!asOf)continue;
     for(const path of ['expense-sheet/access','expense-sheet/options','expense-accounting/settings','expense-cards','expense-invoices','expense-imports','expense-imports/holds','expense-pending','expense-withholding-remittances','expense-card-debits','expense-refund-receipts'])urls.add('/api/'+path);
     if(responses.get('GET /api/expense-sheet/access')?.body?.admin)urls.add('/api/expense-accounting/adoption-preview');
-    for(const set of ['basic','legacy','accounting','payout']){const p=new URLSearchParams(q);p.set('set',set);for(let page=1;page<=Math.max(1,Math.ceil((entry.body?.total??0)/100));page++){p.set('page',page);p.set('pageSize',100);urls.add('/api/expense-sheet?'+sortedQuery(p));}}
+    // 画面の列セットのボタン（SET_LABELS）ごとに記録する
+    for(const set of Object.keys(EXPENSE_SET_LABELS)){const p=new URLSearchParams(q);p.set('set',set);for(let page=1;page<=Math.max(1,Math.ceil((entry.body?.total??0)/100));page++){p.set('page',page);p.set('pageSize',100);urls.add('/api/expense-sheet?'+sortedQuery(p));}}
     for(const groupBy of ['partner','closing'])urls.add('/api/expense-payouts?'+sortedQuery(new URLSearchParams({groupBy,asOf})));
     urls.add('/api/expense-accounting/balances?asOf='+asOf);urls.add('/api/expense-journal?to='+asOf);
     for(const row of entry.body?.rows??[])urls.add(`/api/expense-sheet/${row.id}?asOf=${asOf}`);

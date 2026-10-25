@@ -1,0 +1,1146 @@
+{
+  "fictional": true,
+  "notice": "架空データ。seed.json から build-expected.mjs が作った golden（src を読まない）。個人の額（計画の K2-12）を持たない",
+  "generator": "build-expected.mjs",
+  "seedSha256": "b91504bc5ee218ab3923bf930ce2359941a7ce58a35253989f6f7e0ae8f3dedc",
+  "metricMaster": {
+    "versionNo": 1,
+    "stepCount": 23,
+    "chains": [
+      {
+        "role": "producer",
+        "roleGroup": "producer",
+        "earningType": "own_investment",
+        "profitSource": 2,
+        "steps": [
+          {
+            "seq": 1,
+            "step": "pitch_document",
+            "foldsTo": "meeting",
+            "status": "provisional",
+            "conversionBps": 5000,
+            "hoursX100": 800
+          },
+          {
+            "seq": 2,
+            "step": "approval_request",
+            "foldsTo": "proposal",
+            "status": "provisional",
+            "conversionBps": 7000,
+            "hoursX100": 600
+          },
+          {
+            "seq": 3,
+            "step": "approval_decision",
+            "foldsTo": "contract",
+            "status": "provisional",
+            "conversionBps": 10000,
+            "hoursX100": 100
+          },
+          {
+            "seq": 4,
+            "step": "investment_payment",
+            "foldsTo": "contract",
+            "status": "provisional",
+            "conversionBps": null,
+            "hoursX100": null
+          }
+        ],
+        "folded": {
+          "meeting": 1,
+          "proposal": 1,
+          "contract": 2
+        }
+      },
+      {
+        "role": "producer",
+        "roleGroup": "producer",
+        "earningType": "committee",
+        "profitSource": 3,
+        "steps": [
+          {
+            "seq": 1,
+            "step": "committee_sounding",
+            "foldsTo": "meeting",
+            "status": "provisional",
+            "conversionBps": 3000,
+            "hoursX100": 400
+          },
+          {
+            "seq": 2,
+            "step": "informal_consent",
+            "foldsTo": "proposal",
+            "status": "provisional",
+            "conversionBps": 5000,
+            "hoursX100": 600
+          },
+          {
+            "seq": 3,
+            "step": "investment_contract",
+            "foldsTo": "contract",
+            "status": "provisional",
+            "conversionBps": null,
+            "hoursX100": null
+          }
+        ],
+        "folded": {
+          "meeting": 1,
+          "proposal": 1,
+          "contract": 1
+        }
+      },
+      {
+        "role": "producer",
+        "roleGroup": "producer",
+        "earningType": "contract_work",
+        "profitSource": 1,
+        "steps": [
+          {
+            "seq": 1,
+            "step": "planning_memo",
+            "foldsTo": "meeting",
+            "status": "provisional",
+            "conversionBps": 5000,
+            "hoursX100": 400
+          },
+          {
+            "seq": 2,
+            "step": "budget_estimate",
+            "foldsTo": "proposal",
+            "status": "provisional",
+            "conversionBps": 5000,
+            "hoursX100": 800
+          },
+          {
+            "seq": 3,
+            "step": "proposal",
+            "foldsTo": "proposal",
+            "status": "provisional",
+            "conversionBps": 3000,
+            "hoursX100": 800
+          },
+          {
+            "seq": 4,
+            "step": "contract",
+            "foldsTo": "contract",
+            "status": "provisional",
+            "conversionBps": null,
+            "hoursX100": null
+          }
+        ],
+        "folded": {
+          "meeting": 1,
+          "proposal": 2,
+          "contract": 1
+        }
+      },
+      {
+        "role": "sales_sourcing",
+        "roleGroup": "sales",
+        "earningType": "acquisition",
+        "profitSource": 4,
+        "steps": [
+          {
+            "seq": 1,
+            "step": "rights_holder_meeting",
+            "foldsTo": "meeting",
+            "status": "provisional",
+            "conversionBps": 5000,
+            "hoursX100": 300
+          },
+          {
+            "seq": 2,
+            "step": "term_sheet",
+            "foldsTo": "proposal",
+            "status": "provisional",
+            "conversionBps": 3000,
+            "hoursX100": 800
+          },
+          {
+            "seq": 3,
+            "step": "mg_contract",
+            "foldsTo": "contract",
+            "status": "provisional",
+            "conversionBps": null,
+            "hoursX100": null
+          }
+        ],
+        "folded": {
+          "meeting": 1,
+          "proposal": 1,
+          "contract": 1
+        }
+      },
+      {
+        "role": "sales_sourcing",
+        "roleGroup": "sales",
+        "earningType": "consignment",
+        "profitSource": 5,
+        "steps": [
+          {
+            "seq": 1,
+            "step": "rights_holder_meeting",
+            "foldsTo": "meeting",
+            "status": "provisional",
+            "conversionBps": 5000,
+            "hoursX100": 300
+          },
+          {
+            "seq": 2,
+            "step": "term_sheet",
+            "foldsTo": "proposal",
+            "status": "provisional",
+            "conversionBps": 3000,
+            "hoursX100": 800
+          },
+          {
+            "seq": 3,
+            "step": "consignment_contract",
+            "foldsTo": "contract",
+            "status": "provisional",
+            "conversionBps": null,
+            "hoursX100": null
+          }
+        ],
+        "folded": {
+          "meeting": 1,
+          "proposal": 1,
+          "contract": 1
+        }
+      },
+      {
+        "role": "sales_selling",
+        "roleGroup": "sales",
+        "earningType": "acquisition",
+        "profitSource": 4,
+        "steps": [
+          {
+            "seq": 1,
+            "step": "productization",
+            "foldsTo": "meeting",
+            "status": "provisional",
+            "conversionBps": 8000,
+            "hoursX100": 600
+          },
+          {
+            "seq": 2,
+            "step": "buyer_proposal",
+            "foldsTo": "proposal",
+            "status": "provisional",
+            "conversionBps": 4000,
+            "hoursX100": 400
+          },
+          {
+            "seq": 3,
+            "step": "buyer_adoption",
+            "foldsTo": "contract",
+            "status": "provisional",
+            "conversionBps": null,
+            "hoursX100": null
+          }
+        ],
+        "folded": {
+          "meeting": 1,
+          "proposal": 1,
+          "contract": 1
+        }
+      },
+      {
+        "role": "sales_selling",
+        "roleGroup": "sales",
+        "earningType": "consignment",
+        "profitSource": 5,
+        "steps": [
+          {
+            "seq": 1,
+            "step": "productization",
+            "foldsTo": "meeting",
+            "status": "provisional",
+            "conversionBps": 8000,
+            "hoursX100": 600
+          },
+          {
+            "seq": 2,
+            "step": "buyer_proposal",
+            "foldsTo": "proposal",
+            "status": "provisional",
+            "conversionBps": 4000,
+            "hoursX100": 400
+          },
+          {
+            "seq": 3,
+            "step": "buyer_adoption",
+            "foldsTo": "contract",
+            "status": "provisional",
+            "conversionBps": null,
+            "hoursX100": null
+          }
+        ],
+        "folded": {
+          "meeting": 1,
+          "proposal": 1,
+          "contract": 1
+        }
+      }
+    ]
+  },
+  "roleGroups": {
+    "producer": [
+      "own_investment",
+      "committee",
+      "contract_work"
+    ],
+    "sales": [
+      "acquisition",
+      "consignment"
+    ]
+  },
+  "detailSteps": [
+    {
+      "code": "planning_memo",
+      "foldsTo": "meeting"
+    },
+    {
+      "code": "budget_estimate",
+      "foldsTo": "proposal"
+    },
+    {
+      "code": "pitch_document",
+      "foldsTo": "meeting"
+    },
+    {
+      "code": "approval_request",
+      "foldsTo": "proposal"
+    },
+    {
+      "code": "approval_decision",
+      "foldsTo": "contract"
+    },
+    {
+      "code": "investment_payment",
+      "foldsTo": "contract"
+    },
+    {
+      "code": "committee_sounding",
+      "foldsTo": "meeting"
+    },
+    {
+      "code": "informal_consent",
+      "foldsTo": "proposal"
+    },
+    {
+      "code": "investment_contract",
+      "foldsTo": "contract"
+    },
+    {
+      "code": "rights_holder_meeting",
+      "foldsTo": "meeting"
+    },
+    {
+      "code": "term_sheet",
+      "foldsTo": "proposal"
+    },
+    {
+      "code": "mg_contract",
+      "foldsTo": "contract"
+    },
+    {
+      "code": "consignment_contract",
+      "foldsTo": "contract"
+    },
+    {
+      "code": "productization",
+      "foldsTo": "meeting"
+    },
+    {
+      "code": "buyer_proposal",
+      "foldsTo": "proposal"
+    },
+    {
+      "code": "buyer_adoption",
+      "foldsTo": "contract"
+    }
+  ],
+  "settings": [
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "acquisition",
+      "step": "buyer_proposal",
+      "value": {
+        "kind": "bps",
+        "value": 4000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "acquisition",
+      "step": "productization",
+      "value": {
+        "kind": "bps",
+        "value": 8000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "acquisition",
+      "step": "rights_holder_meeting",
+      "value": {
+        "kind": "bps",
+        "value": 5000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "acquisition",
+      "step": "term_sheet",
+      "value": {
+        "kind": "bps",
+        "value": 3000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "committee",
+      "step": "committee_sounding",
+      "value": {
+        "kind": "bps",
+        "value": 3000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "committee",
+      "step": "informal_consent",
+      "value": {
+        "kind": "bps",
+        "value": 5000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "consignment",
+      "step": "buyer_proposal",
+      "value": {
+        "kind": "bps",
+        "value": 4000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "consignment",
+      "step": "productization",
+      "value": {
+        "kind": "bps",
+        "value": 8000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "consignment",
+      "step": "rights_holder_meeting",
+      "value": {
+        "kind": "bps",
+        "value": 5000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "consignment",
+      "step": "term_sheet",
+      "value": {
+        "kind": "bps",
+        "value": 3000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "contract_work",
+      "step": "budget_estimate",
+      "value": {
+        "kind": "bps",
+        "value": 5000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "contract_work",
+      "step": "planning_memo",
+      "value": {
+        "kind": "bps",
+        "value": 5000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "contract_work",
+      "step": "proposal",
+      "value": {
+        "kind": "bps",
+        "value": 3000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "own_investment",
+      "step": "approval_decision",
+      "value": {
+        "kind": "bps",
+        "value": 10000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "own_investment",
+      "step": "approval_request",
+      "value": {
+        "kind": "bps",
+        "value": 7000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "conversion_rate",
+      "scope": "earning_type_step",
+      "earningType": "own_investment",
+      "step": "pitch_document",
+      "value": {
+        "kind": "bps",
+        "value": 5000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "cost_overrun",
+      "scope": "earning_type",
+      "earningType": "contract_work",
+      "step": null,
+      "value": {
+        "kind": "bps",
+        "value": 100
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "deal_mg",
+      "scope": "earning_type",
+      "earningType": "acquisition",
+      "step": null,
+      "value": {
+        "kind": "yen",
+        "value": 400000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "delivery_hours",
+      "scope": "earning_type",
+      "earningType": "acquisition",
+      "step": null,
+      "value": {
+        "kind": "x100",
+        "value": 1300
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "delivery_hours",
+      "scope": "earning_type",
+      "earningType": "committee",
+      "step": null,
+      "value": {
+        "kind": "x100",
+        "value": 400
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "delivery_hours",
+      "scope": "earning_type",
+      "earningType": "consignment",
+      "step": null,
+      "value": {
+        "kind": "x100",
+        "value": 300
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "delivery_hours",
+      "scope": "earning_type",
+      "earningType": "contract_work",
+      "step": null,
+      "value": {
+        "kind": "x100",
+        "value": 3000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "delivery_hours",
+      "scope": "earning_type",
+      "earningType": "own_investment",
+      "step": null,
+      "value": {
+        "kind": "x100",
+        "value": 800
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "delivery_months",
+      "scope": "earning_type",
+      "earningType": "acquisition",
+      "step": null,
+      "value": {
+        "kind": "months",
+        "value": 2
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "delivery_months",
+      "scope": "earning_type",
+      "earningType": "committee",
+      "step": null,
+      "value": {
+        "kind": "months",
+        "value": 12
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "delivery_months",
+      "scope": "earning_type",
+      "earningType": "consignment",
+      "step": null,
+      "value": {
+        "kind": "months",
+        "value": 12
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "delivery_months",
+      "scope": "earning_type",
+      "earningType": "contract_work",
+      "step": null,
+      "value": {
+        "kind": "months",
+        "value": 4
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "delivery_months",
+      "scope": "earning_type",
+      "earningType": "own_investment",
+      "step": null,
+      "value": {
+        "kind": "months",
+        "value": 6
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "labor_share",
+      "scope": "all",
+      "earningType": null,
+      "step": null,
+      "value": {
+        "kind": "bps",
+        "value": 4000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "months_to_contract",
+      "scope": "earning_type",
+      "earningType": "acquisition",
+      "step": null,
+      "value": {
+        "kind": "months",
+        "value": 2
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "months_to_contract",
+      "scope": "earning_type",
+      "earningType": "committee",
+      "step": null,
+      "value": {
+        "kind": "months",
+        "value": 2
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "months_to_contract",
+      "scope": "earning_type",
+      "earningType": "consignment",
+      "step": null,
+      "value": {
+        "kind": "months",
+        "value": 2
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "months_to_contract",
+      "scope": "earning_type",
+      "earningType": "contract_work",
+      "step": null,
+      "value": {
+        "kind": "months",
+        "value": 2
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "months_to_contract",
+      "scope": "earning_type",
+      "earningType": "own_investment",
+      "step": null,
+      "value": {
+        "kind": "months",
+        "value": 2
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "months_to_window",
+      "scope": "earning_type",
+      "earningType": "acquisition",
+      "step": null,
+      "value": {
+        "kind": "months",
+        "value": 3
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "months_to_window",
+      "scope": "earning_type",
+      "earningType": "consignment",
+      "step": null,
+      "value": {
+        "kind": "months",
+        "value": 3
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "pass_rate",
+      "scope": "all",
+      "earningType": null,
+      "step": null,
+      "value": {
+        "kind": "bps",
+        "value": 5000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "payment_delay",
+      "scope": "all",
+      "earningType": null,
+      "step": null,
+      "value": {
+        "kind": "months",
+        "value": 0
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "payment_lag",
+      "scope": "all",
+      "earningType": null,
+      "step": null,
+      "value": {
+        "kind": "months",
+        "value": 2
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "prep_cost",
+      "scope": "earning_type",
+      "earningType": "acquisition",
+      "step": null,
+      "value": {
+        "kind": "yen",
+        "value": 200000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "rate_min_count",
+      "scope": "all",
+      "earningType": null,
+      "step": null,
+      "value": {
+        "kind": "x100",
+        "value": 900
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "rate_window",
+      "scope": "all",
+      "earningType": null,
+      "step": null,
+      "value": {
+        "kind": "months",
+        "value": 12
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "recovery_amount",
+      "scope": "earning_type",
+      "earningType": "committee",
+      "step": null,
+      "value": {
+        "kind": "bps",
+        "value": 10000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "recovery_amount",
+      "scope": "earning_type",
+      "earningType": "own_investment",
+      "step": null,
+      "value": {
+        "kind": "bps",
+        "value": 10000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "sales_multiplier",
+      "scope": "all",
+      "earningType": null,
+      "step": null,
+      "value": {
+        "kind": "bps",
+        "value": 10000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "acquisition",
+      "step": "buyer_proposal",
+      "value": {
+        "kind": "x100",
+        "value": 400
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "acquisition",
+      "step": "productization",
+      "value": {
+        "kind": "x100",
+        "value": 600
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "acquisition",
+      "step": "rights_holder_meeting",
+      "value": {
+        "kind": "x100",
+        "value": 300
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "acquisition",
+      "step": "term_sheet",
+      "value": {
+        "kind": "x100",
+        "value": 800
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "committee",
+      "step": "committee_sounding",
+      "value": {
+        "kind": "x100",
+        "value": 400
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "committee",
+      "step": "informal_consent",
+      "value": {
+        "kind": "x100",
+        "value": 600
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "consignment",
+      "step": "buyer_proposal",
+      "value": {
+        "kind": "x100",
+        "value": 400
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "consignment",
+      "step": "productization",
+      "value": {
+        "kind": "x100",
+        "value": 600
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "consignment",
+      "step": "rights_holder_meeting",
+      "value": {
+        "kind": "x100",
+        "value": 300
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "consignment",
+      "step": "term_sheet",
+      "value": {
+        "kind": "x100",
+        "value": 800
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "contract_work",
+      "step": "budget_estimate",
+      "value": {
+        "kind": "x100",
+        "value": 800
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "contract_work",
+      "step": "planning_memo",
+      "value": {
+        "kind": "x100",
+        "value": 400
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "contract_work",
+      "step": "proposal",
+      "value": {
+        "kind": "x100",
+        "value": 800
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "own_investment",
+      "step": "approval_decision",
+      "value": {
+        "kind": "x100",
+        "value": 100
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "own_investment",
+      "step": "approval_request",
+      "value": {
+        "kind": "x100",
+        "value": 600
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "step_hours",
+      "scope": "earning_type_step",
+      "earningType": "own_investment",
+      "step": "pitch_document",
+      "value": {
+        "kind": "x100",
+        "value": 800
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "unit_amount",
+      "scope": "earning_type",
+      "earningType": "acquisition",
+      "step": null,
+      "value": {
+        "kind": "yen",
+        "value": 6000000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "unit_amount",
+      "scope": "earning_type",
+      "earningType": "consignment",
+      "step": null,
+      "value": {
+        "kind": "yen",
+        "value": 7000000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "unit_amount",
+      "scope": "earning_type",
+      "earningType": "contract_work",
+      "step": null,
+      "value": {
+        "kind": "yen",
+        "value": 25000000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    },
+    {
+      "variableKey": "work_hours",
+      "scope": "all",
+      "earningType": null,
+      "step": null,
+      "value": {
+        "kind": "x100",
+        "value": 16000
+      },
+      "status": "provisional",
+      "versionNo": 1
+    }
+  ]
+}

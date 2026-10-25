@@ -7,6 +7,7 @@
 //   4. 営業基幹（全作品のウィンドウ・取引先別リスト・売上集計シート・提案資料）… scripts/seed-eigyo-demo.mjs（連続ドラマのウィンドウは 3 の後だと入る）
 //   5. 番販・放送（放送履歴表・アベイルズリスト・放送ウィンドウ提案と、提案から作った下書き）… scripts/seed-broadcast-demo.mjs（4 の後）
 //   6. PL・BS（管理会計の試算）… scripts/seed-plbs-demo.mjs（公開月は 4 の劇場公開の窓から取る）
+//   （経費・作品マスタ・経費の原本の例のあと）最後: シナリオの比較（商談・活動・委託契約・自社出資・委員会）… scripts/seed-scenario-demo.mjs
 // 使い方: node scripts/seed-all-demo.mjs --db <SQLiteのパス> [--as-of 2026-09-25] [--twice] [--record <書き込みの記録.jsonl>] [--only <節,…>] [--check-api]
 // ・--db の指定は必須。data/integrated.sqlite へは --allow-main-db を付けたときだけ書く。本番のD1・Cloudflare・設定・秘密値には触れない。
 // ・どの seed も目印で「もうあるか」を確かめるので、何度流しても増えない。--twice は続けてもう1回流し、表ごとの行数が変わらず、
@@ -43,6 +44,7 @@ import {seedBroadcastDemo} from './seed-broadcast-demo.mjs';
 import {seedPlbsDemo} from './seed-plbs-demo.mjs';
 import {seedExpenseDemo, seedExpenseOriginalsDemo} from './seed-expense-demo.mjs';
 import {seedMasterDemo} from './seed-master-demo.mjs';
+import {seedScenarioDemo} from './seed-scenario-demo.mjs';
 import {draftCountsText} from '../src/broadcast/proposal-draft-model.mjs';
 
 export const D1_LIMITS = Object.freeze({paramsPerStatement: 100, statementsPerBatch: 480, valueBytes: 128 * 1024});
@@ -69,6 +71,9 @@ export const DEMO_SEED_STEPS = Object.freeze([
   // 原本（本番では R2 に置く列）を書く節。本番へ入れる架空データの SQL にできないので、本番の記録では --only から外す（runbook 07 の 3-7b）
   {key: 'expense-originals', label: '経費の原本の例（架空の領収書。本番は画面から入れる）', script: 'scripts/seed-expense-demo.mjs',
     run: (db, {log}) => seedExpenseOriginalsDemo(db, {log}), skipped: (result) => result?.skipped === true},
+  // シナリオの比較（段A）。売上・PL・BS・作品マスタの後に足す（PL・BS の架空データの期間の後の 2026-07 以後の売上・払込・入金だけを書く）
+  {key: 'scenario', label: 'シナリオの比較（商談・活動・委託契約・自社出資・委員会）', script: 'scripts/seed-scenario-demo.mjs',
+    run: (db, {log}) => seedScenarioDemo(db, {log}), skipped: (result) => result?.skipped === true},
 ].map((step) => Object.freeze(step)));
 
 // 文のコメント（-- から行末まで・/* … */）を1つの空白に置き換え、前後の空白を削る。文字（'…'）と名前（"…"・`…`・[…]）の中はそのまま。
@@ -387,9 +392,11 @@ export async function checkDemoApis(db, {asOf = SALES_DEMO.asOf, plFrom = '2025-
   });
   await check('売上集計シート（単独の画面）', async () => {
     const body = await get('/sales-sheet');
+    // 列セット名 additional は全列の別名。列の数は組織の列カタログ（辞書から採用した列）の全列から数える
+    const all = (await get('/sales-sheet/columns')).sets.find((set) => set.key === 'all').columns;
     const additional = await get('/sales-sheet?set=additional&hideEmpty=0');
-    return {ok: body.adopted && body.total > 0 && additional.columns.length === 28 && additional.selected.length === 28,
-      detail: `採用済み・${body.total}行（1ページ ${body.rows.length}行）・${body.columns.length}列・追加の列 ${additional.columns.length}列`};
+    return {ok: body.adopted && body.total > 0 && all.length > 0 && additional.columns.length === all.length && additional.selected.join(',') === all.join(','),
+      detail: `採用済み・${body.total}行（1ページ ${body.rows.length}行）・${body.columns.length}列・全列（additional）${additional.columns.length}列`};
   });
   // seed が旧区分で入れた分類は残っていない（付け替えの節が流れた）。利用者が旧区分のまま分類し直した明細は付け替えないので NG にせず件数を出す。
   // 分類の無い明細は報告の種類の既定の区分で集計し、売上集計シートでは「未分類」と出る

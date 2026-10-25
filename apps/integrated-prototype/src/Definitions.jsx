@@ -19,7 +19,7 @@ export default function Definitions({onNavigate}) {
       <section className="card adm-intro">
         <div>
           <h2>業務の言葉と数字の決め方</h2>
-          <p className="adm-muted">業務基幹と売上基幹で共通に使う、業務のまとまり・まとまりのつながり・数字の定義です。金額・日付・件数はDB、意味と判断の根拠は知識の正本（Vault）で管理します。</p>
+          <p className="adm-muted">共通で使う、業務のまとまり・まとまりのつながり・数字の定義です。金額・日付・件数はDB、意味と判断の根拠は知識の正本（Vault）で管理します。</p>
           <p className="adm-meta"><span>定義の版 {definitionVersion}</span><span>数字の定義 {definitions.length}件</span><span>業務のまとまり {objects.length}件</span></p>
           <p className="adm-muted" role="status">アプリに同梱された定義を表示しています（通信による読み込みはありません）。役割による定義の絞り込みはありません。行の中身は含みません。</p>
         </div>

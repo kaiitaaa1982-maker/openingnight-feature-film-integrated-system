@@ -8,7 +8,7 @@ const keysets = new Map();
 const securityHeaders = {
   'Cache-Control':'private, no-store, max-age=0','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer',
   'X-Frame-Options':'DENY','Permissions-Policy':'camera=(), microphone=(), geolocation=()',
-  'Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'"
+  'Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src https://player.vimeo.com; frame-ancestors 'none'; base-uri 'none'; object-src 'none'"
 };
 
 function config(env) {

@@ -54,7 +54,7 @@ test('提案の行を開くと、許諾回数とホールドバックを入れ�
   const {detail} = await renderer();
   const base = {state: 'ok', timeline: {from: '2026-09-26', to: '2028-09-26', lanes: []}, basis: [], blocked: [], proposals: [], recent: [], reasons: []};
   const missing = detail({row: {allowed_text: 'なし', result: {...base, licenses: [{entryId: 12, station: '架空BS', exclusivity: 'nonexclusive', licensed: null, used: 0, remaining: null, holdbackMonths: null, partnerId: 7, listId: 3}]}}});
-  assert.match(missing, /取引先別リスト › 局のリスト › 明細を開いた「放送の条件」で入れます/);
+  assert.match(missing, /営業管理 › 取引先別の配信・販売リスト › 局のリスト › 明細を開いた「放送の条件」で入れます/);
   assert.match(missing, /取引先別リストで入れる（明細 12）/);
   assert.match(missing, /ホールドバック未確認/);
   const filled = detail({row: {allowed_text: 'なし', result: {...base, licenses: [{entryId: 12, station: '架空BS', exclusivity: 'nonexclusive', licensed: 3, used: 1, remaining: 2, holdbackMonths: 6, partnerId: 7, listId: 3}]}}});

@@ -107,7 +107,8 @@ for (const role of ['admin', 'editor', 'production']) test(`メニュー/${role}
     active = h;
     const all = nodes(h.tree);
     for (const slug of ['definitions', 'design-canvas', 'er', 'data']) assert.ok(all.some((n) => n?.type === 'a' && n.props.href === `?p=${slug}`));
-    assert.equal(all.find((n) => n?.type === 'ul' && n.props.id === 'nav-group-admin').props.hidden, false);
+    const adminList = all.find((n) => n?.type === 'ul' && n.props.id === 'nav-group-admin');
+    assert.ok(adminList); assert.notEqual(adminList.props.hidden, true);
     click(h, '管理・設計');
     assert.deepEqual(destinations, ['設計・定義']);
   } finally {h.close(); delete globalThis.document;}

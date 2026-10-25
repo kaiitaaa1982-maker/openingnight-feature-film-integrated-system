@@ -72,10 +72,10 @@ test('every sales group belongs to one of the four sub-areas, and only sales pag
 
 test('subAreaOf follows the design table (計上・MG・ロイヤリティ・製作委員会)', () => {
   const expected = {
-    uriage: ['売上', '売上集計シート', '経費集計シート', '原本取り込み', '売上データ編集', '報告書マッピング', '請求・入金', '月別消込', '税ルール・台帳', '帳票センター', '収支', 'PL・BS', '分析・Lightdash', '経費', 'デモ資料'],
-    mg: ['MG契約・台帳', '権利先・MG帳票'],
-    royalty: ['ロイヤリティ作成', 'ロイヤリティ集計', 'ロイヤリティ報告書', 'ロイヤリティ契約', '権利・分配'],
-    committee: ['委員会月次収支', '製作委員会'],
+    uriage: ['売上', '売上集計シート', '経費集計シート', '原本取り込み', 'フォルダ', '売上データ編集', '報告書マッピング', '請求・入金', '月別消込', '入出金', '税ルール・台帳', '帳票センター', '収支', 'PL・BS', '分析・Lightdash', 'シナリオの比較', '予実管理', '経費', 'デモ資料'],
+    mg: ['MG契約・台帳', 'MG 買付', '権利先・MG帳票'],
+    royalty: ['ロイヤリティフォルダ', 'ロイヤリティ作成', 'ロイヤリティ集計', 'ロイヤリティ報告書', 'ロイヤリティ契約', '権利・分配'],
+    committee: ['委員会月次収支', '製作委員会', '委員会の台帳'],
   };
   for (const [sub, pages] of Object.entries(expected)) for (const page of pages) assert.equal(subAreaOf(page), sub, page);
   assert.equal(Object.values(expected).flat().length, SALES_PAGES.length);
@@ -85,7 +85,7 @@ test('subAreaOf follows the design table (計上・MG・ロイヤリティ・製
 test('old ?p= links keep their slugs and land in the right sub-area', () => {
   const cases = {
     billing: ['請求・入金', 'uriage'], 'report-center': ['帳票センター', 'uriage'], receipts: ['月別消込', 'uriage'], expenses: ['経費', 'uriage'], demo: ['デモ資料', 'uriage'],
-    mg: ['MG契約・台帳', 'mg'], 'rights-reports': ['権利先・MG帳票', 'mg'], settlement: ['権利・分配', 'royalty'], committee: ['製作委員会', 'committee'],
+    mg: ['MG契約・台帳', 'mg'], 'mg-buy': ['MG 買付', 'mg'], 'rights-reports': ['権利先・MG帳票', 'mg'], settlement: ['権利・分配', 'royalty'], committee: ['製作委員会', 'committee'],
   };
   for (const [slug, [page, sub]] of Object.entries(cases)) {
     const location = parseLocation(`?p=${slug}&work=1`);
@@ -112,15 +112,15 @@ test('the left menu shows only the current sub-area groups; other areas are unch
   const all = SUB_AREAS.flatMap((sub) => menuGroups('sales', sub.id).flatMap((group) => group.items.map((item) => item.page)));
   assert.deepEqual([...all].sort(), [...SALES_PAGES].sort());
   // 役割で隠した画面は業務のメニューからも消える
-  assert.deepEqual(ids(menuGroups('sales', 'mg', new Set(['MG契約・台帳', '権利先・MG帳票']))), []);
+  assert.deepEqual(ids(menuGroups('sales', 'mg', new Set(['MG契約・台帳', 'MG 買付', '権利先・MG帳票']))), []);
 });
 
 test('the sub-area tab model marks the selected tab and drops sub-areas with no visible page', () => {
   const tabs = subAreaTabs('royalty');
   assert.deepEqual(tabs.map((tab) => tab.label), ['計上', 'MG', 'ロイヤリティ', '製作委員会']);
   assert.deepEqual(tabs.filter((tab) => tab.selected).map((tab) => tab.id), ['royalty']);
-  assert.deepEqual(tabs.map((tab) => tab.pageCount), [15, 2, 5, 2], '計上は経費集計シートを含めて15画面');
-  const withoutMg = subAreaTabs('uriage', new Set(['MG契約・台帳', '権利先・MG帳票']));
+  assert.deepEqual(tabs.map((tab) => tab.pageCount), [19, 3, 6, 3], '計上は経費集計シートとシナリオの比較とフォルダの見本と予実管理と入出金の履歴を含めて19画面。ロイヤリティはフォルダを含めて6画面。製作委員会は契約の式と台帳を含めて3画面');
+  const withoutMg = subAreaTabs('uriage', new Set(['MG契約・台帳', 'MG 買付', '権利先・MG帳票']));
   assert.deepEqual(withoutMg.map((tab) => tab.id), ['uriage', 'royalty', 'committee']);
   assert.deepEqual(subAreaTabs('uriage', hiddenPagesForRole('production')), []);
   assert.equal(subAreaTabs('uriage', hiddenPagesForRole('editor')).length, 4);
@@ -137,7 +137,7 @@ test('switching sub-area opens the remembered page of that sub-area, else its ho
   // 覚えた画面が役割で隠れていたら最初の画面、最初の画面も隠れていたらその業務で見える最初の画面
   assert.equal(subAreaEntry('royalty', 'ロイヤリティ集計', new Set(['ロイヤリティ集計'])), 'ロイヤリティ作成');
   assert.equal(subAreaEntry('royalty', null, new Set(['ロイヤリティ作成'])), 'ロイヤリティ集計');
-  assert.equal(subAreaEntry('mg', null, new Set(['MG契約・台帳', '権利先・MG帳票'])), null);
+  assert.equal(subAreaEntry('mg', null, new Set(['MG契約・台帳', 'MG 買付', '権利先・MG帳票'])), null);
   assert.equal(subAreaEntry('nope', null), null);
 });
 
@@ -174,7 +174,7 @@ test('production hides every sales page automatically; other roles keep the visi
   for (const page of [...SALES_PAGES, ...EIGYO_PAGES]) assert.ok(production.has(page), page);
   for (const page of [...PRODUCTION_HIDDEN_WORK_PAGES, ...ADMIN_ONLY_PAGES]) assert.ok(production.has(page), page);
   const visible = (hidden, pages) => pages.filter((page) => !hidden.has(page));
-  assert.deepEqual(visible(production, WORK_PAGES), ['ホーム', '作品・商品マスタ', '企画・作品', '制作', '台本・香盤', '宣伝']);
+  assert.deepEqual(visible(production, WORK_PAGES), ['フォルダ一覧', 'ホーム', '作品・商品マスタ', '企画・作品', 'プロデュース管理', 'プリプロ', '制作', '台本・香盤', '撮影の記録', 'ポスプロ', '宣伝']);
   assert.deepEqual(visible(production, SHARED_PAGES), ['設計・定義', '設計キャンバス', 'ER', '拡張項目', 'データ一覧']);
   assert.deepEqual(visible(production, SALES_PAGES), []);
   assert.deepEqual(visible(production, EIGYO_PAGES), []);

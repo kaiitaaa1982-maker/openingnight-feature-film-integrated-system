@@ -1,0 +1,50 @@
+/* 撮影の記録の画面。見た目は docs/design/integrated-system-visual.md（色7つ・赤は止まっている印といま確認すること1点・角丸0・影なし）。
+   トークンはこの画面の中だけに置く（全画面の作り直しは別の計画） */
+.sr { --ink: #111111; --paper: #ffffff; --soft: #f3f1ec; --sub: #5e5850; --faint: #6b655c; --rule: #cfc8ba; --red: #b3261e;
+  --jp: "Noto Sans JP", "Yu Gothic", "Hiragino Sans", "Meiryo", sans-serif;
+  font-family: var(--jp); color: var(--ink); background: var(--paper); max-width: 1100px; }
+.sr * { border-radius: 0; box-shadow: none; }
+.sr h2 { font-weight: 800; font-size: 20px; margin: 4px 0 8px; padding-bottom: 6px; border-bottom: 2px solid var(--ink); }
+.sr h3 { font-weight: 800; font-size: 14px; margin: 0 0 6px; }
+.sr-crumb { color: var(--faint); font-size: 12px; margin: 0; }
+.sr-sub { color: var(--faint); font-size: 12px; margin-left: 6px; }
+.sr-mute { color: var(--faint); }
+.sr-stop { color: var(--red); font-weight: 700; }
+.sr-verdict { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-weight: 800; border: 1px solid var(--ink); padding: 6px 10px; margin: 8px 0 12px; }
+.sr-now { background: var(--red); color: var(--paper); padding: 1px 8px; }
+.sr-wrap { overflow-x: auto; }
+.sr-table { border-collapse: collapse; font-size: 13px; width: 100%; }
+.sr-table th, .sr-table td { border-bottom: 1px solid var(--rule); padding: 5px 6px; text-align: left; white-space: nowrap; vertical-align: middle; }
+.sr-table th { background: var(--soft); font-weight: 700; font-size: 12px; }
+.sr-table .n { text-align: right; font-variant-numeric: tabular-nums; }
+.sr-spare td { color: var(--faint); }
+.sr-tag { display: inline-block; min-width: 2.6em; text-align: center; font-size: 11px; font-weight: 800; line-height: 1.5; padding: 0 5px; margin-left: 4px;
+  border: 1px solid var(--ink); color: var(--ink); background: var(--paper); }
+.sr-tag.wait { border: 1px dashed var(--rule); color: var(--faint); }
+.sr-tag.none { border-color: transparent; color: var(--faint); }
+.sr-tag.stop { border-color: var(--red); color: var(--red); }
+.sr-link { background: none; border: 0; padding: 0; color: var(--ink); text-decoration: underline; cursor: pointer; font: inherit; }
+.sr button:not(.sr-link) { font: inherit; font-size: 13px; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); padding: 6px 12px; cursor: pointer; min-height: 32px; }
+.sr button.sr-ghost, .sr-kinds button, .sr-result button { background: var(--paper); color: var(--ink); }
+.sr-kinds button[aria-pressed="true"], .sr-result button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.sr button:disabled { opacity: .45; cursor: default; }
+.sr button.sm { font-size: 11px; padding: 2px 6px; min-height: 0; margin-left: 6px; }
+.sr-block { border-top: 1px solid var(--rule); padding: 10px 0; }
+.sr-kinds { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.sr-drop { display: block; border: 1px dashed var(--ink); padding: 18px 12px; text-align: center; cursor: pointer; margin-bottom: 8px; font-weight: 700; }
+.sr-drop input { display: block; margin: 0 auto 6px; max-width: 100%; }
+.sr-inline { display: flex; gap: 6px; flex-wrap: wrap; }
+.sr-inline input { flex: 1; min-width: 200px; }
+.sr input, .sr select, .sr textarea { font: inherit; font-size: 14px; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); padding: 5px 6px; min-height: 32px; }
+.sr-result { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.sr-result input[type="time"] { width: 7.5em; }
+.sr-dept { margin-bottom: 6px; }
+.sr-dept p { margin: 2px 0; }
+.sr-item { padding-left: 8px; }
+.sr-form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
+.sr-form textarea, .sr-form button { grid-column: 1 / -1; }
+@media (max-width: 700px) {
+  .sr-form { grid-template-columns: 1fr; }
+  .sr-drop { padding: 28px 12px; }
+  .sr button:not(.sr-link) { min-height: 40px; }
+}

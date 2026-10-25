@@ -1,0 +1,57 @@
+{
+  "fictional": true,
+  "note": "フェーズ1 #10b の試験の fixture（架空）。案件・作品・契約・入金の名前と額はすべて架空で、不規則な桁にしてある。売上の4区分（自社作品の流通売上・買付の手数料・販売委託の手数料・受託制作）が、要件 docs/requirements/revenue/project-cashflow-forecast-actual.md の対応表どおりに導かれ、4区分の合計が稼ぎ方別の合計と一致することを確かめる。デモ用の種（#23e の seed-revenue-classes.json）も同じ形にする。入金の行の amountYen は手数料・取り分を引く前の額（税別）で、取消は負の額。作品の purchaseYenByRevision は作品の費用の版（第1版から順）の買付額で、null はその版で買付額が空。settlement は分配契約（contractType は mg・commission）。ACQ-COMM（委託の分配契約だけ）と ACQ-VOID（最新の版で買付額が空）は、買付の契約の形が決まらない案件で、入金の行を持たない",
+  "categories": [
+    {"code": "distribution_revenue", "label": "流通売上", "direction": "in", "countsAsRevenue": 1},
+    {"code": "consignment_revenue", "label": "販売委託の売上", "direction": "in", "countsAsRevenue": 1},
+    {"code": "contract_revenue", "label": "受託収益", "direction": "in", "countsAsRevenue": 1},
+    {"code": "crowdfunding_support", "label": "クラウドファンディングの支援金", "direction": "in", "countsAsRevenue": 0},
+    {"code": "production_actual", "label": "制作の実費", "direction": "out", "countsAsRevenue": 0}
+  ],
+  "defaultRates": [
+    {"earningType": "acquisition", "revenueRateBps": 2250, "status": "provisional", "basis": "架空の仮置き（窓口手数料率）"},
+    {"earningType": "consignment", "revenueRateBps": 1875, "status": "provisional", "basis": "架空の仮置き（手数料率）"},
+    {"earningType": "own_investment", "revenueRateBps": 6500, "status": "provisional", "basis": "架空の仮置き"},
+    {"earningType": "committee", "revenueRateBps": 3300, "status": "provisional", "basis": "架空の仮置き（自社の分配）"}
+  ],
+  "projects": [
+    {"key": "ACQ-MG", "code": "FICT-10B-ACQ-MG", "title": "架空の買付（MG つき）", "projectType": "acquisition", "earningType": "acquisition", "revenueRateBps": null,
+      "works": [{"code": "FICT-10B-W-MG", "title": "架空の買付作品（MG）", "settlement": {"contractCode": "FICT-10B-SC-MG", "contractType": "mg", "mgContractYen": 3141592}}]},
+    {"key": "ACQ-BUY", "code": "FICT-10B-ACQ-BUY", "title": "架空の買付（買い切り）", "projectType": "acquisition", "earningType": "acquisition", "revenueRateBps": null,
+      "works": [{"code": "FICT-10B-W-BUY", "title": "架空の買付作品（買い切り）", "purchaseYenByRevision": [2718281]}]},
+    {"key": "ACQ-COMM", "code": "FICT-10B-ACQ-COMM", "title": "架空の買付（委託の分配契約だけ）", "projectType": "acquisition", "earningType": "acquisition", "revenueRateBps": null,
+      "works": [{"code": "FICT-10B-W-COMM", "title": "架空の買付作品（委託）", "settlement": {"contractCode": "FICT-10B-SC-COMM", "contractType": "commission"}}]},
+    {"key": "ACQ-VOID", "code": "FICT-10B-ACQ-VOID", "title": "架空の買付（買付額を最新の版で空にした）", "projectType": "acquisition", "earningType": "acquisition", "revenueRateBps": null,
+      "works": [{"code": "FICT-10B-W-VOID", "title": "架空の買付作品（買付額の取り消し）", "purchaseYenByRevision": [1618033, null]}]},
+    {"key": "CONS", "code": "FICT-10B-CONS", "title": "架空の販売委託", "projectType": "agency", "earningType": "consignment", "revenueRateBps": 1650, "works": []},
+    {"key": "OWN", "code": "FICT-10B-OWN", "title": "架空の自社出資", "projectType": "production", "earningType": "own_investment", "revenueRateBps": null, "works": []},
+    {"key": "COMM", "code": "FICT-10B-COMM", "title": "架空の製作委員会", "projectType": "production", "earningType": "committee", "revenueRateBps": null, "works": []},
+    {"key": "CW", "code": "FICT-10B-CW", "title": "架空の制作受託", "projectType": "contract_production", "earningType": "contract_work", "revenueRateBps": null, "works": [],
+      "contractVersions": [
+        {"budgetYen": 48271903, "markupBps": null, "contractReference": "FICT/契約書/架空の受託_第1版.pdf",
+          "milestones": [{"dueOn": "2026-05-01", "shareBps": 3000}, {"dueOn": "2026-08-01", "shareBps": 4000}, {"dueOn": "2026-12-01", "shareBps": 3000}]},
+        {"budgetYen": 52364117, "markupBps": 1250, "contractReference": "FICT/契約書/架空の受託_第2版.pdf",
+          "milestones": [{"dueOn": "2026-05-01", "shareBps": 3333}, {"dueOn": "2026-09-01", "shareBps": 3334}, {"dueOn": "2027-01-01", "shareBps": 3333}]}
+      ]},
+    {"key": "CW-NOVER", "code": "FICT-10B-CW-NOVER", "title": "架空の制作受託（契約の版なし）", "projectType": "contract_production", "earningType": "contract_work", "revenueRateBps": null, "works": []},
+    {"key": "SW", "code": "FICT-10B-SW", "title": "架空の受託開発", "projectType": "sw_contract", "earningType": null, "revenueRateBps": null, "works": []}
+  ],
+  "lines": [
+    {"project": "ACQ-MG", "category": "distribution_revenue", "amountYen": 1234567},
+    {"project": "ACQ-MG", "category": "distribution_revenue", "amountYen": 2718283},
+    {"project": "ACQ-MG", "category": "distribution_revenue", "amountYen": -98765},
+    {"project": "ACQ-BUY", "category": "distribution_revenue", "amountYen": 3456789},
+    {"project": "CONS", "category": "consignment_revenue", "amountYen": 5432109},
+    {"project": "CONS", "category": "consignment_revenue", "amountYen": 1111113},
+    {"project": "OWN", "category": "distribution_revenue", "amountYen": 2345671},
+    {"project": "OWN", "category": "crowdfunding_support", "amountYen": 900001},
+    {"project": "COMM", "category": "distribution_revenue", "amountYen": 4567891},
+    {"project": "CW", "category": "contract_revenue", "amountYen": 17452959},
+    {"project": "CW", "category": "contract_revenue", "amountYen": 17458195},
+    {"project": "CW", "category": "production_actual", "amountYen": 8000009},
+    {"project": "CW-NOVER", "category": "contract_revenue", "amountYen": 3000007},
+    {"project": "SW", "category": "contract_revenue", "amountYen": 1500003},
+    {"project": null, "category": "distribution_revenue", "amountYen": 654321},
+    {"project": "OWN", "category": "fictional_unregistered", "amountYen": 123457}
+  ]
+}

@@ -64,10 +64,27 @@ export function pgliteStream(db) {
 
 const schemaSql = () => readFileSync(OUTPUT_PATH, 'utf8');
 
+// 使い捨ての schema を消す。表が300を超えると、1回の DROP SCHEMA … CASCADE が全部の表のロックを1つのトランザクションで取り、
+// CI の PostgreSQL（max_locks_per_transaction の既定）で out of shared memory（53200）になる。そのときは表を少しずつ消してから schema を消す
+async function dropSchema(client, schema) {
+  try {
+    await client.query(`DROP SCHEMA ${schema} CASCADE`);
+  } catch (error) {
+    if (error?.code !== '53200') throw error;
+    const tables = (await client.query('SELECT tablename FROM pg_tables WHERE schemaname=$1', [schema])).rows.map((row) => row.tablename);
+    for (let index = 0; index < tables.length; index += 20) {
+      await client.query(`DROP TABLE IF EXISTS ${tables.slice(index, index + 20).map((name) => `${schema}."${name}"`).join(', ')} CASCADE`);
+    }
+    await client.query(`DROP SCHEMA ${schema} CASCADE`);
+  }
+}
+// 同じミリ秒に2つ開いても、本物の PostgreSQL で schema の名前が重ならないように連番を足す
+let schemaSeq = 0;
+
 // {client, kind, schema, pool(), close()}。pool() は本物の PostgreSQL のときだけ、同じ schema を見る Pool を返す（同時の接続の試験用）
 export async function openPgClient({ applySchema = true } = {}) {
   const url = process.env.ON_TEST_PG_URL;
-  const schema = `pgdb_${process.pid}_${Date.now()}`;
+  const schema = `pgdb_${process.pid}_${Date.now()}_${schemaSeq += 1}`;
   if (url) {
     const { hostname } = new URL(url);
     if (!LOCAL_HOSTS.has(hostname)) throw new Error('ON_TEST_PG_URL は手元（localhost）の PostgreSQL だけを受け付ける');
@@ -80,7 +97,7 @@ export async function openPgClient({ applySchema = true } = {}) {
       client, kind: 'postgres', schema,
       pool: () => { const pool = new pg.Pool({ connectionString: url, max: 4, options: `-c search_path=${schema}` }); pools.push(pool); return pool; },
       // DROP SCHEMA が落ちても（2つの試験のファイルを同時に流して out of shared memory になったときなど）接続を閉じ、試験を止めずに落とす
-      close: async () => { try { for (const pool of pools) await pool.end(); await client.query(`DROP SCHEMA ${schema} CASCADE`); } finally { await client.end(); } },
+      close: async () => { try { for (const pool of pools) await pool.end(); await dropSchema(client, schema); } finally { await client.end(); } },
     };
   }
   const { PGlite } = await import('@electric-sql/pglite');

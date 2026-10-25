@@ -1,15 +1,16 @@
-// 売上集計シート（83列）の試験。設計: docs/platform/team-development/eigyo-sales-sheet-design.md §4。
+// 売上集計シートの試験。設計: docs/platform/team-development/eigyo-sales-sheet-design.md §4、列の辞書は会社ルートの plans/2026-10-09-sheet-columns-by-grain.md。
 // 期待値はこの試験の中で、架空の入力（下の定数）から書き下した式で計算し直す（column-registry・sales-sheet-model の関数は使わない）。
-// ・列カタログ: 元の並び1〜83がちょうど1回ずつ・まとまりの列数（識別8・日付10・数量12・単価6・料率5・取引先側の総額6・当社売上6・外貨4・計上と税6・前払保証3・劇場と券種7・備考1・監査9）
-// ・取込（CSV）で拡張属性（attr_列キー）に値が入り、明細の値・切り口の集計（合計・期末・比率の再計算・最小〜最大・種類の数）・月を横に並べる・通貨・ページ送り・空の列
-// ・権限（制作担当は使えない・財務の権限の無い作品は見えない）・版（古い版は 409）・トリガー（変更・削除・型・外貨の額・列の型）・出力（Excel・83列の CSV）・保存した形
+// この組織は統合後の採用（辞書の列。ロイヤリティ計上の額の4列は、採用のときに食い違いが0件なので入らない。裁定3 (a)）。
+// ・列の辞書: 元の並び1〜83がちょうど1回ずつ、辞書から外す列（計画の「消」）だけが採用の列から抜ける、取り方は許可リストのキーか式だけ
+// ・取込（CSV）で拡張属性（attr_列キー）に値が入り（外した列は読み飛ばす）、明細の値・切り口の集計（合計・期末・比率の再計算・最小〜最大・種類の数）・月を横に並べる・通貨・ページ送り・空の列
+// ・権限（制作担当は使えない・財務の権限の無い作品は見えない）・版（古い版は 409）・トリガー（変更・削除・型・外貨の額・列の型）・出力（Excel・辞書の順の CSV）・保存した形
 import test, {before} from 'node:test';
 import assert from 'node:assert/strict';
 import {openTestDb} from './test-db.mjs';
 import {createApp} from '../src/app.mjs';
 import {toCsv, parseCsv} from '../src/csv.mjs';
 import {decodeXlsx} from '../src/xlsx.mjs';
-import {INITIAL_SHEET_COLUMNS, COLUMN_SETS, SOURCE_REFS} from '../src/sales-sheet/column-registry.mjs';
+import {INITIAL_SHEET_COLUMNS, SHEET_COLUMNS, COLUMN_SETS, SOURCE_REFS, ROYALTY_AMOUNT_KEYS} from '../src/sales-sheet/column-registry.mjs';
 import {SALES_TARGETS, CORE_SALES_TARGETS} from '../src/import/column-synonyms.mjs';
 
 // ---------- 架空の入力 ----------
@@ -32,6 +33,9 @@ const OVERSEAS = [ // 取引先 PT-OVERSEAS（この試験で足す）・免税�
   {month: '2026-05', desc: '海外 北米（追加）', ex: 750000, code: 'A001', currency: 'USD', original: '5000.00', rate: '150'},
 ];
 const EXTRA = 12; // ページ送りの確認用に足す配信の小さい売上（2026-03・1件ずつ）
+// 計画の対応表で辞書から外す列（消）。元の列番号のあるもの10と、補助・追加の列の2
+const REMOVED_POSITIONS = [12, 19, 34, 59, 64, 65, 72, 73, 75, 82];
+const REMOVED_UNPOSITIONED = ['h_theatre_inc_amount', 'report_status'];
 
 // ---------- 書き下した決まり ----------
 const round = (value, digits) => { const f = 10 ** digits; return Math.sign(value) * Math.round(Math.abs(value) * f) / f; };
@@ -111,15 +115,20 @@ before(async (t) => {
   }
 });
 
-test('列カタログ: 元の並び1〜83がちょうど1回ずつ、まとまりの列数が旧の意味どおり、取り方は許可リストのキーか式だけ', () => {
+test('列の辞書: 元の並び1〜83がちょうど1回ずつ、外す列（計画の「消」）だけが採用の列から抜け、取り方は許可リストのキーか式だけ', () => {
+  assert.deepEqual(SHEET_COLUMNS.filter((column) => column.legacy_position).map((column) => column.legacy_position).sort((a, b) => a - b), Array.from({length: 83}, (_, n) => n + 1));
+  const removed = SHEET_COLUMNS.filter((column) => column.removed);
+  assert.deepEqual(removed.filter((column) => column.legacy_position).map((column) => column.legacy_position).sort((a, b) => a - b), REMOVED_POSITIONS);
+  assert.deepEqual(removed.filter((column) => !column.legacy_position).map((column) => column.key).sort(), [...REMOVED_UNPOSITIONED].sort());
   const legacy = INITIAL_SHEET_COLUMNS.filter((column) => column.legacy_position);
-  assert.deepEqual(legacy.map((column) => column.legacy_position).sort((a, b) => a - b), Array.from({length: 83}, (_, n) => n + 1));
-  const groups = {};
-  for (const column of legacy) groups[column.group_key] = (groups[column.group_key] || 0) + 1;
-  assert.deepEqual(groups, {identity: 8, dates: 10, quantity: 12, unit_price: 6, rate: 5, partner_gross: 6, holder_sales: 6, currency: 4, booking: 6, mg_balance: 3, theatre: 7, note: 1, audit: 9});
+  assert.deepEqual(legacy.map((column) => column.legacy_position).sort((a, b) => a - b), Array.from({length: 83}, (_, n) => n + 1).filter((n) => !REMOVED_POSITIONS.includes(n)));
+  assert.equal(INITIAL_SHEET_COLUMNS.length, SHEET_COLUMNS.length - removed.length);
+  const order = SHEET_COLUMNS.map((column) => column.sort_order);
+  assert.deepEqual(order, [...order].sort((a, b) => a - b), '並び順は辞書の順');
+  assert.equal(new Set(order).size, order.length, '並び順は重ならない');
   const keys = new Set(INITIAL_SHEET_COLUMNS.map((column) => column.column_key));
   assert.equal(keys.size, INITIAL_SHEET_COLUMNS.length, '列キーは重ならない');
-  assert.equal(new Set(INITIAL_SHEET_COLUMNS.map((column) => column.label)).size, INITIAL_SHEET_COLUMNS.length, '見出しは重ならない（Excel の見出しで照合するため）');
+  assert.equal(new Set(INITIAL_SHEET_COLUMNS.map((column) => column.label.normalize('NFKC'))).size, INITIAL_SHEET_COLUMNS.length, '見出しは重ならない（Excel の見出しで照合するため）');
   const walk = (node, out = []) => { if (node?.col) out.push(node.col); for (const arg of node?.args || []) walk(arg, out); return out; };
   for (const column of INITIAL_SHEET_COLUMNS) {
     if (column.source_kind === 'core') assert.ok(Object.hasOwn(SOURCE_REFS, column.source_ref), column.column_key);
@@ -129,12 +138,13 @@ test('列カタログ: 元の並び1〜83がちょうど1回ずつ、まとま�
     if (column.aggregation === 'ratio') assert.ok(keys.has(column.numerator_key) && keys.has(column.denominator_key) && [1, 100].includes(column.ratio_scale), column.column_key);
     assert.doesNotMatch(JSON.stringify(column), /SELECT|FROM |JOIN /i, 'SQL の文字列を持たない');
   }
-  // 手で数えた ◎12・○45・×26 のうち、置き場所の無い列は 拡張属性か型で守る2表（外貨4・ロイヤリティ3）
-  const attributes = legacy.filter((column) => column.source_kind === 'attribute').map((column) => column.legacy_position);
-  assert.deepEqual(attributes, [11, 18, 24, 25, 29, 30, 31, 32, 33, 35, 41, 56, 59, 61, 63, 64, 65, 67, 72, 73, 82]);
+  // 置き場所の無い列は 拡張属性か型で守る2表（外貨4・ロイヤリティ3）。拡張属性のうち #59・64・65・72・73・82 は辞書から外した
+  const attributes = legacy.filter((column) => column.source_kind === 'attribute').map((column) => column.legacy_position).sort((a, b) => a - b);
+  assert.deepEqual(attributes, [11, 18, 24, 25, 29, 30, 31, 32, 33, 35, 41, 56, 61, 63, 67]);
   assert.equal(COLUMN_SETS.length, 7);
   assert.deepEqual(COLUMN_SETS.map((set) => set.label), ['基本', '劇場', 'ビデオグラム', '配信', 'MG・FLAT', '税・請求・入金', '監査・原本']);
-  for (const set of COLUMN_SETS) for (const key of set.columns) assert.ok(keys.has(key), `${set.key}: ${key}`);
+  const dictionary = new Set(SHEET_COLUMNS.map((column) => column.key));
+  for (const set of COLUMN_SETS) for (const key of set.columns) assert.ok(dictionary.has(key), `${set.key}: ${key}`);
 });
 
 test('取込の変換先（SALES_TARGETS）は共通売上17列と、カタログの拡張属性の列（attr_列キー）から作る', () => {
@@ -150,8 +160,9 @@ test('取込の変換先（SALES_TARGETS）は共通売上17列と、カタロ�
 });
 
 test('取込の attr_ 列の値は、売上と同じ登録で拡張属性の版1になる（入れ方=取込・理由に報告番号）。知らない列・型の違う値は確認の段階で止める', async () => {
+  // attr_theatre_unit_inc_tax（#59 劇場別の単価（税込））は辞書から外した列なので、取込で読み飛ばして入れない
   const rows = await db.all("SELECT column_key,version_no,value_text,value_number,origin,reason FROM sale_attribute_values WHERE sale_id=? ORDER BY column_key", [ids.theatre[0]]);
-  assert.deepEqual(rows.map((row) => [row.column_key, row.version_no, row.value_text ?? (row.value_number === null ? null : Number(row.value_number)), row.origin]), [['theatre_name', 1, '架空劇場A', 'report_import'], ['theatre_unit_inc_tax', 1, 1980, 'report_import']]);
+  assert.deepEqual(rows.map((row) => [row.column_key, row.version_no, row.value_text ?? (row.value_number === null ? null : Number(row.value_number)), row.origin]), [['theatre_name', 1, '架空劇場A', 'report_import']]);
   assert.match(rows[0].reason, /SS-THR-2026-04/);
   const headers = ['report_key', 'partner_id', 'period_from', 'period_to', 'accounting_month', 'description', 'amount_ex_tax', 'tax_amount', 'amount_inc_tax'];
   const unknown = await admin.post('/imports/preview', {kind: 'digital', workId: 1, text: toCsv([...headers, 'attr_no_such_column'], [['SS-BAD-1', 2, '2026-04-01', '2026-04-30', '2026-04', 'x', 1, 0, 1, 'a']])});
@@ -172,7 +183,8 @@ test('明細の値: 当社売上の列は流通のまとまりで分かれ、視
   THEATRE.forEach((t, n) => {
     const r = row(ids.theatre[n]);
     assert.equal(r.rs_holder_ex_tax, t.ex);
-    assert.equal(r.flat_holder_ex_tax, null);
+    assert.equal(r.vod_holder_ex_tax, null);
+    assert.equal(Object.hasOwn(r, 'flat_holder_ex_tax'), false, '定額の当社売上（#12）は辞書から外した');
     assert.equal(r.admissions, t.admissions);
     assert.equal(r.box_office_ex_tax, t.gross);
     assert.equal(r.theatre_unit_ex_tax, round(t.gross / t.admissions, 2));
@@ -190,20 +202,21 @@ test('明細の値: 当社売上の列は流通のまとまりで分かれ、視
     assert.equal(r.vod_partner_sales_ex_tax, Number(s.reported));
     assert.equal(r.unique_viewers, s.uu);
   });
-  // 海外（A002 = 海外 RS → 視聴連動、A001 = 海外 FLAT → 定額）。免税は税率0
+  // 海外（A002 = 海外 RS → 視聴連動、A001 = 海外 FLAT → 定額。定額の当社売上の列は辞書から外したので、RS・視聴連動のどちらにも入らない）。免税は税率0
   OVERSEAS.forEach((o, n) => {
     const r = row(ids.overseas[n]);
-    assert.equal(o.code === 'A001' ? r.flat_holder_ex_tax : r.vod_holder_ex_tax, o.ex);
+    assert.deepEqual([r.vod_holder_ex_tax, r.rs_holder_ex_tax], o.code === 'A001' ? [null, null] : [o.ex, null]);
     assert.equal(r.tax_rate, 0);
     assert.equal(r.currency_code, o.currency);
     assert.equal(r.foreign_amount, Number(o.original));
     assert.equal(r.exchange_rate, Number(o.rate));
   });
-  // 記録の無い売上の通貨は円、ロイヤリティ計上月・額は計上月・計上額と同じ
+  // 記録の無い売上の通貨は円、ロイヤリティ計上月は計上月と同じで、額の食い違いは「いいえ」（ロイヤリティ計上の額の4列は採用していない。裁定3 (a)）
   const extra = all.rows.find((item) => item.line_note === '追加の配信 3');
   assert.equal(extra.currency_code, 'JPY');
   assert.equal(extra.royalty_month, '2026-03');
-  assert.equal(extra.royalty_amount_ex_tax, 300);
+  assert.equal(extra.royalty_amount_mismatch, false);
+  for (const key of ROYALTY_AMOUNT_KEYS) assert.equal(Object.hasOwn(extra, key), false, key);
   // 流通の分類の無い明細は、流通ID列を「未分類」と出す（集計・絞り込みのキーは報告の種類の既定 digital_unknown のまま）
   assert.equal(extra.distribution_code, '未分類');
 });
@@ -232,7 +245,7 @@ test('集計（取引先ごと）: 合計・期末の値・比率の再計算・
   const admissions = sum(THEATRE.map((t) => t.admissions));
   assert.equal(cinema.admissions, admissions);
   assert.equal(cinema.theatre_unit_ex_tax, round(sum(THEATRE.map((t) => t.gross)) / admissions, 2));
-  assert.equal(cinema.theatre_unit_inc_tax, round(sum(THEATRE.map((t) => t.unitInc * t.admissions)) / admissions, 2));
+  assert.equal(Object.hasOwn(cinema, 'theatre_unit_inc_tax'), false, '劇場別の単価（税込。#59）は辞書から外した');
   assert.equal(cinema.theatre_name, '2種類');
   assert.equal(cinema.tax_rate, round(sum(THEATRE.map((t) => t.tax)) / sum(THEATRE.map((t) => t.ex)) * 100, 1));
   const digital = byPartner(body.rows, 'PT-DIGITAL');
@@ -299,7 +312,8 @@ test('全行が空の列を隠す（条件に合う全行で判定）。隠さ�
   assert.ok(hidden.columns.some((column) => column.key === 'amount_ex_tax'));
   const shown = (await admin.get('/sales-sheet?set=theatre&kind=package&hideEmpty=0')).body;
   assert.equal(shown.hiddenEmpty.length, 0);
-  assert.equal(shown.columns.length, COLUMN_SETS.find((set) => set.key === 'theatre').columns.length);
+  const removed = new Set(SHEET_COLUMNS.filter((column) => column.removed).map((column) => column.key));
+  assert.deepEqual(shown.columns.map((column) => column.key), COLUMN_SETS.find((set) => set.key === 'theatre').columns.filter((key) => !removed.has(key)), '劇場の列セットから外した列だけが抜ける');
 });
 
 test('権限: 制作担当は使えない。財務の権限の無い作品の売上は見えず、直せない。列の採用・追加は管理者だけ', async () => {
@@ -336,13 +350,17 @@ test('拡張属性の版: 古い版からの登録は 409、同じ値は登録�
   assert.equal(stale.status, 409);
   const same = await admin.post('/sales-sheet/values', {reason: '試験', changes: [{saleId, columnKey: 'unique_viewers', baseVersion: 1, value: '1,200'}]});
   assert.deepEqual([same.status, same.body.saved, same.body.unchanged], [200, 0, 1]);
-  const changed = await admin.post('/sales-sheet/values', {reason: '報告の訂正（試験）', changes: [{saleId, columnKey: 'unique_viewers', baseVersion: 1, value: '1300'}, {saleId, columnKey: 'ticket_campaign', baseVersion: 0, value: 'はい'}]});
+  const changed = await admin.post('/sales-sheet/values', {reason: '報告の訂正（試験）', changes: [{saleId, columnKey: 'unique_viewers', baseVersion: 1, value: '1300'}, {saleId, columnKey: 'ticket_raw_label', baseVersion: 0, value: '一般 1980円（試験）'}]});
   assert.deepEqual([changed.status, changed.body.saved], [201, 2]);
-  const cleared = await admin.post('/sales-sheet/values', {reason: '誤って入れた（試験）', changes: [{saleId, columnKey: 'ticket_campaign', baseVersion: 1, value: ''}]});
+  const cleared = await admin.post('/sales-sheet/values', {reason: '誤って入れた（試験）', changes: [{saleId, columnKey: 'ticket_raw_label', baseVersion: 1, value: ''}]});
   assert.equal(cleared.status, 201);
+  // 辞書から外した拡張属性の列（#65 券種の施策）は採用していないので、値を入れられない
+  const removedColumn = await admin.post('/sales-sheet/values', {reason: '試験', changes: [{saleId, columnKey: 'ticket_campaign', baseVersion: 0, value: 'はい'}]});
+  assert.equal(removedColumn.status, 400);
+  assert.match(JSON.stringify(removedColumn.body.details), /拡張属性の列ではありません/);
   const detail = (await admin.get(`/sales-sheet/sales/${saleId}`)).body;
   assert.equal(detail.values.unique_viewers, 1300);
-  assert.equal(detail.values.ticket_campaign, null);
+  assert.equal(detail.values.ticket_raw_label, null);
   assert.deepEqual(detail.history.attributes.filter((row) => row.column_key === 'unique_viewers').map((row) => [row.version_no, row.value_number]), [[2, 1300], [1, 1200]]);
   const bad = await admin.post('/sales-sheet/values', {reason: '試験', changes: [{saleId, columnKey: 'amount_ex_tax', baseVersion: 0, value: '1'}]});
   assert.equal(bad.status, 400);
@@ -366,17 +384,19 @@ test('トリガー: 変更・削除の禁止、型の照合、外貨の額の照
   assert.match(currency.body.error, /合いません/);
 });
 
-test('ロイヤリティ計上の基準: 税込＝税抜＋税額。月の基準をロイヤリティ計上月にすると、その月で絞り・並べる', async () => {
+test('ロイヤリティ計上の基準: 税込＝税抜＋税額。月の基準をロイヤリティ計上月にすると、その月で絞り・並べ、額が売上と違えば食い違いの列が「はい」', async () => {
   const saleId = ids.theatre[0];
   const bad = await admin.post(`/sales-sheet/sales/${saleId}/royalty-basis`, {baseVersion: 0, royaltyMonth: '2026-06', amountExTax: '800000', taxAmount: '80000', amountIncTax: '1', reason: '試験'});
   assert.equal(bad.status, 400);
   const ok = await admin.post(`/sales-sheet/sales/${saleId}/royalty-basis`, {baseVersion: 0, royaltyMonth: '2026-06', amountExTax: '800,000', taxAmount: '80000', reason: '契約の計上時期（試験）'});
   assert.equal(ok.status, 201);
-  const body = (await admin.get('/sales-sheet?set=tax&month=royalty&from=2026-06&to=2026-06')).body;
+  const body = (await admin.get('/sales-sheet?columns=royalty_month,amount_ex_tax,royalty_amount_mismatch&month=royalty&from=2026-06&to=2026-06')).body;
   assert.deepEqual(body.rows.map((row) => row.__id), [saleId]);
-  assert.equal(body.rows[0].royalty_amount_ex_tax, 800000);
-  assert.equal(body.rows[0].royalty_amount_inc_tax, 880000);
+  assert.deepEqual([body.rows[0].royalty_month, body.rows[0].royalty_amount_mismatch], ['2026-06', true]);
   assert.equal(body.rows[0].amount_ex_tax, THEATRE[0].ex, '計上額はそのまま');
+  // ロイヤリティ計上の額は版の表（sale_royalty_basis_versions）に残る（この組織はロイヤリティ計上の額の列を採用していない）
+  const [basis] = (await admin.get(`/sales-sheet/sales/${saleId}`)).body.history.royalty;
+  assert.deepEqual([basis.royalty_amount_ex_tax, basis.royalty_tax_amount, basis.royalty_amount_inc_tax].map(Number), [800000, 80000, 880000]);
   const stale = await admin.post(`/sales-sheet/sales/${saleId}/royalty-basis`, {baseVersion: 0, royaltyMonth: '2026-07', amountExTax: '1', taxAmount: '0', reason: '試験'});
   assert.equal(stale.status, 409);
 });
@@ -388,7 +408,8 @@ test('列を足す（拡張属性）: 管理者が足すと列セットに入り
   assert.equal(created.status, 201, JSON.stringify(created.body));
   const catalog = (await admin.get('/sales-sheet/columns')).body;
   assert.ok(catalog.sets.find((set) => set.key === 'basic').columns.includes('festival_name'));
-  assert.equal(catalog.columns.length, INITIAL_SHEET_COLUMNS.length + 1);
+  // 採用した列（辞書の採用の列。採用のときにロイヤリティ計上の額の食い違いが0件なので、その4列は入っていない）＋足した1列
+  assert.equal(catalog.columns.length, INITIAL_SHEET_COLUMNS.filter((column) => !ROYALTY_AMOUNT_KEYS.includes(column.column_key)).length + 1);
   const saved = await admin.post('/sales-sheet/values', {reason: '試験', changes: [{saleId: ids.theatre[1], columnKey: 'festival_name', baseVersion: 0, value: '架空映画祭'}]});
   assert.equal(saved.status, 201);
   const renamed = await admin.post('/sales-sheet/columns/festival_name/versions', {baseVersion: 1, label: '映画祭', active: false, reason: '使わなくなった（試験）'});
@@ -421,7 +442,7 @@ test('保存した形: 作り、名前の重なり・古い版・作った人以
   assert.equal((await admin.post('/sales-sheet/views', {name: '悪い形', definition: {...definition, dimensions: ['partner', 'work', 'product', 'mg']}, reason: '試験'})).status, 400);
 });
 
-test('出力: Excel は 売上集計シート・条件・_meta の3枚、83列の CSV は元の並び・日付 YYYY/MM/DD・月 YYYY/MM・率は%の数', async () => {
+test('出力: Excel は 売上集計シート・条件・_meta の3枚、CSV は辞書の順の全列・日付 YYYY/MM/DD・月 YYYY/MM・率は%の数', async () => {
   const xlsx = await admin.get('/sales-sheet/export.xlsx?set=theatre&kind=theatrical');
   assert.equal(xlsx.status, 200);
   const sheets = decodeXlsx(xlsx.body);
@@ -435,12 +456,15 @@ test('出力: Excel は 売上集計シート・条件・_meta の3枚、83列�
   const csvResponse = await app.request('/api/sales-sheet/export.csv?kind=other', {headers: {cookie: (await app.request('/api/local/login', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({email: 'admin@openingnight.invalid'})})).headers.get('set-cookie').split(';')[0]}});
   const text = (await csvResponse.text()).replace(/^﻿/, '');
   const rows = parseCsv(text);
-  const labels = INITIAL_SHEET_COLUMNS.filter((column) => column.legacy_position).sort((a, b) => a.legacy_position - b.legacy_position).map((column) => column.label);
-  assert.deepEqual(Object.keys(rows[0].values), labels);
-  assert.equal(labels.length, 83);
+  // 見出しは辞書の順（sort_order）に、組織の使っている列から補助の列（h_）を除いたもの。辞書に足した列（festival_name 等）は辞書の列の後ろ
+  const catalog = (await admin.get('/sales-sheet/columns')).body;
+  const used = new Map(catalog.columns.filter((column) => column.active).map((column) => [column.key, column]));
+  const dictionaryOrder = SHEET_COLUMNS.filter((column) => used.has(column.key) && !column.key.startsWith('h_')).map((column) => used.get(column.key).label);
+  assert.deepEqual(Object.keys(rows[0].values).slice(0, dictionaryOrder.length), dictionaryOrder);
+  assert.deepEqual(Object.keys(rows[0].values), catalog.sets.find((set) => set.key === 'all').columns.map((key) => used.get(key).label));
   assert.equal(rows.length, OVERSEAS.length);
-  const north = rows.find((row) => row.values['明細名・備考'] === '海外 北米');
-  assert.equal(north.values['販売日（販売期間の初日）'], '2026/04/01');
+  const north = rows.find((row) => row.values['明細名'] === '海外 北米');
+  assert.equal(north.values['販売期間の初日'], '2026/04/01');
   assert.equal(north.values['計上月'], '2026/04');
   assert.equal(north.values['消費税率（%）'], '0');
   assert.equal(north.values['通貨'], 'USD');

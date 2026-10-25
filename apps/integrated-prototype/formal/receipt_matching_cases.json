@@ -1,0 +1,125 @@
+{
+  "note": "Z3 がわざと壊した版で見つけた反例を、試験の入力に写したもの（架空データ）。formal/receipt_matching.py が、壊した版で最後まで通って不変条件を破り、正しい版では最後の入金だけが rejected_by の決まりに断られることを確かめる。同じ入力を test/billing.test.mjs が API へ（replay.api）、test/receipt-model.test.mjs が入金フォームの論理へ（replay.form）流す。replay.api.rejected_now は、いまの API が rejected_by と別の決まりで断るときのその決まり（CURRENT の名前）で、試験の名前に出す。registration_order は取消の登録順（不変条件に効かない決まりの写し）を確かめる入力で、formal/receipt_matching.py が模型で、test/billing.test.mjs が API で流す。請求・入金の取引先はすべて同じ1社（API では架空配信）。額は税込で、11 で割り切れる額にする（API の試験は税抜＝額×10/11 の売上から請求を作る）",
+  "cases": [
+    {
+      "name": "銀行手数料を引いて届いた入金を、請求の全額で消し込む",
+      "broken": "合計の検査なし",
+      "invariant": "I1",
+      "invoices": [{"key": "A", "amount_yen": 110000, "invoice_date": "2026-11-02"}],
+      "steps": [
+        {"receipt": "R1", "received_on": "2026-11-30", "amount_yen": 109340, "allocations": [{"invoice": "A", "amount_yen": 110000}]}
+      ],
+      "rejected_by": ["消込の合計＝入金額"],
+      "replay": {
+        "api": {"status": 400, "error": "消込額合計は入金額と一致させてください"},
+        "form": {"path": "allocations", "error": "消込額の合計（110,000円）が入金額（109,340円）を超えています"}
+      }
+    },
+    {
+      "name": "請求額を超える額を1回の入金で消し込む",
+      "broken": "未消込の検査なし",
+      "invariant": "I2",
+      "invoices": [{"key": "A", "amount_yen": 110000, "invoice_date": "2026-11-02"}],
+      "steps": [
+        {"receipt": "R1", "received_on": "2026-11-30", "amount_yen": 121000, "allocations": [{"invoice": "A", "amount_yen": 121000}]}
+      ],
+      "rejected_by": ["消込≦その入金日の未消込"],
+      "replay": {
+        "api": {"status": 409, "error": "receipt exceeds invoice balance"},
+        "form": {"path": "lines.A", "error": "未消込（110,000円）を超えています"}
+      }
+    },
+    {
+      "name": "2回の入金で、合わせて請求額を超えて消し込む",
+      "broken": "前の消込を数えない",
+      "invariant": "I2",
+      "invoices": [{"key": "A", "amount_yen": 110000, "invoice_date": "2026-11-02"}],
+      "steps": [
+        {"receipt": "R1", "received_on": "2026-11-10", "amount_yen": 66000, "allocations": [{"invoice": "A", "amount_yen": 66000}]},
+        {"receipt": "R2", "received_on": "2026-11-20", "amount_yen": 66000, "allocations": [{"invoice": "A", "amount_yen": 66000}]}
+      ],
+      "rejected_by": ["消込≦その入金日の未消込"],
+      "replay": {
+        "api": {"status": 409, "error": "receipt exceeds invoice balance"},
+        "form": {"path": "lines.A", "error": "未消込（44,000円）を超えています"}
+      }
+    },
+    {
+      "name": "取り消した入金の分を、取消日より前の入金日で入れ直す",
+      "broken": "取消日を見ずに取消済みを外す",
+      "invariant": "I2",
+      "invoices": [{"key": "A", "amount_yen": 110000, "invoice_date": "2026-11-02"}],
+      "steps": [
+        {"receipt": "R1", "received_on": "2026-11-10", "amount_yen": 110000, "allocations": [{"invoice": "A", "amount_yen": 110000}]},
+        {"reverse": "R1", "reversed_on": "2026-11-20"},
+        {"receipt": "R2", "received_on": "2026-11-15", "amount_yen": 110000, "allocations": [{"invoice": "A", "amount_yen": 110000}]}
+      ],
+      "rejected_by": ["消込≦その入金日の未消込"],
+      "replay": {
+        "api": {"status": 409, "error": "receipt exceeds invoice balance"},
+        "form": {"path": "allocations", "error": "消し込む請求を1件以上選んでください"}
+      }
+    },
+    {
+      "name": "請求日より前の入金日で消し込む",
+      "broken": "請求日の検査なし",
+      "invariant": "I3",
+      "invoices": [{"key": "A", "amount_yen": 110000, "invoice_date": "2026-11-10"}],
+      "steps": [
+        {"receipt": "R1", "received_on": "2026-11-05", "amount_yen": 110000, "allocations": [{"invoice": "A", "amount_yen": 110000}]}
+      ],
+      "rejected_by": ["請求日≦入金日"],
+      "replay": {
+        "api": {"status": 409, "error": "同じ取引先の有効な請求だけへ消し込めます"},
+        "form": {"path": "lines.A", "error": "請求日（2026-11-10）より前の入金日には消し込めません"}
+      }
+    },
+    {
+      "name": "語彙に無い語（振込手数料）を控除の種類にする",
+      "broken": "控除の種類の検査なし",
+      "invariant": "I4",
+      "invoices": [{"key": "A", "amount_yen": 110000, "invoice_date": "2026-11-02"}],
+      "steps": [
+        {"receipt": "R1", "received_on": "2026-11-30", "amount_yen": 109340, "allocations": [{"invoice": "A", "amount_yen": 110000}],
+         "deductions": [{"kind": "振込手数料", "amount_yen": 660}]}
+      ],
+      "rejected_by": ["控除の種類が語彙の中"],
+      "replay": {
+        "api": {"status": 400, "error": "消込額合計は入金額と一致させてください", "rejected_now": "消込の合計＝入金額",
+                "note": "いまの API は控除を受けないので、語彙の検査ではなく消込の合計＝入金額の検査で断る。#6 で控除の行を受けたら、語彙の CHECK の文言で断ることを確かめる形に直し、rejected_now と note を外す"}
+      },
+      "pending": {"form": "入金フォームに控除の欄が無い。#7（入金の確認の画面）で控除を出すときに足す"}
+    },
+    {
+      "name": "控除を記録したのに、消込を入金額だけにする",
+      "broken": "合計が控除を数えない",
+      "invariant": "I1",
+      "invoices": [{"key": "A", "amount_yen": 110000, "invoice_date": "2026-11-02"}],
+      "steps": [
+        {"receipt": "R1", "received_on": "2026-11-30", "amount_yen": 109340, "allocations": [{"invoice": "A", "amount_yen": 109340}],
+         "deductions": [{"kind": "銀行手数料", "amount_yen": 660}]}
+      ],
+      "rejected_by": ["消込の合計＝入金額＋控除"],
+      "replay": {},
+      "pending": {
+        "api": "いまの API は控除を受けないので、この入力は控除を捨てた入金として通る（不変条件は破らない）。#6 で控除の行を受ける API に流し、合計の検査の文言で断ることを確かめ、この pending.api を外す",
+        "form": "入金フォームに控除の欄が無い。#7（入金の確認の画面）で控除を出すときに足す"
+      }
+    }
+  ],
+  "registration_order": [
+    {
+      "name": "取消を登録する前の入金は、あとで登録する取消の取消日より後の入金日でも断る",
+      "invoices": [{"key": "A", "amount_yen": 110000, "invoice_date": "2026-11-02"}],
+      "before": [
+        {"receipt": "R1", "received_on": "2026-11-10", "amount_yen": 110000, "allocations": [{"invoice": "A", "amount_yen": 110000}]}
+      ],
+      "receipt": {"receipt": "R2", "received_on": "2026-11-20", "amount_yen": 110000, "allocations": [{"invoice": "A", "amount_yen": 110000}]},
+      "reversal": {"reverse": "R1", "reversed_on": "2026-11-15"},
+      "rejected_by": ["消込≦その入金日の未消込"],
+      "replay": {
+        "api": {"status": 409, "error": "receipt exceeds invoice balance"}
+      }
+    }
+  ]
+}

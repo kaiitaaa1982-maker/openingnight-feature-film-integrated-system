@@ -55,7 +55,7 @@ const opportunityFields = (partners) => [
   {name: 'partner_id', label: '取引先', type: 'select', required: true, options: partners.map((partner) => ({value: String(partner.id), label: partner.name}))},
   {name: 'name', label: '案件名', type: 'text', required: true},
   {name: 'stage', label: '段階', type: 'select', domain: 'opportunityStage', required: true, defaultValue: 'lead'},
-  {name: 'expected_yen', label: '見込（円）', type: 'yen', hint: '未確認なら空欄のまま登録できます'},
+  {name: 'expected_yen', label: '見込（円）', type: 'yen'},
   {name: 'close_date', label: '予定日', type: 'date'},
 ];
 
@@ -67,7 +67,7 @@ const OPPORTUNITY_EDIT_FIELDS = [
 ];
 
 function ActivityForm({opportunity, workId, request, readOnly, today, onSaved}) {
-  const blank = useMemo(() => ({occurredOn: today, activityType: 'contact', summary: '', nextAction: '', nextDueOn: ''}), [today]);
+  const blank = useMemo(() => ({occurredOn: today, activityType: 'contact', result: '', summary: '', nextAction: '', nextDueOn: ''}), [today]);
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState(blank);
   const [errors, setErrors] = useState({});
@@ -90,7 +90,7 @@ function ActivityForm({opportunity, workId, request, readOnly, today, onSaved}) 
     setSaving(true);
     setError(null);
     try {
-      await request('/sales-activities', {method: 'POST', body: JSON.stringify({workId, opportunityId: opportunity.id, occurredOn: values.occurredOn, activityType: values.activityType, summary: values.summary.trim(), nextAction: values.nextAction.trim(), nextDueOn: values.nextDueOn || null})});
+      await request('/sales-activities', {method: 'POST', body: JSON.stringify({workId, opportunityId: opportunity.id, occurredOn: values.occurredOn, activityType: values.activityType, result: values.result, summary: values.summary.trim(), nextAction: values.nextAction.trim(), nextDueOn: values.nextDueOn || null})});
       setValues(blank);
       setOpen(false);
       setDone('活動を追記しました。');
@@ -114,10 +114,11 @@ function ActivityForm({opportunity, workId, request, readOnly, today, onSaved}) 
   return (
     <form className="so-form" onSubmit={submit} noValidate aria-label="活動の追記">
       <h4>活動を追記</h4>
-      <p className="rp-muted">活動の履歴は追記だけで、あとから修正・削除はできません。次の行動と期限は未確認のまま保存できます。</p>
+      <p className="rp-muted">追記だけ（修正・削除不可）</p>
       <fieldset className="on-form-grid" disabled={saving}>
         <FormField type="date" label="実施日" required value={values.occurredOn} onChange={set('occurredOn')} error={errors.occurredOn} />
         <FormField type="select" label="活動" domain="activityType" includeBlank={false} value={values.activityType} onChange={set('activityType')} />
+        <FormField type="select" label="結果" domain="activityResult" blankLabel="未記録" value={values.result} onChange={set('result')} />
         <FormField label="要約" required wide value={values.summary} onChange={set('summary')} error={errors.summary} />
         <FormField label="次の行動" value={values.nextAction} onChange={set('nextAction')} />
         <FormField type="date" label="次の期限" value={values.nextDueOn} onChange={set('nextDueOn')} />
@@ -136,7 +137,7 @@ function OpportunityDetail({row, activities, workId, request, readOnly, today, o
   const history = activities.filter((activity) => activity.opportunity_id === row.id);
   return (
     <div className="so-detail">
-      <p className="rp-muted">取引先: {row.partner_name}（取引先を変えるときは新しい営業案件として登録します）</p>
+      <p className="rp-muted">取引先: {row.partner_name}</p>
       {!readOnly && (
         <RecordForm mode="edit" collapsible openLabel={VERBS.edit} title="営業案件を修正" fields={OPPORTUNITY_EDIT_FIELDS} submitLabel={VERBS.save}
           initialValues={{name: row.name, stage: row.stage, expected_yen: row.expected_yen, close_date: row.close_date}} successMessage="営業案件を保存しました"
@@ -151,12 +152,13 @@ function OpportunityDetail({row, activities, workId, request, readOnly, today, o
           {history.map((activity) => (
             <li key={activity.id}>
               <strong>{dateJst(activity.occurred_on)}・{labelOf('activityType', activity.activity_type)}</strong>
+              <small>結果: {activity.result ? labelOf('activityResult', activity.result) : '未記録'}</small>
               <span>{activity.summary}</span>
               <small>{activity.next_action ? `次の行動: ${activity.next_action}（${activity.next_due_on ? `期限 ${dateJst(activity.next_due_on)}` : '期限未設定'}）` : '次の行動なし'}</small>
             </li>
           ))}
         </ol>
-      ) : <p className="rp-muted">活動はまだありません。</p>}
+      ) : <p className="rp-muted">0件</p>}
       <ActivityForm opportunity={row} workId={workId} request={request} readOnly={readOnly} today={today} onSaved={onChanged} />
     </div>
   );
@@ -230,7 +232,7 @@ function AgreementDetail({agreement, request, readOnly, onChanged}) {
   const latest = agreement.terms.at(-1);
   return (
     <div className="so-detail">
-      <p className="rp-muted">元の営業案件: {agreement.opportunity_name || '未確認'}・調達ケース: {agreement.intake_label || '関連なし'}。条件の版は追記だけで、前の版と前の版の納品記録は残ります。</p>
+      <p className="rp-muted">元の営業案件: {agreement.opportunity_name || '未確認'}・調達ケース: {agreement.intake_label || '関連なし'}</p>
       <DataGrid columns={TERM_COLUMNS} rows={[...agreement.terms].reverse()} rowKey="id" showTotals={false} maxHeight="40vh" ariaLabel={`${agreement.contract_code}の条件の版`} />
       {!readOnly && latest && (
         <RecordForm mode="create" collapsible openLabel={`${VERBS.newVersion}（${termLabel(latest)}から）`} title={`第${latest.version_no + 1}版を作る`}
@@ -341,14 +343,14 @@ function DeliverableForm({mode, row, agreements, workId, request, readOnly, asOf
             <FormField type="select" label="契約" required value={values.agreementId} onChange={set('agreementId')} error={errors.agreementId}
               options={agreements.map((item) => ({value: String(item.id), label: `${item.contract_code}｜${item.title}`}))} />
             <FormField type="select" label="条件版" required value={values.termVersionId} onChange={set('termVersionId')} error={errors.termVersionId} options={termOptions}
-              hint="既定は最新の版です" />
+              />
           </>
         )}
-        <FormField label="納品物" required value={values.title} onChange={set('title')} error={errors.title} placeholder="例: 本編マスター" />
+        <FormField label="納品物" required value={values.title} onChange={set('title')} error={errors.title} />
         <FormField type="date" label="期限" value={values.dueOn} onChange={set('dueOn')} />
         <FormField type="select" label="状態" domain="deliverableStatus" includeBlank={false} value={values.status} onChange={set('status')} />
-        <FormField type="date" label="提出日" value={values.submittedOn} onChange={set('submittedOn')} error={errors.submittedOn} hint="実際に提出した日" />
-        <FormField type="date" label="受領日" value={values.acceptedOn} onChange={set('acceptedOn')} error={errors.acceptedOn} hint="先方が受け取った日" />
+        <FormField type="date" label="提出日" value={values.submittedOn} onChange={set('submittedOn')} error={errors.submittedOn} />
+        <FormField type="date" label="受領日" value={values.acceptedOn} onChange={set('acceptedOn')} error={errors.acceptedOn} />
         <FormField label="メモ" wide value={values.note} onChange={set('note')} />
       </fieldset>
       {warnings.map((warning) => <Notice key={warning.field} tone="warn" compact message={warning.message} />)}
@@ -423,12 +425,12 @@ function ReportLinks({body, workId, asOf, partners, request, readOnly, onChanged
       <header className="so-head">
         <div>
           <h2>売上報告を契約の根拠へ関連付ける</h2>
-          <p className="rp-muted">最新の条件版へ、登録済みの売上報告を説明のために関連付けます。元の報告・売上・金額・計上月は変わりません。関連付けはあとから外せません。</p>
+          <p className="rp-muted">関連付けは外せません</p>
         </div>
       </header>
       {!readOnly && (
         <FormField type="select" label="関連付ける条件版（最新の版だけ）" value={termId} onChange={choose} blankLabel="選択してください"
-          options={currentTerms.map((term) => ({value: String(term.id), label: termText(term)}))} hint={currentTerms.length ? undefined : '先に販売契約を登録してください'} />
+          options={currentTerms.map((term) => ({value: String(term.id), label: termText(term)}))} />
       )}
       {candidates.loading && <p className="rp-muted" aria-busy="true">候補を読み込み中…</p>}
       {candidates.error && <Notice error={candidates.error} onRetry={() => choose(termId)} />}
@@ -522,7 +524,7 @@ export default function SalesOperations({data, request: requestProp, onOpportuni
   const oppExpand = useMemo(() => (oppParam && body ? {key: String(oppParam), nonce: `${oppParam}:${workId}`} : undefined), [oppParam, body, workId]);
   const deliverableExpand = useMemo(() => (deliverableParam && body ? {key: String(deliverableParam), nonce: `${deliverableParam}:${workId}`} : undefined), [deliverableParam, body, workId]);
 
-  if (!workId) return <section className="card"><p className="rp-muted">作品を選ぶと、その作品の営業が表示されます。</p></section>;
+  if (!workId) return <section className="card"><p className="rp-muted">作品未選択</p></section>;
   if (state.error && !body) return <section className="card"><Notice error={state.error} onRetry={reload} /></section>;
   if (!body || !built) return <section className="card"><p className="rp-muted" aria-busy="true">営業の情報を読み込んでいます…</p></section>;
 
@@ -542,7 +544,6 @@ export default function SalesOperations({data, request: requestProp, onOpportuni
         <header className="so-head">
           <div>
             <h2>{work?.title || '選択中の作品'}の営業</h2>
-            <p className="rp-muted">{body.scopeNote}</p>
           </div>
           <div className="so-actions">
             <FormField type="date" label="期限の判定日" value={asOf} onChange={(value) => shell.setParam('asOf', value && value !== today ? value : null, {replace: true})} />
@@ -554,7 +555,7 @@ export default function SalesOperations({data, request: requestProp, onOpportuni
           <div role="listitem">
             <span>契約条件の見込（各契約の最新版）</span>
             <strong>{yen(body.summary.agreementExpectedYen)}</strong>
-            <small>商談見込とは別の数字{body.summary.unknownAgreementAmountCount ? `・見込未入力 ${int(body.summary.unknownAgreementAmountCount)}件は含まない` : ''}</small>
+            {body.summary.unknownAgreementAmountCount ? <small>見込未入力 {int(body.summary.unknownAgreementAmountCount)}件</small> : null}
           </div>
         </PipelineTiles>
       </section>
@@ -563,7 +564,6 @@ export default function SalesOperations({data, request: requestProp, onOpportuni
         <header className="so-head">
           <div>
             <h2>営業案件（{int(built.opportunities.length)}件）</h2>
-            <p className="rp-muted">行を押すと、修正・活動の履歴・次の行動の追記が開きます。</p>
           </div>
         </header>
         <RecordForm openLabel="＋営業案件を登録" title="営業案件の新規登録" fields={opportunityFields(partners)} allowContinue={false} resetKey={workId}
@@ -572,7 +572,7 @@ export default function SalesOperations({data, request: requestProp, onOpportuni
             name: values.name, stage: values.stage, expected_yen: values.expected_yen ?? null, close_date: values.close_date ?? null})})}
           onSaved={() => { reload(); onOpportunityChanged?.(); }} />
         <DataGrid columns={OPPORTUNITY_COLUMNS} rows={built.opportunities} rowKey="id" persistKey="sales-ops-opportunities" expandRequest={oppExpand}
-          emptyText="営業案件はまだありません。「＋営業案件を登録」から登録します。" initialSort={{key: 'next_due_on', dir: 'asc'}}
+          emptyText="0件" initialSort={{key: 'next_due_on', dir: 'asc'}}
           exportSpec={{name: `営業案件_${work?.title || '作品'}`, title: `営業案件（${work?.title || '作品'}）`, conditions: exportConditions, dataAsOf: dateJst(today),
             notes: ['見込が未入力の案件は金額の合計に含めていません。']}}
           renderDetail={(row) => <OpportunityDetail row={row} activities={body.activities} workId={workId} request={request} readOnly={readOnly} today={today} onChanged={reload} />} />
@@ -582,7 +582,6 @@ export default function SalesOperations({data, request: requestProp, onOpportuni
         <header className="so-head">
           <div>
             <h2>販売契約と条件の版（{int(agreements.length)}件）</h2>
-            <p className="rp-muted">受注から契約・売上は自動で作りません。文書参照は説明のための情報で、法的な有効性は判定しません。行を押すと版の履歴と「{VERBS.newVersion}」が開きます。</p>
           </div>
         </header>
         {built.opportunities.length
@@ -592,7 +591,7 @@ export default function SalesOperations({data, request: requestProp, onOpportuni
                 productId: values.productId ? Number(values.productId) : null, intakeCaseId: values.intakeCaseId ? Number(values.intakeCaseId) : null,
                 contractCode: values.contractCode, title: values.title, terms: termsPayload(values)})})}
               onSaved={reload} />
-          : <p className="rp-muted">先に営業案件を登録すると、販売契約を登録できます。</p>}
+          : <p className="rp-muted">営業案件 0件</p>}
         <DataGrid columns={AGREEMENT_COLUMNS} rows={agreements} rowKey="id" persistKey="sales-ops-agreements"
           emptyText="販売契約はまだありません。"
           exportSpec={{name: `販売契約_${work?.title || '作品'}`, title: `販売契約（${work?.title || '作品'}・各契約の最新版）`, conditions: exportConditions, dataAsOf: dateJst(today)}}
@@ -603,13 +602,12 @@ export default function SalesOperations({data, request: requestProp, onOpportuni
         <header className="so-head">
           <div>
             <h2>契約版ごとの納品（{int(built.deliverables.length)}件）</h2>
-            <p className="rp-muted">提出日・受領日は起きた日を入れます。期限後に提出した納品は「遅延提出（n日）」として数えます。契約を改訂しても前の版の納品記録は残ります。</p>
           </div>
           {!readOnly && !creatingDeliverable && agreements.length > 0 && (
             <button type="button" onClick={() => { setCreatingDeliverable(true); say('deliverables', null); }}>＋納品項目を登録</button>
           )}
         </header>
-        {!agreements.length && <p className="rp-muted">先に販売契約を登録すると、納品項目を登録できます。</p>}
+        {!agreements.length && <p className="rp-muted">販売契約 0件</p>}
         {creatingDeliverable && (
           <DeliverableForm mode="create" agreements={agreements} workId={workId} request={request} readOnly={readOnly} asOf={asOf} today={today}
             onClose={() => setCreatingDeliverable(false)}
@@ -632,7 +630,6 @@ export default function SalesOperations({data, request: requestProp, onOpportuni
 
       <details className="card">
         <summary>制作準備の参照（参照のみ・{int(body.fieldReadiness.shootingDayCount)}撮影日）</summary>
-        <p className="rp-muted">{body.fieldReadiness.note}</p>
         <div className="rp-tiles" role="list" aria-label="制作準備">
           <div role="listitem"><span>撮影日</span><strong>{int(body.fieldReadiness.shootingDayCount)}日</strong></div>
           <div role="listitem"><span>撮影済みの割当</span><strong>{int(body.fieldReadiness.shotAssignments)}件</strong></div>

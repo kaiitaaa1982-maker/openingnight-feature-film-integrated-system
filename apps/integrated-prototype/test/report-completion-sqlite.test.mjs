@@ -18,7 +18,9 @@ test('populated old file migration keeps every row, referencing snapshots, const
  try{
   db=new database.LocalDatabase(':memory:');db.close();db.raw=new DatabaseSync(path);db.raw.exec('PRAGMA foreign_keys=ON');
   const old=database.schemaSql.replace("kind TEXT NOT NULL CHECK(kind IN ('theatrical','digital','package','broadcast','other')), label TEXT NOT NULL", "kind TEXT NOT NULL CHECK(kind IN ('theatrical','digital','package')), label TEXT NOT NULL");
-  db.raw.exec(old);db.raw.exec(database.reportingSql);db.raw.exec(database.workbenchSql);db.raw.exec(database.mgSql);for(const [name,sql] of Object.entries(database))if(name.endsWith('Sql')&&!['schemaSql','reportingSql','workbenchSql','mgSql'].includes(name))db.raw.exec(sql);
+  db.raw.exec(old);db.raw.exec(database.reportingSql);db.raw.exec(database.workbenchSql);db.raw.exec(database.mgSql);for(const [name,sql] of Object.entries(database))if(name.endsWith('Sql')&&!['schemaSql','reportingSql','workbenchSql','mgSql','kpiMetricMigrationSql'].includes(name))db.raw.exec(sql);
+  // 移行 0017（指標マスタ。行動指標の計画 段B #9）は 0014 の設定の変数の表に行を足すので、名前の順（k は y より前）でなく 0014 のあとに当てる
+  db.raw.exec(database.kpiMetricMigrationSql);
   const f=await reportCompletionFixture({db,includeBroadcast:false});
   const tables=db.raw.prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name").all().map(r=>r.name),before=Object.fromEntries(tables.map(name=>[name,JSON.stringify(db.raw.prepare(`SELECT * FROM "${name}" ORDER BY rowid`).all())]));
   const triggers=db.raw.prepare("SELECT name FROM sqlite_master WHERE type='trigger' ORDER BY name").all();

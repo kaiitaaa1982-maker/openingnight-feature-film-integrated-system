@@ -8,15 +8,18 @@ import {resolveTerritory} from './sales-ops/sales-catalog-model.mjs';
 import {registerBroadcastApprovalRoutes} from './broadcast/broadcast-approvals-routes.mjs';
 import {registerBroadcastWindowRoutes} from './broadcast/broadcast-windows-routes.mjs';
 import {registerWorkPnlRoutes} from './work-pnl-report-routes.mjs';
+import {registerWorkIncomeRoutes} from './accounting/work-income/work-income-routes.mjs';
 import {registerReportIssuanceRoutes} from './report-issuance-routes.mjs';
 import {registerDashboardRoutes} from './reporting-dashboard.mjs';
 import {registerProgressRoutes} from './progress/progress-routes.mjs';
 import {registerRoyaltyRoutes} from './royalty/royalty-routes.mjs';
 import {registerCommitteeMonthlyRoutes} from './committee/committee-monthly-routes.mjs';
+import {registerCommitteeLedgerRoutes} from './committee/ledger/committee-ledger-routes.mjs';
 import {parseEffectiveFrom, feeShareCopy, retroactiveRoyaltyImpact, retroactiveMessage} from './committee/committee-version-rules.mjs';
 import {registerSalesSourceRoutes} from './import/sales-source-routes.mjs';
 import {registerSalesSheetRoutes} from './sales-sheet/sales-sheet-routes.mjs';
 import {registerPlBsRoutes} from './pl-bs/pl-bs-routes.mjs';
+import {registerScenarioRoutes} from './revenue/scenario/scenario-routes.mjs';
 import {isAttributeTarget} from './sales-sheet/column-registry.mjs';
 import {attributeImportContext, readRowAttributes, attributeTextOf, attributeInsertStatement} from './sales-sheet/import-attributes.mjs';
 import {partitionPreviewSource,partitionCommitStatements,legacyTakenOverGuard,isTakenOver} from './import/sales-source-store.mjs';
@@ -24,6 +27,8 @@ import {importLimits,utf8Bytes,reportByteLimit} from './import/limits.mjs';
 import {labelOf} from './ui/labels.mjs';
 import {registerPartnerProfileRoutes} from './partners/partner-profile-routes.mjs';
 import {registerDataBrowserRoutes} from './admin/data-browser-routes.mjs';
+import {registerR2ManifestRoutes} from './source-documents/r2-manifest-routes.mjs';
+import {registerSourceDocumentRoutes} from './source-documents/source-documents-routes.mjs';
 import {registerWorkQueueRoutes} from './work-queue.mjs';
 import {registerReceivablesRoutes} from './billing/receivables-routes.mjs';
 import {registerRoyaltyStatementRoutes} from './royalty-statement-routes.mjs';
@@ -52,12 +57,36 @@ import { validateCommitteeTerms, committeePeriods, calculateCommitteeWindow } fr
 import { registerCommercialRoutes } from './commercial.mjs';
 import { registerReportingRoutes } from './reporting.mjs';
 import { registerWorkflowRoutes } from './workflow.mjs';
+import { registerScriptStructuringRoutes } from './production/script-structuring/script-structuring-routes.mjs';
 import { registerMgRoutes } from './mg.mjs';
+import { registerAcqMgRoutes } from './acquisition/acq-mg-routes.mjs';
 import {registerMgLedgerImportRoutes} from './mg-ledger-import.mjs';
 import { registerRightsReportRoutes } from './rights-reports.mjs';
 import { registerTaxRoutes } from './tax.mjs';
 import { registerWorkbenchRoutes } from './workbench.mjs';
 import { channelSalesColumns, parseChannelSalesDetail, buildChannelSalesStatements } from './channel-sales.mjs';
+import { PROJECT_BASE_COLUMNS } from './planning/planning-store.mjs';
+import { registerContractProductionRoutes } from './planning/contract-production/contract-production-routes.mjs';
+import { registerRevenueClassRoutes } from './revenue/revenue-class/revenue-class-routes.mjs';
+import { registerForecastImportRoutes } from './revenue/yojitsu/forecast-import-routes.mjs';
+import { registerYojitsuRoutes } from './revenue/yojitsu/yojitsu-routes.mjs';
+import { registerYojitsuFolderRoutes } from './revenue/yojitsu/folder-routes.mjs';
+import { registerProfitRoutes } from './accounting/profit/profit-routes.mjs';
+import { registerProductionCostRoutes } from './expenses/production-cost/production-cost-routes.mjs';
+import { registerBudgetRoutes } from './planning/budget/budget-routes.mjs';
+import { registerManufacturingRoutes } from './manufacturing/mfg-routes.mjs';
+import { registerCashbookRoutes } from './accounting/cashbook/cashbook-routes.mjs';
+import { registerProduceRoutes } from './planning/produce/produce-routes.mjs';
+import { registerKikakuRoutes } from './planning/kikaku/kikaku-routes.mjs';
+import { registerShootRecordRoutes } from './production/shoot-records/shoot-records-routes.mjs';
+import { registerChotatsuRoutes } from './acquisition/chotatsu/chotatsu-routes.mjs';
+import { registerPreprodRoutes } from './preprod/preprod-routes.mjs';
+import { registerVaultRoutes } from './preprod/vault-routes.mjs';
+import { registerNotebookRoutes } from './notebook/notebook-routes.mjs';
+import { registerSelfMultiplierRoutes } from './revenue/metrics/self-multiplier-routes.mjs';
+import { registerInvestmentApprovalRoutes } from './planning/investment-approval/investment-approval-routes.mjs';
+import { registerActivityImportRoutes } from './revenue/yojitsu/activity-import-routes.mjs';
+import { registerPostRoutes } from './production/post/post-routes.mjs';
 
 const encoder = new TextEncoder();
 const json = value => JSON.stringify(value);
@@ -272,7 +301,7 @@ export function createApp({ db, mode = 'local', authenticate, extractDocument, e
       const origin=c.req.header('Origin');
       if(origin && origin!==new URL(c.req.url).origin) return bad(c,'別サイトからの操作は受け付けません',403);
       if(c.req.method!=='DELETE' && !/^application\/json(?:;|$)/i.test(c.req.header('Content-Type')||''))return bad(c,'JSON形式で送信してください',415);
-      const limit=['/api/workflow/artifacts/extract','/api/workbench/files/extract','/api/sales-import/files'].includes(c.req.path)?8*1024*1024:/^\/api\/(imports|mapped-imports|bulk\/[^/]+|workbench\/drafts|sales-import)(\/|$)/.test(c.req.path)?Math.max(512000,importLimits(mode).bytes*2):512000;// 取込の上限（ローカル2,000行・約2MB）まで受け取れるようにする。Worker は従来の512KBのまま
+      const limit=['/api/workflow/artifacts/extract','/api/workbench/files/extract','/api/sales-import/files'].includes(c.req.path)||/^\/api\/production\/shoot-records\/days\/\d+\/records$/.test(c.req.path)?8*1024*1024:/^\/api\/(imports|mapped-imports|bulk\/[^/]+|workbench\/drafts|sales-import)(\/|$)/.test(c.req.path)?Math.max(512000,importLimits(mode).bytes*2):512000;// 取込の上限（ローカル2,000行・約2MB）まで受け取れるようにする。Worker は従来の512KBのまま
       const bytes=await c.req.raw.clone().arrayBuffer();if(bytes.byteLength>limit)return bad(c,`入力は${Math.floor(limit/1024)}KB以内です`,413);
     }
     await next();
@@ -359,7 +388,7 @@ export function createApp({ db, mode = 'local', authenticate, extractDocument, e
     const i=c.get('identity'), pids=(await permittedProjects(db,i)).map(x=>x.id); if(!pids.length) return c.json({ok:true,projects:[],works:[],products:[],partners:[],metrics:[],productAllocations:[],recognitionBases:await db.all('SELECT id,code,name,source_field FROM recognition_bases ORDER BY id'),ai:{enabled:ai.enabled===true,verified:false}});
     // 案件IDを値として並べず、見てよい案件の副問い合わせで絞る（案件が100件以上でも D1 の値の上限に掛からない）
     const scope=permittedProjectScope(i), args=[i.org_id,...scope.params];
-    let projects=await db.all(`SELECT * FROM projects WHERE org_id=? AND id IN (${scope.sql}) ORDER BY id`,args);
+    let projects=await db.all(`SELECT ${PROJECT_BASE_COLUMNS.join(',')} FROM projects WHERE org_id=? AND id IN (${scope.sql}) ORDER BY id`,args);
     let works=await db.all(`SELECT * FROM works WHERE org_id=? AND project_id IN (${scope.sql}) ORDER BY id`,args);
     const financeIds=new Set((await permittedProjects(db,i,true)).map(p=>p.id));projects=projects.map(row=>{if(i.role==='production'||!financeIds.has(row.id)){const {budget_yen,...rest}=row;return rest;}return row;});works=works.map(row=>{if(i.role==='production'||!financeIds.has(row.project_id)){const {forecast_yen,...rest}=row;return rest;}return row;});
     const [products,partners,metrics,recognitionBases]=await Promise.all([
@@ -376,7 +405,7 @@ export function createApp({ db, mode = 'local', authenticate, extractDocument, e
     const i=c.get('identity'); if(spec.denied?.includes(i.role)) return bad(c,'この役割では財務データを参照できません',403);
     // 見てよい案件は副問い合わせで絞る（案件IDを値として並べない。D1 の値の上限100個に掛からない）
     const scope=permittedProjectScope(i,Boolean(spec.denied)), args=[i.org_id,...scope.params]; let rows;
-    if(spec.project||name==='projects'){ rows=await db.all(`SELECT * FROM ${name==='expenses'?expenseSource():spec.table} WHERE org_id=? AND ${name==='projects'?'id':spec.project} IN (${scope.sql}) ORDER BY id DESC`,args); }
+    if(spec.project||name==='projects'){ rows=await db.all(`SELECT ${name==='projects'?PROJECT_BASE_COLUMNS.join(','):'*'} FROM ${name==='expenses'?expenseSource():spec.table} WHERE org_id=? AND ${name==='projects'?'id':spec.project} IN (${scope.sql}) ORDER BY id DESC`,args); }
     else if(name==='exposures'){ rows=await db.all(`SELECT e.* FROM exposures e JOIN campaigns c ON c.org_id=e.org_id AND c.id=e.campaign_id WHERE e.org_id=? AND c.project_id IN (${scope.sql}) ORDER BY e.id DESC`,args); }
     else if(name==='observations'){ rows=await db.all(`SELECT o.* FROM observations o JOIN exposures e ON e.org_id=o.org_id AND e.id=o.exposure_id JOIN campaigns c ON c.org_id=e.org_id AND c.id=e.campaign_id WHERE o.org_id=? AND c.project_id IN (${scope.sql}) ORDER BY o.id DESC`,args); }
     else rows=await db.all(`SELECT * FROM ${spec.table} WHERE org_id=? ORDER BY id DESC`,[i.org_id]);
@@ -677,7 +706,7 @@ export function createApp({ db, mode = 'local', authenticate, extractDocument, e
   function normalizeDeliverable(input){const status=String(input.status||'pending');if(!['pending','submitted','accepted','blocked'].includes(status))throw new Error('納品状態を確認してください');const dueOn=input.dueOn?isoDate(String(input.dueOn)):null,submittedOn=input.submittedOn?isoDate(String(input.submittedOn)):null,acceptedOn=input.acceptedOn?isoDate(String(input.acceptedOn)):null;if(['submitted','accepted'].includes(status)&&!submittedOn)throw new Error('提出済み・受領済みには提出日が必要です');if(status==='accepted'&&!acceptedOn)throw new Error('受領済みには受領日が必要です');if(acceptedOn&&!submittedOn)throw new Error('受領日には提出日が必要です');if(acceptedOn&&acceptedOn<submittedOn)throw new Error('受領日は提出日以後にしてください');return {title:cleanText(input.title,200,{required:true}),dueOn,status,submittedOn,acceptedOn,note:cleanText(input.note,2000)}}
   async function salesReportCandidate(i,workId,termVersionId,reportId=null){const source=await settlementSource(i,workId),term=await db.get(`SELECT v.*,a.id AS agreement_id,a.partner_id,a.product_id,a.version AS agreement_version FROM sales_agreement_term_versions v JOIN sales_agreements a ON a.org_id=v.org_id AND a.id=v.agreement_id WHERE v.org_id=? AND v.id=? AND a.work_id=?`,[i.org_id,termVersionId,workId]);if(!term)return {source,term:null,candidates:source.reports.map(report=>({...report,eligible:false,reason:'選択作品の契約条件版ではありません'}))};const current=(await db.get('SELECT MAX(version_no) AS n FROM sales_agreement_term_versions WHERE org_id=? AND agreement_id=?',[i.org_id,term.agreement_id])).n,links=await db.all('SELECT report_id FROM sales_report_links WHERE org_id=? AND work_id=?',[i.org_id,workId]),linked=new Set(links.map(row=>row.report_id));const candidates=source.reports.map(report=>{const parts=source.parts.filter(row=>row.report_id===report.id);let reason=null;if(reportId!=null&&report.id!==reportId)reason='選択外';else if(term.version_no!==current)reason='最新版の契約条件ではありません';else if(linked.has(report.id))reason='この作品で関連付け済みです';else if(['broadcast','other'].includes(term.channel))reason='この契約販路と既存報告種別の対応規則は未設定です';else if(term.channel!==report.kind)reason=`契約販路「${labelOf('reportKind',term.channel)}」と報告種別「${labelOf('reportKind',report.kind)}」が一致しません`;else if(report.partner_id!==term.partner_id||parts.some(row=>row.partner_id!==term.partner_id))reason='取引先が契約と一致しません';else if(term.product_id!=null&&parts.some(row=>row.product_id!==term.product_id))reason='商品が契約と一致しません';return {...report,allocatedAmountExTax:parts.reduce((sum,row)=>sum+row.allocated_amount_ex_tax,0),lineCount:parts.length,eligible:reason==null,reason}});return {source,term,candidates}}
   app.get('/api/sales-operations',async c=>{const i=c.get('identity');if(i.role==='production')return bad(c,'制作担当は営業契約・売上関連を参照できません',403);let workId,termVersionId=null;try{workId=integer(c.req.query('workId')||'');if(c.req.query('termVersionId'))termVersionId=integer(c.req.query('termVersionId'))}catch(error){return bad(c,error.message,400,undefined,error)}const work=await settlementWork(i,workId);if(!work)return bad(c,'作品の財務権限がありません',403);let asOf;try{asOf=isoDate(String(c.req.query('asOf')||nowIso().slice(0,10)))}catch(error){return bad(c,error.message,400,undefined,error)}const [opportunities,activities,agreements,terms,deliverables,reportLinks,fieldDays,fieldAssignments,fieldTasks]=await Promise.all([db.all('SELECT * FROM sales_opportunities WHERE org_id=? AND work_id=? ORDER BY id DESC',[i.org_id,workId]),db.all('SELECT * FROM sales_activities WHERE org_id=? AND work_id=? ORDER BY occurred_on DESC,id DESC',[i.org_id,workId]),db.all(`SELECT a.*,p.name AS partner_name,pr.name AS product_name FROM sales_agreements a JOIN partners p ON p.org_id=a.org_id AND p.id=a.partner_id LEFT JOIN products pr ON pr.org_id=a.org_id AND pr.id=a.product_id WHERE a.org_id=? AND a.work_id=? ORDER BY a.id DESC`,[i.org_id,workId]),db.all('SELECT v.* FROM sales_agreement_term_versions v JOIN sales_agreements a ON a.org_id=v.org_id AND a.id=v.agreement_id WHERE v.org_id=? AND a.work_id=? ORDER BY v.agreement_id,v.version_no',[i.org_id,workId]),db.all('SELECT * FROM sales_deliverables WHERE org_id=? AND work_id=? ORDER BY due_on,id',[i.org_id,workId]),db.all('SELECT l.*,r.report_key,r.kind,r.accounting_month,r.content_hash FROM sales_report_links l JOIN report_imports r ON r.org_id=l.org_id AND r.id=l.report_id WHERE l.org_id=? AND l.work_id=? ORDER BY l.created_at DESC',[i.org_id,workId]),db.all('SELECT id,shoot_date,unit,label FROM shooting_days WHERE org_id=? AND work_id=? ORDER BY shoot_date',[i.org_id,workId]),db.all('SELECT outcome FROM day_scene_assignments WHERE org_id=? AND work_id=?',[i.org_id,workId]),db.all('SELECT status FROM prep_tasks WHERE org_id=? AND work_id=?',[i.org_id,workId])]);const maxVersion=new Map();for(const term of terms)maxVersion.set(term.agreement_id,Math.max(maxVersion.get(term.agreement_id)||0,term.version_no));const candidate=termVersionId?await salesReportCandidate(i,workId,termVersionId):{candidates:(await settlementSource(i,workId)).reports.map(report=>({...report,eligible:false,reason:'契約条件版を選択してください'}))};const stages={};for(const opportunity of opportunities)stages[opportunity.stage]=(stages[opportunity.stage]||0)+1;let opportunityExpectedYen=0,unknownForecastCount=0;for(const opportunity of opportunities){if(opportunity.expected_yen==null)unknownForecastCount++;else opportunityExpectedYen+=opportunity.expected_yen}let agreementExpectedYen=0,unknownAgreementAmountCount=0;for(const agreement of agreements){const latest=terms.filter(row=>row.agreement_id===agreement.id).at(-1);if(!latest||latest.expected_amount_yen==null)unknownAgreementAmountCount++;else agreementExpectedYen+=latest.expected_amount_yen}return c.json({ok:true,asOf,opportunities,activities,agreements:agreements.map(row=>({...row,terms:terms.filter(term=>term.agreement_id===row.id)})),terms,deliverables:deliverables.map(row=>{const timing=deliverableTiming(row,asOf);return {...row,overdue:timing.overdue,timing}}),reportLinks:reportLinks.map(row=>({...row,needsReview:(terms.find(term=>term.id===row.term_version_id)?.version_no||0)!==(maxVersion.get(row.agreement_id)||0)})),candidateReports:candidate.candidates,fieldReadiness:{shootingDayCount:fieldDays.length,shotAssignments:fieldAssignments.filter(row=>row.outcome==='shot').length,partialAssignments:fieldAssignments.filter(row=>row.outcome==='partial').length,pendingPrep:fieldTasks.filter(row=>row.status==='pending').length,blockedPrep:fieldTasks.filter(row=>row.status==='blocked').length,note:'制作日程と準備のdraft参照です。契約可能性や法的有効性を自動判定しません。'},summary:{stages,opportunityExpectedYen,unknownForecastCount,agreementExpectedYen,unknownAgreementAmountCount,overdueDeliverableCount:deliverables.filter(row=>deliverableTiming(row,asOf).overdue).length,lateSubmittedCount:deliverables.filter(row=>deliverableTiming(row,asOf).late).length},scopeNote:'商談見込と契約見込は別表示です。受注・契約・売上は自動生成せず、売上関連は作品配賦後の既存値を説明用に1回だけ参照します。'});});
-  app.post('/api/sales-activities',async c=>{const i=c.get('identity');if(i.role==='production')return bad(c,'制作担当は営業活動を登録できません',403);const input=await body(c);let workId,opportunityId,occurredOn,nextDueOn;try{workId=integer(input.workId);opportunityId=integer(input.opportunityId);occurredOn=isoDate(String(input.occurredOn||''));nextDueOn=input.nextDueOn?isoDate(String(input.nextDueOn)):null}catch(error){return bad(c,error.message,400,undefined,error)}if(!await settlementWork(i,workId))return bad(c,'作品の財務編集権限がありません',403);const opportunity=await db.get('SELECT * FROM sales_opportunities WHERE org_id=? AND id=? AND work_id=?',[i.org_id,opportunityId,workId]);if(!opportunity)return bad(c,'選択作品の商談がありません',409);const activityType=String(input.activityType||'');if(!['contact','proposal','negotiation','note'].includes(activityType))return bad(c,'活動種別を確認してください');const summary=cleanText(input.summary,1000,{required:true}),nextAction=cleanText(input.nextAction,1000),activityId=Number((await db.get('SELECT COALESCE(MAX(id),0)+1 AS id FROM sales_activities')).id),after={workId,opportunityId,occurredOn,activityType,summary,nextAction,nextDueOn};await db.batch([{sql:'INSERT INTO sales_activities(id,org_id,project_id,work_id,opportunity_id,partner_id,occurred_on,activity_type,summary,next_action,next_due_on,created_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',params:[activityId,i.org_id,opportunity.project_id,workId,opportunityId,opportunity.partner_id,occurredOn,activityType,summary,nextAction,nextDueOn,i.user_id]},{sql:'INSERT INTO audit_log(org_id,user_id,action,entity_type,entity_id,detail_json) VALUES(?,?,?,?,?,?)',params:[i.org_id,i.user_id,'create','sales_activity',String(activityId),json({before:null,after})]}]);return c.json({ok:true,activityId},201);});
+  app.post('/api/sales-activities',async c=>{const i=c.get('identity');if(i.role==='production')return bad(c,'制作担当は営業活動を登録できません',403);const input=await body(c);let workId,opportunityId,occurredOn,nextDueOn;try{workId=integer(input.workId);opportunityId=integer(input.opportunityId);occurredOn=isoDate(String(input.occurredOn||''));nextDueOn=input.nextDueOn?isoDate(String(input.nextDueOn)):null}catch(error){return bad(c,error.message,400,undefined,error)}if(!await settlementWork(i,workId))return bad(c,'作品の財務編集権限がありません',403);const opportunity=await db.get('SELECT * FROM sales_opportunities WHERE org_id=? AND id=? AND work_id=?',[i.org_id,opportunityId,workId]);if(!opportunity)return bad(c,'選択作品の商談がありません',409);const activityType=String(input.activityType||'');if(!['contact','proposal','negotiation','note'].includes(activityType))return bad(c,'活動種別を確認してください');const result=input.result==null||input.result===''?null:String(input.result);if(result!==null&&!['advanced','on_hold','lost'].includes(result))return bad(c,'結果は進んだ・保留・失注から選んでください',400);const summary=cleanText(input.summary,1000,{required:true}),nextAction=cleanText(input.nextAction,1000),activityId=Number((await db.get('SELECT COALESCE(MAX(id),0)+1 AS id FROM sales_activities')).id),after={workId,opportunityId,occurredOn,activityType,summary,nextAction,nextDueOn,result};await db.batch([{sql:'INSERT INTO sales_activities(id,org_id,project_id,work_id,opportunity_id,partner_id,occurred_on,activity_type,summary,next_action,next_due_on,created_by,result) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',params:[activityId,i.org_id,opportunity.project_id,workId,opportunityId,opportunity.partner_id,occurredOn,activityType,summary,nextAction,nextDueOn,i.user_id,result]},{sql:'INSERT INTO audit_log(org_id,user_id,action,entity_type,entity_id,detail_json) VALUES(?,?,?,?,?,?)',params:[i.org_id,i.user_id,'create','sales_activity',String(activityId),json({before:null,after})]}]);return c.json({ok:true,activityId},201);});
   app.post('/api/sales-agreements',async c=>{const i=c.get('identity');if(i.role==='production')return bad(c,'制作担当は販売契約を登録できません',403);const input=await body(c);let workId,opportunityId,productId,intakeCaseId,terms;try{workId=integer(input.workId);opportunityId=integer(input.opportunityId);productId=optionalInteger(input.productId);intakeCaseId=optionalInteger(input.intakeCaseId);terms=normalizeSalesTerms(input.terms||{})}catch(error){return bad(c,error.message,400,undefined,error)}const work=await settlementWork(i,workId);if(!work)return bad(c,'作品の財務編集権限がありません',403);const opportunity=await db.get('SELECT * FROM sales_opportunities WHERE org_id=? AND id=? AND work_id=?',[i.org_id,opportunityId,workId]);if(!opportunity)return bad(c,'選択作品の商談がありません',409);if(productId&&!await db.get('SELECT 1 FROM product_works WHERE org_id=? AND product_id=? AND work_id=?',[i.org_id,productId,workId]))return bad(c,'選択作品へ配賦された商品ではありません',409);if(intakeCaseId&&!await db.get('SELECT 1 FROM rights_intake_cases WHERE org_id=? AND id=? AND work_id=?',[i.org_id,intakeCaseId,workId]))return bad(c,'選択作品の権利調達ケースではありません',409);const contractCode=cleanText(input.contractCode,100,{required:true}),title=cleanText(input.title,200,{required:true}),agreementId=Number((await db.get('SELECT COALESCE(MAX(id),0)+1 AS id FROM sales_agreements')).id),termVersionId=Number((await db.get('SELECT COALESCE(MAX(id),0)+1 AS id FROM sales_agreement_term_versions')).id),after={workId,opportunityId,partnerId:opportunity.partner_id,productId,intakeCaseId,contractCode,title,version:1,termVersionId,terms};try{await db.batch([{sql:'INSERT INTO sales_agreements(id,org_id,project_id,work_id,opportunity_id,partner_id,product_id,intake_case_id,contract_code,title,created_by) VALUES(?,?,?,?,?,?,?,?,?,?,?)',params:[agreementId,i.org_id,work.project_id,workId,opportunityId,opportunity.partner_id,productId,intakeCaseId,contractCode,title,i.user_id]},{sql:'INSERT INTO sales_agreement_term_versions(id,org_id,agreement_id,version_no,document_reference,version_label,channel,territory,license_start,license_end,expected_amount_yen,note,created_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',params:[termVersionId,i.org_id,agreementId,1,terms.documentReference,terms.versionLabel,terms.channel,terms.territory,terms.licenseStart,terms.licenseEnd,terms.expectedAmountYen,terms.note,i.user_id]},{sql:'INSERT INTO audit_log(org_id,user_id,action,entity_type,entity_id,detail_json) VALUES(?,?,?,?,?,?)',params:[i.org_id,i.user_id,'create','sales_agreement',String(agreementId),json({before:null,after})]}])}catch(error){return bad(c,error.message,409,undefined,error)}return c.json({ok:true,agreementId,termVersionId,version:1},201);});
   app.post('/api/sales-agreements/:id/versions',async c=>{const i=c.get('identity');if(i.role==='production')return bad(c,'制作担当は販売契約を改訂できません',403);let agreementId;try{agreementId=integer(c.req.param('id'))}catch(error){return bad(c,error.message,400,undefined,error)}const expected=Number(c.req.header('If-Match')||0);if(!Number.isInteger(expected)||expected<1)return bad(c,'If-Matchに契約headのversionが必要です',428);const agreement=await db.get('SELECT * FROM sales_agreements WHERE org_id=? AND id=?',[i.org_id,agreementId]);if(!agreement)return bad(c,'販売契約がありません',404);if(!await settlementWork(i,agreement.work_id))return bad(c,'作品の財務編集権限がありません',403);const input=await body(c);let sourceVersionId,terms;try{sourceVersionId=optionalInteger(input.sourceVersionId);terms=normalizeSalesTerms(input)}catch(error){return bad(c,error.message,400,undefined,error)}if(sourceVersionId&&!await db.get('SELECT 1 FROM sales_agreement_term_versions WHERE org_id=? AND agreement_id=? AND id=?',[i.org_id,agreementId,sourceVersionId]))return bad(c,'同じ契約の改訂元条件版ではありません',409);const versionNo=Number((await db.get('SELECT COALESCE(MAX(version_no),0)+1 AS n FROM sales_agreement_term_versions WHERE org_id=? AND agreement_id=?',[i.org_id,agreementId])).n),termVersionId=Number((await db.get('SELECT COALESCE(MAX(id),0)+1 AS id FROM sales_agreement_term_versions')).id),after={termVersionId,versionNo,sourceVersionId,...terms,headVersion:expected+1};try{await db.batch([{sql:'INSERT INTO transaction_guards(value) SELECT 0 WHERE NOT EXISTS(SELECT 1 FROM sales_agreements WHERE org_id=? AND id=? AND version=?)',params:[i.org_id,agreementId,expected]},{sql:'INSERT INTO sales_agreement_term_versions(id,org_id,agreement_id,version_no,source_version_id,document_reference,version_label,channel,territory,license_start,license_end,expected_amount_yen,note,created_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',params:[termVersionId,i.org_id,agreementId,versionNo,sourceVersionId,terms.documentReference,terms.versionLabel,terms.channel,terms.territory,terms.licenseStart,terms.licenseEnd,terms.expectedAmountYen,terms.note,i.user_id]},{sql:'UPDATE sales_agreements SET version=version+1 WHERE org_id=? AND id=? AND version=?',params:[i.org_id,agreementId,expected]},{sql:'INSERT INTO audit_log(org_id,user_id,action,entity_type,entity_id,detail_json) VALUES(?,?,?,?,?,?)',params:[i.org_id,i.user_id,'append','sales_agreement_term',String(termVersionId),json({before:{headVersion:expected},after})]}])}catch(error){return bad(c,'別の利用者が契約を更新しました。再読込してください',409,{cause:error.message})}return c.json({ok:true,termVersionId,versionNo,headVersion:expected+1},201);});
   app.post('/api/deliverables',async c=>{const i=c.get('identity');if(i.role==='production')return bad(c,'制作担当は営業納品を登録できません',403);const input=await body(c);let workId,agreementId,termVersionId,delivery;try{workId=integer(input.workId);agreementId=integer(input.agreementId);termVersionId=integer(input.termVersionId);delivery=normalizeDeliverable(input)}catch(error){return bad(c,error.message,400,undefined,error)}const work=await settlementWork(i,workId);if(!work)return bad(c,'作品の財務編集権限がありません',403);if(!await db.get('SELECT 1 FROM sales_agreement_term_versions v JOIN sales_agreements a ON a.org_id=v.org_id AND a.id=v.agreement_id WHERE v.org_id=? AND v.id=? AND v.agreement_id=? AND a.work_id=?',[i.org_id,termVersionId,agreementId,workId]))return bad(c,'選択作品の契約条件版ではありません',409);const deliverableId=Number((await db.get('SELECT COALESCE(MAX(id),0)+1 AS id FROM sales_deliverables')).id),after={workId,agreementId,termVersionId,...delivery,version:1};await db.batch([{sql:'INSERT INTO sales_deliverables(id,org_id,project_id,work_id,agreement_id,term_version_id,title,due_on,status,submitted_on,accepted_on,note,created_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',params:[deliverableId,i.org_id,work.project_id,workId,agreementId,termVersionId,delivery.title,delivery.dueOn,delivery.status,delivery.submittedOn,delivery.acceptedOn,delivery.note,i.user_id]},{sql:'INSERT INTO audit_log(org_id,user_id,action,entity_type,entity_id,detail_json) VALUES(?,?,?,?,?,?)',params:[i.org_id,i.user_id,'create','sales_deliverable',String(deliverableId),json({before:null,after})]}]);return c.json({ok:true,deliverableId,version:1},201);});
@@ -960,6 +989,7 @@ export function createApp({ db, mode = 'local', authenticate, extractDocument, e
   registerProductionRoutes(app,{db,bad,body,permittedProjects});
   registerCommercialRoutes(app,{db,bad,body,canonical,sha256,nowIso,settlementWork,permittedProjects,allocatedSaleParts});
   registerMgRoutes(app,{db,bad,body,settlementWork});
+  registerAcqMgRoutes(app,{db,bad,body,settlementWork,settlementSource,canonical,sha256});
   registerMgLedgerImportRoutes(app,{db,bad,body,settlementWork,sha256,mode});
   registerRightsReportRoutes(app,{db,bad,settlementWork});
   registerTaxRoutes(app,{db,bad,body,canonical,sha256,settlementWork,requireAllWorks:async(identity,workIds)=>{for(const workId of new Set(workIds))if(!await settlementWork(identity,workId))return false;return true}});
@@ -979,44 +1009,35 @@ export function createApp({ db, mode = 'local', authenticate, extractDocument, e
   registerReceivablesRoutes(app,{db,bad,settlementWork});
   registerWorkQueueRoutes(app,{db,permittedProjects,settlementWork});
   registerDataBrowserRoutes(app,{db,bad});
+  registerR2ManifestRoutes(app,{db,bad});
+  registerSourceDocumentRoutes(app,{db,bad});
   registerPartnerProfileRoutes(app,{db,bad,body});
   registerWorkflowRoutes(app,{db,bad,body,canonical,sha256,nowIso,permittedProjects,settlementWork,extractDocument,suggestMappings});
+  registerScriptStructuringRoutes(app,{db,bad,permittedProjects});
+  registerContractProductionRoutes(app,{db,bad,body,permittedProjects});
+  registerRevenueClassRoutes(app,{db,bad,permittedProjects});
+  registerForecastImportRoutes(app,{db,bad,body,permittedProjects});
+  registerYojitsuRoutes(app,{db,bad,permittedProjectScope,sha256,canonical});
+  registerYojitsuFolderRoutes(app,{db,bad,permittedProjectScope});
+  registerProfitRoutes(app,{db,bad,permittedProjectScope,sha256,canonical});
+  registerProductionCostRoutes(app,{db,bad,body,permittedProjects});
+  registerBudgetRoutes(app,{db,bad,body,permittedProjects});
+  registerManufacturingRoutes(app,{db,bad,body,permittedProjects});
+  registerCashbookRoutes(app,{db,bad,body,sha256});
+  registerProduceRoutes(app,{db,bad,body,permittedProjects});
+  registerKikakuRoutes(app,{db,bad,body,permittedProjects});
+  registerShootRecordRoutes(app,{db,bad,body,permittedProjects});
+  registerChotatsuRoutes(app,{db,bad,body,permittedProjects});
+  registerPreprodRoutes(app,{db,bad,body,permittedProjects});
+  registerVaultRoutes(app,{db,bad,body,permittedProjects});
+  registerNotebookRoutes(app,{db,bad,body,permittedProjects});
+  registerSelfMultiplierRoutes(app,{db,bad});
+  registerInvestmentApprovalRoutes(app,{db,bad,body,permittedProjects,permittedProjectScope,sha256,canonical});
+  registerPostRoutes(app,{db,bad,body,permittedProjects});
+  registerActivityImportRoutes(app,{db,bad,permittedProjectScope});
   app.get('/api/audit',async c=>{const i=c.get('identity');if(i.role!=='admin')return bad(c,'管理者だけが参照できます',403);return c.json({ok:true,rows:await db.all('SELECT * FROM audit_log WHERE org_id=? ORDER BY id DESC',[i.org_id])});});
 
-  async function incomeData(i,monthFilter,workFilter) {
-    const pids=(await permittedProjects(db,i,true)).map(x=>x.id);
-    const works=await db.all('SELECT id,project_id FROM works WHERE org_id=?',[i.org_id]);
-    const permitted=new Set(works.filter(w=>pids.includes(w.project_id)).map(w=>w.id));
-    if(workFilter&&!permitted.has(workFilter))throw Error('作品への権限がありません');
-    const sales=await db.all(`SELECT s.* FROM sale_lines s LEFT JOIN report_imports r ON r.org_id=s.org_id AND r.id=s.report_id WHERE s.org_id=? AND (s.report_id IS NULL OR r.status='active') ${monthFilter?'AND s.accounting_month=?':''}`,monthFilter?[i.org_id,month(monthFilter)]:[i.org_id]);
-    const mappings=await db.all('SELECT * FROM product_works WHERE org_id=? ORDER BY work_id',[i.org_id]);
-    const allocated=[];
-    function split(value,shares){
-      const sign=value<0?-1:1,v=BigInt(Math.abs(value));
-      const parts=shares.map(x=>({workId:x.work_id,bps:x.allocation_bps,base:v*BigInt(x.allocation_bps)/10000n,rem:v*BigInt(x.allocation_bps)%10000n}));
-      let left=v-parts.reduce((n,x)=>n+x.base,0n);parts.sort((a,b)=>a.rem===b.rem?a.workId-b.workId:a.rem>b.rem?-1:1);
-      for(let j=0;left>0n;j++,left--)parts[j%parts.length].base++;
-      return new Map(parts.map(x=>[x.workId,sign*Number(x.base)]));
-    }
-    for(const sale of sales){
-      let shares=sale.product_id?mappings.filter(x=>x.product_id===sale.product_id):[];
-      if(!shares.length)shares=[{work_id:sale.work_id,allocation_bps:10000}];
-      if(shares.reduce((n,x)=>n+x.allocation_bps,0)!==10000)throw Error('商品配賦が100%ではありません');
-      const ex=split(sale.amount_ex_tax,shares),tax=split(sale.tax_amount,shares);
-      for(const share of shares)if(permitted.has(share.work_id)&&(!workFilter||workFilter===share.work_id))allocated.push({sale_id:sale.id,allocated_work_id:share.work_id,allocation_bps:share.allocation_bps,accounting_month:sale.accounting_month,amount_ex_tax:ex.get(share.work_id),tax_amount:tax.get(share.work_id),amount_inc_tax:ex.get(share.work_id)+tax.get(share.work_id)});
-    }
-    const allExpenses=await db.all(`SELECT * FROM ${expenseSource()} WHERE org_id=? ${monthFilter?'AND accounting_month=?':''}`,monthFilter?[i.org_id,monthFilter]:[i.org_id]);
-    const visibleExpenses=allExpenses.filter(e=>pids.includes(e.project_id));
-    const selectedExpenses=visibleExpenses.filter(e=>!workFilter||e.work_id===workFilter);
-    const sum=(rows,key)=>{const n=rows.reduce((v,r)=>v+r[key],0);if(!Number.isSafeInteger(n))throw Error('集計金額が試作の整数範囲を超えています');return n;};
-    const monthKeys=[...new Set([...allocated.map(r=>r.accounting_month),...selectedExpenses.map(r=>r.accounting_month)])].sort();
-    const monthly=monthKeys.map(m=>{const revenue=sum(allocated.filter(r=>r.accounting_month===m),'amount_ex_tax'),cost=sum(selectedExpenses.filter(r=>r.accounting_month===m),'actual_ex_tax');return {month:m,revenue,cost,profit:revenue-cost};});
-    return {ok:true,filters:{month:monthFilter||null,workId:workFilter},sales:{exTax:sum(allocated,'amount_ex_tax'),tax:sum(allocated,'tax_amount'),incTax:sum(allocated,'amount_inc_tax')},expenses:{exTax:sum(selectedExpenses,'actual_ex_tax'),tax:sum(selectedExpenses,'tax_amount'),incTax:sum(selectedExpenses,'actual_inc_tax'),budget:selectedExpenses.reduce((n,r)=>n+(r.budget_yen||0),0)},unallocatedProjectExpenses:visibleExpenses.filter(e=>e.work_id==null&&(!workFilter||e.project_id===works.find(w=>w.id===workFilter)?.project_id)),profitExTax:sum(allocated,'amount_ex_tax')-sum(selectedExpenses,'actual_ex_tax'),monthly,source:'sale_lines + expenses; campaigns are not joined',allocatedLines:allocated};
-  }
-  app.get('/api/analytics/income',async c=>{
-    const i=c.get('identity');if(i.role==='production')return bad(c,'収支への権限がありません',403);
-    try{return c.json(await incomeData(i,c.req.query('month'),c.req.query('workId')?integer(c.req.query('workId')):null));}catch(e){return bad(c,e.message,403,undefined,e);}
-  });
+  registerWorkIncomeRoutes(app,{db,bad,permittedProjects});
   app.get('/api/analytics/publicity',async c=>{
     const i=c.get('identity'),workId=c.req.query('workId')?integer(c.req.query('workId')):null;
     const pids=(await permittedProjects(db,i)).map(x=>x.id);
@@ -1087,9 +1108,11 @@ export function createApp({ db, mode = 'local', authenticate, extractDocument, e
   registerProgressRoutes(app,app.ux);
   registerRoyaltyRoutes(app,app.ux);
   registerCommitteeMonthlyRoutes(app,app.ux);
+  registerCommitteeLedgerRoutes(app,app.ux);
   registerSalesSourceRoutes(app,app.ux);
   registerSalesSheetRoutes(app,app.ux);
   registerPlBsRoutes(app,app.ux);
+  registerScenarioRoutes(app,app.ux);
   return app;
 }
 

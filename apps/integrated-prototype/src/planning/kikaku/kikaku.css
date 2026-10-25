@@ -1,0 +1,89 @@
+/* 企画の画面。見た目の決まり（docs/design/integrated-system-visual.md）に従う: 黒・白・灰と赤1色、角丸0・影なし、状態は文字の札。
+   赤は「いま確認すること」（判定の1行）と、止まっている印（残り・赤字・足りないページ）だけ */
+.kk {
+  --ink: #111111; --paper: #ffffff; --soft: #f3f1ec; --sub: #5e5850; --faint: #6b655c; --rule: #cfc8ba; --red: #b3261e;
+  max-width: 1200px; color: var(--ink);
+}
+.kk h2 { margin: 0; font-size: 18px; font-weight: 800; }
+.kk h3 { margin: 4px 0 8px; font-size: 13px; color: var(--sub); font-weight: 800; }
+.kk button { border-radius: 0; }
+.kk-bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 8px 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); }
+.kk-tabs { display: flex; gap: 0; margin-left: auto; flex-wrap: wrap; }
+.kk-tabs button, .kk-axis button { background: var(--paper); color: var(--ink); border: 1px solid var(--ink); }
+.kk-tabs button[aria-pressed="true"], .kk-axis button[aria-pressed="true"] { background: var(--ink); color: var(--paper); font-weight: bold; }
+.kk-sub { color: var(--faint); font-size: 12px; margin-left: 8px; font-weight: normal; }
+.kk-note { color: var(--sub); font-size: 12px; }
+.kk-empty { color: var(--sub); }
+.kk-message { font-weight: bold; }
+.kk-check { display: inline-flex; gap: 4px; align-items: center; font-size: 13px; }
+.kk-check input { width: auto; }
+.kk-table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.kk-table th, .kk-table td { padding: 5px 8px; border-bottom: 1px solid var(--rule); text-align: left; white-space: nowrap; }
+.kk-table th { color: var(--sub); font-weight: normal; font-size: 12px; background: var(--soft); }
+.kk-table .n, .kk input.n { text-align: right; font-variant-numeric: tabular-nums; }
+.kk-table .bad, .kk .bad { color: var(--red); font-weight: bold; }
+.kk-total td { font-weight: bold; border-top: 2px solid var(--ink); }
+.kk-row { cursor: pointer; }
+.kk-row:hover td { background: var(--soft); }
+.kk-marks { display: inline-flex; gap: 3px; }
+.kk-m { display: inline-flex; width: 22px; height: 22px; border: 1px solid var(--ink); align-items: center; justify-content: center; font-size: 11px; background: var(--paper); }
+.kk-m.on { background: var(--ink); color: var(--paper); }
+.kk-tag { display: inline-block; font-size: 11px; padding: 0 6px; border: 1px solid var(--ink); margin-left: 6px; white-space: nowrap; }
+.kk-tag.in_progress, .kk-tag.not_started { border-color: var(--red); color: var(--red); }
+.kk-tag.done { background: var(--ink); color: var(--paper); }
+.kk-tag.declined { border-color: var(--rule); color: var(--faint); }
+.kk-verdict { display: flex; gap: 12px; align-items: center; font-weight: 800; font-size: 18px; margin: 0 0 12px; padding: 6px 10px; background: var(--red); color: var(--paper); }
+.kk-verdict .kk-m { border-color: var(--paper); background: transparent; color: var(--paper); }
+.kk-verdict .kk-m.on { background: var(--paper); color: var(--ink); }
+.kk-verdict .kk-sub { color: var(--paper); }
+.kk-verdict.done { background: var(--paper); color: var(--ink); border: 1px solid var(--ink); }
+.kk-verdict.done .kk-m { border-color: var(--ink); color: var(--ink); }
+.kk-verdict.done .kk-m.on { background: var(--ink); color: var(--paper); }
+.kk-verdict.done .kk-sub, .kk-verdict.declined .kk-sub { color: var(--faint); }
+.kk-verdict.declined { background: var(--soft); color: var(--faint); }
+.kk-card { background: var(--paper); border: 1px solid var(--ink); padding: 12px 14px; margin-bottom: 12px; min-width: 0; }
+.kk-kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.kk-two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 900px) { .kk-kpis, .kk-two { grid-template-columns: 1fr; } }
+.kk-l { font-size: 11px; color: var(--sub); }
+.kk-big { font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.kk-inline { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin: 6px 0; }
+.kk-inline .wide { flex: 1; min-width: 200px; }
+.kk-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; }
+.kk-form label { display: flex; flex-direction: column; font-size: 12px; color: var(--sub); gap: 2px; }
+.kk-form .wide { grid-column: 1 / -1; }
+.kk-primary { background: var(--ink); color: var(--paper); font-weight: bold; border: 1px solid var(--ink); }
+.kk-scroll { overflow-x: auto; }
+.kk-grid input { min-width: 90px; }
+.kk-grid input.s { min-width: 70px; width: 80px; }
+.kk-grid input.xs { width: 50px; min-width: 50px; }
+.kk-axis { display: inline-flex; gap: 0; }
+.kk-versions { margin-bottom: 8px; }
+.kk-drop { display: block; border: 1px dashed var(--ink); padding: 10px; text-align: center; color: var(--sub); cursor: pointer; margin: 8px 0; }
+.kk-file { display: flex; gap: 8px; align-items: center; margin: 4px 0; border-bottom: 1px solid var(--rule); padding-bottom: 4px; }
+.kk-link { background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; color: inherit; }
+.kk-picker { border-top: 1px solid var(--rule); padding: 8px 0; }
+.kk-picker select { display: block; width: 100%; max-width: 100%; }
+.kk-picker input, .kk-picker select { border: 1px solid var(--ink); border-radius: 0; box-shadow: none; background: var(--paper); color: var(--ink); }
+.kk-flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; margin-bottom: 12px; }
+.kk-flow div { border: 1px solid var(--ink); padding: 8px 10px; font-size: 12px; color: var(--sub); }
+.kk-flow div + div { border-left: 0; }
+.kk-flow b { display: block; font-size: 20px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.kk-flow .bad b { color: var(--red); }
+.kk-sec { margin-bottom: 8px; }
+.kk-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 6px; margin-top: 4px; }
+.kk-tile { border: 1px solid var(--ink); padding: 6px; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 58px; text-align: left; background: var(--paper); color: var(--ink); cursor: pointer; }
+.kk-tile .no { font-size: 10px; color: var(--faint); }
+.kk-tile .lb { font-size: 12px; font-weight: bold; }
+.kk-tile .dots { margin-top: auto; font-size: 10px; color: var(--faint); }
+.kk-tile.draft { background: var(--soft); }
+.kk-tile.confirmed, .kk-tile.auto { background: var(--ink); color: var(--paper); }
+.kk-tile.confirmed .no, .kk-tile.confirmed .dots, .kk-tile.auto .no, .kk-tile.auto .dots { color: var(--rule); }
+.kk-tile.auto { border-style: dashed; }
+.kk-tile.gap { border-color: var(--red); }
+.kk-tile.sel { outline: 3px solid var(--ink); outline-offset: 1px; }
+.kk-fact { border-bottom: 1px solid var(--rule); padding: 6px 0; display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+.kk-fact.ai_draft { background: var(--soft); }
+.kk-lab { font-size: 10px; font-weight: bold; border: 1px solid var(--ink); padding: 0 4px; }
+.kk-lab.probable { border-color: var(--rule); color: var(--sub); }
+.kk-lab.unknown { border-color: var(--red); color: var(--red); }

@@ -131,6 +131,18 @@
       "reason": "core ?????????"
     },
     {
+      "pattern": "apps/integrated-prototype/test/fixtures/scenario/**",
+      "tests": [
+        "apps/integrated-prototype/test/scenario-model.test.mjs",
+        "apps/integrated-prototype/test/scenario-routes.test.mjs",
+        "apps/integrated-prototype/test/scenario-form-model.test.mjs",
+        "apps/integrated-prototype/test/scenario-view-model.test.mjs",
+        "apps/integrated-prototype/test/scenario-compare-ui.test.mjs",
+        "apps/integrated-prototype/test/seed-all-demo.test.mjs"
+      ],
+      "reason": "シナリオの比較の fixture と golden（compare-request.json・expected.json）は試験が readFileSync で読み、import で届かない。seed-all-demo.test は fixture の facts と種の行を照らし、scenario-routes.test は fixture の要求の本文を API へ送る。scenario-form-model.test は画面の既定の入力と画面が作る要求の本文を fixture の入力と照らし、scenario-view-model.test は fixture の入力から計算した応答を、scenario-compare-ui.test は fixture の要求を API へ送った応答を、画面の表示の形で確かめる"
+    },
+    {
       "pattern": ".claude/rules/**",
       "tests": [
         "apps/integrated-prototype/test/*-rules.test.mjs",
@@ -140,6 +152,149 @@
         "scripts/ops/rules-sync.test.mjs"
       ],
       "reason": "core ?????????"
+    },
+    {
+      "pattern": "apps/integrated-prototype/goals/**",
+      "tests": [
+        "apps/integrated-prototype/test/metrics.test.mjs"
+      ],
+      "reason": "goal の md と記録は scripts/metrics.mjs が読む（import で届かない）"
+    },
+    {
+      "pattern": "apps/integrated-prototype/formal/**",
+      "tests": [
+        "apps/integrated-prototype/test/billing.test.mjs",
+        "apps/integrated-prototype/test/receipt-model.test.mjs"
+      ],
+      "reason": "Z3 の反例を写した試験の入力（formal/receipt_matching_cases.json）を試験が読む（import で届かない）。Z3 そのものは CI の formal ジョブ"
+    },
+    {
+      "pattern": "apps/integrated-prototype/test/fixtures/receipt-matching/**",
+      "tests": [
+        "apps/integrated-prototype/test/receipt-matching-fixture.test.mjs",
+        "apps/integrated-prototype/test/yojitsu-seed-fixture.test.mjs",
+        "apps/integrated-prototype/test/yojitsu-golden-fixture.test.mjs",
+        "apps/integrated-prototype/test/yojitsu-view-golden.test.mjs",
+        "apps/integrated-prototype/test/yojitsu-view-store.test.mjs",
+        "apps/integrated-prototype/test/profit-golden.test.mjs",
+        "apps/integrated-prototype/test/profit-routes.test.mjs",
+        "apps/integrated-prototype/test/kpi-golden-fixture.test.mjs",
+        "apps/integrated-prototype/test/investment-approval.test.mjs",
+        "apps/integrated-prototype/test/source-profit-routes.test.mjs"
+      ],
+      "reason": "入金の確認の架空データ（JSON と生成スクリプト）は import でたどれない。読むのは整合の試験と、それを入金の行に使う予実の種の試験、請求を利益額の計上の売上に使う予実の golden の試験と、同じ請求を源泉別の計上の実績に使う行動指標の golden の試験（段B #15）、請求と入金を DB に入れて予実の4段を golden と照らす試験（フェーズ1 #14）、請求と入金を会社への利益額の売上に使って golden と照らす試験（#14b）、同じ入金を自社出資の回収に使って行動指標の golden の出資の回収と照らす試験（段B #4）、同じ請求と入金を源泉別の利益額の売上に使って行動指標の golden の源泉1・2（sourceProfit）と照らす試験（段B #2）"
+    },
+    {
+      "pattern": "apps/integrated-prototype/test/fixtures/yojitsu/**",
+      "tests": [
+        "apps/integrated-prototype/test/yojitsu-seed-fixture.test.mjs",
+        "apps/integrated-prototype/test/yojitsu-golden-fixture.test.mjs",
+        "apps/integrated-prototype/test/yojitsu-targets-plans-golden.test.mjs",
+        "apps/integrated-prototype/test/yojitsu-forecasts-activities-golden.test.mjs",
+        "apps/integrated-prototype/test/yojitsu-trial-import.test.mjs",
+        "apps/integrated-prototype/test/contract-production.test.mjs",
+        "apps/integrated-prototype/test/yojitsu-view-golden.test.mjs",
+        "apps/integrated-prototype/test/yojitsu-view-store.test.mjs",
+        "apps/integrated-prototype/test/profit-golden.test.mjs",
+        "apps/integrated-prototype/test/profit-routes.test.mjs",
+        "apps/integrated-prototype/test/kpi-golden-fixture.test.mjs",
+        "apps/integrated-prototype/test/investment-approval.test.mjs",
+        "apps/integrated-prototype/test/source-profit-routes.test.mjs"
+      ],
+      "reason": "案件収支の予実の架空の種と golden（JSON と生成スクリプト）は import でたどれない。読むのは種の整合の試験と golden の整合の試験、種の目標・計画・設定を DB に入れて golden と照らす試験（フェーズ1 #11）、種の予測・活動記録を DB に入れて golden と照らす試験と、架空の試算の写しを取り込んで build_yojitsu.py の期待値と照らす試験（#13）、4区分の fixture（revenue-classes.json）を読む受託制作の契約の版の試験と、種を延長した行動指標の golden（kpi-seed.json・kpi-expected.json。段B #15）の整合の試験、種の全部を DB に入れて予実の4段の受け口を golden の予実の整数と照らす試験と読み取りの一括の試験（#14）、種から写した記録と DB に入れた種で会社への利益額を golden の利益額と照らす試験（#14b）、種に稟議の払込を入れて自社出資の回収を行動指標の golden（kpi-expected.json）と照らす試験（段B #4）、種の全部と延長の種の受託の契約の版（kpi-seed.json）を DB に入れて源泉別の利益額の源泉1・2を行動指標の golden（kpi-expected.json の sourceProfit）と照らす試験（段B #2）"
+    },
+    {
+      "pattern": "apps/integrated-prototype/test/fixtures/kpi-metrics/**",
+      "tests": [
+        "apps/integrated-prototype/test/kpi-metric-master-golden.test.mjs",
+        "apps/integrated-prototype/test/kpi-golden-fixture.test.mjs"
+      ],
+      "reason": "指標マスタの架空の種と golden（seed.json・expected.json）は import でたどれない。読むのは種を DB に入れて golden と照らす試験（行動指標の計画 段B #9）と、設定の行を行動の時間・前提の標準に使う行動指標の golden の試験（段B #15）"
+    },
+    {
+      "pattern": "apps/integrated-prototype/test/fixtures/scenario/**",
+      "tests": [
+        "apps/integrated-prototype/test/kpi-golden-fixture.test.mjs"
+      ],
+      "reason": "シナリオの比較（段A。core #109）の fixture と golden（compare-request.json・expected.json）は、段B #15 の行動指標の golden の試験が readFileSync で読み、段A の入力を同じ計算に通して段A の golden と照らす。段A の同じパターンの行（段A の試験の一覧）とは別の行に置き、どちらが先に main に入っても段A の golden だけを直した変更でこの照合が選ばれる（同じファイルに当たる行は全部当てる）"
+    },
+    {
+      "pattern": "apps/integrated-prototype/scripts/run-check-cases.mjs",
+      "tests": [
+        "apps/integrated-prototype/test/folder-check-cases.test.mjs"
+      ],
+      "reason": "正解表の採点コマンドは試験が spawnSync で起動する（import でたどれない）"
+    },
+    {
+      "pattern": "apps/integrated-prototype/test/fixtures/folder-check-cases/**",
+      "tests": [
+        "apps/integrated-prototype/test/folder-check-cases.test.mjs",
+        "apps/integrated-prototype/test/folder-check-tables.test.mjs"
+      ],
+      "reason": "検査の正解表の架空の種（cases.json）は readFileSync で読む（import で届かない）。正答率の試験と、表へ入れた行を採点する試験が使う"
+    },
+    {
+      "pattern": "apps/integrated-prototype/test/fixtures/**",
+      "tests": [
+        "apps/integrated-prototype/test/fictional-compensation.test.mjs"
+      ],
+      "reason": "個人の額の試験（行動指標の計画 段B #23。K2-12）は fixture をすべて readFileSync で読み、報酬・家賃補助の鍵と、fictional の印の無い目標・計画の行が無いことを見る。フォルダごとの行（読む整合の試験の一覧）とは別の行に置き、どのフォルダを足しても選ばれる"
+    },
+    {
+      "pattern": "apps/integrated-prototype/fixtures/**",
+      "tests": [
+        "apps/integrated-prototype/test/fictional-compensation.test.mjs"
+      ],
+      "reason": "取込の見本（CSV・Excel の元の XML）は個人の額の試験（段B #23）が readFileSync で読み、報酬・家賃補助・目標・計画の額の列が無いことを見る"
+    },
+    {
+      "pattern": "apps/integrated-prototype/demo-fixtures/**",
+      "tests": [
+        "apps/integrated-prototype/test/fictional-compensation.test.mjs"
+      ],
+      "reason": "デモの見本とその生成スクリプトは個人の額の試験（段B #23）が readFileSync で読み、報酬・家賃補助の鍵と本人だけの表への書き込みが無いことを見る"
+    },
+    {
+      "pattern": "apps/integrated-prototype/public/demo-fixtures/**",
+      "tests": [
+        "apps/integrated-prototype/test/fictional-compensation.test.mjs"
+      ],
+      "reason": "公開版に入るデモの見本（JSON・CSV・Excel）は個人の額の試験（段B #23）が readFileSync で読み、報酬・家賃補助・目標・計画の額の列が無いことを見る"
+    },
+    {
+      "pattern": "apps/integrated-prototype/scripts/seed-*.mjs",
+      "tests": [
+        "apps/integrated-prototype/test/fictional-compensation.test.mjs"
+      ],
+      "reason": "種の道具は個人の額の試験（段B #23）が本文を readFileSync で読み、目標の版・計画の版と子表・採用の記録・報酬の表を名前で書かず、目標・計画の版を足す store の関数を呼ばないことを見る（種を流す試験は import でたどれる）"
+    },
+    {
+      "pattern": "apps/integrated-prototype/scripts/*demo*.mjs",
+      "tests": [
+        "apps/integrated-prototype/test/fictional-compensation.test.mjs"
+      ],
+      "reason": "デモの道具は個人の額の試験（段B #23）が本文を readFileSync で読み、目標の版・計画の版と子表・採用の記録・報酬の表を名前で書かず、目標・計画の版を足す store の関数を呼ばないことを見る"
+    },
+    {
+      "pattern": "apps/integrated-prototype/scripts/seed-*.py",
+      "tests": [
+        "apps/integrated-prototype/test/fictional-compensation.test.mjs"
+      ],
+      "reason": "個人の額の試験（段B #23）は scripts/ の seed・demo の名前の .mjs と .py の本文を readFileSync で読む。Python の種の道具も、本人だけの表と報酬の表を名前で書かないことを見る"
+    },
+    {
+      "pattern": "apps/integrated-prototype/scripts/*demo*.py",
+      "tests": [
+        "apps/integrated-prototype/test/fictional-compensation.test.mjs"
+      ],
+      "reason": "個人の額の試験（段B #23）は scripts/ の seed・demo の名前の .mjs と .py の本文を readFileSync で読む。Python のデモの道具も、本人だけの表と報酬の表を名前で書かないことを見る"
+    },
+    {
+      "pattern": "apps/integrated-prototype/test/fixtures/yojitsu/seed.json",
+      "tests": [
+        "apps/integrated-prototype/test/seed-all-demo.test.mjs"
+      ],
+      "reason": "種を流した DB の目標・計画の行が案件収支の予実の架空の種の fictional の印の行の額だけであることを見る試験（段B #23）が、test/personal-amount-fixture.mjs から種を readFileSync で読む"
     }
   ]
 }

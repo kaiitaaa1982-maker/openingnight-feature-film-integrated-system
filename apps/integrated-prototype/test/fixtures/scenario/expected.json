@@ -1,0 +1,7989 @@
+{
+  "fictional": true,
+  "generatedBy": "test/fixtures/scenario/build-expected.mjs",
+  "definitionVersion": "scenario-stage-a.2026-10-10",
+  "gridYen": 10000,
+  "sources": [
+    {
+      "source": "contract_work",
+      "status": "unconnected",
+      "actualYen": null,
+      "actualSalesYen": null,
+      "rowCount": 0,
+      "unknownCount": 0
+    },
+    {
+      "source": "own_investment",
+      "status": "connected",
+      "actualYen": 2200000,
+      "actualSalesYen": 2200000,
+      "rowCount": 1,
+      "unknownCount": 0
+    },
+    {
+      "source": "committee",
+      "status": "connected",
+      "actualYen": 3462000,
+      "actualSalesYen": 6262000,
+      "rowCount": 4,
+      "unknownCount": 1
+    },
+    {
+      "source": "acquisition",
+      "status": "connected",
+      "actualYen": 2910000,
+      "actualSalesYen": 4590000,
+      "rowCount": 3,
+      "unknownCount": 0
+    },
+    {
+      "source": "consignment",
+      "status": "connected",
+      "actualYen": 900000,
+      "actualSalesYen": 900000,
+      "rowCount": 1,
+      "unknownCount": 0
+    }
+  ],
+  "excluded": [
+    {
+      "reason": "lost",
+      "count": 1,
+      "amountYen": 900000,
+      "opportunityIds": [
+        6
+      ]
+    },
+    {
+      "reason": "no_source",
+      "count": 1,
+      "amountYen": 600000,
+      "opportunityIds": [
+        8
+      ]
+    },
+    {
+      "reason": "no_amount",
+      "count": 1,
+      "amountYen": 0,
+      "opportunityIds": [
+        7
+      ]
+    },
+    {
+      "reason": "no_month",
+      "count": 0,
+      "amountYen": 0,
+      "opportunityIds": []
+    }
+  ],
+  "creators": {
+    "totalYen": 3600000,
+    "bySource": {
+      "contract_work": null,
+      "own_investment": null,
+      "committee": null,
+      "acquisition": null,
+      "consignment": 3600000
+    },
+    "mgReferenceYen": 1000000
+  },
+  "actionActuals": {
+    "bySource": [
+      {
+        "source": "acquisition",
+        "meeting": 1,
+        "proposal": 0,
+        "contract": 0
+      },
+      {
+        "source": "consignment",
+        "meeting": 3,
+        "proposal": 2,
+        "contract": 2
+      },
+      {
+        "source": "unassigned",
+        "meeting": 1,
+        "proposal": 0,
+        "contract": 0
+      }
+    ],
+    "total": {
+      "meeting": 5,
+      "proposal": 2,
+      "contract": 2
+    }
+  },
+  "overlapCount": 1,
+  "unlinkedReports": {
+    "count": 1,
+    "amountYen": 500000
+  },
+  "scenarios": {
+    "standard": {
+      "assumptions": {
+        "salesMultiplierBps": 10000,
+        "recoveryAmountBps": 10000,
+        "meetingToProposalBps": 5000,
+        "proposalToContractBps": 3000,
+        "paymentDelayMonths": 0
+      },
+      "actions": [
+        {
+          "source": "consignment",
+          "step": "meeting",
+          "countX100": 400
+        },
+        {
+          "source": "acquisition",
+          "step": "meeting",
+          "countX100": 150
+        },
+        {
+          "source": "contract_work",
+          "step": "proposal",
+          "countX100": 100
+        }
+      ],
+      "expectedYen": 13906573,
+      "actualYen": 9472000,
+      "weightedYen": 2436573,
+      "actionYen": 1998000,
+      "actualPlusWeightedYen": 11908573,
+      "expectedSalesYen": 19411573,
+      "actualSalesYen": 13952000,
+      "weightedSalesYen": 2516573,
+      "actionSalesYen": 2943000,
+      "actualPlusWeightedSalesYen": 16468573,
+      "bySource": [
+        {
+          "source": "contract_work",
+          "status": "unconnected",
+          "actualYen": null,
+          "weightedYen": 0,
+          "actionYen": 750000,
+          "expectedYen": 750000,
+          "actualSalesYen": null,
+          "weightedSalesYen": 0,
+          "actionSalesYen": 750000,
+          "expectedSalesYen": 750000
+        },
+        {
+          "source": "own_investment",
+          "status": "connected",
+          "actualYen": 2200000,
+          "weightedYen": 900000,
+          "actionYen": 0,
+          "expectedYen": 3100000,
+          "actualSalesYen": 2200000,
+          "weightedSalesYen": 900000,
+          "actionSalesYen": 0,
+          "expectedSalesYen": 3100000
+        },
+        {
+          "source": "committee",
+          "status": "connected",
+          "actualYen": 3462000,
+          "weightedYen": 0,
+          "actionYen": 0,
+          "expectedYen": 3462000,
+          "actualSalesYen": 6262000,
+          "weightedSalesYen": 0,
+          "actionSalesYen": 0,
+          "expectedSalesYen": 6262000
+        },
+        {
+          "source": "acquisition",
+          "status": "connected",
+          "actualYen": 2910000,
+          "weightedYen": 770000,
+          "actionYen": 405000,
+          "expectedYen": 4085000,
+          "actualSalesYen": 4590000,
+          "weightedSalesYen": 850000,
+          "actionSalesYen": 1350000,
+          "expectedSalesYen": 6790000
+        },
+        {
+          "source": "consignment",
+          "status": "connected",
+          "actualYen": 900000,
+          "weightedYen": 766573,
+          "actionYen": 843000,
+          "expectedYen": 2509573,
+          "actualSalesYen": 900000,
+          "weightedSalesYen": 766573,
+          "actionSalesYen": 843000,
+          "expectedSalesYen": 2509573
+        }
+      ],
+      "opportunities": [
+        {
+          "opportunityId": 1,
+          "workId": 101,
+          "source": "consignment",
+          "stage": "won",
+          "probabilityBps": 10000,
+          "remainingYen": 2500000,
+          "valueYen": 500000,
+          "weightedYen": 500000,
+          "salesValueYen": 500000,
+          "weightedSalesYen": 500000,
+          "revenueMonth": "2026-09",
+          "overdue": true,
+          "placement": "in_period",
+          "paymentMonth": "2026-11",
+          "inflowYen": 2500000
+        },
+        {
+          "opportunityId": 2,
+          "workId": 101,
+          "source": "consignment",
+          "stage": "won",
+          "probabilityBps": 10000,
+          "remainingYen": 0,
+          "valueYen": 0,
+          "weightedYen": 0,
+          "salesValueYen": 0,
+          "weightedSalesYen": 0,
+          "revenueMonth": "2026-09",
+          "overdue": true,
+          "placement": "in_period",
+          "paymentMonth": "2026-11",
+          "inflowYen": 0
+        },
+        {
+          "opportunityId": 3,
+          "workId": 102,
+          "source": "acquisition",
+          "stage": "lead",
+          "probabilityBps": 3000,
+          "remainingYen": 2500000,
+          "valueYen": 2500000,
+          "weightedYen": 750000,
+          "salesValueYen": 2500000,
+          "weightedSalesYen": 750000,
+          "revenueMonth": "2027-01",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-03",
+          "inflowYen": 750000
+        },
+        {
+          "opportunityId": 4,
+          "workId": 101,
+          "source": "consignment",
+          "stage": "proposal",
+          "probabilityBps": 5000,
+          "remainingYen": 1925000,
+          "valueYen": 385000,
+          "weightedYen": 192500,
+          "salesValueYen": 385000,
+          "weightedSalesYen": 192500,
+          "revenueMonth": "2027-03",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-04",
+          "inflowYen": 962500
+        },
+        {
+          "opportunityId": 5,
+          "workId": 103,
+          "source": "own_investment",
+          "stage": "negotiation",
+          "probabilityBps": 8000,
+          "remainingYen": 1125000,
+          "valueYen": 1125000,
+          "weightedYen": 900000,
+          "salesValueYen": 1125000,
+          "weightedSalesYen": 900000,
+          "revenueMonth": "2026-11",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-02",
+          "inflowYen": 900000
+        },
+        {
+          "opportunityId": 9,
+          "workId": 102,
+          "source": "acquisition",
+          "stage": "proposal",
+          "probabilityBps": 5000,
+          "remainingYen": 800000,
+          "valueYen": 800000,
+          "weightedYen": 400000,
+          "salesValueYen": 800000,
+          "weightedSalesYen": 400000,
+          "revenueMonth": "2027-05",
+          "overdue": false,
+          "placement": "after_period",
+          "paymentMonth": "2027-06",
+          "inflowYen": 400000
+        },
+        {
+          "opportunityId": 10,
+          "workId": 108,
+          "source": "acquisition",
+          "stage": "won",
+          "probabilityBps": 10000,
+          "remainingYen": 100000,
+          "valueYen": 20000,
+          "weightedYen": 20000,
+          "salesValueYen": 100000,
+          "weightedSalesYen": 100000,
+          "revenueMonth": "2026-09",
+          "overdue": true,
+          "placement": "in_period",
+          "paymentMonth": "2026-11",
+          "inflowYen": 100000
+        },
+        {
+          "opportunityId": 11,
+          "workId": 110,
+          "source": "consignment",
+          "stage": "lead",
+          "probabilityBps": 3000,
+          "remainingYen": 1234567,
+          "valueYen": 246913,
+          "weightedYen": 74073,
+          "salesValueYen": 246913,
+          "weightedSalesYen": 74073,
+          "revenueMonth": "2027-02",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-04",
+          "inflowYen": 370370
+        }
+      ],
+      "actionRows": [
+        {
+          "source": "consignment",
+          "step": "meeting",
+          "countX100": 400,
+          "dealYen": 7025000,
+          "valueYen": 1405000,
+          "expectedYen": 843000,
+          "salesValueYen": 1405000,
+          "expectedSalesYen": 843000
+        },
+        {
+          "source": "acquisition",
+          "step": "meeting",
+          "countX100": 150,
+          "dealYen": 6000000,
+          "valueYen": 1800000,
+          "expectedYen": 405000,
+          "salesValueYen": 6000000,
+          "expectedSalesYen": 1350000
+        },
+        {
+          "source": "contract_work",
+          "step": "proposal",
+          "countX100": 100,
+          "dealYen": 25000000,
+          "valueYen": 2500000,
+          "expectedYen": 750000,
+          "salesValueYen": 2500000,
+          "expectedSalesYen": 750000
+        }
+      ],
+      "nextPeriodProfitYen": 400000,
+      "componentCount": 12,
+      "distribution": {
+        "gridYen": 10000,
+        "points": [
+          [
+            9990000,
+            0.01407766030234375
+          ],
+          [
+            10240000,
+            0.006033282986718749
+          ],
+          [
+            10380000,
+            0.01407766030234375
+          ],
+          [
+            10630000,
+            0.006033282986718749
+          ],
+          [
+            11120000,
+            0.056310641209375
+          ],
+          [
+            11370000,
+            0.024133131946874997
+          ],
+          [
+            11400000,
+            0.009937171978125
+          ],
+          [
+            11510000,
+            0.056310641209375
+          ],
+          [
+            11650000,
+            0.0042587879906249996
+          ],
+          [
+            11760000,
+            0.024133131946874997
+          ],
+          [
+            11790000,
+            0.0135628968890625
+          ],
+          [
+            12040000,
+            0.005812670095312501
+          ],
+          [
+            12180000,
+            0.0036257249109375002
+          ],
+          [
+            12430000,
+            0.0015538821046875001
+          ],
+          [
+            12490000,
+            0.012066565973437499
+          ],
+          [
+            12530000,
+            0.0397486879125
+          ],
+          [
+            12740000,
+            0.0051713854171875
+          ],
+          [
+            12780000,
+            0.017035151962499998
+          ],
+          [
+            12800000,
+            0.0026304278765625
+          ],
+          [
+            12880000,
+            0.012066565973437499
+          ],
+          [
+            12920000,
+            0.05425158755625
+          ],
+          [
+            13050000,
+            0.0011273262328125
+          ],
+          [
+            13130000,
+            0.0051713854171875
+          ],
+          [
+            13170000,
+            0.023250680381250003
+          ],
+          [
+            13190000,
+            0.0026304278765625
+          ],
+          [
+            13200000,
+            0.00255933523125
+          ],
+          [
+            13310000,
+            0.014502899643750001
+          ],
+          [
+            13440000,
+            0.0011273262328125
+          ],
+          [
+            13450000,
+            0.00109685795625
+          ],
+          [
+            13560000,
+            0.0062155284187500005
+          ],
+          [
+            13590000,
+            0.00276076439296875
+          ],
+          [
+            13620000,
+            0.048266263893749994
+          ],
+          [
+            13840000,
+            0.0011831847398437502
+          ],
+          [
+            13870000,
+            0.02068554166875
+          ],
+          [
+            13900000,
+            0.008517575981249999
+          ],
+          [
+            13930000,
+            0.01052171150625
+          ],
+          [
+            13980000,
+            0.00020142916171875
+          ],
+          [
+            14010000,
+            0.048266263893749994
+          ],
+          [
+            14150000,
+            0.00365038970625
+          ],
+          [
+            14180000,
+            0.00450930493125
+          ],
+          [
+            14210000,
+            0.000309462103125
+          ],
+          [
+            14230000,
+            0.00008632678359375
+          ],
+          [
+            14260000,
+            0.02068554166875
+          ],
+          [
+            14290000,
+            0.011625340190625002
+          ],
+          [
+            14320000,
+            0.01052171150625
+          ],
+          [
+            14330000,
+            0.010237340925
+          ],
+          [
+            14460000,
+            0.000132626615625
+          ],
+          [
+            14540000,
+            0.004982288653125
+          ],
+          [
+            14570000,
+            0.00450930493125
+          ],
+          [
+            14580000,
+            0.004387431825
+          ],
+          [
+            14600000,
+            0.00098693319375
+          ],
+          [
+            14680000,
+            0.0031077642093750002
+          ],
+          [
+            14720000,
+            0.011043057571875
+          ],
+          [
+            14850000,
+            0.00042297136875
+          ],
+          [
+            14930000,
+            0.001331898946875
+          ],
+          [
+            14970000,
+            0.004732738959375001
+          ],
+          [
+            14990000,
+            0.00326316379921875
+          ],
+          [
+            15000000,
+            0.000142185290625
+          ],
+          [
+            15030000,
+            0.034070303924999996
+          ],
+          [
+            15110000,
+            0.000805716646875
+          ],
+          [
+            15240000,
+            0.00139849877109375
+          ],
+          [
+            15250000,
+            0.000060936553125
+          ],
+          [
+            15280000,
+            0.014601558825
+          ],
+          [
+            15300000,
+            0.002254652465625
+          ],
+          [
+            15340000,
+            0.0012378484125
+          ],
+          [
+            15360000,
+            0.000345307134375
+          ],
+          [
+            15380000,
+            0.00258569270859375
+          ],
+          [
+            15390000,
+            0.000142185290625
+          ],
+          [
+            15420000,
+            0.046501360762500006
+          ],
+          [
+            15550000,
+            0.000966279628125
+          ],
+          [
+            15590000,
+            0.0005305064625
+          ],
+          [
+            15610000,
+            0.00001365273984375
+          ],
+          [
+            15630000,
+            0.00110815401796875
+          ],
+          [
+            15640000,
+            0.000060936553125
+          ],
+          [
+            15670000,
+            0.0199291546125
+          ],
+          [
+            15690000,
+            0.002254652465625
+          ],
+          [
+            15700000,
+            0.0021937159125
+          ],
+          [
+            15730000,
+            0.003947732775
+          ],
+          [
+            15810000,
+            0.012431056837500001
+          ],
+          [
+            15860000,
+            0.00000585117421875
+          ],
+          [
+            15940000,
+            0.000966279628125
+          ],
+          [
+            15950000,
+            0.0009401639625
+          ],
+          [
+            15980000,
+            0.001691885475
+          ],
+          [
+            16000000,
+            0.00001365273984375
+          ],
+          [
+            16010000,
+            0.00007970248125
+          ],
+          [
+            16060000,
+            0.0053275957875
+          ],
+          [
+            16090000,
+            0.0023663694796875003
+          ],
+          [
+            16120000,
+            0.013052655196875
+          ],
+          [
+            16130000,
+            0.0005687411625
+          ],
+          [
+            16250000,
+            0.00000585117421875
+          ],
+          [
+            16260000,
+            0.00003415820625
+          ],
+          [
+            16340000,
+            0.0010141583484375
+          ],
+          [
+            16370000,
+            0.005593995084375
+          ],
+          [
+            16380000,
+            0.0002437462125
+          ],
+          [
+            16400000,
+            0.0019425346171875002
+          ],
+          [
+            16430000,
+            0.0090186098625
+          ],
+          [
+            16480000,
+            0.0001726535671875
+          ],
+          [
+            16510000,
+            0.010342770834375
+          ],
+          [
+            16520000,
+            0.0005687411625
+          ],
+          [
+            16650000,
+            0.0008325148359375
+          ],
+          [
+            16680000,
+            0.0038651185125
+          ],
+          [
+            16710000,
+            0.00026525323125
+          ],
+          [
+            16730000,
+            0.0000739943859375
+          ],
+          [
+            16740000,
+            0.000054610959375
+          ],
+          [
+            16760000,
+            0.004432616071875
+          ],
+          [
+            16770000,
+            0.0002437462125
+          ],
+          [
+            16790000,
+            0.002528781609375
+          ],
+          [
+            16820000,
+            0.0090186098625
+          ],
+          [
+            16830000,
+            0.00877486365
+          ],
+          [
+            16960000,
+            0.00011367995625
+          ],
+          [
+            16990000,
+            0.000023404696875
+          ],
+          [
+            17040000,
+            0.001083763546875
+          ],
+          [
+            17070000,
+            0.0038651185125
+          ],
+          [
+            17080000,
+            0.00376065585
+          ],
+          [
+            17100000,
+            0.0008459427375
+          ],
+          [
+            17130000,
+            0.000054610959375
+          ],
+          [
+            17140000,
+            0.000318809925
+          ],
+          [
+            17180000,
+            0.0006659494734375
+          ],
+          [
+            17220000,
+            0.009465477918750001
+          ],
+          [
+            17350000,
+            0.0003625468875
+          ],
+          [
+            17380000,
+            0.000023404696875
+          ],
+          [
+            17390000,
+            0.000136632825
+          ],
+          [
+            17410000,
+            0.0000035162859375
+          ],
+          [
+            17430000,
+            0.0002854069171875
+          ],
+          [
+            17470000,
+            0.00405663339375
+          ],
+          [
+            17490000,
+            0.00058068950625
+          ],
+          [
+            17500000,
+            0.00012187310625
+          ],
+          [
+            17530000,
+            0.007770138468750001
+          ],
+          [
+            17610000,
+            0.00069061426875
+          ],
+          [
+            17660000,
+            0.0000015069796875
+          ],
+          [
+            17740000,
+            0.00024886693125
+          ],
+          [
+            17750000,
+            0.00005223133125
+          ],
+          [
+            17780000,
+            0.00333005934375
+          ],
+          [
+            17800000,
+            0.0004866561
+          ],
+          [
+            17810000,
+            0.000004427915625
+          ],
+          [
+            17840000,
+            0.001061012925
+          ],
+          [
+            17860000,
+            0.00029597754375
+          ],
+          [
+            17890000,
+            0.00012187310625
+          ],
+          [
+            17920000,
+            0.0101151264375
+          ],
+          [
+            18050000,
+            0.0002085669
+          ],
+          [
+            18060000,
+            0.000001897678125
+          ],
+          [
+            18090000,
+            0.000454719825
+          ],
+          [
+            18110000,
+            0.0000117023484375
+          ],
+          [
+            18140000,
+            0.00005223133125
+          ],
+          [
+            18170000,
+            0.0043350541875
+          ],
+          [
+            18190000,
+            0.0004831398140625
+          ],
+          [
+            18200000,
+            0.000474509896875
+          ],
+          [
+            18230000,
+            0.00338377095
+          ],
+          [
+            18310000,
+            0.00266379789375
+          ],
+          [
+            18360000,
+            0.0000050152921875
+          ],
+          [
+            18440000,
+            0.0002070599203125
+          ],
+          [
+            18450000,
+            0.000203361384375
+          ],
+          [
+            18480000,
+            0.00145018755
+          ],
+          [
+            18500000,
+            0.0000117023484375
+          ],
+          [
+            18510000,
+            0.0000683164125
+          ],
+          [
+            18540000,
+            0.00001406514375
+          ],
+          [
+            18560000,
+            0.00114162766875
+          ],
+          [
+            18590000,
+            0.00050707917421875
+          ],
+          [
+            18620000,
+            0.002322758025
+          ],
+          [
+            18630000,
+            0.000487492425
+          ],
+          [
+            18750000,
+            0.0000050152921875
+          ],
+          [
+            18760000,
+            0.0000292784625
+          ],
+          [
+            18790000,
+            0.00000602791875
+          ],
+          [
+            18840000,
+            0.00021731964609375
+          ],
+          [
+            18870000,
+            0.000995467725
+          ],
+          [
+            18880000,
+            0.000208925325
+          ],
+          [
+            18900000,
+            0.000100576940625
+          ],
+          [
+            18930000,
+            0.0019466244
+          ],
+          [
+            18940000,
+            0.0000177116625
+          ],
+          [
+            18980000,
+            0.00003699719296875
+          ],
+          [
+            19020000,
+            0.000487492425
+          ],
+          [
+            19150000,
+            0.000043104403125
+          ],
+          [
+            19180000,
+            0.0008342676
+          ],
+          [
+            19190000,
+            0.0000075907125
+          ],
+          [
+            19210000,
+            0.00005703532734375
+          ],
+          [
+            19230000,
+            0.00001585593984375
+          ],
+          [
+            19240000,
+            0.00004680939375
+          ],
+          [
+            19270000,
+            0.000208925325
+          ],
+          [
+            19290000,
+            0.000032260528125
+          ],
+          [
+            19320000,
+            0.00193255925625
+          ],
+          [
+            19330000,
+            0.0018980395875
+          ],
+          [
+            19460000,
+            0.00002444371171875
+          ],
+          [
+            19490000,
+            0.00002006116875
+          ],
+          [
+            19540000,
+            0.000013825940625
+          ],
+          [
+            19570000,
+            0.00082823968125
+          ],
+          [
+            19580000,
+            0.0008134455375
+          ],
+          [
+            19600000,
+            0.00018146879296875
+          ],
+          [
+            19630000,
+            0.00004680939375
+          ],
+          [
+            19640000,
+            0.00027326565
+          ],
+          [
+            19720000,
+            0.002028316696875
+          ],
+          [
+            19850000,
+            0.00007777233984375
+          ],
+          [
+            19880000,
+            0.00002006116875
+          ],
+          [
+            19890000,
+            0.00011711385
+          ],
+          [
+            19910000,
+            0.000003013959375
+          ],
+          [
+            19970000,
+            0.000869278584375
+          ],
+          [
+            19990000,
+            0.000124433465625
+          ],
+          [
+            20000000,
+            0.000026115665625
+          ],
+          [
+            20030000,
+            0.0004023077625
+          ],
+          [
+            20110000,
+            0.000147988771875
+          ],
+          [
+            20160000,
+            0.000001291696875
+          ],
+          [
+            20240000,
+            0.000053328628125
+          ],
+          [
+            20250000,
+            0.000011192428125
+          ],
+          [
+            20280000,
+            0.0001724176125
+          ],
+          [
+            20300000,
+            0.000003013959375
+          ],
+          [
+            20310000,
+            0.00000379535625
+          ],
+          [
+            20340000,
+            0.000228141309375
+          ],
+          [
+            20360000,
+            0.000063423759375
+          ],
+          [
+            20390000,
+            0.000026115665625
+          ],
+          [
+            20420000,
+            0.0001290421125
+          ],
+          [
+            20550000,
+            0.000001291696875
+          ],
+          [
+            20560000,
+            0.00000162658125
+          ],
+          [
+            20590000,
+            0.000097774846875
+          ],
+          [
+            20610000,
+            0.00000250764609375
+          ],
+          [
+            20640000,
+            0.000011192428125
+          ],
+          [
+            20670000,
+            0.0000553037625
+          ],
+          [
+            20700000,
+            0.00000379535625
+          ],
+          [
+            20730000,
+            0.000725875171875
+          ],
+          [
+            20860000,
+            0.00000107470546875
+          ],
+          [
+            20950000,
+            0.00000162658125
+          ],
+          [
+            20980000,
+            0.000311089359375
+          ],
+          [
+            21000000,
+            0.00000250764609375
+          ],
+          [
+            21010000,
+            0.00001463923125
+          ],
+          [
+            21040000,
+            0.0000120558375
+          ],
+          [
+            21120000,
+            0.0004977338625
+          ],
+          [
+            21130000,
+            0.0001044626625
+          ],
+          [
+            21250000,
+            0.00000107470546875
+          ],
+          [
+            21260000,
+            0.00000627395625
+          ],
+          [
+            21290000,
+            0.0000051667875
+          ],
+          [
+            21370000,
+            0.0002133145125
+          ],
+          [
+            21380000,
+            0.0000447697125
+          ],
+          [
+            21400000,
+            0.0000215522015625
+          ],
+          [
+            21430000,
+            0.0000120558375
+          ],
+          [
+            21440000,
+            0.000015181425
+          ],
+          [
+            21520000,
+            0.0001044626625
+          ],
+          [
+            21650000,
+            0.0000092366578125
+          ],
+          [
+            21680000,
+            0.0000051667875
+          ],
+          [
+            21690000,
+            0.000006506325
+          ],
+          [
+            21710000,
+            1.674421875e-7
+          ],
+          [
+            21740000,
+            0.000010030584375
+          ],
+          [
+            21770000,
+            0.0000447697125
+          ],
+          [
+            21790000,
+            0.0000069129703125
+          ],
+          [
+            21830000,
+            0.000015181425
+          ],
+          [
+            21960000,
+            7.17609375e-8
+          ],
+          [
+            21990000,
+            0.000004298821875
+          ],
+          [
+            22040000,
+            0.0000029627015625
+          ],
+          [
+            22080000,
+            0.000006506325
+          ],
+          [
+            22100000,
+            1.674421875e-7
+          ],
+          [
+            22130000,
+            0.000010030584375
+          ],
+          [
+            22140000,
+            0.000058556925
+          ],
+          [
+            22350000,
+            7.17609375e-8
+          ],
+          [
+            22380000,
+            0.000004298821875
+          ],
+          [
+            22390000,
+            0.000025095825
+          ],
+          [
+            22410000,
+            6.458484375e-7
+          ],
+          [
+            22530000,
+            0.00008620880625
+          ],
+          [
+            22660000,
+            2.767921875e-7
+          ],
+          [
+            22780000,
+            0.00003694663125
+          ],
+          [
+            22800000,
+            6.458484375e-7
+          ],
+          [
+            22810000,
+            8.13290625e-7
+          ],
+          [
+            22840000,
+            6.6976875e-7
+          ],
+          [
+            22920000,
+            0.00002765188125
+          ],
+          [
+            23050000,
+            2.767921875e-7
+          ],
+          [
+            23060000,
+            3.48553125e-7
+          ],
+          [
+            23090000,
+            2.8704375e-7
+          ],
+          [
+            23170000,
+            0.00001185080625
+          ],
+          [
+            23200000,
+            8.13290625e-7
+          ],
+          [
+            23230000,
+            6.6976875e-7
+          ],
+          [
+            23450000,
+            3.48553125e-7
+          ],
+          [
+            23480000,
+            2.8704375e-7
+          ],
+          [
+            23540000,
+            0.00000258339375
+          ],
+          [
+            23790000,
+            0.00000110716875
+          ],
+          [
+            23930000,
+            0.00000258339375
+          ],
+          [
+            23940000,
+            0.0000032531625
+          ],
+          [
+            24180000,
+            0.00000110716875
+          ],
+          [
+            24190000,
+            0.0000013942125
+          ],
+          [
+            24210000,
+            3.588046875e-8
+          ],
+          [
+            24330000,
+            0.0000032531625
+          ],
+          [
+            24460000,
+            1.537734375e-8
+          ],
+          [
+            24580000,
+            0.0000013942125
+          ],
+          [
+            24600000,
+            3.588046875e-8
+          ],
+          [
+            24850000,
+            1.537734375e-8
+          ],
+          [
+            25340000,
+            1.43521875e-7
+          ],
+          [
+            25590000,
+            6.1509375e-8
+          ],
+          [
+            25730000,
+            1.43521875e-7
+          ],
+          [
+            25980000,
+            6.1509375e-8
+          ]
+        ]
+      },
+      "quantiles": {
+        "p10Yen": 11370000,
+        "p50Yen": 13870000,
+        "p90Yen": 16820000
+      },
+      "quantilesWithoutActions": {
+        "p10Yen": 10380000,
+        "p50Yen": 11510000,
+        "p90Yen": 14010000
+      },
+      "cash": {
+        "byMonth": [
+          {
+            "month": "2026-11",
+            "yen": 2600000
+          },
+          {
+            "month": "2027-02",
+            "yen": 900000
+          },
+          {
+            "month": "2027-03",
+            "yen": 750000
+          }
+        ],
+        "periodYen": 4250000,
+        "lastTwoMonthsYen": 1650000,
+        "slipOutYen": 750000,
+        "nextPeriodYen": 1732870,
+        "unscheduledCount": 0
+      },
+      "investmentRecovery": {
+        "rows": [
+          {
+            "kind": "own_investment",
+            "workId": 103,
+            "title": "坂の上の写真館（架空）",
+            "investmentYen": 4000000,
+            "revenueYen": 2200000,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 2200000,
+            "remainingExpectedYen": 900000,
+            "error": null,
+            "holdNote": null,
+            "diffYen": -1800000,
+            "recoveryRateBps": 5500,
+            "status": "awaiting",
+            "projectedDiffYen": -900000
+          },
+          {
+            "kind": "committee",
+            "workId": 104,
+            "title": "風の停車場（架空）",
+            "investmentYen": 1800000,
+            "revenueYen": 4062000,
+            "periodInvestmentYen": 1800000,
+            "periodRevenueYen": 4062000,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": null,
+            "diffYen": 2262000,
+            "recoveryRateBps": 22566,
+            "status": "recovered",
+            "projectedDiffYen": 2262000
+          },
+          {
+            "kind": "committee",
+            "workId": 105,
+            "title": "雪の灯台（架空）",
+            "investmentYen": 8000000,
+            "revenueYen": 1500000,
+            "periodInvestmentYen": 1000000,
+            "periodRevenueYen": 1500000,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": "委員会の月次収支に保留があります: 窓口の条件が無い区分（海外）の売上を委員会の収入にしていません",
+            "diffYen": -6500000,
+            "recoveryRateBps": 1875,
+            "status": "awaiting",
+            "projectedDiffYen": -6500000
+          },
+          {
+            "kind": "committee",
+            "workId": 106,
+            "title": "夜の温室（架空）",
+            "investmentYen": 0,
+            "revenueYen": 700000,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 700000,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": null,
+            "diffYen": 700000,
+            "recoveryRateBps": null,
+            "status": "recovered",
+            "projectedDiffYen": 700000
+          },
+          {
+            "kind": "committee",
+            "workId": 107,
+            "title": "遠い汽笛（架空）",
+            "investmentYen": 5000000,
+            "revenueYen": null,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": null,
+            "remainingExpectedYen": 0,
+            "error": "委員会契約に条件版がありません",
+            "holdNote": null,
+            "diffYen": null,
+            "recoveryRateBps": null,
+            "status": "unknown",
+            "projectedDiffYen": null
+          },
+          {
+            "kind": "committee",
+            "workId": 111,
+            "title": "汐見の時計塔（架空）",
+            "investmentYen": 2000000,
+            "revenueYen": 2000000,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 0,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": null,
+            "diffYen": 0,
+            "recoveryRateBps": 10000,
+            "status": "recovered",
+            "projectedDiffYen": 0
+          }
+        ],
+        "total": {
+          "rowCount": 5,
+          "investmentYen": 15800000,
+          "revenueYen": 10462000,
+          "diffYen": -5338000,
+          "periodInvestmentYen": 2800000,
+          "periodRevenueYen": 8462000,
+          "projectedDiffYen": -4438000,
+          "recoveryRateBps": 6621,
+          "status": "awaiting"
+        },
+        "unknown": {
+          "count": 1,
+          "investmentYen": 5000000
+        },
+        "unconnected": []
+      }
+    },
+    "optimistic": {
+      "assumptions": {
+        "salesMultiplierBps": 11500,
+        "recoveryAmountBps": 11500,
+        "meetingToProposalBps": 5000,
+        "proposalToContractBps": 4000,
+        "paymentDelayMonths": 0
+      },
+      "actions": [
+        {
+          "source": "consignment",
+          "step": "meeting",
+          "countX100": 400
+        },
+        {
+          "source": "acquisition",
+          "step": "meeting",
+          "countX100": 150
+        },
+        {
+          "source": "contract_work",
+          "step": "proposal",
+          "countX100": 100
+        }
+      ],
+      "expectedYen": 15187660,
+      "actualYen": 9472000,
+      "weightedYen": 2802060,
+      "actionYen": 2913600,
+      "actualPlusWeightedYen": 12274060,
+      "expectedSalesYen": 21208660,
+      "actualSalesYen": 13952000,
+      "weightedSalesYen": 2894060,
+      "actionSalesYen": 4362600,
+      "actualPlusWeightedSalesYen": 16846060,
+      "bySource": [
+        {
+          "source": "contract_work",
+          "status": "unconnected",
+          "actualYen": null,
+          "weightedYen": 0,
+          "actionYen": 1000000,
+          "expectedYen": 1000000,
+          "actualSalesYen": null,
+          "weightedSalesYen": 0,
+          "actionSalesYen": 1000000,
+          "expectedSalesYen": 1000000
+        },
+        {
+          "source": "own_investment",
+          "status": "connected",
+          "actualYen": 2200000,
+          "weightedYen": 1035000,
+          "actionYen": 0,
+          "expectedYen": 3235000,
+          "actualSalesYen": 2200000,
+          "weightedSalesYen": 1035000,
+          "actionSalesYen": 0,
+          "expectedSalesYen": 3235000
+        },
+        {
+          "source": "committee",
+          "status": "connected",
+          "actualYen": 3462000,
+          "weightedYen": 0,
+          "actionYen": 0,
+          "expectedYen": 3462000,
+          "actualSalesYen": 6262000,
+          "weightedSalesYen": 0,
+          "actionSalesYen": 0,
+          "expectedSalesYen": 6262000
+        },
+        {
+          "source": "acquisition",
+          "status": "connected",
+          "actualYen": 2910000,
+          "weightedYen": 885500,
+          "actionYen": 621000,
+          "expectedYen": 4416500,
+          "actualSalesYen": 4590000,
+          "weightedSalesYen": 977500,
+          "actionSalesYen": 2070000,
+          "expectedSalesYen": 7637500
+        },
+        {
+          "source": "consignment",
+          "status": "connected",
+          "actualYen": 900000,
+          "weightedYen": 881560,
+          "actionYen": 1292600,
+          "expectedYen": 3074160,
+          "actualSalesYen": 900000,
+          "weightedSalesYen": 881560,
+          "actionSalesYen": 1292600,
+          "expectedSalesYen": 3074160
+        }
+      ],
+      "opportunities": [
+        {
+          "opportunityId": 1,
+          "workId": 101,
+          "source": "consignment",
+          "stage": "won",
+          "probabilityBps": 10000,
+          "remainingYen": 2500000,
+          "valueYen": 575000,
+          "weightedYen": 575000,
+          "salesValueYen": 575000,
+          "weightedSalesYen": 575000,
+          "revenueMonth": "2026-09",
+          "overdue": true,
+          "placement": "in_period",
+          "paymentMonth": "2026-11",
+          "inflowYen": 2875000
+        },
+        {
+          "opportunityId": 2,
+          "workId": 101,
+          "source": "consignment",
+          "stage": "won",
+          "probabilityBps": 10000,
+          "remainingYen": 0,
+          "valueYen": 0,
+          "weightedYen": 0,
+          "salesValueYen": 0,
+          "weightedSalesYen": 0,
+          "revenueMonth": "2026-09",
+          "overdue": true,
+          "placement": "in_period",
+          "paymentMonth": "2026-11",
+          "inflowYen": 0
+        },
+        {
+          "opportunityId": 3,
+          "workId": 102,
+          "source": "acquisition",
+          "stage": "lead",
+          "probabilityBps": 3000,
+          "remainingYen": 2500000,
+          "valueYen": 2875000,
+          "weightedYen": 862500,
+          "salesValueYen": 2875000,
+          "weightedSalesYen": 862500,
+          "revenueMonth": "2027-01",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-03",
+          "inflowYen": 862500
+        },
+        {
+          "opportunityId": 4,
+          "workId": 101,
+          "source": "consignment",
+          "stage": "proposal",
+          "probabilityBps": 5000,
+          "remainingYen": 1925000,
+          "valueYen": 442750,
+          "weightedYen": 221375,
+          "salesValueYen": 442750,
+          "weightedSalesYen": 221375,
+          "revenueMonth": "2027-03",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-04",
+          "inflowYen": 1106875
+        },
+        {
+          "opportunityId": 5,
+          "workId": 103,
+          "source": "own_investment",
+          "stage": "negotiation",
+          "probabilityBps": 8000,
+          "remainingYen": 1125000,
+          "valueYen": 1293750,
+          "weightedYen": 1035000,
+          "salesValueYen": 1293750,
+          "weightedSalesYen": 1035000,
+          "revenueMonth": "2026-11",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-02",
+          "inflowYen": 1035000
+        },
+        {
+          "opportunityId": 9,
+          "workId": 102,
+          "source": "acquisition",
+          "stage": "proposal",
+          "probabilityBps": 5000,
+          "remainingYen": 800000,
+          "valueYen": 920000,
+          "weightedYen": 460000,
+          "salesValueYen": 920000,
+          "weightedSalesYen": 460000,
+          "revenueMonth": "2027-05",
+          "overdue": false,
+          "placement": "after_period",
+          "paymentMonth": "2027-06",
+          "inflowYen": 460000
+        },
+        {
+          "opportunityId": 10,
+          "workId": 108,
+          "source": "acquisition",
+          "stage": "won",
+          "probabilityBps": 10000,
+          "remainingYen": 100000,
+          "valueYen": 23000,
+          "weightedYen": 23000,
+          "salesValueYen": 115000,
+          "weightedSalesYen": 115000,
+          "revenueMonth": "2026-09",
+          "overdue": true,
+          "placement": "in_period",
+          "paymentMonth": "2026-11",
+          "inflowYen": 115000
+        },
+        {
+          "opportunityId": 11,
+          "workId": 110,
+          "source": "consignment",
+          "stage": "lead",
+          "probabilityBps": 3000,
+          "remainingYen": 1234567,
+          "valueYen": 283950,
+          "weightedYen": 85185,
+          "salesValueYen": 283950,
+          "weightedSalesYen": 85185,
+          "revenueMonth": "2027-02",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-04",
+          "inflowYen": 425925
+        }
+      ],
+      "actionRows": [
+        {
+          "source": "consignment",
+          "step": "meeting",
+          "countX100": 400,
+          "dealYen": 7025000,
+          "valueYen": 1615750,
+          "expectedYen": 1292600,
+          "salesValueYen": 1615750,
+          "expectedSalesYen": 1292600
+        },
+        {
+          "source": "acquisition",
+          "step": "meeting",
+          "countX100": 150,
+          "dealYen": 6000000,
+          "valueYen": 2070000,
+          "expectedYen": 621000,
+          "salesValueYen": 6900000,
+          "expectedSalesYen": 2070000
+        },
+        {
+          "source": "contract_work",
+          "step": "proposal",
+          "countX100": 100,
+          "dealYen": 25000000,
+          "valueYen": 2500000,
+          "expectedYen": 1000000,
+          "salesValueYen": 2500000,
+          "expectedSalesYen": 1000000
+        }
+      ],
+      "nextPeriodProfitYen": 460000,
+      "componentCount": 12,
+      "distribution": {
+        "gridYen": 10000,
+        "points": [
+          [
+            10070000,
+            0.0086704128
+          ],
+          [
+            10350000,
+            0.0037158912
+          ],
+          [
+            10510000,
+            0.0086704128
+          ],
+          [
+            10790000,
+            0.0037158912
+          ],
+          [
+            11360000,
+            0.0346816512
+          ],
+          [
+            11640000,
+            0.0148635648
+          ],
+          [
+            11690000,
+            0.0086704128
+          ],
+          [
+            11800000,
+            0.0346816512
+          ],
+          [
+            11970000,
+            0.0037158912
+          ],
+          [
+            12080000,
+            0.0148635648
+          ],
+          [
+            12130000,
+            0.0086704128
+          ],
+          [
+            12140000,
+            0.0031309824
+          ],
+          [
+            12410000,
+            0.0037158912
+          ],
+          [
+            12420000,
+            0.0013418496
+          ],
+          [
+            12570000,
+            0.0057802752
+          ],
+          [
+            12580000,
+            0.0031309824
+          ],
+          [
+            12850000,
+            0.0024772608
+          ],
+          [
+            12860000,
+            0.0013418496
+          ],
+          [
+            12950000,
+            0.0037158912
+          ],
+          [
+            12980000,
+            0.0346816512
+          ],
+          [
+            13010000,
+            0.0057802752
+          ],
+          [
+            13230000,
+            0.0015925248
+          ],
+          [
+            13260000,
+            0.0148635648
+          ],
+          [
+            13290000,
+            0.0024772608
+          ],
+          [
+            13300000,
+            0.0032514048
+          ],
+          [
+            13390000,
+            0.0037158912
+          ],
+          [
+            13420000,
+            0.0346816512
+          ],
+          [
+            13430000,
+            0.0125239296
+          ],
+          [
+            13580000,
+            0.0013934592
+          ],
+          [
+            13670000,
+            0.0015925248
+          ],
+          [
+            13700000,
+            0.0148635648
+          ],
+          [
+            13710000,
+            0.0053673984
+          ],
+          [
+            13740000,
+            0.0032514048
+          ],
+          [
+            13760000,
+            0.0031309824
+          ],
+          [
+            13860000,
+            0.0231211008
+          ],
+          [
+            13870000,
+            0.0125239296
+          ],
+          [
+            14020000,
+            0.0013934592
+          ],
+          [
+            14040000,
+            0.0013418496
+          ],
+          [
+            14140000,
+            0.0099090432
+          ],
+          [
+            14150000,
+            0.0053673984
+          ],
+          [
+            14190000,
+            0.0057802752
+          ],
+          [
+            14200000,
+            0.0031309824
+          ],
+          [
+            14210000,
+            0.0002408448
+          ],
+          [
+            14240000,
+            0.0148635648
+          ],
+          [
+            14300000,
+            0.0231211008
+          ],
+          [
+            14470000,
+            0.0024772608
+          ],
+          [
+            14480000,
+            0.0013418496
+          ],
+          [
+            14490000,
+            0.0001032192
+          ],
+          [
+            14520000,
+            0.0063700992
+          ],
+          [
+            14570000,
+            0.0037158912
+          ],
+          [
+            14580000,
+            0.0099090432
+          ],
+          [
+            14590000,
+            0.0130056192
+          ],
+          [
+            14630000,
+            0.0057802752
+          ],
+          [
+            14640000,
+            0.0020873216
+          ],
+          [
+            14650000,
+            0.0002408448
+          ],
+          [
+            14680000,
+            0.0148635648
+          ],
+          [
+            14850000,
+            0.0015925248
+          ],
+          [
+            14870000,
+            0.0055738368
+          ],
+          [
+            14910000,
+            0.0024772608
+          ],
+          [
+            14920000,
+            0.0014364672
+          ],
+          [
+            14930000,
+            0.0001032192
+          ],
+          [
+            14960000,
+            0.0063700992
+          ],
+          [
+            15010000,
+            0.0037158912
+          ],
+          [
+            15020000,
+            0.0013418496
+          ],
+          [
+            15030000,
+            0.0130056192
+          ],
+          [
+            15050000,
+            0.0125239296
+          ],
+          [
+            15080000,
+            0.0020873216
+          ],
+          [
+            15200000,
+            0.0002322432
+          ],
+          [
+            15290000,
+            0.0015925248
+          ],
+          [
+            15300000,
+            0.0005750784
+          ],
+          [
+            15310000,
+            0.0055738368
+          ],
+          [
+            15330000,
+            0.0053673984
+          ],
+          [
+            15360000,
+            0.0014364672
+          ],
+          [
+            15370000,
+            0.0011741184
+          ],
+          [
+            15450000,
+            0.0024772608
+          ],
+          [
+            15460000,
+            0.0013418496
+          ],
+          [
+            15480000,
+            0.0231211008
+          ],
+          [
+            15490000,
+            0.0125239296
+          ],
+          [
+            15500000,
+            0.0009633792
+          ],
+          [
+            15640000,
+            0.0002322432
+          ],
+          [
+            15650000,
+            0.0005031936
+          ],
+          [
+            15730000,
+            0.0010616832
+          ],
+          [
+            15740000,
+            0.0005750784
+          ],
+          [
+            15760000,
+            0.0099090432
+          ],
+          [
+            15770000,
+            0.0053673984
+          ],
+          [
+            15780000,
+            0.0004128768
+          ],
+          [
+            15800000,
+            0.0021676032
+          ],
+          [
+            15810000,
+            0.0011741184
+          ],
+          [
+            15830000,
+            0.0002408448
+          ],
+          [
+            15860000,
+            0.0148635648
+          ],
+          [
+            15890000,
+            0.0024772608
+          ],
+          [
+            15920000,
+            0.0231211008
+          ],
+          [
+            15930000,
+            0.0083492864
+          ],
+          [
+            15940000,
+            0.0009633792
+          ],
+          [
+            16080000,
+            0.0009289728
+          ],
+          [
+            16090000,
+            0.0005031936
+          ],
+          [
+            16110000,
+            0.0001032192
+          ],
+          [
+            16140000,
+            0.0063700992
+          ],
+          [
+            16170000,
+            0.0010616832
+          ],
+          [
+            16180000,
+            0.0013934592
+          ],
+          [
+            16200000,
+            0.0099090432
+          ],
+          [
+            16210000,
+            0.0057458688
+          ],
+          [
+            16220000,
+            0.0004128768
+          ],
+          [
+            16240000,
+            0.0021676032
+          ],
+          [
+            16260000,
+            0.0020873216
+          ],
+          [
+            16270000,
+            0.0002408448
+          ],
+          [
+            16300000,
+            0.0148635648
+          ],
+          [
+            16310000,
+            0.0053673984
+          ],
+          [
+            16370000,
+            0.0083492864
+          ],
+          [
+            16460000,
+            0.0005971968
+          ],
+          [
+            16490000,
+            0.0009289728
+          ],
+          [
+            16520000,
+            0.0009289728
+          ],
+          [
+            16530000,
+            0.0000338688
+          ],
+          [
+            16540000,
+            0.0008945664
+          ],
+          [
+            16550000,
+            0.0001032192
+          ],
+          [
+            16580000,
+            0.0063700992
+          ],
+          [
+            16590000,
+            0.0023003136
+          ],
+          [
+            16620000,
+            0.0013934592
+          ],
+          [
+            16640000,
+            0.0013418496
+          ],
+          [
+            16650000,
+            0.0057458688
+          ],
+          [
+            16660000,
+            0.0046964736
+          ],
+          [
+            16700000,
+            0.0020873216
+          ],
+          [
+            16710000,
+            0.0001605632
+          ],
+          [
+            16740000,
+            0.0099090432
+          ],
+          [
+            16750000,
+            0.0053673984
+          ],
+          [
+            16810000,
+            0.0000145152
+          ],
+          [
+            16900000,
+            0.0005971968
+          ],
+          [
+            16920000,
+            0.0005750784
+          ],
+          [
+            16930000,
+            0.0009289728
+          ],
+          [
+            16940000,
+            0.0020127744
+          ],
+          [
+            16970000,
+            0.0000338688
+          ],
+          [
+            16980000,
+            0.0008945664
+          ],
+          [
+            16990000,
+            0.0002644992
+          ],
+          [
+            17020000,
+            0.0042467328
+          ],
+          [
+            17030000,
+            0.0023003136
+          ],
+          [
+            17070000,
+            0.0024772608
+          ],
+          [
+            17080000,
+            0.0013418496
+          ],
+          [
+            17090000,
+            0.008773632
+          ],
+          [
+            17100000,
+            0.0046964736
+          ],
+          [
+            17120000,
+            0.0009633792
+          ],
+          [
+            17150000,
+            0.0001605632
+          ],
+          [
+            17180000,
+            0.0099090432
+          ],
+          [
+            17250000,
+            0.0000145152
+          ],
+          [
+            17270000,
+            0.0000838656
+          ],
+          [
+            17350000,
+            0.0010616832
+          ],
+          [
+            17360000,
+            0.0005750784
+          ],
+          [
+            17370000,
+            0.003760128
+          ],
+          [
+            17380000,
+            0.0020127744
+          ],
+          [
+            17400000,
+            0.0004128768
+          ],
+          [
+            17420000,
+            0.0003612672
+          ],
+          [
+            17430000,
+            0.0002644992
+          ],
+          [
+            17440000,
+            0.0000903168
+          ],
+          [
+            17460000,
+            0.0042467328
+          ],
+          [
+            17470000,
+            0.0055738368
+          ],
+          [
+            17510000,
+            0.0024772608
+          ],
+          [
+            17520000,
+            0.0008945664
+          ],
+          [
+            17530000,
+            0.008773632
+          ],
+          [
+            17550000,
+            0.0083492864
+          ],
+          [
+            17560000,
+            0.0009633792
+          ],
+          [
+            17700000,
+            0.0001548288
+          ],
+          [
+            17710000,
+            0.0000838656
+          ],
+          [
+            17720000,
+            0.0000387072
+          ],
+          [
+            17750000,
+            0.0023887872
+          ],
+          [
+            17790000,
+            0.0010616832
+          ],
+          [
+            17800000,
+            0.0006156288
+          ],
+          [
+            17810000,
+            0.003760128
+          ],
+          [
+            17820000,
+            0.0001354752
+          ],
+          [
+            17830000,
+            0.0035782656
+          ],
+          [
+            17840000,
+            0.0004128768
+          ],
+          [
+            17860000,
+            0.0003612672
+          ],
+          [
+            17870000,
+            0.0007827456
+          ],
+          [
+            17880000,
+            0.0000903168
+          ],
+          [
+            17910000,
+            0.0055738368
+          ],
+          [
+            17930000,
+            0.0053673984
+          ],
+          [
+            17960000,
+            0.0008945664
+          ],
+          [
+            17990000,
+            0.0083492864
+          ],
+          [
+            18000000,
+            0.0006422528
+          ],
+          [
+            18080000,
+            0.0000995328
+          ],
+          [
+            18100000,
+            0.0000580608
+          ],
+          [
+            18140000,
+            0.0001548288
+          ],
+          [
+            18150000,
+            0.0003354624
+          ],
+          [
+            18160000,
+            0.0000387072
+          ],
+          [
+            18190000,
+            0.0023887872
+          ],
+          [
+            18210000,
+            0.0023003136
+          ],
+          [
+            18240000,
+            0.0006156288
+          ],
+          [
+            18250000,
+            0.0005031936
+          ],
+          [
+            18260000,
+            0.0001354752
+          ],
+          [
+            18270000,
+            0.0035782656
+          ],
+          [
+            18280000,
+            0.0010579968
+          ],
+          [
+            18310000,
+            0.0007827456
+          ],
+          [
+            18330000,
+            0.0001605632
+          ],
+          [
+            18360000,
+            0.0099090432
+          ],
+          [
+            18370000,
+            0.0053673984
+          ],
+          [
+            18380000,
+            0.0004128768
+          ],
+          [
+            18440000,
+            0.0006422528
+          ],
+          [
+            18520000,
+            0.0000995328
+          ],
+          [
+            18530000,
+            0.0002156544
+          ],
+          [
+            18540000,
+            0.0000580608
+          ],
+          [
+            18560000,
+            0.0003354624
+          ],
+          [
+            18590000,
+            0.0003354624
+          ],
+          [
+            18600000,
+            0.0000122304
+          ],
+          [
+            18610000,
+            0.0000688128
+          ],
+          [
+            18640000,
+            0.0042467328
+          ],
+          [
+            18650000,
+            0.0023003136
+          ],
+          [
+            18660000,
+            0.0001769472
+          ],
+          [
+            18680000,
+            0.0009289728
+          ],
+          [
+            18690000,
+            0.0005031936
+          ],
+          [
+            18710000,
+            0.001548288
+          ],
+          [
+            18720000,
+            0.0010579968
+          ],
+          [
+            18730000,
+            0.0003612672
+          ],
+          [
+            18770000,
+            0.0001605632
+          ],
+          [
+            18800000,
+            0.0099090432
+          ],
+          [
+            18810000,
+            0.0035782656
+          ],
+          [
+            18820000,
+            0.0004128768
+          ],
+          [
+            18880000,
+            0.0000052416
+          ],
+          [
+            18960000,
+            0.0003981312
+          ],
+          [
+            18970000,
+            0.0002156544
+          ],
+          [
+            18990000,
+            0.000663552
+          ],
+          [
+            19000000,
+            0.0003354624
+          ],
+          [
+            19010000,
+            0.0001548288
+          ],
+          [
+            19030000,
+            0.0000225792
+          ],
+          [
+            19040000,
+            0.0000122304
+          ],
+          [
+            19050000,
+            0.0000688128
+          ],
+          [
+            19060000,
+            0.0000150528
+          ],
+          [
+            19080000,
+            0.0042467328
+          ],
+          [
+            19090000,
+            0.0024625152
+          ],
+          [
+            19100000,
+            0.0001769472
+          ],
+          [
+            19120000,
+            0.0009289728
+          ],
+          [
+            19140000,
+            0.0008945664
+          ],
+          [
+            19150000,
+            0.001548288
+          ],
+          [
+            19160000,
+            0.0031309824
+          ],
+          [
+            19170000,
+            0.0003612672
+          ],
+          [
+            19250000,
+            0.0035782656
+          ],
+          [
+            19310000,
+            0.0000096768
+          ],
+          [
+            19320000,
+            0.0000052416
+          ],
+          [
+            19340000,
+            0.0000064512
+          ],
+          [
+            19370000,
+            0.0003981312
+          ],
+          [
+            19400000,
+            0.0003981312
+          ],
+          [
+            19410000,
+            0.0000145152
+          ],
+          [
+            19420000,
+            0.0003833856
+          ],
+          [
+            19430000,
+            0.000663552
+          ],
+          [
+            19440000,
+            0.0013418496
+          ],
+          [
+            19450000,
+            0.0001548288
+          ],
+          [
+            19470000,
+            0.0000225792
+          ],
+          [
+            19490000,
+            0.0001304576
+          ],
+          [
+            19500000,
+            0.0000150528
+          ],
+          [
+            19530000,
+            0.0024625152
+          ],
+          [
+            19540000,
+            0.0020127744
+          ],
+          [
+            19580000,
+            0.0008945664
+          ],
+          [
+            19590000,
+            0.0000688128
+          ],
+          [
+            19600000,
+            0.0031309824
+          ],
+          [
+            19620000,
+            0.0006422528
+          ],
+          [
+            19690000,
+            0.0000062208
+          ],
+          [
+            19750000,
+            0.0000096768
+          ],
+          [
+            19770000,
+            0.0000559104
+          ],
+          [
+            19780000,
+            0.0000064512
+          ],
+          [
+            19810000,
+            0.0003981312
+          ],
+          [
+            19820000,
+            0.0008626176
+          ],
+          [
+            19850000,
+            0.0000145152
+          ],
+          [
+            19860000,
+            0.0003833856
+          ],
+          [
+            19870000,
+            0.0001133568
+          ],
+          [
+            19880000,
+            0.0013418496
+          ],
+          [
+            19890000,
+            0.0000489216
+          ],
+          [
+            19900000,
+            0.0002752512
+          ],
+          [
+            19930000,
+            0.0001304576
+          ],
+          [
+            19940000,
+            0.0000602112
+          ],
+          [
+            19970000,
+            0.0037158912
+          ],
+          [
+            19980000,
+            0.0020127744
+          ],
+          [
+            20000000,
+            0.0004128768
+          ],
+          [
+            20030000,
+            0.0000688128
+          ],
+          [
+            20060000,
+            0.0006422528
+          ],
+          [
+            20130000,
+            0.0000062208
+          ],
+          [
+            20150000,
+            0.0000359424
+          ],
+          [
+            20170000,
+            0.0000209664
+          ],
+          [
+            20210000,
+            0.0000559104
+          ],
+          [
+            20220000,
+            0.0000258048
+          ],
+          [
+            20250000,
+            0.0015925248
+          ],
+          [
+            20260000,
+            0.0008626176
+          ],
+          [
+            20280000,
+            0.0001769472
+          ],
+          [
+            20300000,
+            0.0001548288
+          ],
+          [
+            20310000,
+            0.0001133568
+          ],
+          [
+            20320000,
+            0.000129024
+          ],
+          [
+            20330000,
+            0.0000489216
+          ],
+          [
+            20340000,
+            0.0002752512
+          ],
+          [
+            20350000,
+            0.0000602112
+          ],
+          [
+            20380000,
+            0.0000602112
+          ],
+          [
+            20410000,
+            0.0037158912
+          ],
+          [
+            20430000,
+            0.0035782656
+          ],
+          [
+            20440000,
+            0.0004128768
+          ],
+          [
+            20580000,
+            0.0000663552
+          ],
+          [
+            20590000,
+            0.0000359424
+          ],
+          [
+            20600000,
+            0.000055296
+          ],
+          [
+            20610000,
+            0.0000209664
+          ],
+          [
+            20630000,
+            0.0000258048
+          ],
+          [
+            20660000,
+            0.0000258048
+          ],
+          [
+            20670000,
+            9.408e-7
+          ],
+          [
+            20690000,
+            0.0015925248
+          ],
+          [
+            20700000,
+            0.0000580608
+          ],
+          [
+            20710000,
+            0.0015335424
+          ],
+          [
+            20720000,
+            0.0001769472
+          ],
+          [
+            20740000,
+            0.0001548288
+          ],
+          [
+            20750000,
+            0.0003354624
+          ],
+          [
+            20760000,
+            0.000129024
+          ],
+          [
+            20780000,
+            0.0005218304
+          ],
+          [
+            20790000,
+            0.0000602112
+          ],
+          [
+            20870000,
+            0.0035782656
+          ],
+          [
+            20880000,
+            0.0002752512
+          ],
+          [
+            20950000,
+            4.032e-7
+          ],
+          [
+            20980000,
+            0.0000248832
+          ],
+          [
+            21020000,
+            0.0000663552
+          ],
+          [
+            21030000,
+            0.0001437696
+          ],
+          [
+            21040000,
+            0.000055296
+          ],
+          [
+            21060000,
+            0.0002236416
+          ],
+          [
+            21070000,
+            0.0000258048
+          ],
+          [
+            21100000,
+            0.0000081536
+          ],
+          [
+            21110000,
+            9.408e-7
+          ],
+          [
+            21140000,
+            0.0000580608
+          ],
+          [
+            21150000,
+            0.0015335424
+          ],
+          [
+            21160000,
+            0.0004534272
+          ],
+          [
+            21190000,
+            0.0003354624
+          ],
+          [
+            21210000,
+            0.0000688128
+          ],
+          [
+            21220000,
+            0.0005218304
+          ],
+          [
+            21230000,
+            0.0002408448
+          ],
+          [
+            21320000,
+            0.0002752512
+          ],
+          [
+            21380000,
+            0.0000034944
+          ],
+          [
+            21390000,
+            4.032e-7
+          ],
+          [
+            21420000,
+            0.0000248832
+          ],
+          [
+            21440000,
+            0.0001437696
+          ],
+          [
+            21470000,
+            0.0001437696
+          ],
+          [
+            21480000,
+            0.0000052416
+          ],
+          [
+            21490000,
+            0.0000294912
+          ],
+          [
+            21500000,
+            0.0002236416
+          ],
+          [
+            21510000,
+            0.0001032192
+          ],
+          [
+            21540000,
+            0.0000081536
+          ],
+          [
+            21560000,
+            0.0000100352
+          ],
+          [
+            21590000,
+            0.0006193152
+          ],
+          [
+            21600000,
+            0.0004534272
+          ],
+          [
+            21610000,
+            0.0001548288
+          ],
+          [
+            21650000,
+            0.0000688128
+          ],
+          [
+            21670000,
+            0.0002408448
+          ],
+          [
+            21760000,
+            0.0000022464
+          ],
+          [
+            21820000,
+            0.0000034944
+          ],
+          [
+            21840000,
+            0.0000043008
+          ],
+          [
+            21870000,
+            0.0002654208
+          ],
+          [
+            21880000,
+            0.0001437696
+          ],
+          [
+            21890000,
+            0.0000663552
+          ],
+          [
+            21910000,
+            0.0000096768
+          ],
+          [
+            21920000,
+            0.0000052416
+          ],
+          [
+            21930000,
+            0.0000294912
+          ],
+          [
+            21940000,
+            0.0000064512
+          ],
+          [
+            21950000,
+            0.0001032192
+          ],
+          [
+            21960000,
+            0.0000037632
+          ],
+          [
+            22000000,
+            0.0000100352
+          ],
+          [
+            22030000,
+            0.0006193152
+          ],
+          [
+            22040000,
+            0.0013418496
+          ],
+          [
+            22050000,
+            0.0001548288
+          ],
+          [
+            22190000,
+            0.0000041472
+          ],
+          [
+            22200000,
+            0.0000022464
+          ],
+          [
+            22220000,
+            0.0000027648
+          ],
+          [
+            22240000,
+            0.0000016128
+          ],
+          [
+            22280000,
+            0.0000043008
+          ],
+          [
+            22310000,
+            0.0002654208
+          ],
+          [
+            22320000,
+            0.0005750784
+          ],
+          [
+            22330000,
+            0.0000663552
+          ],
+          [
+            22350000,
+            0.0000096768
+          ],
+          [
+            22370000,
+            0.0000559104
+          ],
+          [
+            22380000,
+            0.0000064512
+          ],
+          [
+            22390000,
+            0.0000326144
+          ],
+          [
+            22400000,
+            0.0000037632
+          ],
+          [
+            22480000,
+            0.0013418496
+          ],
+          [
+            22500000,
+            0.0002752512
+          ],
+          [
+            22630000,
+            0.0000041472
+          ],
+          [
+            22650000,
+            0.0000239616
+          ],
+          [
+            22660000,
+            0.0000027648
+          ],
+          [
+            22670000,
+            0.0000139776
+          ],
+          [
+            22680000,
+            0.0000016128
+          ],
+          [
+            22760000,
+            0.0005750784
+          ],
+          [
+            22770000,
+            0.0000209664
+          ],
+          [
+            22780000,
+            0.0001179648
+          ],
+          [
+            22810000,
+            0.0000559104
+          ],
+          [
+            22820000,
+            0.0000258048
+          ],
+          [
+            22830000,
+            0.0000326144
+          ],
+          [
+            22850000,
+            0.0000401408
+          ],
+          [
+            22940000,
+            0.0002752512
+          ],
+          [
+            23050000,
+            0.0000089856
+          ],
+          [
+            23090000,
+            0.0000239616
+          ],
+          [
+            23100000,
+            0.0000110592
+          ],
+          [
+            23110000,
+            0.0000139776
+          ],
+          [
+            23130000,
+            0.0000172032
+          ],
+          [
+            23170000,
+            6.272e-7
+          ],
+          [
+            23200000,
+            0.0000387072
+          ],
+          [
+            23210000,
+            0.0000209664
+          ],
+          [
+            23220000,
+            0.0001179648
+          ],
+          [
+            23230000,
+            0.0000258048
+          ],
+          [
+            23260000,
+            0.0000258048
+          ],
+          [
+            23290000,
+            0.0000401408
+          ],
+          [
+            23450000,
+            2.688e-7
+          ],
+          [
+            23480000,
+            0.0000165888
+          ],
+          [
+            23490000,
+            0.0000089856
+          ],
+          [
+            23510000,
+            0.0000110592
+          ],
+          [
+            23540000,
+            0.0000110592
+          ],
+          [
+            23550000,
+            4.032e-7
+          ],
+          [
+            23570000,
+            0.0000172032
+          ],
+          [
+            23610000,
+            6.272e-7
+          ],
+          [
+            23640000,
+            0.0000387072
+          ],
+          [
+            23660000,
+            0.0002236416
+          ],
+          [
+            23670000,
+            0.0000258048
+          ],
+          [
+            23830000,
+            1.728e-7
+          ],
+          [
+            23890000,
+            2.688e-7
+          ],
+          [
+            23920000,
+            0.0000165888
+          ],
+          [
+            23940000,
+            0.0000958464
+          ],
+          [
+            23950000,
+            0.0000110592
+          ],
+          [
+            23980000,
+            0.0000034944
+          ],
+          [
+            23990000,
+            4.032e-7
+          ],
+          [
+            24100000,
+            0.0002236416
+          ],
+          [
+            24110000,
+            0.0001032192
+          ],
+          [
+            24260000,
+            0.0000014976
+          ],
+          [
+            24270000,
+            1.728e-7
+          ],
+          [
+            24380000,
+            0.0000958464
+          ],
+          [
+            24390000,
+            0.0000442368
+          ],
+          [
+            24420000,
+            0.0000034944
+          ],
+          [
+            24440000,
+            0.0000043008
+          ],
+          [
+            24460000,
+            0.0000025088
+          ],
+          [
+            24550000,
+            0.0001032192
+          ],
+          [
+            24700000,
+            0.0000014976
+          ],
+          [
+            24720000,
+            0.0000018432
+          ],
+          [
+            24740000,
+            0.0000010752
+          ],
+          [
+            24830000,
+            0.0000442368
+          ],
+          [
+            24840000,
+            0.0000016128
+          ],
+          [
+            24880000,
+            0.0000043008
+          ],
+          [
+            24900000,
+            0.0000025088
+          ],
+          [
+            25120000,
+            6.912e-7
+          ],
+          [
+            25160000,
+            0.0000018432
+          ],
+          [
+            25180000,
+            0.0000010752
+          ],
+          [
+            25270000,
+            0.0000139776
+          ],
+          [
+            25280000,
+            0.0000016128
+          ],
+          [
+            25550000,
+            0.0000059904
+          ],
+          [
+            25560000,
+            6.912e-7
+          ],
+          [
+            25710000,
+            0.0000139776
+          ],
+          [
+            25730000,
+            0.0000172032
+          ],
+          [
+            25990000,
+            0.0000059904
+          ],
+          [
+            26010000,
+            0.0000073728
+          ],
+          [
+            26050000,
+            2.688e-7
+          ],
+          [
+            26170000,
+            0.0000172032
+          ],
+          [
+            26330000,
+            1.152e-7
+          ],
+          [
+            26450000,
+            0.0000073728
+          ],
+          [
+            26490000,
+            2.688e-7
+          ],
+          [
+            26770000,
+            1.152e-7
+          ],
+          [
+            27340000,
+            0.0000010752
+          ],
+          [
+            27620000,
+            4.608e-7
+          ],
+          [
+            27780000,
+            0.0000010752
+          ],
+          [
+            28060000,
+            4.608e-7
+          ]
+        ]
+      },
+      "quantiles": {
+        "p10Yen": 11800000,
+        "p50Yen": 15030000,
+        "p90Yen": 18640000
+      },
+      "quantilesWithoutActions": {
+        "p10Yen": 10510000,
+        "p50Yen": 11800000,
+        "p90Yen": 14680000
+      },
+      "cash": {
+        "byMonth": [
+          {
+            "month": "2026-11",
+            "yen": 2990000
+          },
+          {
+            "month": "2027-02",
+            "yen": 1035000
+          },
+          {
+            "month": "2027-03",
+            "yen": 862500
+          }
+        ],
+        "periodYen": 4887500,
+        "lastTwoMonthsYen": 1897500,
+        "slipOutYen": 862500,
+        "nextPeriodYen": 1992800,
+        "unscheduledCount": 0
+      },
+      "investmentRecovery": {
+        "rows": [
+          {
+            "kind": "own_investment",
+            "workId": 103,
+            "title": "坂の上の写真館（架空）",
+            "investmentYen": 4000000,
+            "revenueYen": 2200000,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 2200000,
+            "remainingExpectedYen": 1035000,
+            "error": null,
+            "holdNote": null,
+            "diffYen": -1800000,
+            "recoveryRateBps": 5500,
+            "status": "awaiting",
+            "projectedDiffYen": -765000
+          },
+          {
+            "kind": "committee",
+            "workId": 104,
+            "title": "風の停車場（架空）",
+            "investmentYen": 1800000,
+            "revenueYen": 4062000,
+            "periodInvestmentYen": 1800000,
+            "periodRevenueYen": 4062000,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": null,
+            "diffYen": 2262000,
+            "recoveryRateBps": 22566,
+            "status": "recovered",
+            "projectedDiffYen": 2262000
+          },
+          {
+            "kind": "committee",
+            "workId": 105,
+            "title": "雪の灯台（架空）",
+            "investmentYen": 8000000,
+            "revenueYen": 1500000,
+            "periodInvestmentYen": 1000000,
+            "periodRevenueYen": 1500000,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": "委員会の月次収支に保留があります: 窓口の条件が無い区分（海外）の売上を委員会の収入にしていません",
+            "diffYen": -6500000,
+            "recoveryRateBps": 1875,
+            "status": "awaiting",
+            "projectedDiffYen": -6500000
+          },
+          {
+            "kind": "committee",
+            "workId": 106,
+            "title": "夜の温室（架空）",
+            "investmentYen": 0,
+            "revenueYen": 700000,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 700000,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": null,
+            "diffYen": 700000,
+            "recoveryRateBps": null,
+            "status": "recovered",
+            "projectedDiffYen": 700000
+          },
+          {
+            "kind": "committee",
+            "workId": 107,
+            "title": "遠い汽笛（架空）",
+            "investmentYen": 5000000,
+            "revenueYen": null,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": null,
+            "remainingExpectedYen": 0,
+            "error": "委員会契約に条件版がありません",
+            "holdNote": null,
+            "diffYen": null,
+            "recoveryRateBps": null,
+            "status": "unknown",
+            "projectedDiffYen": null
+          },
+          {
+            "kind": "committee",
+            "workId": 111,
+            "title": "汐見の時計塔（架空）",
+            "investmentYen": 2000000,
+            "revenueYen": 2000000,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 0,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": null,
+            "diffYen": 0,
+            "recoveryRateBps": 10000,
+            "status": "recovered",
+            "projectedDiffYen": 0
+          }
+        ],
+        "total": {
+          "rowCount": 5,
+          "investmentYen": 15800000,
+          "revenueYen": 10462000,
+          "diffYen": -5338000,
+          "periodInvestmentYen": 2800000,
+          "periodRevenueYen": 8462000,
+          "projectedDiffYen": -4303000,
+          "recoveryRateBps": 6621,
+          "status": "awaiting"
+        },
+        "unknown": {
+          "count": 1,
+          "investmentYen": 5000000
+        },
+        "unconnected": []
+      }
+    },
+    "pessimistic": {
+      "assumptions": {
+        "salesMultiplierBps": 8500,
+        "recoveryAmountBps": 8500,
+        "meetingToProposalBps": 5000,
+        "proposalToContractBps": 2000,
+        "paymentDelayMonths": 1
+      },
+      "actions": [
+        {
+          "source": "consignment",
+          "step": "meeting",
+          "countX100": 400
+        },
+        {
+          "source": "acquisition",
+          "step": "meeting",
+          "countX100": 150
+        },
+        {
+          "source": "contract_work",
+          "step": "proposal",
+          "countX100": 100
+        }
+      ],
+      "expectedYen": 12750287,
+      "actualYen": 9472000,
+      "weightedYen": 2071087,
+      "actionYen": 1207200,
+      "actualPlusWeightedYen": 11543087,
+      "expectedSalesYen": 17833787,
+      "actualSalesYen": 13952000,
+      "weightedSalesYen": 2139087,
+      "actionSalesYen": 1742700,
+      "actualPlusWeightedSalesYen": 16091087,
+      "bySource": [
+        {
+          "source": "contract_work",
+          "status": "unconnected",
+          "actualYen": null,
+          "weightedYen": 0,
+          "actionYen": 500000,
+          "expectedYen": 500000,
+          "actualSalesYen": null,
+          "weightedSalesYen": 0,
+          "actionSalesYen": 500000,
+          "expectedSalesYen": 500000
+        },
+        {
+          "source": "own_investment",
+          "status": "connected",
+          "actualYen": 2200000,
+          "weightedYen": 765000,
+          "actionYen": 0,
+          "expectedYen": 2965000,
+          "actualSalesYen": 2200000,
+          "weightedSalesYen": 765000,
+          "actionSalesYen": 0,
+          "expectedSalesYen": 2965000
+        },
+        {
+          "source": "committee",
+          "status": "connected",
+          "actualYen": 3462000,
+          "weightedYen": 0,
+          "actionYen": 0,
+          "expectedYen": 3462000,
+          "actualSalesYen": 6262000,
+          "weightedSalesYen": 0,
+          "actionSalesYen": 0,
+          "expectedSalesYen": 6262000
+        },
+        {
+          "source": "acquisition",
+          "status": "connected",
+          "actualYen": 2910000,
+          "weightedYen": 654500,
+          "actionYen": 229500,
+          "expectedYen": 3794000,
+          "actualSalesYen": 4590000,
+          "weightedSalesYen": 722500,
+          "actionSalesYen": 765000,
+          "expectedSalesYen": 6077500
+        },
+        {
+          "source": "consignment",
+          "status": "connected",
+          "actualYen": 900000,
+          "weightedYen": 651587,
+          "actionYen": 477700,
+          "expectedYen": 2029287,
+          "actualSalesYen": 900000,
+          "weightedSalesYen": 651587,
+          "actionSalesYen": 477700,
+          "expectedSalesYen": 2029287
+        }
+      ],
+      "opportunities": [
+        {
+          "opportunityId": 1,
+          "workId": 101,
+          "source": "consignment",
+          "stage": "won",
+          "probabilityBps": 10000,
+          "remainingYen": 2500000,
+          "valueYen": 425000,
+          "weightedYen": 425000,
+          "salesValueYen": 425000,
+          "weightedSalesYen": 425000,
+          "revenueMonth": "2026-09",
+          "overdue": true,
+          "placement": "in_period",
+          "paymentMonth": "2026-12",
+          "inflowYen": 2125000
+        },
+        {
+          "opportunityId": 2,
+          "workId": 101,
+          "source": "consignment",
+          "stage": "won",
+          "probabilityBps": 10000,
+          "remainingYen": 0,
+          "valueYen": 0,
+          "weightedYen": 0,
+          "salesValueYen": 0,
+          "weightedSalesYen": 0,
+          "revenueMonth": "2026-09",
+          "overdue": true,
+          "placement": "in_period",
+          "paymentMonth": "2026-12",
+          "inflowYen": 0
+        },
+        {
+          "opportunityId": 3,
+          "workId": 102,
+          "source": "acquisition",
+          "stage": "lead",
+          "probabilityBps": 3000,
+          "remainingYen": 2500000,
+          "valueYen": 2125000,
+          "weightedYen": 637500,
+          "salesValueYen": 2125000,
+          "weightedSalesYen": 637500,
+          "revenueMonth": "2027-01",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-04",
+          "inflowYen": 637500
+        },
+        {
+          "opportunityId": 4,
+          "workId": 101,
+          "source": "consignment",
+          "stage": "proposal",
+          "probabilityBps": 5000,
+          "remainingYen": 1925000,
+          "valueYen": 327250,
+          "weightedYen": 163625,
+          "salesValueYen": 327250,
+          "weightedSalesYen": 163625,
+          "revenueMonth": "2027-03",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-05",
+          "inflowYen": 818125
+        },
+        {
+          "opportunityId": 5,
+          "workId": 103,
+          "source": "own_investment",
+          "stage": "negotiation",
+          "probabilityBps": 8000,
+          "remainingYen": 1125000,
+          "valueYen": 956250,
+          "weightedYen": 765000,
+          "salesValueYen": 956250,
+          "weightedSalesYen": 765000,
+          "revenueMonth": "2026-11",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-03",
+          "inflowYen": 765000
+        },
+        {
+          "opportunityId": 9,
+          "workId": 102,
+          "source": "acquisition",
+          "stage": "proposal",
+          "probabilityBps": 5000,
+          "remainingYen": 800000,
+          "valueYen": 680000,
+          "weightedYen": 340000,
+          "salesValueYen": 680000,
+          "weightedSalesYen": 340000,
+          "revenueMonth": "2027-05",
+          "overdue": false,
+          "placement": "after_period",
+          "paymentMonth": "2027-07",
+          "inflowYen": 340000
+        },
+        {
+          "opportunityId": 10,
+          "workId": 108,
+          "source": "acquisition",
+          "stage": "won",
+          "probabilityBps": 10000,
+          "remainingYen": 100000,
+          "valueYen": 17000,
+          "weightedYen": 17000,
+          "salesValueYen": 85000,
+          "weightedSalesYen": 85000,
+          "revenueMonth": "2026-09",
+          "overdue": true,
+          "placement": "in_period",
+          "paymentMonth": "2026-12",
+          "inflowYen": 85000
+        },
+        {
+          "opportunityId": 11,
+          "workId": 110,
+          "source": "consignment",
+          "stage": "lead",
+          "probabilityBps": 3000,
+          "remainingYen": 1234567,
+          "valueYen": 209876,
+          "weightedYen": 62962,
+          "salesValueYen": 209876,
+          "weightedSalesYen": 62962,
+          "revenueMonth": "2027-02",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-05",
+          "inflowYen": 314814
+        }
+      ],
+      "actionRows": [
+        {
+          "source": "consignment",
+          "step": "meeting",
+          "countX100": 400,
+          "dealYen": 7025000,
+          "valueYen": 1194250,
+          "expectedYen": 477700,
+          "salesValueYen": 1194250,
+          "expectedSalesYen": 477700
+        },
+        {
+          "source": "acquisition",
+          "step": "meeting",
+          "countX100": 150,
+          "dealYen": 6000000,
+          "valueYen": 1530000,
+          "expectedYen": 229500,
+          "salesValueYen": 5100000,
+          "expectedSalesYen": 765000
+        },
+        {
+          "source": "contract_work",
+          "step": "proposal",
+          "countX100": 100,
+          "dealYen": 25000000,
+          "valueYen": 2500000,
+          "expectedYen": 500000,
+          "salesValueYen": 2500000,
+          "expectedSalesYen": 500000
+        }
+      ],
+      "nextPeriodProfitYen": 340000,
+      "componentCount": 12,
+      "distribution": {
+        "gridYen": 10000,
+        "points": [
+          [
+            9920000,
+            0.0219898476
+          ],
+          [
+            10130000,
+            0.0094242204
+          ],
+          [
+            10250000,
+            0.0219898476
+          ],
+          [
+            10460000,
+            0.0094242204
+          ],
+          [
+            10880000,
+            0.0879593904
+          ],
+          [
+            11090000,
+            0.0376968816
+          ],
+          [
+            11110000,
+            0.0097732656
+          ],
+          [
+            11210000,
+            0.0879593904
+          ],
+          [
+            11320000,
+            0.0041885424
+          ],
+          [
+            11420000,
+            0.0376968816
+          ],
+          [
+            11440000,
+            0.0097732656
+          ],
+          [
+            11450000,
+            0.0036006768
+          ],
+          [
+            11650000,
+            0.0041885424
+          ],
+          [
+            11660000,
+            0.0015431472
+          ],
+          [
+            11780000,
+            0.0036006768
+          ],
+          [
+            11990000,
+            0.0015431472
+          ],
+          [
+            12050000,
+            0.0094242204
+          ],
+          [
+            12070000,
+            0.0390930624
+          ],
+          [
+            12260000,
+            0.0040389516
+          ],
+          [
+            12280000,
+            0.0167541696
+          ],
+          [
+            12310000,
+            0.0016288776
+          ],
+          [
+            12380000,
+            0.0094242204
+          ],
+          [
+            12400000,
+            0.0390930624
+          ],
+          [
+            12410000,
+            0.0144027072
+          ],
+          [
+            12420000,
+            0.0054974619
+          ],
+          [
+            12520000,
+            0.0006980904
+          ],
+          [
+            12590000,
+            0.0040389516
+          ],
+          [
+            12610000,
+            0.0167541696
+          ],
+          [
+            12620000,
+            0.0061725888
+          ],
+          [
+            12630000,
+            0.0023560551
+          ],
+          [
+            12640000,
+            0.0032291784
+          ],
+          [
+            12740000,
+            0.0144027072
+          ],
+          [
+            12750000,
+            0.0054974619
+          ],
+          [
+            12850000,
+            0.0013839336
+          ],
+          [
+            12950000,
+            0.0061725888
+          ],
+          [
+            12960000,
+            0.0023560551
+          ],
+          [
+            12970000,
+            0.0016003008
+          ],
+          [
+            12980000,
+            0.0001285956
+          ],
+          [
+            13010000,
+            0.0376968816
+          ],
+          [
+            13180000,
+            0.0006858432
+          ],
+          [
+            13190000,
+            0.0000551124
+          ],
+          [
+            13220000,
+            0.0161558064
+          ],
+          [
+            13240000,
+            0.0041885424
+          ],
+          [
+            13270000,
+            0.0065155104
+          ],
+          [
+            13310000,
+            0.0001285956
+          ],
+          [
+            13340000,
+            0.0376968816
+          ],
+          [
+            13380000,
+            0.0219898476
+          ],
+          [
+            13450000,
+            0.0017950896
+          ],
+          [
+            13480000,
+            0.0027923616
+          ],
+          [
+            13500000,
+            0.0001206576
+          ],
+          [
+            13520000,
+            0.0000551124
+          ],
+          [
+            13550000,
+            0.0161558064
+          ],
+          [
+            13570000,
+            0.0041885424
+          ],
+          [
+            13580000,
+            0.0015431472
+          ],
+          [
+            13590000,
+            0.0094242204
+          ],
+          [
+            13600000,
+            0.0129167136
+          ],
+          [
+            13610000,
+            0.0024433164
+          ],
+          [
+            13710000,
+            0.022041558
+          ],
+          [
+            13780000,
+            0.0017950896
+          ],
+          [
+            13790000,
+            0.0006613488
+          ],
+          [
+            13810000,
+            0.0055357344
+          ],
+          [
+            13820000,
+            0.0010471356
+          ],
+          [
+            13830000,
+            0.0001206576
+          ],
+          [
+            13840000,
+            0.0002667168
+          ],
+          [
+            13910000,
+            0.0015431472
+          ],
+          [
+            13920000,
+            0.0094242204
+          ],
+          [
+            13930000,
+            0.0064012032
+          ],
+          [
+            13940000,
+            0.0029576988
+          ],
+          [
+            13950000,
+            0.0009001692
+          ],
+          [
+            14040000,
+            0.0000517104
+          ],
+          [
+            14050000,
+            0.0001143072
+          ],
+          [
+            14120000,
+            0.0006613488
+          ],
+          [
+            14140000,
+            0.0027433728
+          ],
+          [
+            14150000,
+            0.0012675852
+          ],
+          [
+            14160000,
+            0.0003857868
+          ],
+          [
+            14170000,
+            0.0003238704
+          ],
+          [
+            14200000,
+            0.0167541696
+          ],
+          [
+            14270000,
+            0.0005143824
+          ],
+          [
+            14280000,
+            0.0009001692
+          ],
+          [
+            14380000,
+            0.0001388016
+          ],
+          [
+            14410000,
+            0.0071803584
+          ],
+          [
+            14440000,
+            0.0006980904
+          ],
+          [
+            14460000,
+            0.0004826304
+          ],
+          [
+            14480000,
+            0.0002204496
+          ],
+          [
+            14490000,
+            0.0003857868
+          ],
+          [
+            14500000,
+            0.0000571536
+          ],
+          [
+            14530000,
+            0.0167541696
+          ],
+          [
+            14540000,
+            0.0061725888
+          ],
+          [
+            14550000,
+            0.0023560551
+          ],
+          [
+            14570000,
+            0.0097732656
+          ],
+          [
+            14650000,
+            0.0002991816
+          ],
+          [
+            14670000,
+            0.0002068416
+          ],
+          [
+            14700000,
+            0.0000033516
+          ],
+          [
+            14710000,
+            0.0000244944
+          ],
+          [
+            14740000,
+            0.0071803584
+          ],
+          [
+            14750000,
+            0.0026453952
+          ],
+          [
+            14760000,
+            0.0010097379
+          ],
+          [
+            14770000,
+            0.0013839336
+          ],
+          [
+            14780000,
+            0.0041885424
+          ],
+          [
+            14790000,
+            0.0004826304
+          ],
+          [
+            14800000,
+            0.0010668672
+          ],
+          [
+            14810000,
+            0.0004072194
+          ],
+          [
+            14870000,
+            0.0061725888
+          ],
+          [
+            14880000,
+            0.0023560551
+          ],
+          [
+            14900000,
+            0.0097732656
+          ],
+          [
+            14910000,
+            0.0036021132
+          ],
+          [
+            14980000,
+            0.0005931144
+          ],
+          [
+            15000000,
+            0.0002068416
+          ],
+          [
+            15010000,
+            0.0004572288
+          ],
+          [
+            15020000,
+            0.0001745226
+          ],
+          [
+            15030000,
+            0.0000231084
+          ],
+          [
+            15080000,
+            0.0026453952
+          ],
+          [
+            15090000,
+            0.0010097379
+          ],
+          [
+            15100000,
+            0.0006858432
+          ],
+          [
+            15110000,
+            0.0042436548
+          ],
+          [
+            15120000,
+            0.0015431472
+          ],
+          [
+            15130000,
+            0.0012954816
+          ],
+          [
+            15140000,
+            0.0008072946
+          ],
+          [
+            15240000,
+            0.0036105804
+          ],
+          [
+            15310000,
+            0.0002939328
+          ],
+          [
+            15320000,
+            0.0000236196
+          ],
+          [
+            15340000,
+            0.0005552064
+          ],
+          [
+            15350000,
+            0.0003459834
+          ],
+          [
+            15360000,
+            0.0000197568
+          ],
+          [
+            15370000,
+            0.0000095256
+          ],
+          [
+            15400000,
+            0.0027923616
+          ],
+          [
+            15440000,
+            0.0000551124
+          ],
+          [
+            15450000,
+            0.0015431472
+          ],
+          [
+            15460000,
+            0.0002286144
+          ],
+          [
+            15470000,
+            0.0004000752
+          ],
+          [
+            15480000,
+            0.0000321489
+          ],
+          [
+            15510000,
+            0.0094242204
+          ],
+          [
+            15570000,
+            0.0000084672
+          ],
+          [
+            15580000,
+            0.0000040824
+          ],
+          [
+            15610000,
+            0.0011967264
+          ],
+          [
+            15630000,
+            0.0000517104
+          ],
+          [
+            15650000,
+            0.0000236196
+          ],
+          [
+            15660000,
+            0.0000134064
+          ],
+          [
+            15670000,
+            0.0000979776
+          ],
+          [
+            15680000,
+            0.0001714608
+          ],
+          [
+            15690000,
+            0.0000137781
+          ],
+          [
+            15700000,
+            0.0000095256
+          ],
+          [
+            15720000,
+            0.0040389516
+          ],
+          [
+            15730000,
+            0.0055357344
+          ],
+          [
+            15740000,
+            0.0010471356
+          ],
+          [
+            15770000,
+            0.0016288776
+          ],
+          [
+            15810000,
+            0.0000321489
+          ],
+          [
+            15840000,
+            0.009446382
+          ],
+          [
+            15870000,
+            0.0000057456
+          ],
+          [
+            15910000,
+            0.0000040824
+          ],
+          [
+            15940000,
+            0.0023724576
+          ],
+          [
+            15950000,
+            0.0004487724
+          ],
+          [
+            15960000,
+            0.0000517104
+          ],
+          [
+            15970000,
+            0.0001143072
+          ],
+          [
+            15980000,
+            0.0006980904
+          ],
+          [
+            15990000,
+            0.0000924336
+          ],
+          [
+            16000000,
+            0.0000301644
+          ],
+          [
+            16020000,
+            0.0000137781
+          ],
+          [
+            16050000,
+            0.0040389516
+          ],
+          [
+            16060000,
+            0.0027433728
+          ],
+          [
+            16070000,
+            0.0012675852
+          ],
+          [
+            16080000,
+            0.0003857868
+          ],
+          [
+            16100000,
+            0.0032291784
+          ],
+          [
+            16170000,
+            0.0000221616
+          ],
+          [
+            16180000,
+            0.0000489888
+          ],
+          [
+            16200000,
+            0.0000396144
+          ],
+          [
+            16210000,
+            0.0000129276
+          ],
+          [
+            16230000,
+            5.488e-7
+          ],
+          [
+            16270000,
+            0.0011757312
+          ],
+          [
+            16280000,
+            0.0005432508
+          ],
+          [
+            16290000,
+            0.0001653372
+          ],
+          [
+            16300000,
+            0.0001388016
+          ],
+          [
+            16310000,
+            0.0013839336
+          ],
+          [
+            16320000,
+            0.0000790272
+          ],
+          [
+            16330000,
+            0.0000682668
+          ],
+          [
+            16340000,
+            0.0000666792
+          ],
+          [
+            16400000,
+            0.0002204496
+          ],
+          [
+            16410000,
+            0.0003857868
+          ],
+          [
+            16430000,
+            0.0016003008
+          ],
+          [
+            16440000,
+            0.0001288308
+          ],
+          [
+            16510000,
+            0.0000594864
+          ],
+          [
+            16530000,
+            0.0000338688
+          ],
+          [
+            16540000,
+            0.0000292572
+          ],
+          [
+            16550000,
+            0.0000285768
+          ],
+          [
+            16560000,
+            0.0000012544
+          ],
+          [
+            16590000,
+            0.0002068416
+          ],
+          [
+            16610000,
+            0.0000944784
+          ],
+          [
+            16620000,
+            0.0001653372
+          ],
+          [
+            16630000,
+            0.0000244944
+          ],
+          [
+            16640000,
+            0.0006858432
+          ],
+          [
+            16650000,
+            0.0000551124
+          ],
+          [
+            16660000,
+            0.0000381024
+          ],
+          [
+            16670000,
+            0.0000809676
+          ],
+          [
+            16700000,
+            0.0041885424
+          ],
+          [
+            16770000,
+            0.0001291332
+          ],
+          [
+            16800000,
+            0.0000886464
+          ],
+          [
+            16830000,
+            0.0000014364
+          ],
+          [
+            16840000,
+            0.0000104976
+          ],
+          [
+            16870000,
+            0.0000163296
+          ],
+          [
+            16880000,
+            0.0000347004
+          ],
+          [
+            16890000,
+            7.056e-7
+          ],
+          [
+            16910000,
+            0.0017950896
+          ],
+          [
+            16920000,
+            0.0002068416
+          ],
+          [
+            16930000,
+            0.0004572288
+          ],
+          [
+            16940000,
+            0.0001745226
+          ],
+          [
+            16960000,
+            0.0001206576
+          ],
+          [
+            16980000,
+            0.0000551124
+          ],
+          [
+            17000000,
+            0.0000142884
+          ],
+          [
+            17030000,
+            0.0041885424
+          ],
+          [
+            17040000,
+            0.0015437628
+          ],
+          [
+            17100000,
+            3.024e-7
+          ],
+          [
+            17130000,
+            0.0000886464
+          ],
+          [
+            17140000,
+            0.0001959552
+          ],
+          [
+            17150000,
+            0.0000747954
+          ],
+          [
+            17160000,
+            0.0000099036
+          ],
+          [
+            17170000,
+            0.0000517104
+          ],
+          [
+            17190000,
+            0.0000021952
+          ],
+          [
+            17200000,
+            8.379e-7
+          ],
+          [
+            17210000,
+            0.0000061236
+          ],
+          [
+            17240000,
+            0.0017950896
+          ],
+          [
+            17250000,
+            0.0006613488
+          ],
+          [
+            17260000,
+            0.0005552064
+          ],
+          [
+            17270000,
+            0.0003459834
+          ],
+          [
+            17290000,
+            0.0001206576
+          ],
+          [
+            17300000,
+            0.0002667168
+          ],
+          [
+            17370000,
+            0.0015473916
+          ],
+          [
+            17400000,
+            9.408e-7
+          ],
+          [
+            17410000,
+            3.591e-7
+          ],
+          [
+            17470000,
+            0.0002379456
+          ],
+          [
+            17480000,
+            0.0001482786
+          ],
+          [
+            17490000,
+            0.0000084672
+          ],
+          [
+            17500000,
+            0.0000557928
+          ],
+          [
+            17510000,
+            0.0001143072
+          ],
+          [
+            17520000,
+            0.0000050176
+          ],
+          [
+            17530000,
+            0.0000057771
+          ],
+          [
+            17580000,
+            0.0006613488
+          ],
+          [
+            17590000,
+            0.0000979776
+          ],
+          [
+            17600000,
+            0.0001714608
+          ],
+          [
+            17610000,
+            0.0000137781
+          ],
+          [
+            17630000,
+            0.0003238704
+          ],
+          [
+            17700000,
+            0.0000036288
+          ],
+          [
+            17710000,
+            0.0000017496
+          ],
+          [
+            17730000,
+            0.0000021504
+          ],
+          [
+            17740000,
+            0.0000024759
+          ],
+          [
+            17760000,
+            1.96e-8
+          ],
+          [
+            17790000,
+            0.0000057456
+          ],
+          [
+            17800000,
+            0.0000419904
+          ],
+          [
+            17810000,
+            0.0000734832
+          ],
+          [
+            17820000,
+            0.0000059049
+          ],
+          [
+            17830000,
+            0.0000040824
+          ],
+          [
+            17840000,
+            0.0001388016
+          ],
+          [
+            17850000,
+            0.0000028224
+          ],
+          [
+            17860000,
+            0.0000049392
+          ],
+          [
+            17870000,
+            0.0000023814
+          ],
+          [
+            17900000,
+            0.0006980904
+          ],
+          [
+            17940000,
+            0.0000137781
+          ],
+          [
+            17960000,
+            0.0000571536
+          ],
+          [
+            17970000,
+            8.4e-9
+          ],
+          [
+            18000000,
+            0.0000024624
+          ],
+          [
+            18040000,
+            0.0000017496
+          ],
+          [
+            18060000,
+            0.0000012096
+          ],
+          [
+            18070000,
+            0.0000021168
+          ],
+          [
+            18080000,
+            0.0000010206
+          ],
+          [
+            18090000,
+            1.96e-8
+          ],
+          [
+            18110000,
+            0.0002991816
+          ],
+          [
+            18120000,
+            0.0000396144
+          ],
+          [
+            18130000,
+            0.0000129276
+          ],
+          [
+            18150000,
+            0.0000059049
+          ],
+          [
+            18160000,
+            0.0000033516
+          ],
+          [
+            18170000,
+            0.0000244944
+          ],
+          [
+            18200000,
+            0.0000023814
+          ],
+          [
+            18230000,
+            0.0013839336
+          ],
+          [
+            18300000,
+            8.4e-9
+          ],
+          [
+            18330000,
+            0.0000169776
+          ],
+          [
+            18340000,
+            0.0000055404
+          ],
+          [
+            18360000,
+            2.352e-7
+          ],
+          [
+            18370000,
+            0.0000014364
+          ],
+          [
+            18410000,
+            0.0000010206
+          ],
+          [
+            18440000,
+            0.0005931144
+          ],
+          [
+            18450000,
+            0.0000338688
+          ],
+          [
+            18460000,
+            0.0000292572
+          ],
+          [
+            18470000,
+            0.0000285768
+          ],
+          [
+            18490000,
+            0.0000231084
+          ],
+          [
+            18560000,
+            0.0006858432
+          ],
+          [
+            18570000,
+            0.0000552132
+          ],
+          [
+            18660000,
+            0.0000145152
+          ],
+          [
+            18670000,
+            0.0000125388
+          ],
+          [
+            18680000,
+            0.0000122472
+          ],
+          [
+            18690000,
+            5.376e-7
+          ],
+          [
+            18700000,
+            0.0000099036
+          ],
+          [
+            18720000,
+            7.84e-8
+          ],
+          [
+            18730000,
+            1.372e-7
+          ],
+          [
+            18770000,
+            0.0002939328
+          ],
+          [
+            18780000,
+            0.0000236196
+          ],
+          [
+            18790000,
+            0.0000163296
+          ],
+          [
+            18800000,
+            0.0000347004
+          ],
+          [
+            18820000,
+            0.0000197568
+          ],
+          [
+            18830000,
+            0.0000095256
+          ],
+          [
+            18900000,
+            0.0000553428
+          ],
+          [
+            18930000,
+            3.36e-8
+          ],
+          [
+            18940000,
+            5.88e-8
+          ],
+          [
+            19000000,
+            0.0000069984
+          ],
+          [
+            19010000,
+            0.0000148716
+          ],
+          [
+            19020000,
+            3.024e-7
+          ],
+          [
+            19030000,
+            0.0000084672
+          ],
+          [
+            19040000,
+            0.0000040824
+          ],
+          [
+            19050000,
+            7.84e-8
+          ],
+          [
+            19060000,
+            3.136e-7
+          ],
+          [
+            19090000,
+            0.0000517104
+          ],
+          [
+            19110000,
+            0.0000236196
+          ],
+          [
+            19130000,
+            0.0000061236
+          ],
+          [
+            19160000,
+            0.0000095256
+          ],
+          [
+            19230000,
+            1.296e-7
+          ],
+          [
+            19260000,
+            3.36e-8
+          ],
+          [
+            19270000,
+            1.344e-7
+          ],
+          [
+            19300000,
+            0.0000221616
+          ],
+          [
+            19320000,
+            9.408e-7
+          ],
+          [
+            19330000,
+            3.591e-7
+          ],
+          [
+            19340000,
+            0.0000026244
+          ],
+          [
+            19370000,
+            0.0000040824
+          ],
+          [
+            19390000,
+            1.764e-7
+          ],
+          [
+            19420000,
+            0.0000517104
+          ],
+          [
+            19430000,
+            0.0001143072
+          ],
+          [
+            19530000,
+            4.032e-7
+          ],
+          [
+            19540000,
+            1.539e-7
+          ],
+          [
+            19600000,
+            7.56e-8
+          ],
+          [
+            19630000,
+            0.0000221616
+          ],
+          [
+            19640000,
+            0.0000489888
+          ],
+          [
+            19650000,
+            0.0000021504
+          ],
+          [
+            19660000,
+            0.0000024759
+          ],
+          [
+            19690000,
+            5.488e-7
+          ],
+          [
+            19760000,
+            0.0001388016
+          ],
+          [
+            19860000,
+            9.216e-7
+          ],
+          [
+            19870000,
+            0.0000010611
+          ],
+          [
+            19890000,
+            8.4e-9
+          ],
+          [
+            19900000,
+            2.352e-7
+          ],
+          [
+            19970000,
+            0.0000594864
+          ],
+          [
+            19980000,
+            0.0000012096
+          ],
+          [
+            19990000,
+            0.0000021168
+          ],
+          [
+            20000000,
+            0.0000010206
+          ],
+          [
+            20020000,
+            0.0000012544
+          ],
+          [
+            20090000,
+            0.0000244944
+          ],
+          [
+            20100000,
+            3.6e-9
+          ],
+          [
+            20190000,
+            5.184e-7
+          ],
+          [
+            20200000,
+            9.072e-7
+          ],
+          [
+            20210000,
+            4.374e-7
+          ],
+          [
+            20220000,
+            8.4e-9
+          ],
+          [
+            20230000,
+            5.376e-7
+          ],
+          [
+            20260000,
+            4.9e-9
+          ],
+          [
+            20290000,
+            0.0000014364
+          ],
+          [
+            20300000,
+            0.0000104976
+          ],
+          [
+            20330000,
+            0.0000010206
+          ],
+          [
+            20350000,
+            7.056e-7
+          ],
+          [
+            20430000,
+            3.6e-9
+          ],
+          [
+            20470000,
+            2.1e-9
+          ],
+          [
+            20500000,
+            6.156e-7
+          ],
+          [
+            20540000,
+            4.374e-7
+          ],
+          [
+            20560000,
+            3.024e-7
+          ],
+          [
+            20590000,
+            4.9e-9
+          ],
+          [
+            20620000,
+            0.0000099036
+          ],
+          [
+            20800000,
+            2.1e-9
+          ],
+          [
+            20830000,
+            0.0000042444
+          ],
+          [
+            20850000,
+            3.36e-8
+          ],
+          [
+            20860000,
+            5.88e-8
+          ],
+          [
+            20950000,
+            0.0000084672
+          ],
+          [
+            20960000,
+            0.0000040824
+          ],
+          [
+            21060000,
+            1.44e-8
+          ],
+          [
+            21070000,
+            2.52e-8
+          ],
+          [
+            21160000,
+            0.0000036288
+          ],
+          [
+            21170000,
+            0.0000017496
+          ],
+          [
+            21180000,
+            3.36e-8
+          ],
+          [
+            21190000,
+            1.344e-7
+          ],
+          [
+            21220000,
+            1.96e-8
+          ],
+          [
+            21290000,
+            0.0000040824
+          ],
+          [
+            21390000,
+            1.44e-8
+          ],
+          [
+            21400000,
+            5.76e-8
+          ],
+          [
+            21430000,
+            8.4e-9
+          ],
+          [
+            21500000,
+            0.0000017496
+          ],
+          [
+            21520000,
+            7.56e-8
+          ],
+          [
+            21550000,
+            1.96e-8
+          ],
+          [
+            21730000,
+            3.24e-8
+          ],
+          [
+            21760000,
+            8.4e-9
+          ],
+          [
+            21820000,
+            2.352e-7
+          ],
+          [
+            22030000,
+            1.008e-7
+          ],
+          [
+            22150000,
+            5.376e-7
+          ],
+          [
+            22360000,
+            2.304e-7
+          ],
+          [
+            22390000,
+            2.1e-9
+          ],
+          [
+            22480000,
+            3.024e-7
+          ],
+          [
+            22600000,
+            9e-10
+          ],
+          [
+            22690000,
+            1.296e-7
+          ],
+          [
+            22720000,
+            2.1e-9
+          ],
+          [
+            22930000,
+            9e-10
+          ],
+          [
+            23350000,
+            8.4e-9
+          ],
+          [
+            23560000,
+            3.6e-9
+          ],
+          [
+            23680000,
+            8.4e-9
+          ],
+          [
+            23890000,
+            3.6e-9
+          ]
+        ]
+      },
+      "quantiles": {
+        "p10Yen": 10880000,
+        "p50Yen": 12610000,
+        "p90Yen": 15100000
+      },
+      "quantilesWithoutActions": {
+        "p10Yen": 10250000,
+        "p50Yen": 11210000,
+        "p90Yen": 13340000
+      },
+      "cash": {
+        "byMonth": [
+          {
+            "month": "2026-12",
+            "yen": 2210000
+          },
+          {
+            "month": "2027-03",
+            "yen": 765000
+          }
+        ],
+        "periodYen": 2975000,
+        "lastTwoMonthsYen": 765000,
+        "slipOutYen": 765000,
+        "nextPeriodYen": 2110439,
+        "unscheduledCount": 0
+      },
+      "investmentRecovery": {
+        "rows": [
+          {
+            "kind": "own_investment",
+            "workId": 103,
+            "title": "坂の上の写真館（架空）",
+            "investmentYen": 4000000,
+            "revenueYen": 2200000,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 2200000,
+            "remainingExpectedYen": 765000,
+            "error": null,
+            "holdNote": null,
+            "diffYen": -1800000,
+            "recoveryRateBps": 5500,
+            "status": "awaiting",
+            "projectedDiffYen": -1035000
+          },
+          {
+            "kind": "committee",
+            "workId": 104,
+            "title": "風の停車場（架空）",
+            "investmentYen": 1800000,
+            "revenueYen": 4062000,
+            "periodInvestmentYen": 1800000,
+            "periodRevenueYen": 4062000,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": null,
+            "diffYen": 2262000,
+            "recoveryRateBps": 22566,
+            "status": "recovered",
+            "projectedDiffYen": 2262000
+          },
+          {
+            "kind": "committee",
+            "workId": 105,
+            "title": "雪の灯台（架空）",
+            "investmentYen": 8000000,
+            "revenueYen": 1500000,
+            "periodInvestmentYen": 1000000,
+            "periodRevenueYen": 1500000,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": "委員会の月次収支に保留があります: 窓口の条件が無い区分（海外）の売上を委員会の収入にしていません",
+            "diffYen": -6500000,
+            "recoveryRateBps": 1875,
+            "status": "awaiting",
+            "projectedDiffYen": -6500000
+          },
+          {
+            "kind": "committee",
+            "workId": 106,
+            "title": "夜の温室（架空）",
+            "investmentYen": 0,
+            "revenueYen": 700000,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 700000,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": null,
+            "diffYen": 700000,
+            "recoveryRateBps": null,
+            "status": "recovered",
+            "projectedDiffYen": 700000
+          },
+          {
+            "kind": "committee",
+            "workId": 107,
+            "title": "遠い汽笛（架空）",
+            "investmentYen": 5000000,
+            "revenueYen": null,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": null,
+            "remainingExpectedYen": 0,
+            "error": "委員会契約に条件版がありません",
+            "holdNote": null,
+            "diffYen": null,
+            "recoveryRateBps": null,
+            "status": "unknown",
+            "projectedDiffYen": null
+          },
+          {
+            "kind": "committee",
+            "workId": 111,
+            "title": "汐見の時計塔（架空）",
+            "investmentYen": 2000000,
+            "revenueYen": 2000000,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 0,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": null,
+            "diffYen": 0,
+            "recoveryRateBps": 10000,
+            "status": "recovered",
+            "projectedDiffYen": 0
+          }
+        ],
+        "total": {
+          "rowCount": 5,
+          "investmentYen": 15800000,
+          "revenueYen": 10462000,
+          "diffYen": -5338000,
+          "periodInvestmentYen": 2800000,
+          "periodRevenueYen": 8462000,
+          "projectedDiffYen": -4573000,
+          "recoveryRateBps": 6621,
+          "status": "awaiting"
+        },
+        "unknown": {
+          "count": 1,
+          "investmentYen": 5000000
+        },
+        "unconnected": []
+      }
+    },
+    "custom": {
+      "assumptions": {
+        "salesMultiplierBps": 10000,
+        "recoveryAmountBps": 10000,
+        "meetingToProposalBps": 5000,
+        "proposalToContractBps": 3500,
+        "paymentDelayMonths": 0
+      },
+      "actions": [
+        {
+          "source": "consignment",
+          "step": "meeting",
+          "countX100": 600
+        },
+        {
+          "source": "acquisition",
+          "step": "meeting",
+          "countX100": 150
+        },
+        {
+          "source": "contract_work",
+          "step": "proposal",
+          "countX100": 100
+        }
+      ],
+      "expectedYen": 14731323,
+      "actualYen": 9472000,
+      "weightedYen": 2436573,
+      "actionYen": 2822750,
+      "actualPlusWeightedYen": 11908573,
+      "expectedSalesYen": 20393823,
+      "actualSalesYen": 13952000,
+      "weightedSalesYen": 2516573,
+      "actionSalesYen": 3925250,
+      "actualPlusWeightedSalesYen": 16468573,
+      "bySource": [
+        {
+          "source": "contract_work",
+          "status": "unconnected",
+          "actualYen": null,
+          "weightedYen": 0,
+          "actionYen": 875000,
+          "expectedYen": 875000,
+          "actualSalesYen": null,
+          "weightedSalesYen": 0,
+          "actionSalesYen": 875000,
+          "expectedSalesYen": 875000
+        },
+        {
+          "source": "own_investment",
+          "status": "connected",
+          "actualYen": 2200000,
+          "weightedYen": 900000,
+          "actionYen": 0,
+          "expectedYen": 3100000,
+          "actualSalesYen": 2200000,
+          "weightedSalesYen": 900000,
+          "actionSalesYen": 0,
+          "expectedSalesYen": 3100000
+        },
+        {
+          "source": "committee",
+          "status": "connected",
+          "actualYen": 3462000,
+          "weightedYen": 0,
+          "actionYen": 0,
+          "expectedYen": 3462000,
+          "actualSalesYen": 6262000,
+          "weightedSalesYen": 0,
+          "actionSalesYen": 0,
+          "expectedSalesYen": 6262000
+        },
+        {
+          "source": "acquisition",
+          "status": "connected",
+          "actualYen": 2910000,
+          "weightedYen": 770000,
+          "actionYen": 472500,
+          "expectedYen": 4152500,
+          "actualSalesYen": 4590000,
+          "weightedSalesYen": 850000,
+          "actionSalesYen": 1575000,
+          "expectedSalesYen": 7015000
+        },
+        {
+          "source": "consignment",
+          "status": "connected",
+          "actualYen": 900000,
+          "weightedYen": 766573,
+          "actionYen": 1475250,
+          "expectedYen": 3141823,
+          "actualSalesYen": 900000,
+          "weightedSalesYen": 766573,
+          "actionSalesYen": 1475250,
+          "expectedSalesYen": 3141823
+        }
+      ],
+      "opportunities": [
+        {
+          "opportunityId": 1,
+          "workId": 101,
+          "source": "consignment",
+          "stage": "won",
+          "probabilityBps": 10000,
+          "remainingYen": 2500000,
+          "valueYen": 500000,
+          "weightedYen": 500000,
+          "salesValueYen": 500000,
+          "weightedSalesYen": 500000,
+          "revenueMonth": "2026-09",
+          "overdue": true,
+          "placement": "in_period",
+          "paymentMonth": "2026-11",
+          "inflowYen": 2500000
+        },
+        {
+          "opportunityId": 2,
+          "workId": 101,
+          "source": "consignment",
+          "stage": "won",
+          "probabilityBps": 10000,
+          "remainingYen": 0,
+          "valueYen": 0,
+          "weightedYen": 0,
+          "salesValueYen": 0,
+          "weightedSalesYen": 0,
+          "revenueMonth": "2026-09",
+          "overdue": true,
+          "placement": "in_period",
+          "paymentMonth": "2026-11",
+          "inflowYen": 0
+        },
+        {
+          "opportunityId": 3,
+          "workId": 102,
+          "source": "acquisition",
+          "stage": "lead",
+          "probabilityBps": 3000,
+          "remainingYen": 2500000,
+          "valueYen": 2500000,
+          "weightedYen": 750000,
+          "salesValueYen": 2500000,
+          "weightedSalesYen": 750000,
+          "revenueMonth": "2027-01",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-03",
+          "inflowYen": 750000
+        },
+        {
+          "opportunityId": 4,
+          "workId": 101,
+          "source": "consignment",
+          "stage": "proposal",
+          "probabilityBps": 5000,
+          "remainingYen": 1925000,
+          "valueYen": 385000,
+          "weightedYen": 192500,
+          "salesValueYen": 385000,
+          "weightedSalesYen": 192500,
+          "revenueMonth": "2027-03",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-04",
+          "inflowYen": 962500
+        },
+        {
+          "opportunityId": 5,
+          "workId": 103,
+          "source": "own_investment",
+          "stage": "negotiation",
+          "probabilityBps": 8000,
+          "remainingYen": 1125000,
+          "valueYen": 1125000,
+          "weightedYen": 900000,
+          "salesValueYen": 1125000,
+          "weightedSalesYen": 900000,
+          "revenueMonth": "2026-11",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-02",
+          "inflowYen": 900000
+        },
+        {
+          "opportunityId": 9,
+          "workId": 102,
+          "source": "acquisition",
+          "stage": "proposal",
+          "probabilityBps": 5000,
+          "remainingYen": 800000,
+          "valueYen": 800000,
+          "weightedYen": 400000,
+          "salesValueYen": 800000,
+          "weightedSalesYen": 400000,
+          "revenueMonth": "2027-05",
+          "overdue": false,
+          "placement": "after_period",
+          "paymentMonth": "2027-06",
+          "inflowYen": 400000
+        },
+        {
+          "opportunityId": 10,
+          "workId": 108,
+          "source": "acquisition",
+          "stage": "won",
+          "probabilityBps": 10000,
+          "remainingYen": 100000,
+          "valueYen": 20000,
+          "weightedYen": 20000,
+          "salesValueYen": 100000,
+          "weightedSalesYen": 100000,
+          "revenueMonth": "2026-09",
+          "overdue": true,
+          "placement": "in_period",
+          "paymentMonth": "2026-11",
+          "inflowYen": 100000
+        },
+        {
+          "opportunityId": 11,
+          "workId": 110,
+          "source": "consignment",
+          "stage": "lead",
+          "probabilityBps": 3000,
+          "remainingYen": 1234567,
+          "valueYen": 246913,
+          "weightedYen": 74073,
+          "salesValueYen": 246913,
+          "weightedSalesYen": 74073,
+          "revenueMonth": "2027-02",
+          "overdue": false,
+          "placement": "in_period",
+          "paymentMonth": "2027-04",
+          "inflowYen": 370370
+        }
+      ],
+      "actionRows": [
+        {
+          "source": "consignment",
+          "step": "meeting",
+          "countX100": 600,
+          "dealYen": 7025000,
+          "valueYen": 1405000,
+          "expectedYen": 1475250,
+          "salesValueYen": 1405000,
+          "expectedSalesYen": 1475250
+        },
+        {
+          "source": "acquisition",
+          "step": "meeting",
+          "countX100": 150,
+          "dealYen": 6000000,
+          "valueYen": 1800000,
+          "expectedYen": 472500,
+          "salesValueYen": 6000000,
+          "expectedSalesYen": 1575000
+        },
+        {
+          "source": "contract_work",
+          "step": "proposal",
+          "countX100": 100,
+          "dealYen": 25000000,
+          "valueYen": 2500000,
+          "expectedYen": 875000,
+          "salesValueYen": 2500000,
+          "expectedSalesYen": 875000
+        }
+      ],
+      "nextPeriodProfitYen": 400000,
+      "componentCount": 12,
+      "distribution": {
+        "gridYen": 10000,
+        "points": [
+          [
+            9990000,
+            0.007559967868322285
+          ],
+          [
+            10240000,
+            0.003239986229280979
+          ],
+          [
+            10380000,
+            0.007559967868322285
+          ],
+          [
+            10630000,
+            0.003239986229280979
+          ],
+          [
+            11120000,
+            0.03023987147328914
+          ],
+          [
+            11370000,
+            0.012959944917123916
+          ],
+          [
+            11400000,
+            0.009621777286955634
+          ],
+          [
+            11510000,
+            0.03023987147328914
+          ],
+          [
+            11650000,
+            0.004123618837266701
+          ],
+          [
+            11760000,
+            0.012959944917123916
+          ],
+          [
+            11790000,
+            0.011950335260511109
+          ],
+          [
+            12040000,
+            0.005121572254504761
+          ],
+          [
+            12180000,
+            0.0023285579735554734
+          ],
+          [
+            12430000,
+            0.00099795341723806
+          ],
+          [
+            12490000,
+            0.007310738158377594
+          ],
+          [
+            12530000,
+            0.03848710914782254
+          ],
+          [
+            12740000,
+            0.0031331734964475406
+          ],
+          [
+            12780000,
+            0.016494475349066805
+          ],
+          [
+            12800000,
+            0.005102457652173442
+          ],
+          [
+            12880000,
+            0.007310738158377594
+          ],
+          [
+            12920000,
+            0.047801341042044435
+          ],
+          [
+            13050000,
+            0.00218676756521719
+          ],
+          [
+            13130000,
+            0.0031331734964475406
+          ],
+          [
+            13170000,
+            0.020486289018019042
+          ],
+          [
+            13190000,
+            0.005102457652173442
+          ],
+          [
+            13200000,
+            0.002963619239070602
+          ],
+          [
+            13310000,
+            0.009314231894221894
+          ],
+          [
+            13440000,
+            0.00218676756521719
+          ],
+          [
+            13450000,
+            0.0012701225310302582
+          ],
+          [
+            13560000,
+            0.00399181366895224
+          ],
+          [
+            13590000,
+            0.0031173919354374733
+          ],
+          [
+            13620000,
+            0.029242952633510375
+          ],
+          [
+            13840000,
+            0.0013360251151874885
+          ],
+          [
+            13870000,
+            0.012532693985790162
+          ],
+          [
+            13900000,
+            0.00930457583793512
+          ],
+          [
+            13930000,
+            0.02040983060869377
+          ],
+          [
+            13980000,
+            0.00015377269636687087
+          ],
+          [
+            14010000,
+            0.029242952633510375
+          ],
+          [
+            14150000,
+            0.0039876753591150515
+          ],
+          [
+            14180000,
+            0.00874707026086876
+          ],
+          [
+            14210000,
+            0.0014431193359682464
+          ],
+          [
+            14230000,
+            0.00006590258415723037
+          ],
+          [
+            14260000,
+            0.012532693985790162
+          ],
+          [
+            14290000,
+            0.011556368164010742
+          ],
+          [
+            14320000,
+            0.02040983060869377
+          ],
+          [
+            14330000,
+            0.011854476956282408
+          ],
+          [
+            14460000,
+            0.0006184797154149627
+          ],
+          [
+            14540000,
+            0.004952729213147461
+          ],
+          [
+            14570000,
+            0.00874707026086876
+          ],
+          [
+            14580000,
+            0.005080490124121033
+          ],
+          [
+            14600000,
+            0.003014735599111748
+          ],
+          [
+            14680000,
+            0.0022517923260756225
+          ],
+          [
+            14720000,
+            0.012469567741749893
+          ],
+          [
+            14850000,
+            0.0012920295424764634
+          ],
+          [
+            14930000,
+            0.0009650538540324096
+          ],
+          [
+            14970000,
+            0.005344100460749954
+          ],
+          [
+            14990000,
+            0.003316224232756336
+          ],
+          [
+            15000000,
+            0.00019571070446692656
+          ],
+          [
+            15030000,
+            0.03721830335174048
+          ],
+          [
+            15110000,
+            0.0006150907854674835
+          ],
+          [
+            15240000,
+            0.0014212389568955726
+          ],
+          [
+            15250000,
+            0.00008387601620011138
+          ],
+          [
+            15280000,
+            0.015950701436460206
+          ],
+          [
+            15300000,
+            0.004934244762541351
+          ],
+          [
+            15340000,
+            0.0057724773438729855
+          ],
+          [
+            15360000,
+            0.0002636103366289215
+          ],
+          [
+            15380000,
+            0.001744607969612835
+          ],
+          [
+            15390000,
+            0.00019571070446692656
+          ],
+          [
+            15420000,
+            0.04622547265604297
+          ],
+          [
+            15550000,
+            0.002114676326803436
+          ],
+          [
+            15590000,
+            0.0024739188616598514
+          ],
+          [
+            15610000,
+            0.0002295871670858574
+          ],
+          [
+            15630000,
+            0.0007476891298340722
+          ],
+          [
+            15640000,
+            0.00008387601620011138
+          ],
+          [
+            15670000,
+            0.019810916852589844
+          ],
+          [
+            15690000,
+            0.004934244762541351
+          ],
+          [
+            15700000,
+            0.002865917505914429
+          ],
+          [
+            15730000,
+            0.012058942396446991
+          ],
+          [
+            15810000,
+            0.00900716930430249
+          ],
+          [
+            15860000,
+            0.00009839450017965316
+          ],
+          [
+            15940000,
+            0.002114676326803436
+          ],
+          [
+            15950000,
+            0.0012282503596776123
+          ],
+          [
+            15980000,
+            0.0051681181699058535
+          ],
+          [
+            16000000,
+            0.0002295871670858574
+          ],
+          [
+            16010000,
+            0.0004444975289698791
+          ],
+          [
+            16060000,
+            0.0038602154161296383
+          ],
+          [
+            16090000,
+            0.0030146207727307435
+          ],
+          [
+            16120000,
+            0.013264896931025344
+          ],
+          [
+            16130000,
+            0.0007828428178677062
+          ],
+          [
+            16250000,
+            0.00009839450017965316
+          ],
+          [
+            16260000,
+            0.00019049894098709103
+          ],
+          [
+            16340000,
+            0.0012919803311703185
+          ],
+          [
+            16370000,
+            0.00568495582758229
+          ],
+          [
+            16380000,
+            0.0003355040648004456
+          ],
+          [
+            16400000,
+            0.0027686936517550393
+          ],
+          [
+            16430000,
+            0.019736979050165405
+          ],
+          [
+            16480000,
+            0.00014870326681631468
+          ],
+          [
+            16510000,
+            0.00697843187845134
+          ],
+          [
+            16520000,
+            0.0007828428178677062
+          ],
+          [
+            16650000,
+            0.0011865829936093025
+          ],
+          [
+            16680000,
+            0.008458705307213744
+          ],
+          [
+            16710000,
+            0.0013955439732440185
+          ],
+          [
+            16730000,
+            0.0000637299714927063
+          ],
+          [
+            16740000,
+            0.0009183486683434296
+          ],
+          [
+            16760000,
+            0.0029907565193362886
+          ],
+          [
+            16770000,
+            0.0003355040648004456
+          ],
+          [
+            16790000,
+            0.0028615556551441156
+          ],
+          [
+            16820000,
+            0.019736979050165405
+          ],
+          [
+            16830000,
+            0.011463670023657715
+          ],
+          [
+            16960000,
+            0.0005980902742474365
+          ],
+          [
+            16990000,
+            0.0003935780007186126
+          ],
+          [
+            17020000,
+            0.00001948012326789093
+          ],
+          [
+            17040000,
+            0.001226380995061764
+          ],
+          [
+            17070000,
+            0.008458705307213744
+          ],
+          [
+            17080000,
+            0.004913001438710449
+          ],
+          [
+            17100000,
+            0.002915348711228943
+          ],
+          [
+            17130000,
+            0.0009183486683434296
+          ],
+          [
+            17140000,
+            0.0017779901158795164
+          ],
+          [
+            17180000,
+            0.0005373595323589554
+          ],
+          [
+            17220000,
+            0.012058483090922974
+          ],
+          [
+            17270000,
+            0.00000834862425766754
+          ],
+          [
+            17350000,
+            0.0012494351619552612
+          ],
+          [
+            17380000,
+            0.0003935780007186126
+          ],
+          [
+            17390000,
+            0.0007619957639483643
+          ],
+          [
+            17410000,
+            0.0000901956392403717
+          ],
+          [
+            17430000,
+            0.00023029694243955232
+          ],
+          [
+            17470000,
+            0.005167921324681274
+          ],
+          [
+            17490000,
+            0.001519804737984924
+          ],
+          [
+            17500000,
+            0.00018925870322076415
+          ],
+          [
+            17530000,
+            0.011074774607020157
+          ],
+          [
+            17610000,
+            0.0005948130672652588
+          ],
+          [
+            17660000,
+            0.0000386552739601593
+          ],
+          [
+            17740000,
+            0.0006513448877078248
+          ],
+          [
+            17750000,
+            0.00008111087280889891
+          ],
+          [
+            17780000,
+            0.00474633197443721
+          ],
+          [
+            17800000,
+            0.0012482057433971215
+          ],
+          [
+            17810000,
+            0.00002935361040367126
+          ],
+          [
+            17840000,
+            0.005582175892976074
+          ],
+          [
+            17860000,
+            0.0002549198859708252
+          ],
+          [
+            17890000,
+            0.00018925870322076415
+          ],
+          [
+            17920000,
+            0.011446222620576462
+          ],
+          [
+            18050000,
+            0.0005349453185987663
+          ],
+          [
+            18060000,
+            0.00001258011874443054
+          ],
+          [
+            18090000,
+            0.002392361096989746
+          ],
+          [
+            18110000,
+            0.00022201835937973023
+          ],
+          [
+            18140000,
+            0.00008111087280889891
+          ],
+          [
+            18150000,
+            0.00007792049307156372
+          ],
+          [
+            18170000,
+            0.004905523980247056
+          ],
+          [
+            18190000,
+            0.0011774902274246405
+          ],
+          [
+            18200000,
+            0.0007132657424968873
+          ],
+          [
+            18230000,
+            0.011661394844915771
+          ],
+          [
+            18310000,
+            0.0021494381294358215
+          ],
+          [
+            18360000,
+            0.0000951507254484558
+          ],
+          [
+            18400000,
+            0.00003339449703067016
+          ],
+          [
+            18420000,
+            6.886912266426e-7
+          ],
+          [
+            18440000,
+            0.0005046386688962746
+          ],
+          [
+            18450000,
+            0.0003056853182129517
+          ],
+          [
+            18480000,
+            0.004997740647821045
+          ],
+          [
+            18500000,
+            0.00022201835937973023
+          ],
+          [
+            18510000,
+            0.0004298437642785645
+          ],
+          [
+            18540000,
+            0.0003607825569614868
+          ],
+          [
+            18560000,
+            0.0009211877697582093
+          ],
+          [
+            18590000,
+            0.0007193981389471092
+          ],
+          [
+            18620000,
+            0.006079218951939696
+          ],
+          [
+            18630000,
+            0.0007570348128830566
+          ],
+          [
+            18670000,
+            2.9515338284683e-7
+          ],
+          [
+            18750000,
+            0.0000951507254484558
+          ],
+          [
+            18760000,
+            0.00018421875611938476
+          ],
+          [
+            18790000,
+            0.0001546210958406372
+          ],
+          [
+            18810000,
+            6.886912266426e-7
+          ],
+          [
+            18820000,
+            0.00000600010438554382
+          ],
+          [
+            18840000,
+            0.00030831348812018967
+          ],
+          [
+            18870000,
+            0.002605379550831299
+          ],
+          [
+            18880000,
+            0.00032444349123559566
+          ],
+          [
+            18900000,
+            0.0005302082281077576
+          ],
+          [
+            18930000,
+            0.004992822973588486
+          ],
+          [
+            18940000,
+            0.00011741444161468504
+          ],
+          [
+            18980000,
+            0.00003548600685389328
+          ],
+          [
+            19020000,
+            0.0007570348128830566
+          ],
+          [
+            19060000,
+            2.9515338284683e-7
+          ],
+          [
+            19070000,
+            0.0000025714733080902
+          ],
+          [
+            19150000,
+            0.0002272320977604675
+          ],
+          [
+            19180000,
+            0.002139781274395065
+          ],
+          [
+            19190000,
+            0.00005032047497772216
+          ],
+          [
+            19210000,
+            0.0003436975360193596
+          ],
+          [
+            19230000,
+            0.00001520828865166854
+          ],
+          [
+            19240000,
+            0.0008880734375189209
+          ],
+          [
+            19270000,
+            0.00032444349123559566
+          ],
+          [
+            19290000,
+            0.00010036446382919312
+          ],
+          [
+            19320000,
+            0.004709960909698562
+          ],
+          [
+            19330000,
+            0.002853062969987549
+          ],
+          [
+            19460000,
+            0.00014729894400829696
+          ],
+          [
+            19490000,
+            0.0003806029017938232
+          ],
+          [
+            19520000,
+            0.0000188379214019165
+          ],
+          [
+            19540000,
+            0.00004301334164108276
+          ],
+          [
+            19550000,
+            0.00000275476490657043
+          ],
+          [
+            19570000,
+            0.0020185546755850984
+          ],
+          [
+            19580000,
+            0.0012227412728518067
+          ],
+          [
+            19600000,
+            0.0007003781077438545
+          ],
+          [
+            19630000,
+            0.0008880734375189209
+          ],
+          [
+            19640000,
+            0.001719375057114258
+          ],
+          [
+            19720000,
+            0.002877592555788437
+          ],
+          [
+            19770000,
+            0.00000807339488653564
+          ],
+          [
+            19800000,
+            0.00000118061353138732
+          ],
+          [
+            19850000,
+            0.0003001620461759376
+          ],
+          [
+            19880000,
+            0.0003806029017938232
+          ],
+          [
+            19890000,
+            0.000736875024477539
+          ],
+          [
+            19910000,
+            0.00008722215662805176
+          ],
+          [
+            19940000,
+            0.00000275476490657043
+          ],
+          [
+            19950000,
+            0.00002400041754217529
+          ],
+          [
+            19970000,
+            0.0012332539524807587
+          ],
+          [
+            19990000,
+            0.0003626806761100387
+          ],
+          [
+            20000000,
+            0.0000451640087231369
+          ],
+          [
+            20030000,
+            0.0021208329124310305
+          ],
+          [
+            20110000,
+            0.00014194402741557312
+          ],
+          [
+            20160000,
+            0.00003738092426916503
+          ],
+          [
+            20190000,
+            0.00000118061353138732
+          ],
+          [
+            20200000,
+            0.00001028589323236083
+          ],
+          [
+            20220000,
+            2.1212490251922e-7
+          ],
+          [
+            20240000,
+            0.00015543457547573087
+          ],
+          [
+            20250000,
+            0.00001935600373848724
+          ],
+          [
+            20280000,
+            0.00090892839104187
+          ],
+          [
+            20300000,
+            0.00006838423522613526
+          ],
+          [
+            20310000,
+            0.00002838590896179199
+          ],
+          [
+            20340000,
+            0.0013747901440774384
+          ],
+          [
+            20360000,
+            0.00006083315460667419
+          ],
+          [
+            20390000,
+            0.0000451640087231369
+          ],
+          [
+            20420000,
+            0.00040145785531677246
+          ],
+          [
+            20470000,
+            9.091067250823e-8
+          ],
+          [
+            20550000,
+            0.00002930752938262939
+          ],
+          [
+            20560000,
+            0.00001216538955505371
+          ],
+          [
+            20590000,
+            0.0005891957760331878
+          ],
+          [
+            20610000,
+            0.00005319377884540939
+          ],
+          [
+            20620000,
+            3.962333084793e-7
+          ],
+          [
+            20640000,
+            0.00001935600373848724
+          ],
+          [
+            20650000,
+            0.00007535168560766601
+          ],
+          [
+            20670000,
+            0.00017205336656433103
+          ],
+          [
+            20700000,
+            0.00002838590896179199
+          ],
+          [
+            20730000,
+            0.002801512430975418
+          ],
+          [
+            20860000,
+            0.00002279733379088973
+          ],
+          [
+            20870000,
+            1.6981427506256e-7
+          ],
+          [
+            20900000,
+            0.00003229357954614257
+          ],
+          [
+            20920000,
+            6.6598712026977e-7
+          ],
+          [
+            20950000,
+            0.00001216538955505371
+          ],
+          [
+            20980000,
+            0.0012006481847037505
+          ],
+          [
+            21000000,
+            0.00005298165394289016
+          ],
+          [
+            21010000,
+            0.00010297258614768218
+          ],
+          [
+            21040000,
+            0.000348888626512207
+          ],
+          [
+            21120000,
+            0.0014507227044401549
+          ],
+          [
+            21130000,
+            0.0001806560348925476
+          ],
+          [
+            21170000,
+            2.8542305154418e-7
+          ],
+          [
+            21250000,
+            0.0000227064231183815
+          ],
+          [
+            21260000,
+            0.00004413110834900665
+          ],
+          [
+            21290000,
+            0.00014952369707666016
+          ],
+          [
+            21310000,
+            6.6598712026977e-7
+          ],
+          [
+            21320000,
+            0.00000580229874645996
+          ],
+          [
+            21350000,
+            8.484996100769e-7
+          ],
+          [
+            21370000,
+            0.0006217383019029236
+          ],
+          [
+            21380000,
+            0.00007742401495394896
+          ],
+          [
+            21400000,
+            0.00012652696352571488
+          ],
+          [
+            21430000,
+            0.000273536940904541
+          ],
+          [
+            21440000,
+            0.00011354363584716796
+          ],
+          [
+            21520000,
+            0.0001806560348925476
+          ],
+          [
+            21560000,
+            2.8542305154418e-7
+          ],
+          [
+            21570000,
+            0.00000248669946276855
+          ],
+          [
+            21600000,
+            3.6364269003295e-7
+          ],
+          [
+            21650000,
+            0.00005422584151102066
+          ],
+          [
+            21680000,
+            0.00011723011753051756
+          ],
+          [
+            21690000,
+            0.00004866155822021484
+          ],
+          [
+            21710000,
+            0.00001031823880856323
+          ],
+          [
+            21740000,
+            0.00021277511538163755
+          ],
+          [
+            21750000,
+            0.00000158493323391723
+          ],
+          [
+            21770000,
+            0.00007742401495394896
+          ],
+          [
+            21790000,
+            0.00002395061068651199
+          ],
+          [
+            21830000,
+            0.00011354363584716796
+          ],
+          [
+            21960000,
+            0.00000442210234652709
+          ],
+          [
+            21990000,
+            0.00009118933516355896
+          ],
+          [
+            22000000,
+            6.7925710025024e-7
+          ],
+          [
+            22020000,
+            0.00000450942131010055
+          ],
+          [
+            22040000,
+            0.00001026454743707656
+          ],
+          [
+            22050000,
+            0.0000026639484810791
+          ],
+          [
+            22080000,
+            0.00004866155822021484
+          ],
+          [
+            22100000,
+            0.00000451594006210327
+          ],
+          [
+            22130000,
+            0.00021192661577156064
+          ],
+          [
+            22140000,
+            0.0004118903445907287
+          ],
+          [
+            22270000,
+            0.00000193260913290023
+          ],
+          [
+            22300000,
+            0.00000114169220617675
+          ],
+          [
+            22350000,
+            0.00000193540288375854
+          ],
+          [
+            22380000,
+            0.000090825692473526
+          ],
+          [
+            22390000,
+            0.0001765244333960266
+          ],
+          [
+            22410000,
+            0.00002082838653451919
+          ],
+          [
+            22440000,
+            0.0000026639484810791
+          ],
+          [
+            22450000,
+            0.00002320919498583984
+          ],
+          [
+            22530000,
+            0.0005061078541028595
+          ],
+          [
+            22660000,
+            0.00000892645137193679
+          ],
+          [
+            22690000,
+            0.00000114169220617675
+          ],
+          [
+            22700000,
+            0.00000994679785107421
+          ],
+          [
+            22720000,
+            2.0513177386474e-7
+          ],
+          [
+            22780000,
+            0.00021690336604408264
+          ],
+          [
+            22800000,
+            0.00001631896522441864
+          ],
+          [
+            22810000,
+            0.0000067739100931549
+          ],
+          [
+            22840000,
+            0.00004127295523425292
+          ],
+          [
+            22920000,
+            0.00009580244274604796
+          ],
+          [
+            22970000,
+            8.79136173706e-8
+          ],
+          [
+            23050000,
+            0.00000699384223903656
+          ],
+          [
+            23060000,
+            0.00000290310432563781
+          ],
+          [
+            23090000,
+            0.00001768840938610839
+          ],
+          [
+            23110000,
+            2.0513177386474e-7
+          ],
+          [
+            23120000,
+            3.8317067193603e-7
+          ],
+          [
+            23150000,
+            0.00001803768524040222
+          ],
+          [
+            23170000,
+            0.00004105818974830627
+          ],
+          [
+            23200000,
+            0.0000067739100931549
+          ],
+          [
+            23230000,
+            0.00001806376024841308
+          ],
+          [
+            23360000,
+            8.79136173706e-8
+          ],
+          [
+            23370000,
+            1.642160022583e-7
+          ],
+          [
+            23400000,
+            0.00000773043653160095
+          ],
+          [
+            23420000,
+            1.5892874460983e-7
+          ],
+          [
+            23450000,
+            0.00000290310432563781
+          ],
+          [
+            23480000,
+            0.00000774161153503417
+          ],
+          [
+            23510000,
+            3.8317067193603e-7
+          ],
+          [
+            23540000,
+            0.00008331354613807679
+          ],
+          [
+            23670000,
+            6.811231911849e-8
+          ],
+          [
+            23760000,
+            1.642160022583e-7
+          ],
+          [
+            23790000,
+            0.00003570580548774719
+          ],
+          [
+            23810000,
+            1.5892874460983e-7
+          ],
+          [
+            23820000,
+            0.00000138463947358703
+          ],
+          [
+            23850000,
+            8.2052709545898e-7
+          ],
+          [
+            23930000,
+            0.00006527586089767456
+          ],
+          [
+            23940000,
+            0.00002709564037261962
+          ],
+          [
+            24060000,
+            6.811231911849e-8
+          ],
+          [
+            24070000,
+            5.9341691725158e-7
+          ],
+          [
+            24100000,
+            3.5165446948242e-7
+          ],
+          [
+            24180000,
+            0.00002797536895614624
+          ],
+          [
+            24190000,
+            0.00001161241730255126
+          ],
+          [
+            24210000,
+            0.00000246230698840713
+          ],
+          [
+            24240000,
+            8.2052709545898e-7
+          ],
+          [
+            24250000,
+            0.00000153268268774414
+          ],
+          [
+            24330000,
+            0.00002709564037261962
+          ],
+          [
+            24460000,
+            0.00000105527442360305
+          ],
+          [
+            24490000,
+            3.5165446948242e-7
+          ],
+          [
+            24500000,
+            6.568640090332e-7
+          ],
+          [
+            24520000,
+            1.354643789672e-8
+          ],
+          [
+            24550000,
+            6.3571497843933e-7
+          ],
+          [
+            24580000,
+            0.00001161241730255126
+          ],
+          [
+            24600000,
+            0.00000107766751482009
+          ],
+          [
+            24640000,
+            0.00000153268268774414
+          ],
+          [
+            24770000,
+            5.80561624145e-9
+          ],
+          [
+            24800000,
+            2.7244927647399e-7
+          ],
+          [
+            24850000,
+            4.6185750635147e-7
+          ],
+          [
+            24890000,
+            6.568640090332e-7
+          ],
+          [
+            24910000,
+            1.354643789672e-8
+          ],
+          [
+            24940000,
+            6.3571497843933e-7
+          ],
+          [
+            24950000,
+            0.00000553855789434814
+          ],
+          [
+            25160000,
+            5.80561624145e-9
+          ],
+          [
+            25190000,
+            2.7244927647399e-7
+          ],
+          [
+            25200000,
+            0.00000237366766900634
+          ],
+          [
+            25220000,
+            4.895190058135e-8
+          ],
+          [
+            25340000,
+            0.00000984922795362854
+          ],
+          [
+            25470000,
+            2.097938596343e-8
+          ],
+          [
+            25590000,
+            0.00000422109769441223
+          ],
+          [
+            25610000,
+            4.895190058135e-8
+          ],
+          [
+            25620000,
+            9.143845580291e-8
+          ],
+          [
+            25650000,
+            5.418575158691e-8
+          ],
+          [
+            25730000,
+            0.00000431067005928039
+          ],
+          [
+            25860000,
+            2.097938596343e-8
+          ],
+          [
+            25870000,
+            3.918790962982e-8
+          ],
+          [
+            25900000,
+            2.322246496582e-8
+          ],
+          [
+            25980000,
+            0.00000184743002540588
+          ],
+          [
+            26010000,
+            9.143845580291e-8
+          ],
+          [
+            26040000,
+            5.418575158691e-8
+          ],
+          [
+            26260000,
+            3.918790962982e-8
+          ],
+          [
+            26290000,
+            2.322246496582e-8
+          ],
+          [
+            26350000,
+            1.9580760232543e-7
+          ],
+          [
+            26600000,
+            8.391754385375e-8
+          ],
+          [
+            26740000,
+            1.9580760232543e-7
+          ],
+          [
+            26750000,
+            3.6575382321166e-7
+          ],
+          [
+            26990000,
+            8.391754385375e-8
+          ],
+          [
+            27000000,
+            1.5675163851928e-7
+          ],
+          [
+            27020000,
+            3.2326726799e-9
+          ],
+          [
+            27140000,
+            3.6575382321166e-7
+          ],
+          [
+            27270000,
+            1.38543114852e-9
+          ],
+          [
+            27390000,
+            1.5675163851928e-7
+          ],
+          [
+            27410000,
+            3.2326726799e-9
+          ],
+          [
+            27660000,
+            1.38543114852e-9
+          ],
+          [
+            28150000,
+            1.29306907196e-8
+          ],
+          [
+            28400000,
+            5.54172459411e-9
+          ],
+          [
+            28540000,
+            1.29306907196e-8
+          ],
+          [
+            28790000,
+            5.54172459411e-9
+          ]
+        ]
+      },
+      "quantiles": {
+        "p10Yen": 11510000,
+        "p50Yen": 14570000,
+        "p90Yen": 17920000
+      },
+      "quantilesWithoutActions": {
+        "p10Yen": 10380000,
+        "p50Yen": 11510000,
+        "p90Yen": 14010000
+      },
+      "cash": {
+        "byMonth": [
+          {
+            "month": "2026-11",
+            "yen": 2600000
+          },
+          {
+            "month": "2027-02",
+            "yen": 900000
+          },
+          {
+            "month": "2027-03",
+            "yen": 750000
+          }
+        ],
+        "periodYen": 4250000,
+        "lastTwoMonthsYen": 1650000,
+        "slipOutYen": 750000,
+        "nextPeriodYen": 1732870,
+        "unscheduledCount": 0
+      },
+      "investmentRecovery": {
+        "rows": [
+          {
+            "kind": "own_investment",
+            "workId": 103,
+            "title": "坂の上の写真館（架空）",
+            "investmentYen": 4000000,
+            "revenueYen": 2200000,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 2200000,
+            "remainingExpectedYen": 900000,
+            "error": null,
+            "holdNote": null,
+            "diffYen": -1800000,
+            "recoveryRateBps": 5500,
+            "status": "awaiting",
+            "projectedDiffYen": -900000
+          },
+          {
+            "kind": "committee",
+            "workId": 104,
+            "title": "風の停車場（架空）",
+            "investmentYen": 1800000,
+            "revenueYen": 4062000,
+            "periodInvestmentYen": 1800000,
+            "periodRevenueYen": 4062000,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": null,
+            "diffYen": 2262000,
+            "recoveryRateBps": 22566,
+            "status": "recovered",
+            "projectedDiffYen": 2262000
+          },
+          {
+            "kind": "committee",
+            "workId": 105,
+            "title": "雪の灯台（架空）",
+            "investmentYen": 8000000,
+            "revenueYen": 1500000,
+            "periodInvestmentYen": 1000000,
+            "periodRevenueYen": 1500000,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": "委員会の月次収支に保留があります: 窓口の条件が無い区分（海外）の売上を委員会の収入にしていません",
+            "diffYen": -6500000,
+            "recoveryRateBps": 1875,
+            "status": "awaiting",
+            "projectedDiffYen": -6500000
+          },
+          {
+            "kind": "committee",
+            "workId": 106,
+            "title": "夜の温室（架空）",
+            "investmentYen": 0,
+            "revenueYen": 700000,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 700000,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": null,
+            "diffYen": 700000,
+            "recoveryRateBps": null,
+            "status": "recovered",
+            "projectedDiffYen": 700000
+          },
+          {
+            "kind": "committee",
+            "workId": 107,
+            "title": "遠い汽笛（架空）",
+            "investmentYen": 5000000,
+            "revenueYen": null,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": null,
+            "remainingExpectedYen": 0,
+            "error": "委員会契約に条件版がありません",
+            "holdNote": null,
+            "diffYen": null,
+            "recoveryRateBps": null,
+            "status": "unknown",
+            "projectedDiffYen": null
+          },
+          {
+            "kind": "committee",
+            "workId": 111,
+            "title": "汐見の時計塔（架空）",
+            "investmentYen": 2000000,
+            "revenueYen": 2000000,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 0,
+            "remainingExpectedYen": 0,
+            "error": null,
+            "holdNote": null,
+            "diffYen": 0,
+            "recoveryRateBps": 10000,
+            "status": "recovered",
+            "projectedDiffYen": 0
+          }
+        ],
+        "total": {
+          "rowCount": 5,
+          "investmentYen": 15800000,
+          "revenueYen": 10462000,
+          "diffYen": -5338000,
+          "periodInvestmentYen": 2800000,
+          "periodRevenueYen": 8462000,
+          "projectedDiffYen": -4438000,
+          "recoveryRateBps": 6621,
+          "status": "awaiting"
+        },
+        "unknown": {
+          "count": 1,
+          "investmentYen": 5000000
+        },
+        "unconnected": []
+      }
+    }
+  },
+  "tornado": [
+    {
+      "key": "proposalToContractBps",
+      "pessimistic": {
+        "value": 2000,
+        "expectedYen": 13240573,
+        "periodCashYen": 4250000
+      },
+      "optimistic": {
+        "value": 4000,
+        "expectedYen": 14572573,
+        "periodCashYen": 4250000
+      },
+      "swingYen": 1332000,
+      "cashSwingYen": 0
+    },
+    {
+      "key": "salesMultiplierBps",
+      "pessimistic": {
+        "value": 8500,
+        "expectedYen": 13488887,
+        "periodCashYen": 3747500
+      },
+      "optimistic": {
+        "value": 11500,
+        "expectedYen": 14324260,
+        "periodCashYen": 4752500
+      },
+      "swingYen": 835373,
+      "cashSwingYen": 1005000
+    },
+    {
+      "key": "meetingToProposalBps",
+      "pessimistic": {
+        "value": 4000,
+        "expectedYen": 13656973,
+        "periodCashYen": 4250000
+      },
+      "optimistic": {
+        "value": 6000,
+        "expectedYen": 14156173,
+        "periodCashYen": 4250000
+      },
+      "swingYen": 499200,
+      "cashSwingYen": 0
+    },
+    {
+      "key": "recoveryAmountBps",
+      "pessimistic": {
+        "value": 8500,
+        "expectedYen": 13771573,
+        "periodCashYen": 4115000
+      },
+      "optimistic": {
+        "value": 11500,
+        "expectedYen": 14041573,
+        "periodCashYen": 4385000
+      },
+      "swingYen": 270000,
+      "cashSwingYen": 270000
+    },
+    {
+      "key": "paymentDelayMonths",
+      "pessimistic": {
+        "value": 1,
+        "expectedYen": 13906573,
+        "periodCashYen": 3500000
+      },
+      "optimistic": {
+        "value": 0,
+        "expectedYen": 13906573,
+        "periodCashYen": 4250000
+      },
+      "swingYen": 0,
+      "cashSwingYen": 750000
+    }
+  ],
+  "candidates": [
+    {
+      "source": "acquisition",
+      "step": "meeting",
+      "addCountX100": 100,
+      "hoursX100": 300,
+      "expectedDeltaYen": 270000
+    },
+    {
+      "source": "consignment",
+      "step": "meeting",
+      "addCountX100": 100,
+      "hoursX100": 300,
+      "expectedDeltaYen": 210750
+    },
+    {
+      "source": "contract_work",
+      "step": "proposal",
+      "addCountX100": 100,
+      "hoursX100": 4000,
+      "expectedDeltaYen": 750000
+    }
+  ]
+}

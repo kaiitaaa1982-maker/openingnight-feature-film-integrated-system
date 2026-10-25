@@ -1,0 +1,500 @@
+{
+ "note": "会社ルート ORG/企画/_フォーマット/売上試算_3段の型_架空.xlsx を Excel で再計算した値。架空のデータ",
+ "costTotalYen": 20000000,
+ "firstMonth": "2026-12",
+ "rates": [
+  {
+   "typeCode": "THEA",
+   "shareBps": 5000,
+   "feeBps": 2000,
+   "originalBps": 0,
+   "creatorBps": 0,
+   "unitCostYen": 0
+  },
+  {
+   "typeCode": "EVNT",
+   "shareBps": 3000,
+   "feeBps": 2000,
+   "originalBps": 0,
+   "creatorBps": 0,
+   "unitCostYen": 0
+  },
+  {
+   "typeCode": "PVOD",
+   "shareBps": 5000,
+   "feeBps": 1000,
+   "originalBps": 350,
+   "creatorBps": 200,
+   "unitCostYen": 0
+  },
+  {
+   "typeCode": "EST",
+   "shareBps": 5000,
+   "feeBps": 1000,
+   "originalBps": 350,
+   "creatorBps": 200,
+   "unitCostYen": 0
+  },
+  {
+   "typeCode": "TVOD",
+   "shareBps": 5000,
+   "feeBps": 1000,
+   "originalBps": 350,
+   "creatorBps": 200,
+   "unitCostYen": 0
+  },
+  {
+   "typeCode": "SVOD",
+   "shareBps": 0,
+   "feeBps": 1000,
+   "originalBps": 350,
+   "creatorBps": 200,
+   "unitCostYen": 0
+  },
+  {
+   "typeCode": "AVOD",
+   "shareBps": 0,
+   "feeBps": 1000,
+   "originalBps": 350,
+   "creatorBps": 200,
+   "unitCostYen": 0
+  },
+  {
+   "typeCode": "BIZ",
+   "shareBps": 0,
+   "feeBps": 1000,
+   "originalBps": 350,
+   "creatorBps": 200,
+   "unitCostYen": 0
+  },
+  {
+   "typeCode": "BCST",
+   "shareBps": 0,
+   "feeBps": 1000,
+   "originalBps": 400,
+   "creatorBps": 800,
+   "unitCostYen": 0
+  },
+  {
+   "typeCode": "SELL",
+   "shareBps": 3700,
+   "feeBps": 3000,
+   "originalBps": 335,
+   "creatorBps": 350,
+   "unitCostYen": 600
+  },
+  {
+   "typeCode": "RENT",
+   "shareBps": 0,
+   "feeBps": 3000,
+   "originalBps": 335,
+   "creatorBps": 670,
+   "unitCostYen": 250
+  },
+  {
+   "typeCode": "OVS",
+   "shareBps": 0,
+   "feeBps": 3000,
+   "originalBps": 500,
+   "creatorBps": 700,
+   "unitCostYen": 0
+  },
+  {
+   "typeCode": "GOOD",
+   "shareBps": 3000,
+   "feeBps": 2500,
+   "originalBps": 1000,
+   "creatorBps": 0,
+   "unitCostYen": 0
+  }
+ ],
+ "investments": [
+  {
+   "month": "2026-12",
+   "amountYen": 10000000
+  },
+  {
+   "month": "2027-03",
+   "amountYen": 10000000
+  }
+ ],
+ "lines": [
+  {
+   "typeCode": "THEA",
+   "partnerName": "都内チェーンA（架空）",
+   "windowLabel": "全国公開",
+   "startMonth": "2027-04",
+   "months": 2,
+   "calc": "unit",
+   "unitPriceYen": 1300,
+   "evenValue": 7659,
+   "goodValue": 9000,
+   "maxValue": 12600,
+   "expected": {
+    "even": 3982680,
+    "good": 4680000,
+    "max": 6552000
+   }
+  },
+  {
+   "typeCode": "THEA",
+   "partnerName": "地方館グループB（架空）",
+   "windowLabel": "拡大公開",
+   "startMonth": "2027-05",
+   "months": 2,
+   "calc": "unit",
+   "unitPriceYen": 1200,
+   "evenValue": 2553,
+   "goodValue": 3000,
+   "maxValue": 4200,
+   "expected": {
+    "even": 1225440,
+    "good": 1440000,
+    "max": 2016000
+   }
+  },
+  {
+   "typeCode": "EVNT",
+   "partnerName": "1日限定イベント（架空）",
+   "windowLabel": "限定",
+   "startMonth": "2027-04",
+   "months": 1,
+   "calc": "unit",
+   "unitPriceYen": 3000,
+   "evenValue": 511,
+   "goodValue": 600,
+   "maxValue": 840,
+   "expected": {
+    "even": 858480,
+    "good": 1008000,
+    "max": 1411200
+   }
+  },
+  {
+   "typeCode": "PVOD",
+   "partnerName": "配信A（架空）",
+   "windowLabel": "独占",
+   "startMonth": "2027-06",
+   "months": 2,
+   "calc": "unit",
+   "unitPriceYen": 800,
+   "evenValue": 2978,
+   "goodValue": 3500,
+   "maxValue": 4900,
+   "expected": {
+    "even": 1006564,
+    "good": 1183000,
+    "max": 1656200
+   }
+  },
+  {
+   "typeCode": "EST",
+   "partnerName": "配信A（架空）",
+   "windowLabel": "先行",
+   "startMonth": "2027-06",
+   "months": 12,
+   "calc": "unit",
+   "unitPriceYen": 2500,
+   "evenValue": 766,
+   "goodValue": 900,
+   "maxValue": 1260,
+   "expected": {
+    "even": 809088,
+    "good": 950625,
+    "max": 1330875
+   }
+  },
+  {
+   "typeCode": "EST",
+   "partnerName": "配信B（架空）",
+   "windowLabel": "開放",
+   "startMonth": "2027-09",
+   "months": 12,
+   "calc": "unit",
+   "unitPriceYen": 2000,
+   "evenValue": 255,
+   "goodValue": 300,
+   "maxValue": 420,
+   "expected": {
+    "even": 215475,
+    "good": 253500,
+    "max": 354900
+   }
+  },
+  {
+   "typeCode": "TVOD",
+   "partnerName": "配信A（架空）",
+   "windowLabel": "独占",
+   "startMonth": "2027-08",
+   "months": 4,
+   "calc": "unit",
+   "unitPriceYen": 500,
+   "evenValue": 2128,
+   "goodValue": 2500,
+   "maxValue": 3500,
+   "expected": {
+    "even": 449540,
+    "good": 528125,
+    "max": 739375
+   }
+  },
+  {
+   "typeCode": "TVOD",
+   "partnerName": "配信B〜F（架空・まとめ）",
+   "windowLabel": "開放",
+   "startMonth": "2027-12",
+   "months": 12,
+   "calc": "unit",
+   "unitPriceYen": 500,
+   "evenValue": 1702,
+   "goodValue": 2000,
+   "maxValue": 2800,
+   "expected": {
+    "even": 359548,
+    "good": 422500,
+    "max": 591500
+   }
+  },
+  {
+   "typeCode": "SVOD",
+   "partnerName": "配信C（架空）",
+   "windowLabel": "先行・1年",
+   "startMonth": "2027-10",
+   "months": 1,
+   "calc": "fixed",
+   "unitPriceYen": 0,
+   "evenValue": 2553000,
+   "goodValue": 3000000,
+   "maxValue": 4200000,
+   "expected": {
+    "even": 2157285,
+    "good": 2535000,
+    "max": 3549000
+   }
+  },
+  {
+   "typeCode": "SVOD",
+   "partnerName": "配信A（架空）",
+   "windowLabel": "見放題",
+   "startMonth": "2028-04",
+   "months": 1,
+   "calc": "fixed",
+   "unitPriceYen": 0,
+   "evenValue": 1276500,
+   "goodValue": 1500000,
+   "maxValue": 2100000,
+   "expected": {
+    "even": 1078643,
+    "good": 1267500,
+    "max": 1774500
+   }
+  },
+  {
+   "typeCode": "AVOD",
+   "partnerName": "配信D（架空）",
+   "windowLabel": "開放",
+   "startMonth": "2028-04",
+   "months": 12,
+   "calc": "fixed",
+   "unitPriceYen": 0,
+   "evenValue": 425500,
+   "goodValue": 500000,
+   "maxValue": 700000,
+   "expected": {
+    "even": 359548,
+    "good": 422500,
+    "max": 591500
+   }
+  },
+  {
+   "typeCode": "BIZ",
+   "partnerName": "ホテル向けE（架空）",
+   "windowLabel": "開放",
+   "startMonth": "2027-10",
+   "months": 12,
+   "calc": "fixed",
+   "unitPriceYen": 0,
+   "evenValue": 255300,
+   "goodValue": 300000,
+   "maxValue": 420000,
+   "expected": {
+    "even": 215729,
+    "good": 253500,
+    "max": 354900
+   }
+  },
+  {
+   "typeCode": "BCST",
+   "partnerName": "BS局A（架空）",
+   "windowLabel": "放送初",
+   "startMonth": "2028-01",
+   "months": 1,
+   "calc": "fixed",
+   "unitPriceYen": 0,
+   "evenValue": 1021200,
+   "goodValue": 1200000,
+   "maxValue": 1680000,
+   "expected": {
+    "even": 796536,
+    "good": 936000,
+    "max": 1310400
+   }
+  },
+  {
+   "typeCode": "BCST",
+   "partnerName": "CS局B（架空）",
+   "windowLabel": "テレビ独占",
+   "startMonth": "2028-04",
+   "months": 1,
+   "calc": "fixed",
+   "unitPriceYen": 0,
+   "evenValue": 510600,
+   "goodValue": 600000,
+   "maxValue": 840000,
+   "expected": {
+    "even": 398268,
+    "good": 468000,
+    "max": 655200
+   }
+  },
+  {
+   "typeCode": "BCST",
+   "partnerName": "地上波ローカルC（架空）",
+   "windowLabel": "番販",
+   "startMonth": "2028-10",
+   "months": 1,
+   "calc": "fixed",
+   "unitPriceYen": 0,
+   "evenValue": 340400,
+   "goodValue": 400000,
+   "maxValue": 560000,
+   "expected": {
+    "even": 265512,
+    "good": 312000,
+    "max": 436800
+   }
+  },
+  {
+   "typeCode": "SELL",
+   "partnerName": "BD 通常版（架空）",
+   "windowLabel": "発売",
+   "startMonth": "2027-08",
+   "months": 12,
+   "calc": "unit",
+   "unitPriceYen": 5000,
+   "evenValue": 1021,
+   "goodValue": 1200,
+   "maxValue": 1680,
+   "expected": {
+    "even": 1418399,
+    "good": 1667070,
+    "max": 2333898
+   }
+  },
+  {
+   "typeCode": "SELL",
+   "partnerName": "BD 豪華版（架空）",
+   "windowLabel": "発売",
+   "startMonth": "2027-08",
+   "months": 12,
+   "calc": "unit",
+   "unitPriceYen": 9000,
+   "evenValue": 255,
+   "goodValue": 300,
+   "maxValue": 420,
+   "expected": {
+    "even": 760054,
+    "good": 894182,
+    "max": 1251854
+   }
+  },
+  {
+   "typeCode": "RENT",
+   "partnerName": "レンタル 買い切り（架空）",
+   "windowLabel": "発売",
+   "startMonth": "2027-08",
+   "months": 6,
+   "calc": "unit",
+   "unitPriceYen": 6000,
+   "evenValue": 426,
+   "goodValue": 500,
+   "maxValue": 700,
+   "expected": {
+    "even": 1425822,
+    "good": 1673500,
+    "max": 2342900
+   }
+  },
+  {
+   "typeCode": "RENT",
+   "partnerName": "レンタル RSS・MG（架空）",
+   "windowLabel": "発売",
+   "startMonth": "2027-08",
+   "months": 6,
+   "calc": "fixed",
+   "unitPriceYen": 0,
+   "evenValue": 851000,
+   "goodValue": 1000000,
+   "maxValue": 1400000,
+   "expected": {
+    "even": 510175,
+    "good": 599500,
+    "max": 839300
+   }
+  },
+  {
+   "typeCode": "OVS",
+   "partnerName": "海外 地域A（架空）",
+   "windowLabel": "一括",
+   "startMonth": "2027-12",
+   "months": 1,
+   "calc": "fixed",
+   "unitPriceYen": 0,
+   "evenValue": 1276500,
+   "goodValue": 1500000,
+   "maxValue": 2100000,
+   "expected": {
+    "even": 740370,
+    "good": 870000,
+    "max": 1218000
+   }
+  },
+  {
+   "typeCode": "GOOD",
+   "partnerName": "パンフ・グッズ（架空）",
+   "windowLabel": "劇場・EC",
+   "startMonth": "2027-04",
+   "months": 3,
+   "calc": "fixed",
+   "unitPriceYen": 0,
+   "evenValue": 2127500,
+   "goodValue": 2500000,
+   "maxValue": 3500000,
+   "expected": {
+    "even": 968013,
+    "good": 1137500,
+    "max": 1592500
+   }
+  }
+ ],
+ "expected": {
+  "even": {
+   "income": 20001169,
+   "creator": 788000,
+   "recoveryBps": 10001,
+   "breakEvenMonth": "2029-03"
+  },
+  "good": {
+   "income": 23502002,
+   "creator": 925835,
+   "recoveryBps": 11751,
+   "breakEvenMonth": "2028-04"
+  },
+  "max": {
+   "income": 32902802,
+   "creator": 1296169,
+   "recoveryBps": 16451,
+   "breakEvenMonth": "2027-10"
+  }
+ }
+}

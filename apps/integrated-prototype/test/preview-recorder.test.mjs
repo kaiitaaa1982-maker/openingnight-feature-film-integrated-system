@@ -4,9 +4,10 @@ import {mkdtempSync, mkdirSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {availsExportUrls, API_LINK_LIMIT, FILE_LIMIT_BYTES, PREVIEW_ALWAYS_GETS, checkOutDir, foreignEmailDomains, jstDate, normalizeLocation, outDirOf, parseArgs, resolveLink, restrictOrgs, seedLocations, requiredPreviewApiUrls, recordRequiredPreviewApis} from '../scripts/build-preview.mjs';
+import {availsExportUrls, API_LINK_LIMIT, FILE_LIMIT_BYTES, PREVIEW_ALWAYS_GETS, PREVIEW_UNRECORDED_PAGES, checkOutDir, foreignEmailDomains, jstDate, normalizeLocation, outDirOf, parseArgs, resolveLink, restrictOrgs, seedLocations, requiredPreviewApiUrls, recordRequiredPreviewApis} from '../scripts/build-preview.mjs';
 import {snapshotKey, createSnapshotFetch, mergePreviewData, splitPreviewData} from '../src/preview/snapshot-client.mjs';
 import {REPORT_CATALOG} from '../src/reports/report-catalog.mjs';
+import {navItems} from '../src/shell/nav-model.mjs';
 
 const appRoot = fileURLToPath(new URL('..', import.meta.url));
 
@@ -155,6 +156,12 @@ test('最初に開く画面: ナビの全画面・帳票センターの全帳票
     assert.ok(searches.has(`?fy=${fy}&p=pl-bs&work=1`));
     assert.ok(searches.has(`?fy=${fy}&p=sales-sheet&work=1`));
   }
+  // 入力の値から保存しない POST で計算する画面（シナリオの比較）は、記録できる応答が無いので巡回しない（メニューには残り、開くと「プレビューでは計算できません」と出る）
+  assert.deepEqual([...PREVIEW_UNRECORDED_PAGES], ['シナリオの比較', 'フォルダ']);
+  assert.ok(navItems().some((item) => item.page === 'シナリオの比較' && !item.hidden), 'この画面は全表示のメニューにある（skip が空振りでない）');
+  assert.ok(searches.has('?p=pl-bs&work=1'), '会社全体の画面は巡回する');
+  assert.ok(![...searches].some((search) => /p=scenario-compare(&|$)/.test(search)), '巡回しない画面');
+  assert.ok(![...searches].some((search) => /p=folders(&|$)/.test(search)), '見本のフォルダは巡回しない');
   // 作品の数を絞る
   const limited = seedLocations({works, role: 'admin', worksLimit: '1', year: 2026});
   assert.ok(limited.some((seed) => seed.search === '?p=home&work=1'));

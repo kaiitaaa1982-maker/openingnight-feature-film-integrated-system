@@ -1,0 +1,2618 @@
+{
+  "fictional": true,
+  "notice": "架空データ。入金の確認の試験専用で、実在の取引先・作品・金額ではない",
+  "method": "Python の標準ライブラリだけで独立に作った正解表（整数円と fractions.Fraction。統合システムの関数を使わない）",
+  "generator": "generate.py",
+  "seed": 20261108,
+  "dictionary_version": "RM-DICT-1",
+  "vocabulary": "brain wiki/01_rules/ontology.md「業務フローの語彙」（2026-10-09）",
+  "inputs_sha256": {
+    "invoices.json": "e7778d887cd8343242a35444cae2175fe4db2d656766ef348c594da9e7637b0a",
+    "receipts.json": "1c63e01ff32bbeeb150ba43395ebf0f4f7805d3580562f4e1e329a34596b3e88"
+  },
+  "summary": {
+    "receipts": 128,
+    "自動で一致": 119,
+    "確認が要る": 9,
+    "自動で一致の入金額": 119983262,
+    "確認が要るの入金額": 7400769,
+    "理由ごとの件数": {
+      "名義が辞書に無い": 1,
+      "返品の相殺": 1,
+      "為替の確定": 2,
+      "外国で源泉された額": 1,
+      "銀行手数料": 3,
+      "一部入金": 1,
+      "請求前の入金": 1,
+      "二重入金の疑い": 1
+    }
+  },
+  "answers": [
+    {
+      "receipt_id": 1,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-DS-H",
+      "allocations": [
+        {
+          "invoice_id": 1,
+          "invoice_number": "RM-INV-202609-001",
+          "amount_yen": 1007311,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 2,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TV-N",
+      "allocations": [
+        {
+          "invoice_id": 35,
+          "invoice_number": "RM-INV-202610-022",
+          "amount_yen": 459800,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 3,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-DS-J",
+      "allocations": [
+        {
+          "invoice_id": 9,
+          "invoice_number": "RM-INV-202609-009",
+          "amount_yen": 596808,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 4,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-L",
+      "allocations": [
+        {
+          "invoice_id": 5,
+          "invoice_number": "RM-INV-202609-005",
+          "amount_yen": 387526,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 5,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-RNT-R",
+      "allocations": [
+        {
+          "invoice_id": 4,
+          "invoice_number": "RM-INV-202609-004",
+          "amount_yen": 631684,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 6,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-RNT-R",
+      "allocations": [
+        {
+          "invoice_id": 8,
+          "invoice_number": "RM-INV-202609-008",
+          "amount_yen": 584426,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 7,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-E",
+      "allocations": [
+        {
+          "invoice_id": 135,
+          "invoice_number": "RM-INV-202610-122",
+          "amount_yen": 837743,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 8,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-E",
+      "allocations": [
+        {
+          "invoice_id": 32,
+          "invoice_number": "RM-INV-202610-019",
+          "amount_yen": 920365,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 9,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-RNT-Q",
+      "allocations": [
+        {
+          "invoice_id": 25,
+          "invoice_number": "RM-INV-202610-012",
+          "amount_yen": 38870,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 10,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-RNT-Q",
+      "allocations": [
+        {
+          "invoice_id": 36,
+          "invoice_number": "RM-INV-202610-023",
+          "amount_yen": 632170,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 11,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-RNT-Q",
+      "allocations": [
+        {
+          "invoice_id": 17,
+          "invoice_number": "RM-INV-202610-004",
+          "amount_yen": 925719,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 12,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-RNT-Q",
+      "allocations": [
+        {
+          "invoice_id": 51,
+          "invoice_number": "RM-INV-202610-038",
+          "amount_yen": 476595,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 13,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-RNT-Q",
+      "allocations": [
+        {
+          "invoice_id": 63,
+          "invoice_number": "RM-INV-202610-050",
+          "amount_yen": 617488,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 14,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-RNT-Q",
+      "allocations": [
+        {
+          "invoice_id": 136,
+          "invoice_number": "RM-INV-202610-123",
+          "amount_yen": 182419,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 15,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-RNT-Q",
+      "allocations": [
+        {
+          "invoice_id": 118,
+          "invoice_number": "RM-INV-202610-105",
+          "amount_yen": 441238,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 16,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-W",
+      "allocations": [
+        {
+          "invoice_id": 28,
+          "invoice_number": "RM-INV-202610-015",
+          "amount_yen": 1960379,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 17,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-W",
+      "allocations": [
+        {
+          "invoice_id": 53,
+          "invoice_number": "RM-INV-202610-040",
+          "amount_yen": 2200174,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 18,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-W",
+      "allocations": [
+        {
+          "invoice_id": 128,
+          "invoice_number": "RM-INV-202610-115",
+          "amount_yen": 479872,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 19,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-W",
+      "allocations": [
+        {
+          "invoice_id": 103,
+          "invoice_number": "RM-INV-202610-090",
+          "amount_yen": 1846227,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 20,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-W",
+      "allocations": [
+        {
+          "invoice_id": 61,
+          "invoice_number": "RM-INV-202610-048",
+          "amount_yen": 903494,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 21,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-W",
+      "allocations": [
+        {
+          "invoice_id": 139,
+          "invoice_number": "RM-INV-202610-126",
+          "amount_yen": 2150648,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 22,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-W",
+      "allocations": [
+        {
+          "invoice_id": 6,
+          "invoice_number": "RM-INV-202609-006",
+          "amount_yen": 1364150,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 23,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-B",
+      "allocations": [
+        {
+          "invoice_id": 11,
+          "invoice_number": "RM-INV-202609-011",
+          "amount_yen": 2460296,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 24,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TV-N",
+      "allocations": [
+        {
+          "invoice_id": 7,
+          "invoice_number": "RM-INV-202609-007",
+          "amount_yen": 1149324,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 25,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-DS-H",
+      "allocations": [
+        {
+          "invoice_id": 39,
+          "invoice_number": "RM-INV-202610-026",
+          "amount_yen": 812260,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 26,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-DS-H",
+      "allocations": [
+        {
+          "invoice_id": 99,
+          "invoice_number": "RM-INV-202610-086",
+          "amount_yen": 71289,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 27,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-DS-H",
+      "allocations": [
+        {
+          "invoice_id": 21,
+          "invoice_number": "RM-INV-202610-008",
+          "amount_yen": 1798549,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 28,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-DS-J",
+      "allocations": [
+        {
+          "invoice_id": 13,
+          "invoice_number": "RM-INV-202609-013",
+          "amount_yen": 1015309,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 29,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TV-P",
+      "allocations": [
+        {
+          "invoice_id": 41,
+          "invoice_number": "RM-INV-202610-028",
+          "amount_yen": 3165327,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 30,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TV-P",
+      "allocations": [
+        {
+          "invoice_id": 101,
+          "invoice_number": "RM-INV-202610-088",
+          "amount_yen": 384531,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 31,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TV-P",
+      "allocations": [
+        {
+          "invoice_id": 16,
+          "invoice_number": "RM-INV-202610-003",
+          "amount_yen": 774896,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 32,
+      "outcome": "自動で一致",
+      "rule": "合計の一致（まとめ払い）",
+      "partner_code": "RM-TV-P",
+      "allocations": [
+        {
+          "invoice_id": 116,
+          "invoice_number": "RM-INV-202610-103",
+          "amount_yen": 717138,
+          "balance_after_yen": 0
+        },
+        {
+          "invoice_id": 117,
+          "invoice_number": "RM-INV-202610-104",
+          "amount_yen": 869093,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 33,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-U",
+      "allocations": [
+        {
+          "invoice_id": 138,
+          "invoice_number": "RM-INV-202610-125",
+          "amount_yen": 579376,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 34,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-U",
+      "allocations": [
+        {
+          "invoice_id": 111,
+          "invoice_number": "RM-INV-202610-098",
+          "amount_yen": 1693949,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 35,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-U",
+      "allocations": [
+        {
+          "invoice_id": 121,
+          "invoice_number": "RM-INV-202610-108",
+          "amount_yen": 2430787,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 36,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-U",
+      "allocations": [
+        {
+          "invoice_id": 59,
+          "invoice_number": "RM-INV-202610-046",
+          "amount_yen": 2331354,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 37,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-U",
+      "allocations": [
+        {
+          "invoice_id": 60,
+          "invoice_number": "RM-INV-202610-047",
+          "amount_yen": 2119701,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 38,
+      "outcome": "確認が要る",
+      "rule": "名義が辞書に無い",
+      "partner_code": null,
+      "allocations": [],
+      "deductions": [],
+      "unapplied_yen": 77000,
+      "review": {
+        "reasons": [
+          "名義が辞書に無い"
+        ],
+        "level": "bad",
+        "difference_yen": null,
+        "breakdown": [],
+        "explained_yen": 0,
+        "remaining_yen": null,
+        "suspected": [],
+        "candidates": [
+          {
+            "partner_code": "RM-DS-H",
+            "invoice_number": "RM-INV-202610-057"
+          },
+          {
+            "partner_code": "RM-DS-J",
+            "invoice_number": "RM-INV-202610-100"
+          }
+        ],
+        "related_receipt_id": null,
+        "evidence": [
+          {
+            "mark": "y",
+            "text": "金額と期日が RM-INV-202610-057（配給会社H（架空））と一致",
+            "source": "請求書"
+          },
+          {
+            "mark": "q",
+            "text": "名義「ｶ)ｴｲｶﾞﾊｲｷﾕｳ」は辞書に無い。候補は配給会社H・配給会社J",
+            "source": "名寄せの辞書"
+          },
+          {
+            "mark": "n",
+            "text": "同じ額の未消込が配給会社J（架空）にもある（RM-INV-202610-100）",
+            "source": "請求書"
+          }
+        ],
+        "alternative": "選んだ取引先と名義の組は辞書に足す案として残し、次回からの候補に使う（採用は担当者）"
+      }
+    },
+    {
+      "receipt_id": 39,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TV-P",
+      "allocations": [
+        {
+          "invoice_id": 3,
+          "invoice_number": "RM-INV-202609-003",
+          "amount_yen": 2666051,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 40,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-RNT-Q",
+      "allocations": [
+        {
+          "invoice_id": 2,
+          "invoice_number": "RM-INV-202609-002",
+          "amount_yen": 195037,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 41,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-D",
+      "allocations": [
+        {
+          "invoice_id": 12,
+          "invoice_number": "RM-INV-202609-012",
+          "amount_yen": 1201781,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 42,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-V",
+      "allocations": [
+        {
+          "invoice_id": 10,
+          "invoice_number": "RM-INV-202609-010",
+          "amount_yen": 1704219,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 43,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-D",
+      "allocations": [
+        {
+          "invoice_id": 67,
+          "invoice_number": "RM-INV-202610-054",
+          "amount_yen": 363369,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 44,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-D",
+      "allocations": [
+        {
+          "invoice_id": 75,
+          "invoice_number": "RM-INV-202610-062",
+          "amount_yen": 178707,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 45,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-D",
+      "allocations": [
+        {
+          "invoice_id": 76,
+          "invoice_number": "RM-INV-202610-063",
+          "amount_yen": 781981,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 46,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-D",
+      "allocations": [
+        {
+          "invoice_id": 43,
+          "invoice_number": "RM-INV-202610-030",
+          "amount_yen": 874815,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 47,
+      "outcome": "自動で一致",
+      "rule": "合計の一致（まとめ払い）",
+      "partner_code": "RM-SEL-D",
+      "allocations": [
+        {
+          "invoice_id": 55,
+          "invoice_number": "RM-INV-202610-042",
+          "amount_yen": 681397,
+          "balance_after_yen": 0
+        },
+        {
+          "invoice_id": 92,
+          "invoice_number": "RM-INV-202610-079",
+          "amount_yen": 1222625,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 48,
+      "outcome": "確認が要る",
+      "rule": "差額の原因で説明",
+      "partner_code": "RM-SEL-D",
+      "allocations": [
+        {
+          "invoice_id": 91,
+          "invoice_number": "RM-INV-202610-078",
+          "amount_yen": 550000,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [
+        {
+          "kind": "返品の相殺",
+          "amount_yen": 55000,
+          "invoice_number": "RM-INV-202610-078",
+          "report_ref": "RM-R-0091",
+          "report_row": 12
+        }
+      ],
+      "unapplied_yen": 0,
+      "review": {
+        "reasons": [
+          "返品の相殺"
+        ],
+        "level": "warn",
+        "difference_yen": 55000,
+        "breakdown": [
+          {
+            "cause": "返品の相殺",
+            "amount_yen": 55000
+          }
+        ],
+        "explained_yen": 55000,
+        "remaining_yen": 0,
+        "suspected": [],
+        "candidates": [],
+        "related_receipt_id": null,
+        "evidence": [
+          {
+            "mark": "y",
+            "text": "9月分の売上報告に返品50本・税込−55,000円の行がある",
+            "source": "売上報告 RM-R-0091 12行目"
+          },
+          {
+            "mark": "q",
+            "text": "返品の行は請求に載っていない（相殺で処理された）",
+            "source": "請求書"
+          },
+          {
+            "mark": "y",
+            "text": "差額が返品の額と1円まで一致",
+            "source": "—"
+          }
+        ],
+        "alternative": "返品を売上の差額として計上し直すか、請求を訂正するかを決める"
+      }
+    },
+    {
+      "receipt_id": 49,
+      "outcome": "確認が要る",
+      "rule": "差額の原因で説明",
+      "partner_code": "RM-OS-G",
+      "allocations": [
+        {
+          "invoice_id": 33,
+          "invoice_number": "RM-INV-202610-020",
+          "amount_yen": 830025,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [
+        {
+          "kind": "為替の確定",
+          "amount_yen": 18003,
+          "invoice_number": "RM-INV-202610-020",
+          "currency": "EUR",
+          "foreign_amount": "5100.00",
+          "rate_from": "162.7500",
+          "rate_to": "159.2200"
+        }
+      ],
+      "unapplied_yen": 3,
+      "review": {
+        "reasons": [
+          "為替の確定"
+        ],
+        "level": "warn",
+        "difference_yen": 18000,
+        "breakdown": [
+          {
+            "cause": "為替の確定",
+            "amount_yen": 18003
+          }
+        ],
+        "explained_yen": 18003,
+        "remaining_yen": -3,
+        "suspected": [],
+        "candidates": [],
+        "related_receipt_id": null,
+        "evidence": [
+          {
+            "mark": "y",
+            "text": "報告の日と入金日のレートの差で 18,003円が説明できる",
+            "source": "為替の表"
+          },
+          {
+            "mark": "q",
+            "text": "3円の差が残る（円の端数処理の違いと推定）",
+            "source": "—"
+          }
+        ],
+        "alternative": "3円を為替の確定に含めるか、不明として残すかを決める"
+      }
+    },
+    {
+      "receipt_id": 50,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-L",
+      "allocations": [
+        {
+          "invoice_id": 23,
+          "invoice_number": "RM-INV-202610-010",
+          "amount_yen": 770313,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 51,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-L",
+      "allocations": [
+        {
+          "invoice_id": 100,
+          "invoice_number": "RM-INV-202610-087",
+          "amount_yen": 1133481,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 52,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-L",
+      "allocations": [
+        {
+          "invoice_id": 88,
+          "invoice_number": "RM-INV-202610-075",
+          "amount_yen": 938725,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 53,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-L",
+      "allocations": [
+        {
+          "invoice_id": 71,
+          "invoice_number": "RM-INV-202610-058",
+          "amount_yen": 561102,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 54,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-L",
+      "allocations": [
+        {
+          "invoice_id": 114,
+          "invoice_number": "RM-INV-202610-101",
+          "amount_yen": 267540,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 55,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-L",
+      "allocations": [
+        {
+          "invoice_id": 49,
+          "invoice_number": "RM-INV-202610-036",
+          "amount_yen": 1088445,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 56,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-L",
+      "allocations": [
+        {
+          "invoice_id": 94,
+          "invoice_number": "RM-INV-202610-081",
+          "amount_yen": 617106,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 57,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-RNT-R",
+      "allocations": [
+        {
+          "invoice_id": 72,
+          "invoice_number": "RM-INV-202610-059",
+          "amount_yen": 245760,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 58,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-RNT-R",
+      "allocations": [
+        {
+          "invoice_id": 26,
+          "invoice_number": "RM-INV-202610-013",
+          "amount_yen": 335894,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 59,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-RNT-R",
+      "allocations": [
+        {
+          "invoice_id": 97,
+          "invoice_number": "RM-INV-202610-084",
+          "amount_yen": 1081385,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 60,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-RNT-R",
+      "allocations": [
+        {
+          "invoice_id": 57,
+          "invoice_number": "RM-INV-202610-044",
+          "amount_yen": 840159,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 61,
+      "outcome": "自動で一致",
+      "rule": "合計の一致（まとめ払い）",
+      "partner_code": "RM-RNT-R",
+      "allocations": [
+        {
+          "invoice_id": 132,
+          "invoice_number": "RM-INV-202610-119",
+          "amount_yen": 215780,
+          "balance_after_yen": 0
+        },
+        {
+          "invoice_id": 37,
+          "invoice_number": "RM-INV-202610-024",
+          "amount_yen": 279512,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 62,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-EDU-Y",
+      "allocations": [
+        {
+          "invoice_id": 98,
+          "invoice_number": "RM-INV-202610-085",
+          "amount_yen": 227708,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 63,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-EDU-Y",
+      "allocations": [
+        {
+          "invoice_id": 19,
+          "invoice_number": "RM-INV-202610-006",
+          "amount_yen": 409079,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 64,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-EDU-Y",
+      "allocations": [
+        {
+          "invoice_id": 89,
+          "invoice_number": "RM-INV-202610-076",
+          "amount_yen": 208563,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 65,
+      "outcome": "確認が要る",
+      "rule": "差額の原因で説明",
+      "partner_code": "RM-OS-C",
+      "allocations": [
+        {
+          "invoice_id": 31,
+          "invoice_number": "RM-INV-202610-018",
+          "amount_yen": 2058840,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [
+        {
+          "kind": "外国で源泉された額",
+          "amount_yen": 203056,
+          "invoice_number": "RM-INV-202610-018",
+          "country": "US",
+          "rate_bps": 1000,
+          "foreign_amount": "1400.00",
+          "currency": "USD",
+          "certificate_received": false
+        },
+        {
+          "kind": "為替の確定",
+          "amount_yen": 28280,
+          "invoice_number": "RM-INV-202610-018",
+          "currency": "USD",
+          "foreign_amount": "14000.00",
+          "rate_from": "147.0600",
+          "rate_to": "145.0400"
+        },
+        {
+          "kind": "銀行手数料",
+          "amount_yen": 4000,
+          "invoice_number": null
+        }
+      ],
+      "unapplied_yen": 0,
+      "review": {
+        "reasons": [
+          "外国で源泉された額",
+          "為替の確定",
+          "銀行手数料"
+        ],
+        "level": "warn",
+        "difference_yen": 235336,
+        "breakdown": [
+          {
+            "cause": "外国で源泉された額",
+            "amount_yen": 203056
+          },
+          {
+            "cause": "為替の確定",
+            "amount_yen": 28280
+          },
+          {
+            "cause": "銀行手数料",
+            "amount_yen": 4000
+          }
+        ],
+        "explained_yen": 235336,
+        "remaining_yen": 0,
+        "suspected": [],
+        "candidates": [],
+        "related_receipt_id": null,
+        "evidence": [
+          {
+            "mark": "y",
+            "text": "契約の条件に「源泉税は相手国で控除・米国10%」がある",
+            "source": "契約 C-RM-03 第8条"
+          },
+          {
+            "mark": "y",
+            "text": "取引先の国が米国で、租税条約の税率は10%",
+            "source": "取引先"
+          },
+          {
+            "mark": "y",
+            "text": "報告の日と入金日の公表仲値の差で 28,280円が説明できる",
+            "source": "為替の表"
+          },
+          {
+            "mark": "q",
+            "text": "手数料 4,000円は過去3回と同じ額。今回の明細には内訳が無い",
+            "source": "入金の履歴"
+          },
+          {
+            "mark": "n",
+            "text": "納税の証明書はまだ受け取っていない",
+            "source": "—"
+          }
+        ],
+        "alternative": "手数料ではなく一部入金（残り4,000円が後日）。過去に分割の例は無い"
+      }
+    },
+    {
+      "receipt_id": 66,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-DS-F",
+      "allocations": [
+        {
+          "invoice_id": 77,
+          "invoice_number": "RM-INV-202610-064",
+          "amount_yen": 680594,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 67,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-DS-F",
+      "allocations": [
+        {
+          "invoice_id": 69,
+          "invoice_number": "RM-INV-202610-056",
+          "amount_yen": 1393949,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 68,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-DS-F",
+      "allocations": [
+        {
+          "invoice_id": 86,
+          "invoice_number": "RM-INV-202610-073",
+          "amount_yen": 196970,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 69,
+      "outcome": "確認が要る",
+      "rule": "差額の原因で説明",
+      "partner_code": "RM-DS-F",
+      "allocations": [
+        {
+          "invoice_id": 68,
+          "invoice_number": "RM-INV-202610-055",
+          "amount_yen": 1000000,
+          "balance_after_yen": 650000
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": {
+        "reasons": [
+          "一部入金"
+        ],
+        "level": "warn",
+        "difference_yen": 650000,
+        "breakdown": [
+          {
+            "cause": "一部入金",
+            "amount_yen": 650000
+          }
+        ],
+        "explained_yen": 650000,
+        "remaining_yen": 0,
+        "suspected": [],
+        "candidates": [],
+        "related_receipt_id": null,
+        "evidence": [
+          {
+            "mark": "y",
+            "text": "入金予定の変更が承認済み（2回に分ける）",
+            "source": "入金予定の変更 RM-SC-0058"
+          },
+          {
+            "mark": "y",
+            "text": "1回目の予定額 1,000,000円と一致",
+            "source": "—"
+          }
+        ],
+        "alternative": null
+      }
+    },
+    {
+      "receipt_id": 70,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-M",
+      "allocations": [
+        {
+          "invoice_id": 14,
+          "invoice_number": "RM-INV-202610-001",
+          "amount_yen": 659080,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 71,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-M",
+      "allocations": [
+        {
+          "invoice_id": 115,
+          "invoice_number": "RM-INV-202610-102",
+          "amount_yen": 138383,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 72,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-M",
+      "allocations": [
+        {
+          "invoice_id": 95,
+          "invoice_number": "RM-INV-202610-082",
+          "amount_yen": 1614023,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 73,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-M",
+      "allocations": [
+        {
+          "invoice_id": 15,
+          "invoice_number": "RM-INV-202610-002",
+          "amount_yen": 570839,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 74,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-M",
+      "allocations": [
+        {
+          "invoice_id": 56,
+          "invoice_number": "RM-INV-202610-043",
+          "amount_yen": 1227836,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 75,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-M",
+      "allocations": [
+        {
+          "invoice_id": 96,
+          "invoice_number": "RM-INV-202610-083",
+          "amount_yen": 1217656,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 76,
+      "outcome": "自動で一致",
+      "rule": "合計の一致（まとめ払い）",
+      "partner_code": "RM-PF-M",
+      "allocations": [
+        {
+          "invoice_id": 109,
+          "invoice_number": "RM-INV-202610-096",
+          "amount_yen": 1322888,
+          "balance_after_yen": 0
+        },
+        {
+          "invoice_id": 24,
+          "invoice_number": "RM-INV-202610-011",
+          "amount_yen": 724421,
+          "balance_after_yen": 0
+        },
+        {
+          "invoice_id": 131,
+          "invoice_number": "RM-INV-202610-118",
+          "amount_yen": 1411661,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 77,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-T",
+      "allocations": [
+        {
+          "invoice_id": 137,
+          "invoice_number": "RM-INV-202610-124",
+          "amount_yen": 363799,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 78,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-T",
+      "allocations": [
+        {
+          "invoice_id": 58,
+          "invoice_number": "RM-INV-202610-045",
+          "amount_yen": 247299,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 79,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-T",
+      "allocations": [
+        {
+          "invoice_id": 82,
+          "invoice_number": "RM-INV-202610-069",
+          "amount_yen": 772702,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 80,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-T",
+      "allocations": [
+        {
+          "invoice_id": 120,
+          "invoice_number": "RM-INV-202610-107",
+          "amount_yen": 575006,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 81,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-T",
+      "allocations": [
+        {
+          "invoice_id": 127,
+          "invoice_number": "RM-INV-202610-114",
+          "amount_yen": 73279,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 82,
+      "outcome": "自動で一致",
+      "rule": "合計の一致（まとめ払い）",
+      "partner_code": "RM-SEL-T",
+      "allocations": [
+        {
+          "invoice_id": 110,
+          "invoice_number": "RM-INV-202610-097",
+          "amount_yen": 244393,
+          "balance_after_yen": 0
+        },
+        {
+          "invoice_id": 83,
+          "invoice_number": "RM-INV-202610-070",
+          "amount_yen": 951789,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 83,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-AIR-X",
+      "allocations": [
+        {
+          "invoice_id": 29,
+          "invoice_number": "RM-INV-202610-016",
+          "amount_yen": 376349,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 84,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-AIR-X",
+      "allocations": [
+        {
+          "invoice_id": 104,
+          "invoice_number": "RM-INV-202610-091",
+          "amount_yen": 1130707,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 85,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-AIR-X",
+      "allocations": [
+        {
+          "invoice_id": 129,
+          "invoice_number": "RM-INV-202610-116",
+          "amount_yen": 399780,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 86,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-AIR-X",
+      "allocations": [
+        {
+          "invoice_id": 105,
+          "invoice_number": "RM-INV-202610-092",
+          "amount_yen": 844516,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 87,
+      "outcome": "自動で一致",
+      "rule": "合計の一致（まとめ払い）",
+      "partner_code": "RM-AIR-X",
+      "allocations": [
+        {
+          "invoice_id": 134,
+          "invoice_number": "RM-INV-202610-121",
+          "amount_yen": 113538,
+          "balance_after_yen": 0
+        },
+        {
+          "invoice_id": 38,
+          "invoice_number": "RM-INV-202610-025",
+          "amount_yen": 450547,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 88,
+      "outcome": "確認が要る",
+      "rule": "対応する請求なし",
+      "partner_code": "RM-PF-E",
+      "allocations": [],
+      "deductions": [],
+      "unapplied_yen": 330000,
+      "review": {
+        "reasons": [
+          "請求前の入金"
+        ],
+        "level": "bad",
+        "difference_yen": null,
+        "breakdown": [],
+        "explained_yen": 0,
+        "remaining_yen": null,
+        "suspected": [],
+        "candidates": [],
+        "related_receipt_id": null,
+        "evidence": [
+          {
+            "mark": "y",
+            "text": "名義は配信会社E（架空）として辞書にある",
+            "source": "名寄せの辞書"
+          },
+          {
+            "mark": "q",
+            "text": "10月分の売上報告がまだ届いていない（届くはずの報告）",
+            "source": "届くはずの報告"
+          },
+          {
+            "mark": "n",
+            "text": "この額の未消込の請求が無い",
+            "source": "請求書"
+          }
+        ],
+        "alternative": "売上報告が届くまで前受けとして保留できる"
+      }
+    },
+    {
+      "receipt_id": 89,
+      "outcome": "確認が要る",
+      "rule": "差額の原因で説明",
+      "partner_code": "RM-PF-A",
+      "allocations": [
+        {
+          "invoice_id": 54,
+          "invoice_number": "RM-INV-202610-041",
+          "amount_yen": 453585,
+          "balance_after_yen": 0
+        },
+        {
+          "invoice_id": 112,
+          "invoice_number": "RM-INV-202610-099",
+          "amount_yen": 646415,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [
+        {
+          "kind": "銀行手数料",
+          "amount_yen": 660,
+          "invoice_number": null
+        }
+      ],
+      "unapplied_yen": 0,
+      "review": {
+        "reasons": [
+          "銀行手数料"
+        ],
+        "level": "ok",
+        "difference_yen": 660,
+        "breakdown": [
+          {
+            "cause": "銀行手数料",
+            "amount_yen": 660
+          }
+        ],
+        "explained_yen": 660,
+        "remaining_yen": 0,
+        "suspected": [],
+        "candidates": [],
+        "related_receipt_id": null,
+        "evidence": [
+          {
+            "mark": "y",
+            "text": "2件の請求の合計が入金額＋660円で、期日が同じ月",
+            "source": "請求書"
+          },
+          {
+            "mark": "y",
+            "text": "契約に「振込手数料は当方負担」がある",
+            "source": "契約 C-RM-01 第5条"
+          },
+          {
+            "mark": "y",
+            "text": "同じ名義の過去6回の入金も 660円少ない",
+            "source": "入金の履歴"
+          }
+        ],
+        "alternative": null
+      }
+    },
+    {
+      "receipt_id": 90,
+      "outcome": "確認が要る",
+      "rule": "対応する請求なし",
+      "partner_code": "RM-PF-A",
+      "allocations": [],
+      "deductions": [],
+      "unapplied_yen": 1099340,
+      "review": {
+        "reasons": [
+          "二重入金の疑い"
+        ],
+        "level": "bad",
+        "difference_yen": null,
+        "breakdown": [],
+        "explained_yen": 0,
+        "remaining_yen": null,
+        "suspected": [],
+        "candidates": [],
+        "related_receipt_id": 89,
+        "evidence": [
+          {
+            "mark": "y",
+            "text": "同じ日に同じ額・同じ名義の入金が2件ある",
+            "source": "銀行明細 89行目・90行目"
+          },
+          {
+            "mark": "n",
+            "text": "2件目に当てる請求が無い",
+            "source": "請求書"
+          }
+        ],
+        "alternative": "返金するか、翌月分の前受けにするかを決める（理由が要る）"
+      }
+    },
+    {
+      "receipt_id": 91,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-B",
+      "allocations": [
+        {
+          "invoice_id": 85,
+          "invoice_number": "RM-INV-202610-072",
+          "amount_yen": 919218,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 92,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-B",
+      "allocations": [
+        {
+          "invoice_id": 130,
+          "invoice_number": "RM-INV-202610-117",
+          "amount_yen": 325409,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 93,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-B",
+      "allocations": [
+        {
+          "invoice_id": 106,
+          "invoice_number": "RM-INV-202610-093",
+          "amount_yen": 1105238,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 94,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-B",
+      "allocations": [
+        {
+          "invoice_id": 107,
+          "invoice_number": "RM-INV-202610-094",
+          "amount_yen": 361414,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 95,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-B",
+      "allocations": [
+        {
+          "invoice_id": 123,
+          "invoice_number": "RM-INV-202610-110",
+          "amount_yen": 2334481,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 96,
+      "outcome": "確認が要る",
+      "rule": "差額の原因で説明",
+      "partner_code": "RM-TH-B",
+      "allocations": [
+        {
+          "invoice_id": 90,
+          "invoice_number": "RM-INV-202610-077",
+          "amount_yen": 664560,
+          "balance_after_yen": 660
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": {
+        "reasons": [
+          "銀行手数料"
+        ],
+        "level": "bad",
+        "difference_yen": 660,
+        "breakdown": [],
+        "explained_yen": 0,
+        "remaining_yen": 660,
+        "suspected": [
+          {
+            "cause": "銀行手数料",
+            "amount_yen": 660,
+            "conflict": "契約では先方負担"
+          }
+        ],
+        "candidates": [],
+        "related_receipt_id": null,
+        "evidence": [
+          {
+            "mark": "n",
+            "text": "契約では「振込手数料は先方負担」",
+            "source": "契約 C-RM-02 第6条"
+          },
+          {
+            "mark": "y",
+            "text": "差額 660円は振込手数料の額と一致",
+            "source": "—"
+          }
+        ],
+        "alternative": "取引先に確かめる。消し込むと 660円は未回収として請求に残る"
+      }
+    },
+    {
+      "receipt_id": 97,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-DS-J",
+      "allocations": [
+        {
+          "invoice_id": 62,
+          "invoice_number": "RM-INV-202610-049",
+          "amount_yen": 1367617,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 98,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-DS-J",
+      "allocations": [
+        {
+          "invoice_id": 108,
+          "invoice_number": "RM-INV-202610-095",
+          "amount_yen": 190906,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 99,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-K",
+      "allocations": [
+        {
+          "invoice_id": 78,
+          "invoice_number": "RM-INV-202610-065",
+          "amount_yen": 674812,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 100,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-K",
+      "allocations": [
+        {
+          "invoice_id": 79,
+          "invoice_number": "RM-INV-202610-066",
+          "amount_yen": 924145,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 101,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-K",
+      "allocations": [
+        {
+          "invoice_id": 87,
+          "invoice_number": "RM-INV-202610-074",
+          "amount_yen": 713302,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 102,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-K",
+      "allocations": [
+        {
+          "invoice_id": 124,
+          "invoice_number": "RM-INV-202610-111",
+          "amount_yen": 1532584,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 103,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-K",
+      "allocations": [
+        {
+          "invoice_id": 22,
+          "invoice_number": "RM-INV-202610-009",
+          "amount_yen": 496833,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 104,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-K",
+      "allocations": [
+        {
+          "invoice_id": 66,
+          "invoice_number": "RM-INV-202610-053",
+          "amount_yen": 1479283,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 105,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-K",
+      "allocations": [
+        {
+          "invoice_id": 40,
+          "invoice_number": "RM-INV-202610-027",
+          "amount_yen": 864345,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 106,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-K",
+      "allocations": [
+        {
+          "invoice_id": 48,
+          "invoice_number": "RM-INV-202610-035",
+          "amount_yen": 439554,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 107,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-PF-K",
+      "allocations": [
+        {
+          "invoice_id": 34,
+          "invoice_number": "RM-INV-202610-021",
+          "amount_yen": 1343816,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 108,
+      "outcome": "自動で一致",
+      "rule": "合計の一致（まとめ払い）",
+      "partner_code": "RM-PF-K",
+      "allocations": [
+        {
+          "invoice_id": 93,
+          "invoice_number": "RM-INV-202610-080",
+          "amount_yen": 504002,
+          "balance_after_yen": 0
+        },
+        {
+          "invoice_id": 125,
+          "invoice_number": "RM-INV-202610-112",
+          "amount_yen": 1302697,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 109,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TV-N",
+      "allocations": [
+        {
+          "invoice_id": 44,
+          "invoice_number": "RM-INV-202610-031",
+          "amount_yen": 2607040,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 110,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TV-N",
+      "allocations": [
+        {
+          "invoice_id": 80,
+          "invoice_number": "RM-INV-202610-067",
+          "amount_yen": 856480,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 111,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TV-N",
+      "allocations": [
+        {
+          "invoice_id": 126,
+          "invoice_number": "RM-INV-202610-113",
+          "amount_yen": 1395639,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 112,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TV-N",
+      "allocations": [
+        {
+          "invoice_id": 50,
+          "invoice_number": "RM-INV-202610-037",
+          "amount_yen": 2653092,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 113,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-S",
+      "allocations": [
+        {
+          "invoice_id": 18,
+          "invoice_number": "RM-INV-202610-005",
+          "amount_yen": 238970,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 114,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-S",
+      "allocations": [
+        {
+          "invoice_id": 64,
+          "invoice_number": "RM-INV-202610-051",
+          "amount_yen": 727809,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 115,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-S",
+      "allocations": [
+        {
+          "invoice_id": 119,
+          "invoice_number": "RM-INV-202610-106",
+          "amount_yen": 344184,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 116,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-S",
+      "allocations": [
+        {
+          "invoice_id": 45,
+          "invoice_number": "RM-INV-202610-032",
+          "amount_yen": 585125,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 117,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-S",
+      "allocations": [
+        {
+          "invoice_id": 81,
+          "invoice_number": "RM-INV-202610-068",
+          "amount_yen": 896438,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 118,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-S",
+      "allocations": [
+        {
+          "invoice_id": 52,
+          "invoice_number": "RM-INV-202610-039",
+          "amount_yen": 826142,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 119,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-SEL-S",
+      "allocations": [
+        {
+          "invoice_id": 102,
+          "invoice_number": "RM-INV-202610-089",
+          "amount_yen": 427286,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 120,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-V",
+      "allocations": [
+        {
+          "invoice_id": 73,
+          "invoice_number": "RM-INV-202610-060",
+          "amount_yen": 2355159,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 121,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-V",
+      "allocations": [
+        {
+          "invoice_id": 65,
+          "invoice_number": "RM-INV-202610-052",
+          "amount_yen": 1148847,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 122,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-V",
+      "allocations": [
+        {
+          "invoice_id": 133,
+          "invoice_number": "RM-INV-202610-120",
+          "amount_yen": 2626016,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 123,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-TH-V",
+      "allocations": [
+        {
+          "invoice_id": 27,
+          "invoice_number": "RM-INV-202610-014",
+          "amount_yen": 2041806,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 124,
+      "outcome": "自動で一致",
+      "rule": "合計の一致（まとめ払い）",
+      "partner_code": "RM-TH-V",
+      "allocations": [
+        {
+          "invoice_id": 46,
+          "invoice_number": "RM-INV-202610-033",
+          "amount_yen": 457301,
+          "balance_after_yen": 0
+        },
+        {
+          "invoice_id": 42,
+          "invoice_number": "RM-INV-202610-029",
+          "amount_yen": 2309806,
+          "balance_after_yen": 0
+        },
+        {
+          "invoice_id": 47,
+          "invoice_number": "RM-INV-202610-034",
+          "amount_yen": 997705,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 125,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-HTL-Z",
+      "allocations": [
+        {
+          "invoice_id": 30,
+          "invoice_number": "RM-INV-202610-017",
+          "amount_yen": 151456,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 126,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-HTL-Z",
+      "allocations": [
+        {
+          "invoice_id": 20,
+          "invoice_number": "RM-INV-202610-007",
+          "amount_yen": 263616,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 127,
+      "outcome": "自動で一致",
+      "rule": "金額の完全一致",
+      "partner_code": "RM-HTL-Z",
+      "allocations": [
+        {
+          "invoice_id": 84,
+          "invoice_number": "RM-INV-202610-071",
+          "amount_yen": 76728,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    },
+    {
+      "receipt_id": 128,
+      "outcome": "自動で一致",
+      "rule": "合計の一致（まとめ払い）",
+      "partner_code": "RM-HTL-Z",
+      "allocations": [
+        {
+          "invoice_id": 122,
+          "invoice_number": "RM-INV-202610-109",
+          "amount_yen": 146789,
+          "balance_after_yen": 0
+        },
+        {
+          "invoice_id": 74,
+          "invoice_number": "RM-INV-202610-061",
+          "amount_yen": 159349,
+          "balance_after_yen": 0
+        }
+      ],
+      "deductions": [],
+      "unapplied_yen": 0,
+      "review": null
+    }
+  ]
+}

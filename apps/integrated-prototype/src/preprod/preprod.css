@@ -1,0 +1,63 @@
+/* プリプロの画面。docs/design/integrated-system-visual.md のトークン（色7つ・角丸0・影なし・書体2つ） */
+.pp{--ink:#111111;--paper:#ffffff;--soft:#f3f1ec;--sub:#5e5850;--faint:#6b655c;--rule:#cfc8ba;--red:#b3261e;
+  --jp:"Noto Sans JP","Yu Gothic","Hiragino Sans","Meiryo",sans-serif;--cond:"Oswald","Noto Sans JP","Yu Gothic",sans-serif;
+  font-family:var(--jp);color:var(--ink);background:var(--paper);padding:4px 0 40px;max-width:1100px}
+.pp *{border-radius:0;box-shadow:none}
+.pp h1{font-size:22px;font-weight:800;margin:0}
+.pp h2{font-size:16px;font-weight:800;margin:0 0 4px;padding-bottom:6px;border-bottom:2px solid var(--ink)}
+.pp-mark,.pp-no{font-family:var(--cond);font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+.pp-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:14px}
+.pp-tabs,.pp-docbar{display:flex;gap:6px;flex-wrap:wrap}
+.pp button{font-family:var(--jp);font-size:13px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);padding:4px 12px;cursor:pointer}
+.pp button.on{background:var(--ink);color:var(--paper)}
+/* 共通の styles.css の hover（青）を打ち消す。見た目の決まりは黒・白・灰と赤1色 */
+.pp button:hover:not(:disabled),.pp button:focus-visible{background:var(--soft);color:var(--ink);border-color:var(--ink)}
+.pp button.on:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+.pp button:disabled{cursor:default}
+.pp-sub{color:var(--sub);font-size:12px}
+.pp-num{font-variant-numeric:tabular-nums;text-align:right}
+.pp-tag{display:inline-block;border:1px solid var(--ink);font-size:11px;padding:0 6px;white-space:nowrap;background:var(--paper)}
+.pp-tag.red{border-color:var(--red);color:var(--red)}
+.pp-tag.weak{border-color:var(--rule);color:var(--faint)}
+.pp-alert{border:2px solid var(--red);padding:10px 14px;margin-bottom:14px}
+.pp-alert-h{display:inline-block;background:var(--red);color:var(--paper);font-weight:700;padding:1px 8px;margin-bottom:6px}
+.pp-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--rule)}
+.pp-row:last-child{border-bottom:0}
+.pp-band{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid var(--ink);margin-bottom:14px}
+.pp-band .pp-cell{display:flex;flex-direction:column;align-items:flex-start;gap:4px;border:0;border-right:1px solid var(--ink);padding:10px}
+.pp-band .pp-cell:last-child{border-right:0}
+.pp-cell-l{font-weight:800}
+@media(max-width:800px){.pp-band{grid-template-columns:repeat(2,1fr)}.pp-band .pp-cell{border-bottom:1px solid var(--ink)}}
+.pp-meta{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--ink);margin-bottom:10px}
+.pp-meta div{padding:8px 10px;border-right:1px solid var(--ink);font-size:12px;color:var(--sub)}
+.pp-meta div:last-child{border-right:0}
+.pp-meta b{display:block;font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums}
+.pp-doc{display:flex;flex-direction:column;gap:14px}
+.pp-page{border:1px solid var(--ink);padding:18px 22px;background:var(--paper)}
+.pp-src{font-size:11px;color:var(--faint);margin:4px 0 10px}
+.pp table{border-collapse:collapse;width:100%;font-size:13px;margin-bottom:8px}
+.pp th{background:var(--soft);text-align:left;font-weight:700;padding:5px 6px;border-bottom:1px solid var(--ink);white-space:nowrap}
+.pp td{padding:5px 6px;border-bottom:1px solid var(--rule);vertical-align:top;white-space:normal;overflow-wrap:anywhere}
+.pp-later{color:var(--faint);font-size:12px;border:1px dashed var(--rule);padding:6px 10px;margin:6px 0 0}
+.pp-stop{color:var(--red)}
+.pp-form{display:flex;flex-wrap:wrap;gap:8px 12px;border:1px solid var(--ink);padding:10px;margin:8px 0;background:var(--soft)}
+.pp-form label{display:flex;flex-direction:column;font-size:11px;color:var(--sub);gap:2px}
+.pp-form input,.pp-form select{font-family:var(--jp);font-size:13px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);padding:3px 6px;min-width:90px}
+.pp-form-act{display:flex;gap:6px;align-items:center;width:100%}
+.pp tr.pp-off td{color:var(--faint)}
+@media print{
+  .pp-form,.pp-ghost,.pp-page>button{display:none}
+  .pp-head .pp-tabs,.pp-docbar{display:none}
+  .pp-page{break-inside:avoid;border:0;border-top:2px solid var(--ink);padding:10px 0}
+  .pp-later{display:none}
+}
+.pp-vault{display:grid;grid-template-columns:190px minmax(0,1fr);gap:16px}
+@media(max-width:800px){.pp-vault{grid-template-columns:1fr}}
+.pp-vault-cats{display:flex;flex-direction:column;gap:2px}
+.pp-vault-cats button{text-align:left;border:0;border-left:3px solid transparent;display:flex;justify-content:space-between}
+.pp-vault-cats button.on{background:var(--paper);color:var(--ink);border-left-color:var(--ink);font-weight:700}
+.pp-drop{border:1px dashed var(--ink);padding:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;font-size:12px;color:var(--sub)}
+.pp-ghost-label{border:1px solid var(--ink);padding:3px 10px;color:var(--ink);cursor:pointer;font-size:13px}
+.pp-ghost-label input{display:none}
+.pp select{font-family:var(--jp);font-size:12px;border:1px solid var(--ink);background:var(--paper);color:var(--ink)}
+.pp a{color:var(--ink)}

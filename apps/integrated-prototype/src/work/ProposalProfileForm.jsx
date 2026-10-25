@@ -65,7 +65,7 @@ export function ProposalProfileForm({request: requestProp, workId, readOnly = fa
   return (
     <section className="pp-profile" aria-label="提案資料に出す作品情報">
       <h3>提案資料に出す作品情報{body?.profile ? `（第${body.profile.revision}版）` : '（未登録）'}</h3>
-      <p className="wc-note">営業基幹の提案資料（月別・SVOD）の列に出ます。保存するたびに新しい版になり、前の版は残ります。画像はファイルを置かず、URL か保存済みのキーとファイル名だけを入れます。</p>
+      <p className="wc-note">営業管理の提案資料（月別・SVOD）の列に出ます。保存するたびに新しい版になり、前の版は残ります。画像はファイルを置かず、URL か保存済みのキーとファイル名だけを入れます。</p>
       {state.error && <Notice error={state.error} onRetry={() => setRevision((n) => n + 1)} />}
       {notice && <Notice tone={notice.tone} message={notice.message} error={notice.error} onDismiss={() => setNotice(null)} />}
       {body && (

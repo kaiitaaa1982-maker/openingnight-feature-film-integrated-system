@@ -1,7 +1,8 @@
 ﻿# ps1-rules: strict
-# Windows PowerShell 5.1。PG 計画 段2の実測 S9・S10 の2本（pg-drill-restore.ps1＝練習 F・pg-drill-pitr.ps1＝練習 E）が
+# Windows PowerShell 5.1。PG 計画 段2の実測 S9・S10・S14 の ps1（pg-drill-restore.ps1＝練習 F・pg-drill-pitr.ps1＝練習 E・pg-drill-migrate.ps1＝練習 G・
+# pg-staging.ps1 の差分の移行と catalog）が
 # 「. (Join-Path $PSScriptRoot 'pg-drill-common.ps1')」で読む共通の部品。単独では流さない（関数と定数を定めるだけ）。
-# 手順の正本は core の docs/platform/operations/runbooks/03-restore-drill.md の「PostgreSQL の準備」「練習 E」「練習 F」。
+# 手順の正本は core の docs/platform/operations/runbooks/03-restore-drill.md の「PostgreSQL の準備」「練習 E」「練習 F」「練習 G」と 13-planetscale-schema.md。
 # ・外部コマンドは pg-staging.ps1:46-51 の形で包み、終了コードで成否を決める（Invoke-DrillNative）
 # ・Docker は時間を区切って確かめる（docker info・docker version が止まったままになる不調の前例。Test-DrillDocker）
 # ・SHA-256 は .NET で計算する（pwsh 7 から呼ばれて PSModulePath が混ざると Get-FileHash が消える前例）
@@ -218,7 +219,7 @@ function Test-DrillUnderRoot([string]$RootDir, [string]$TargetDir) {
     return ($targetFull.StartsWith($rootFull, [StringComparison]::OrdinalIgnoreCase) -and $targetFull.Length -gt $rootFull.Length)
 }
 
-# ps1 が作った作業フォルダ（ondrill の根の直下の pg-F-<時刻>・pg-E-<時刻>）だけを消す。結果の JSON（数値だけ）は根へ写してから消す。
+# ps1 が作った作業フォルダ（ondrill の根の直下の pg-F-<時刻>・pg-E-<時刻>・pg-G-<時刻>）だけを消す。結果の JSON（数値だけ）は根へ写してから消す。
 # 根の直下でない・名前の形が違うときは消さずに $false。消せなかった（ファイルを開いている・PS 5.1 の再帰の削除の失敗）ときも、
 # 練習の結果は変わらないので止めずに、手で消す案内を出して $false（成功のあとに呼ぶ。生のエラーで終了コード 1 にしない）
 function Remove-DrillWorkDir([string]$RootDir, [string]$TargetDir, [string]$ResultName) {
@@ -226,7 +227,7 @@ function Remove-DrillWorkDir([string]$RootDir, [string]$TargetDir, [string]$Resu
     $targetFull = [IO.Path]::GetFullPath($TargetDir).TrimEnd('\')
     $leaf = Split-Path -Leaf $targetFull
     if (-not (Test-DrillUnderRoot $rootFull $targetFull) -or -not ((Split-Path -Parent $targetFull).Equals($rootFull, [StringComparison]::OrdinalIgnoreCase)) -or
-        $leaf -cnotmatch '^pg-[EF]-\d{8}-\d{6}$' -or -not (Test-Path -LiteralPath $targetFull -PathType Container)) {
+        $leaf -cnotmatch '^pg-[EFG]-\d{8}-\d{6}$' -or -not (Test-Path -LiteralPath $targetFull -PathType Container)) {
         Write-Host ('消さない: ' + $targetFull + ' は ' + $rootFull + ' の直下の練習の作業フォルダでない')
         return $false
     }

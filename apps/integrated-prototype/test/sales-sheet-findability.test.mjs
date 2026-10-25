@@ -16,7 +16,7 @@ import {openTestDb} from './test-db.mjs';
 import {createApp} from '../src/app.mjs';
 import {toCsv} from '../src/csv.mjs';
 import {decodeXlsx} from '../src/xlsx.mjs';
-import {INITIAL_SHEET_COLUMNS} from '../src/sales-sheet/column-registry.mjs';
+import {INITIAL_SHEET_COLUMNS, ROYALTY_AMOUNT_KEYS} from '../src/sales-sheet/column-registry.mjs';
 import {SALES_PAGES} from '../src/navigation.mjs';
 import {slugOf, pageOfSlug, displayLabel, menuGroups, pageScope} from '../src/shell/nav-model.mjs';
 import {parseLocation} from '../src/shell/url-state.mjs';
@@ -31,7 +31,7 @@ test('入口: 左メニューの計上 › 帳票・分析に「売上集計シ�
   assert.equal(pageOfSlug('sales-sheet'), '売上集計シート');
   assert.equal(pageScope('売上集計シート'), 'company');
   const reports = menuGroups('sales', 'uriage').find((group) => group.id === 'reports');
-  assert.deepEqual(reports.items.map((item) => item.label), ['帳票センター', '売上集計シート', '経費集計シート', '作品の月別収支', 'PL・BS', '分析']);
+  assert.deepEqual(reports.items.map((item) => item.label), ['帳票センター', '売上集計シート', '経費集計シート', '作品の月別収支', 'PL・BS', '分析', '予実管理', 'シナリオの比較']);
   assert.ok(featuredReports().some((entry) => entry.id === 'sales-sheet'), 'よく使う帳票に売上集計シート');
   assert.deepEqual(parseLocation('?p=report-center&report=sales-sheet'), {page: '帳票センター', workId: null, params: {report: 'sales-sheet'}});
   assert.equal(displayLabel('ロイヤリティ集計'), 'ロイヤリティ集計シート');
@@ -121,8 +121,11 @@ test('未採用の組織: 採用前に列の一覧を返し、管理者以外に
   const forAdmin = await admin.get('/sales-sheet/columns');
   assert.equal(forAdmin.status, 200);
   assert.equal(forAdmin.body.adopted, false);
-  assert.equal(forAdmin.body.initialColumns.length, INITIAL_SHEET_COLUMNS.length);
-  assert.equal(forAdmin.body.initialColumns.filter((column) => column.legacyPosition).length, 83);
+  // 採用する列は辞書の採用の列。ロイヤリティ計上の額が売上と食い違う版が0件の組織なので、その4列は入らない（裁定3 (a)）
+  const adoption = INITIAL_SHEET_COLUMNS.filter((column) => !ROYALTY_AMOUNT_KEYS.includes(column.column_key));
+  assert.deepEqual(forAdmin.body.initialColumns.map((column) => column.key), adoption.map((column) => column.column_key));
+  assert.equal(forAdmin.body.initialColumns.filter((column) => column.legacyPosition).length, adoption.filter((column) => column.legacy_position).length);
+  assert.equal(forAdmin.body.initialCount, adoption.length);
   assert.deepEqual(forAdmin.body.initialColumns[0], {key: 'sale_id', label: '売上ID', legacyPosition: 1, group: 'identity', groupLabel: forAdmin.body.initialColumns[0].groupLabel});
   assert.deepEqual(forAdmin.body.admins, [], '管理者自身には依頼先を出さない');
   const forEditor = await editor.get('/sales-sheet/columns');
@@ -201,7 +204,7 @@ test('未採用の案内: 列の一覧・取り消せないこと・監査・依
     adoptedElsewhere: [{id: 3, name: '架空データ（デモ）'}], onSwitchOrg: async () => true});
   assert.match(editorView, /採用は取り消せません。/);
   assert.match(editorView, /監査の記録に残ります/);
-  assert.match(editorView, /採用する列の一覧を見る（103列）/);
+  assert.match(editorView, new RegExp(`採用する列の一覧を見る（${initialColumns.length}列）`));
   assert.match(editorView, /この組織の管理者（架空の管理者A・架空の管理者B）に、初期の83列の採用を依頼してください。/);
   assert.match(editorView, /組織「架空データ（デモ）」では採用済みで、表を見られます。/);
   assert.match(editorView, /組織「架空データ（デモ）」に切り替えて売上集計シートを開く/);

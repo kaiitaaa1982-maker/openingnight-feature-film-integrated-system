@@ -1,7 +1,8 @@
 import {isDbConflict} from '../data-platform/db-errors.mjs';
 import {expenseSource} from '../expense-sheet/expense-read.mjs';
 // PL・BS（管理会計の試算）の API。設計: docs/platform/team-development/pl-bs-design.md。Worker でも動くよう node:* を import しない。
-//   GET  /api/reports/pl-bs?from&to[&asOf]           作品別PL・作品別の残高（財務の権限がある作品）と、会社PL・会社BS（会社全体を見られる人だけ）
+//   GET  /api/reports/pl-bs?from&to[&asOf][&basis]   作品別PL・作品別の残高（財務の権限がある作品）と、会社PL・会社BS（会社全体を見られる人だけ）。
+//                                                    basis=accrual（既定。計上）|cash（入金。PL を入金の材料で作り、BS は計上と同じ。pl-bs-cash-model.mjs）。ほかの値は400
 //   GET  /api/pl-bs/settings                          会社の法人情報（最新の版と履歴）・年度の設定・勘定科目・取引先（自社の候補）
 //   POST /api/pl-bs/profile-versions                  会社の法人情報の新しい版（管理者だけ）
 //   POST /api/pl-bs/accounts/defaults                 勘定科目の共通の初期値を組織に入れる（管理者だけ。入っている科目は足さない）
@@ -17,7 +18,8 @@ import {expenseSource} from '../expense-sheet/expense-read.mjs';
 //   POST /api/committee-investment-payments/:id/reverse 払込の取消の行を足す
 // 権限: 制作担当は403。作品の数字は作品の財務権限（settlementWork）、会社PL・BSと手入力の一覧は会社全体の財務権限
 // （管理者か、組織のすべての案件に財務の権限がある人）。会社の設定・勘定科目・手入力の登録は管理者だけ。書き込みはすべて監査（audit_log）に残す。
-import {buildPlBs, DEFAULT_ACCOUNTS, PL_SECTIONS, BS_SECTIONS, PAYMENT_METHODS, SECTION_LABELS, isMonth, monthsFromTo, PL_BS_HEADING} from '../reports/pl-bs-model.mjs';
+import {DEFAULT_ACCOUNTS, PL_SECTIONS, BS_SECTIONS, PAYMENT_METHODS, SECTION_LABELS, isMonth, monthsFromTo, PL_BS_HEADING} from '../reports/pl-bs-model.mjs';
+import {buildPlBsForBasis, parseBasis} from '../reports/pl-bs-cash-model.mjs';
 import {loadPlBsInput, latestProfile, profileFromRow, loadAccounts, liveManualRows} from './pl-bs-data.mjs';
 import {corporateCheckDigitOk} from '../partners/partner-profile.mjs';
 import {fiscalSetting} from '../reporting-annual.mjs';
@@ -72,6 +74,9 @@ export function registerPlBsRoutes(app, ctx) {
   app.get('/api/reports/pl-bs', async (c) => {
     const i = c.get('identity');
     if (denied(i)) return bad(c, 'PL・BSは財務担当の帳票です', 403);
+    const basisRead = parseBasis(c.req.query('basis'));
+    if (!basisRead.ok) return bad(c, basisRead.error, 400, {field: 'basis'});
+    const basis = basisRead.basis;
     const from = c.req.query('from'), to = c.req.query('to'), asOf = c.req.query('asOf') || to;
     if (!MONTH.test(from || '') || !MONTH.test(to || '') || !MONTH.test(asOf || '')) return bad(c, '期間（from・to）とBSの基準月（asOf）を「2026-05」の形で指定してください');
     if (from > to) return bad(c, '期間の開始月が終了月より後になっています');
@@ -80,10 +85,11 @@ export function registerPlBsRoutes(app, ctx) {
       const scope = await financeScope(i);
       if (!scope.workIds.length && !scope.company) return bad(c, '財務の権限がある作品がありません', 403);
       const input = await loadPlBsInput(db, i, ctx, {from, to, asOf, workIds: scope.workIds, includeCompany: scope.company});
-      const report = buildPlBs(input);
+      const report = buildPlBsForBasis(input, basis);
       const latest = await db.get("SELECT MAX(created_at) AS at FROM report_imports WHERE org_id=? AND status='active' AND kind<>'publicity'", [i.org_id]);
       const out = {
-        ok: true, heading: PL_BS_HEADING, conditions: report.conditions, scope: {company: scope.company, workCount: scope.workIds.length},
+        ok: true, heading: PL_BS_HEADING, basis: report.basis, basisLabel: report.basisLabel, basisDescription: report.basisDescription,
+        conditions: report.conditions, scope: {company: scope.company, workCount: scope.workIds.length},
         profile: input.profile ? {legalName: input.profile.legalName, selfPartnerName: input.profile.selfPartnerName, openingMonth: input.profile.openingMonth, versionNo: input.profile.versionNo} : null,
         fiscal: {fiscalStartMonth: input.fiscal.fiscalStartMonth, confirmed: input.fiscal.confirmed},
         // 会社全体の注意（現預金・期首残高など）と会社PL・BSの照合は、会社全体を見られる人だけに返す（範囲を絞った計算の額を会社の数字として見せない）
@@ -92,6 +98,8 @@ export function registerPlBsRoutes(app, ctx) {
         expenseClassification: report.expenseClassification,
         companyPl: scope.company ? report.companyPl : null, companyBs: scope.company ? report.companyBs : null,
         checks: scope.company ? report.checks : report.checks.filter((row) => row.scope === 'work'),
+        // 入金ベースの未確定の入出金（期間）。作品に付かない分は会社の数字なので、会社全体を見られる人だけに返す
+        unsettled: report.unsettled ? {rows: scope.company ? report.unsettled.rows : report.unsettled.rows.filter((row) => row.workId !== null)} : null,
         dataAsOf: {latestImportAt: latest?.at || null, generatedAt: new Date().toISOString()},
         calculationVersion: report.calculationVersion,
       };

@@ -3,7 +3,7 @@
 
 統合システムの DB（本番は Cloudflare D1、手元とテストは SQLite）の全表を、領域ごとに説明する。型・NULL・既定値・制約・索引・トリガーは空の DB から読み、表の領域・論理名・説明は辞書（`dictionary.json`）に書く。説明の末尾が「（推測）」のものは、コードの使われ方から読み取った推測で、確かめを待っている。
 
-- 表 258・列 2,561・参照 628・索引 125・トリガー 540
+- 表 389・列 3,953・参照 952・索引 256・トリガー 912
 - 説明のうち推測: 2 件
 - Excel 版は `node scripts/build-db-docs.mjs --xlsx` で `docs/database/_build/` に書き出す（git の対象外）
 
@@ -14,21 +14,47 @@
 | 1.0 | 2026-09-30 | Claude（代表の依頼） | 初版。全表の領域・論理名・説明と全列の説明を、コードの読み取りから下書きし、別の確かめ役が直した |
 | 1.1 | 2026-10-01 | Claude（代表の依頼） | D-026・D-028 に合わせて領域を直した。作品・権利の調達の4表・支払MGの契約と仕入先を企画へ移し、案件・作品・調達・請求書の領域の要確認を外した。受取MGと共有するMGの表は、D-026 で分けるまで精算に置く |
 | 1.2 | 2026-10-04 | Codex（代表の依頼） | 移行0011で集約した分析の状態・ジョブの2表を追加した（PG移行計画 #28） |
+| 1.3 | 2026-10-10 | Claude（代表の依頼） | 移行0012で、案件の型・稼ぎ方・段階と確度・基準額・売上率（フェーズ1 #10）の参照表3つ・稼ぎ方ごとの段階の意味・段階の履歴・稼ぎ方の既定の売上率の版・区分マスタの7表と、案件の9列を足した |
+| 1.4 | 2026-10-11 | Claude（代表の依頼） | 移行0013で、受託制作の契約の版（フェーズ1 #10b。総製作費・受託費率・受託費・節目の数）と、その支払いの節目の2表を足した |
+| 1.5 | 2026-10-11 | Claude（代表の依頼） | 移行0014で、案件収支の予実の期間・目標の版・計画の版（ヘッダと稼ぎ方別の額）・採用の記録・設定の変数・設定の行（版）の7表（フェーズ1 #11）を足した |
+| 1.6 | 2026-10-11 | Claude（代表の依頼） | 移行0015で、案件収支の予実の予測の版（案件ごとのヘッダ）・予測の行・活動記録・活動記録の取消の4表（フェーズ1 #13）を足した |
+| 1.7 | 2026-10-11 | Claude（代表の依頼） | 移行0016で、制作費の版（成功報酬の線にする制作費。作品ごとの連番・追記だけ。フェーズ1 #5）の1表を足した |
+| 1.8 | 2026-10-11 | Claude（代表の依頼） | 移行0017で、指標マスタの版（ヘッダ）と段（役×稼ぎ方×段の対応と出どころの状態）の2表（行動指標の計画 段B #9）を足し、設定の変数に行動指標の変数18行を足した |
+| 1.9 | 2026-10-11 | Claude（代表の依頼） | 移行0018で、案件収支の予実の語を選ぶ設定と月の設定（採用するシナリオ・月別の表に入れる案件の範囲・締めた月）の版の1表（フェーズ1 #14）を足した |
+| 1.10 | 2026-10-11 | Claude（代表の依頼） | 移行0019で、稟議の版（自社出資の申請・承認・却下・払込の4状態の版。行動指標の計画 段B #4）の1表を足した |
+| 1.11 | 2026-10-15 | Codex（代表の回答） | 移行0020で営業活動の明示結果欄を追加。未記録を推定せず、3値を通過率の分母と内訳へ、進んだを分子へ反映する |
+| 1.12 | 2026-10-18 | Claude（代表の依頼） | 移行0021で、売上原本の1通の条件の版（取引先・報告の種類・対象期間・受領日・報告月・申告合計）と報告の取消の記録の2表（フォルダ型の画面の最初の一切れ U1）を足した。#131 の仮の 0019 を、0019（稟議）と 0020（営業活動の結果）のあとへ振り直した |
+| 1.13 | 2026-10-18 | Claude（代表の依頼） | 移行0023で、検査の決まりの版・正解表・検査の結果・抜き取りの記録の4表（フォルダ型の画面 U2a 後半）を足した。0022 は別の枝が使うので、この枝では欠番のまま |
+| 1.14 | 2026-10-23 | Claude（代表の依頼） | 移行0026で、支払う MG（買付分）のマスタの10表を足した。会社ルートの plans/2026-10-22-folder-mg-buy.md の香盤表 #3 |
+| 1.15 | 2026-10-24 | Claude（代表の依頼） | 移行0027で、支払う MG の支払の記録（acq_mg_payments）を足した |
+| 1.16 | 2026-10-24 | Claude（代表の依頼） | 移行0041で、経費管理のフォルダの3表（置いた月・外した記録・月の締め）を足した。会社ルートの plans/2026-10-22-folder-keihi.md の表A・表B |
+| 1.17 | 2026-10-24 | Claude（代表の依頼） | 移行0042〜0044で、製作委員会の契約の型・条件版の式の部品・日程の版・収支の台帳の10表を足した。会社ルートの plans/2026-10-23-committee-terms-ledger.md |
+| 1.18 | 2026-10-24 | Claude（代表の依頼） | 移行0046で、製造の8表（商品・版・工程の記録・発注書・明細・段・納品・経費の結び）を足した |
+| 1.19 | 2026-10-24 | Claude（代表の依頼） | 移行0047で、プロデュース管理の進行表の7表（チケットの版・着手と完了の記録・チェック項目・掲示板・関連する場所・テンプレートの版と行）を足した |
+| 1.20 | 2026-10-24 | Claude（代表の依頼） | 移行0048で、ポストプロダクションの7表（編集の版・指摘・対応・工程のタスクと記録・納品物の行と状態の記録）を足した。0025〜0034 は先にマージする別の PR の番号 |
+| 1.21 | 2026-10-24 | Claude（代表の依頼） | 移行0049で、営業管理の1回の提案・提案で結んだウィンドウ・結果と自己評価・効いた要因・接点の言葉の5表を足した（0041 が先に入ったので、まだ main に無い移行を 0042 から振り直した） |
+| 1.22 | 2026-10-24 | Claude（代表の依頼） | 移行0050で、企画の10表（企画の項目と体制・3段の試算・案件の担当者・原本の結び付き・素材と事実）を足した |
+| 1.23 | 2026-10-24 | Claude（代表の依頼） | 移行0051で、撮影の結果・撮影日の記録の原本・日報の項目の3表（プロダクションの撮影の記録）を足した。原本は共通の原本の表（0025）を指す。0041 のあとに振り直した |
+| 1.24 | 2026-10-25 | Claude（代表の依頼） | 移行0052で、調達（フォルダ台帳 F19）の13表を足した |
+| 1.25 | 2026-10-25 | Claude（代表の依頼） | 移行0053で、プリプロの手配・美術の項目・シーンの撮影の方針の3表を足した |
+| 1.26 | 2026-10-25 | Claude（代表の依頼） | 移行0054で、プリプロのプリプロの保管庫の置き場の1表を足した |
+| 1.27 | 2026-10-25 | Claude（代表の依頼） | 移行0055で、プリプロの連絡帳の3表（スペース・連絡・既読と了解）を足した |
+| 1.28 | 2026-10-25 | Codex（代表の依頼） | 移行0056で、原本の場所の移動を追加のみの履歴として記録する表を足した |
 
 ## 目次
 
 | 領域 | ページ | 表の数 |
 |---|---|---|
-| 企画 | [planning.md](planning.md) | 8 |
-| 制作 | [production.md](production.md) | 20 |
-| 営業 | [sales.md](sales.md) | 37 |
+| 企画 | [planning.md](planning.md) | 68 |
+| 制作 | [production.md](production.md) | 37 |
+| 営業 | [sales.md](sales.md) | 50 |
 | 宣伝 | [publicity.md](publicity.md) | 3 |
-| 売上 | [revenue.md](revenue.md) | 45 |
-| 経費 | [expenses.md](expenses.md) | 38 |
-| 精算 | [settlement.md](settlement.md) | 50 |
-| 会計 | [accounting.md](accounting.md) | 10 |
+| 売上 | [revenue.md](revenue.md) | 65 |
+| 経費 | [expenses.md](expenses.md) | 42 |
+| 精算 | [settlement.md](settlement.md) | 60 |
+| 会計 | [accounting.md](accounting.md) | 15 |
 | 台帳 | [ledger.md](ledger.md) | 20 |
-| 共通基盤 | [core.md](core.md) | 11 |
+| 共通基盤 | [core.md](core.md) | 13 |
 | 管理 | [admin.md](admin.md) | 16 |
 
 ## 領域が要確認の表
@@ -38,6 +64,7 @@
 | 表 | 論理名 | いまの領域 | 迷った点 |
 |---|---|---|---|
 | [ai_usage](admin.md#ai_usage) | AIの利用回数 | 管理 | AI接続の利用枠を数える共通の仕組みとして共通基盤にしたが、いま数えるのは管理の追加項目のAI提案だけ。（確かめ役が直した: 書くのは src/app.mjs:1038-1046 の /api/proposals/ai だけで、呼ぶ画面は管理の拡張項目（src/admin/ExtensionsPage.jsx:117、src/shell/nav-model.mjs:93）。共通基盤（画面の枠・ログイン・組織・利用者・権限・監査）には当たらない） |
+| [cashflow_categories](planning.md#cashflow_categories) | 入出金の区分 | 企画 | 区分は案件収支の予実（売上）の予測・実績が使うが、フェーズ1 #10 で案件の区分マスタとして企画に置いた。 |
 | [catalog_product_windows](ledger.md#catalog_product_windows) | 商品別の販売ウィンドウ（版） | 台帳 | 販売ウィンドウと条件は営業の受け持ちだが、いまは作品・商品マスタの画面から作り、移設計画では ledger に置く。（確かめ役が直した: 書くのは src/catalog.mjs:14（POST /api/work-catalog/windows。作品・商品マスタ WorkCatalog.jsx の販売ウィンドウ）だけで、broadcast/broadcast-windows-routes.mjs:92 は読むだけ。plans/2026-09-29-integrated-src-restructure.md:56 で catalog.mjs・WorkCatalog.jsx は ledger） |
 | [change_proposals](admin.md#change_proposals) | 追加項目の提案 | 管理 | 管理の追加項目画面で提案と採否を行うため管理にしたが、設計の分類（design-model）では宣伝に入れている。 |
 | [committee_investment_payments](accounting.md#committee_investment_payments) | 委員会への出資の払込 | 会計 | PL・BS の「作品別の残高」から記録し現預金と未払込を出すので会計に置いたが、製作委員会の記録として精算とも読める。 |
@@ -76,16 +103,16 @@
 
 ```mermaid
 flowchart LR
-  planning["企画<br/>8 表"]
-  production["制作<br/>20 表"]
-  sales["営業<br/>37 表"]
+  planning["企画<br/>68 表"]
+  production["制作<br/>37 表"]
+  sales["営業<br/>50 表"]
   publicity["宣伝<br/>3 表"]
-  revenue["売上<br/>45 表"]
-  expenses["経費<br/>38 表"]
-  settlement["精算<br/>50 表"]
-  accounting["会計<br/>10 表"]
+  revenue["売上<br/>65 表"]
+  expenses["経費<br/>42 表"]
+  settlement["精算<br/>60 表"]
+  accounting["会計<br/>15 表"]
   ledger["台帳<br/>20 表"]
-  core["共通基盤<br/>11 表"]
+  core["共通基盤<br/>13 表"]
   admin["管理<br/>16 表"]
   accounting -->|1| core
   accounting -->|3| ledger
@@ -95,27 +122,39 @@ flowchart LR
   admin -->|4| core
   core -->|2| planning
   expenses -->|1| accounting
-  expenses -->|6| ledger
-  expenses -->|3| planning
+  expenses -->|8| ledger
+  expenses -->|4| planning
   expenses -->|2| revenue
+  expenses -->|1| settlement
   ledger -->|1| core
   ledger -->|7| planning
   ledger -->|1| settlement
-  planning -->|1| ledger
-  production -->|8| planning
+  planning -->|10| core
+  planning -->|1| expenses
+  planning -->|5| ledger
+  planning -->|1| revenue
+  planning -->|1| sales
+  planning -->|2| settlement
+  production -->|2| core
+  production -->|1| ledger
+  production -->|19| planning
+  production -->|1| sales
+  production -->|1| settlement
   publicity -->|1| admin
   publicity -->|1| planning
   publicity -->|1| revenue
   revenue -->|1| accounting
   revenue -->|1| core
-  revenue -->|11| ledger
-  revenue -->|8| planning
+  revenue -->|13| ledger
+  revenue -->|20| planning
   revenue -->|3| production
-  sales -->|15| ledger
-  sales -->|11| planning
+  revenue -->|1| sales
+  sales -->|1| expenses
+  sales -->|16| ledger
+  sales -->|12| planning
   sales -->|2| revenue
   settlement -->|1| expenses
-  settlement -->|18| ledger
+  settlement -->|21| ledger
   settlement -->|12| planning
   settlement -->|4| revenue
 ```

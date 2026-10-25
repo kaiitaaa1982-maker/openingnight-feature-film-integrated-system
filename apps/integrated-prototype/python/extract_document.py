@@ -1,6 +1,6 @@
 import base64, contextlib, datetime, csv, hashlib, io, json, math, os, re, statistics, sys, unicodedata, zipfile
 
-VERSION = "workflow-extractor-3"
+VERSION = "workflow-extractor-4"
 
 def cell_text(value):
     if value is None: return ""
@@ -51,6 +51,58 @@ def _fold(text):
     # 縦書き用の約物（﹁︒ 等）と康熙部首（⼭ 等）だけを通常の文字へ寄せる。ほかの文字は変えない
     return "".join(unicodedata.normalize("NFKC", ch) if "\ufe10" <= ch <= "\ufe4f" or "\u2e80" <= ch <= "\u2fdf" else ch for ch in text)
 
+# 字の占める範囲（頁の座標。原点は左下）。フォントの幅の表は読まず、全角を1字（size）、半角を0.7字とみなす。
+# ・縦書きフォント（-V）の文字列: x は列の中心線、y は最初の字の上端で、字ごとに size だけ下へ進む
+# ・横書きの文字列（1文字ずつ置いた字を含む）: x は左端、y はベースライン。字の高さはベースラインの下 0.12・上 0.88 字
+def _advance(ch):
+    return 1.0 if unicodedata.east_asian_width(ch) in ("W", "F", "A") else 0.7
+
+def _run_box(x, y, text, size, vertical):
+    lead = len(text) - len(text.lstrip())
+    visible = text.strip()
+    if vertical:
+        return (x - size / 2, y - (lead + len(visible)) * size, x + size / 2, y - lead * size)
+    left = x + sum(_advance(ch) for ch in text[:lead]) * size
+    return (left, y - 0.12 * size, left + sum(_advance(ch) for ch in visible) * size, y + 0.88 * size)
+
+def _union(boxes):
+    boxes = [b for b in boxes if b]
+    if not boxes: return None
+    return (min(b[0] for b in boxes), min(b[1] for b in boxes), max(b[2] for b in boxes), max(b[3] for b in boxes))
+
+def _rect(box):
+    x0, y0, x1, y1 = (float(v) for v in box)
+    left, right = sorted((x0, x1))
+    bottom, top = sorted((y0, y1))
+    return left, bottom, right, top
+
+def _page_frame(page):
+    """柱の枠の基準になる頁の範囲（左・下・幅・高さ）。画面の pdf.js が描く範囲と同じく、cropbox と mediabox の重なり
+    （重ならなければ mediabox）。/Rotate のある頁は向きを直さないので枠を出さない（None）"""
+    try:
+        if int(page.rotation or 0) % 360: return None
+        media, crop = _rect(page.mediabox), _rect(page.cropbox)
+    except Exception:
+        return None
+    left, bottom, right, top = max(media[0], crop[0]), max(media[1], crop[1]), min(media[2], crop[2]), min(media[3], crop[3])
+    if right <= left or top <= bottom: left, bottom, right, top = media
+    return (left, bottom, right - left, top - bottom) if right > left and top > bottom else None
+
+BOX_MARGIN = 0.25   # 柱の枠の余白（本文の字の大きさに対する割合。上下左右）
+
+def _box(bbox, frame, size):
+    """頁の座標の範囲を、頁の幅と高さに対する割合（原点は左上。0〜1に収める）にする"""
+    if not bbox or not frame: return None
+    left, bottom, width, height = frame
+    pad = BOX_MARGIN * size
+    x0 = min(1.0, max(0.0, (bbox[0] - pad - left) / width))
+    x1 = min(1.0, max(0.0, (bbox[2] + pad - left) / width))
+    y0 = min(1.0, max(0.0, 1 - (bbox[3] + pad - bottom) / height))
+    y1 = min(1.0, max(0.0, 1 - (bbox[1] - pad - bottom) / height))
+    x0, x1, y0, y1 = (round(v, 4) for v in (x0, x1, y0, y1))
+    if x1 <= x0 or y1 <= y0: return None    # 頁の外に置かれた字
+    return {"left": x0, "top": y0, "width": round(x1 - x0, 4), "height": round(y1 - y0, 4)}
+
 def _page_runs(page):
     runs = []
     def visit(text, cm, tm, font_dict, font_size):
@@ -61,7 +113,8 @@ def _page_runs(page):
         encoding = ""
         try: encoding = str(font_dict.get("/Encoding", "")) if font_dict is not None else ""
         except Exception: encoding = ""
-        runs.append({"x": m[4], "y": m[5], "text": _fold(t), "size": size, "vertical": encoding.endswith("-V")})
+        vertical = encoding.endswith("-V")
+        runs.append({"x": m[4], "y": m[5], "text": _fold(t), "size": size, "vertical": vertical, "bbox": _run_box(m[4], m[5], t, size, vertical)})
     page.extract_text(visitor_text=visit)
     return runs
 
@@ -123,10 +176,12 @@ def _vertical_columns(runs, size):
     columns.sort(key=lambda c: -c["x"])
     for c in columns:
         c["text"] = "".join(r["text"] for r in sorted(c["runs"], key=lambda r: -r["y"])).strip()
+        c["bbox"] = _union(r.get("bbox") for r in c["runs"])   # 列（柱なら上のシーン番号を含む）の占める範囲
     return [c for c in columns if c["text"]]
 
 def pdf_script(data):
-    """PDFの本文を行の並びにする。戻り値: text（本文）、lines（[{text,page,slot}]）、layout（向き・1頁の行数）"""
+    """PDFの本文を行の並びにする。戻り値: text（本文）、lines（[{text,page,slot,box,vertical}]。box は縦書きの列の枠で、横書きと回転した頁は None）、
+    layout（向き・1頁の行数・縦書きの頁の数）"""
     import logging
     from pypdf import PdfReader
     logging.getLogger("pypdf").setLevel(logging.ERROR)
@@ -138,6 +193,8 @@ def pdf_script(data):
         size = statistics.median(sizes) if sizes else 10.0
         if runs and _is_vertical_page(runs, size):
             columns = _vertical_columns(runs, size)
+            frame = _page_frame(page)
+            for c in columns: c["box"] = _box(c["bbox"], frame, size)
             vertical_pages += 1
             pages.append({"vertical": True, "size": size, "columns": columns})
         else:
@@ -158,13 +215,13 @@ def pdf_script(data):
         if p["vertical"]:
             for c in p["columns"]:
                 slot = max(0, round((right - c["x"]) / pitch)) if pitch and right is not None else None
-                lines.append({"text": c["text"], "page": page_no, "slot": slot})
+                lines.append({"text": c["text"], "page": page_no, "slot": slot, "box": c["box"], "vertical": True})
                 texts.append(c["text"])
         else:
             kept = p["lines"]
             horizontal_counts.append(len(kept))
             for index, line in enumerate(kept):
-                lines.append({"text": line, "page": page_no, "slot": index})
+                lines.append({"text": line, "page": page_no, "slot": index, "box": None, "vertical": False})
                 texts.append(line)
         texts.append("")
     if vertical_pages and vertical_pages >= len(pages) / 2:
@@ -172,6 +229,7 @@ def pdf_script(data):
     else:
         layout = {"orientation": "horizontal", "slotsPerPage": max(horizontal_counts) if horizontal_counts else None}
     layout["pages"] = len(pages)
+    layout["verticalPages"] = vertical_pages
     return {"text": "\n".join(texts).strip("\n"), "lines": lines, "layout": layout}
 
 # ─── 台本の読み取り（シーン見出し・昼夜・出演・頁） ──────────────────────
@@ -242,15 +300,46 @@ def _heading(line, numbered_ok):
         if m and JP_CHAR.search(m.group(2)) and not m.group(2).startswith("「") and not re.search(r"[。、]", m.group(2)): return m.group(1), m.group(2), "number"
     return None
 
+# 「同・隣室」「同　隣室」「同」だけを直前の場所の続きとみる。「同窓会会場」のように「同」で始まる場所の名前は、区切りが無いので当てない。
+# 区切りの中黒は、全角（・）のほかに半角（･）とラテン文字の中点（·）も読む（書体や変換で混ざる）
+PLACE_DOT = "・･·"
+SAME_PLACE = re.compile(rf"^同(?:[{PLACE_DOT}\s]+(.*))?$")
+
 def _resolve_same(location, previous):
-    # 「同・隣室」は直前の場所の「・」より前を引き継ぐ
-    m = re.match(r"^同[・\s]*(.*)$", location)
+    # 「同・隣室」は直前の場所の中黒より前を引き継ぎ、全角の「・」でつなぐ
+    m = SAME_PLACE.match(location)
     if not m or not previous: return location
-    base = previous.split("・")[0].strip()
+    base = re.split(f"[{PLACE_DOT}]", previous)[0].strip()
     return f"{base}・{m.group(1)}" if m.group(1) else base
 
+# 読み取りが当てる変換の決まり。scriptMeta.rulesApplied に、当てたシーン（vertical-columns は縦書きの頁）の数とともに、この順で返す
+RULES = (
+    ("vertical-columns", "縦書きの列を、右の列から順に組み直した"),
+    ("trailing-time", "柱の末尾の（夜）・（昼）などを昼夜にした"),
+    ("same-place", "「同・」は直前の場所の続きとして補った"),
+    ("inherit-day-night", "「同・」の柱に昼夜が無いときは、直前のシーンの昼夜を引き継いだ"),
+    ("speaker-cast", "セリフの話者を出演者にした"),
+    ("order-number", "番号の無い柱に、順番で番号を振った"),
+    ("page-eighths", "柱から次の柱までの量で、頁（1/8）を計算した"),
+)
+REASON_LIMIT = 60
+
+def _clip(text, limit=30):
+    return text if len(text) <= limit else text[:limit - 1] + "…"
+
+def _field(status, *reasons):
+    """項目の出どころ。status は read（原本の文字をそのまま読めた）・inferred（補った・推し量った。人が確かめる）・
+    missing（読めなかった。人が入れる）。理由が2つ以上なら、60字に入る分だけ「。」でつなぐ"""
+    text = ""
+    for reason in reasons:
+        joined = f"{text}。{reason}" if text else reason
+        if len(joined) <= REASON_LIMIT: text = joined
+        elif not text: text = reason[:REASON_LIMIT - 1] + "…"
+    return {"status": status, "reason": text or None}
+
 def analyze_script(lines, layout=None, name=None):
-    """行の並び（[{text,page,slot}] または文字列）から、シーン候補と読み取りの注意を作る"""
+    """行の並び（[{text,page,slot,box,vertical}] または文字列）から、シーン候補と読み取りの注意を作る。
+    シーンごとに出どころ（source: 頁と柱の枠）と項目の状態（fields）を、meta に当てた変換の決まり（rulesApplied）を付ける"""
     if isinstance(lines, str):
         lines = [{"text": t, "page": None, "slot": None} for t in lines.replace("\r", "").split("\n")]
     layout = layout or {}
@@ -270,6 +359,9 @@ def analyze_script(lines, layout=None, name=None):
         heads.append((index, number, location, style))
     episode = detect_episode(texts[:heads[0][0]] if heads else texts, name)   # 話数は最初の見出しより前（表紙）とファイル名からだけ読む
     slots = layout.get("slotsPerPage")
+    has_pages = any(l.get("page") is not None for l in lines)   # PDF（頁の情報がある）。TXT・DOCX には無い
+    counts = {rule_id: 0 for rule_id, _ in RULES}
+    counts["vertical-columns"] = layout.get("verticalPages") or 0
     scenes, previous_location = [], None
     style_counts = {}
     for k, (index, number, raw_location, style) in enumerate(heads):
@@ -279,10 +371,17 @@ def analyze_script(lines, layout=None, name=None):
         # 喫茶「灯台」のように括弧の閉じた見出しはそのまま。閉じない「や、」の後に続く「は台詞が同じ列に入ったとみる
         mixed = raw_location.count("「") != raw_location.count("」") or bool(re.search(r"」.*「", raw_location))
         location, day_night = split_time(raw_location.split("「")[0] if mixed else raw_location)
+        same_heading = bool(SAME_PLACE.match(location))
+        place_before = previous_location
+        same_place = same_heading and bool(place_before)
         location = _resolve_same(location, previous_location)
         previous_location = location or previous_location
         no = number or str(len(scenes) + 1)
         scene_no = f"{episode}-{int(no) if no.isdigit() else no}" if episode else f"S{no}"
+        # 「同・」の柱に昼夜が無いときは、直前のシーンの昼夜（引き継いだ値を含む）を引き継ぐ
+        time_read, inherited_from = day_night is not None, None
+        if not time_read and same_heading and scenes and scenes[-1]["dayNight"]:
+            day_night, inherited_from = scenes[-1]["dayNight"], scenes[-1]["sceneNo"]
         cast, synopsis, notes, suspects = [], "", [], []
         for l in body:
             clean = l["text"].strip()
@@ -306,15 +405,44 @@ def analyze_script(lines, layout=None, name=None):
                 last = next((_position(l, slots) for l in reversed(body) if l["text"].strip() and _position(l, slots) is not None), None)
                 finish = last + 1 if last is not None else start + 1
             page_eighths = max(1, round((finish - start) / slots * 8))
+        # 出どころ: 柱のある頁（1から数える）と柱の枠。テキストの原本は頁が無いので null
+        head = lines[index]
+        source = None if head.get("page") is None else {"page": head["page"] + 1, "box": head.get("box")}
+        # 項目ごとの状態と理由（補った値と読めない値を、人が確かめる）
+        location_reasons = [f"「同・」を直前の場所「{_clip(place_before)}」で補った"] if same_place else []
+        if same_heading and not place_before: location_reasons.append("「同・」の柱だが直前の場所が無い（原本で確かめる）")
+        if SUSPECT.search(raw_location): location_reasons.append("場所の文字が化けている疑い（原本で確かめる）")
+        if mixed: location_reasons.append("柱に台詞が混ざっている疑い（原本で場所を確かめる）")
+        if NON_SHOOTING.match(location): location_reasons.append("撮影しない見出し（黒味・タイトル）の疑い")
+        fields = {
+            "sceneNo": _field("read", "柱の番号" if number else "番号の無い柱なので、順番で振った"),
+            "location": _field("missing", "柱から場所を読めなかった") if not location
+                        else _field("inferred", *location_reasons) if location_reasons else _field("read"),
+            "dayNight": _field("read", "柱の末尾の時間帯") if time_read
+                        else _field("inferred", f"柱に昼夜が無いので、直前のシーン（{inherited_from}）の昼夜を引き継いだ") if inherited_from
+                        else _field("missing", "柱に昼夜が無い"),
+            "cast": _field("read", "セリフの話者から（ト書きだけの人物は入らない）" if cast else "セリフの話者がいない"),
+        }
+        if has_pages:
+            fields["pageEighths"] = (_field("read", f"柱から次の柱までの{'列' if head.get('vertical') else '行'}の数で計算") if page_eighths is not None
+                                     else _field("missing", "頁を計算できなかった"))
+        counts["trailing-time"] += int(time_read)
+        counts["same-place"] += int(same_place)
+        counts["inherit-day-night"] += int(inherited_from is not None)
+        counts["speaker-cast"] += int(bool(cast))
+        counts["order-number"] += int(not number)
+        counts["page-eighths"] += int(page_eighths is not None)
         scenes.append({"sceneNo": scene_no, "location": location, "dayNight": day_night, "synopsis": synopsis, "cast": cast,
-                       "estimatedMinutes": None, "pageEighths": page_eighths, "heading": raw_location.strip(), "reviewNotes": notes})
+                       "estimatedMinutes": None, "pageEighths": page_eighths, "heading": raw_location.strip(), "reviewNotes": notes,
+                       "source": source, "fields": fields})
     suspect_total = sum(1 for t in texts if SUSPECT.search(t))
     warnings = []
     if suspect_total: warnings.append(f"文字化けの疑いがある行が{suspect_total}行あります。原本と見比べて直してください（自動では直しません）")
     if scenes and not any(s["dayNight"] for s in scenes): warnings.append("見出しに昼夜の記載がありません。香盤で昼夜を入れてください")
     if layout.get("orientation") == "vertical": warnings.append("縦書きのPDFを列ごとに組み直して読みました。改行の位置は原本と違うことがあります")
     meta = {"episode": episode, "headingStyles": style_counts, "orientation": layout.get("orientation"), "pages": layout.get("pages"),
-            "slotsPerPage": slots, "suspectLines": suspect_total, "warnings": warnings}
+            "slotsPerPage": slots, "suspectLines": suspect_total, "warnings": warnings,
+            "rulesApplied": [{"id": rule_id, "label": label, "count": counts[rule_id]} for rule_id, label in RULES if counts[rule_id] > 0]}
     return scenes, meta
 
 def _position(line, slots):

@@ -23,7 +23,28 @@ test('FR-CORE-DATA-043 書き出しを空のPGへ戻すと全表の件数と金�
   t.after(() => target.close());
   const bucket = memoryBucket();
   const result = await exportPgDatabase({db: source, bucket, pageRows: 2});
-  assert.equal(result.manifest.tables.length, 258);
+  assert.equal(result.manifest.tables.length, 389);
+  // 移行 0012（フェーズ1 #10）と 0013（#10b）と 0014（#11）と 0015（#13）と 0016（#5）と 0017（行動指標の計画 段B #9）と 0018（#14）と 0019（行動指標の計画 段B #4）と 0021（フォルダ型の画面 U1）と 0023（フォルダ型の画面 U2a 後半）で足した表も書き出しと戻しの対象に入る（D-015 の backup-dr の証拠）
+  const names = new Set(result.manifest.tables.map((table) => table.table_name));
+  assert.deepEqual(['earning_types', 'action_steps', 'project_stages', 'project_stage_meanings', 'project_stage_events', 'earning_type_rate_versions', 'cashflow_categories',
+    'contract_production_versions', 'contract_production_milestones',
+    'yojitsu_periods', 'yojitsu_target_versions', 'yojitsu_plan_versions', 'yojitsu_plan_amounts', 'plan_adoptions', 'yojitsu_variables', 'yojitsu_setting_versions',
+    'yojitsu_forecast_versions', 'yojitsu_forecast_lines', 'yojitsu_activity_records', 'yojitsu_activity_cancellations',
+    'production_cost_versions',
+    'kpi_metric_versions', 'kpi_metric_steps',
+    'yojitsu_choice_versions',
+    'investment_approval_versions',
+    'sales_source_file_terms', 'report_voids',
+    'report_check_versions', 'report_check_cases', 'source_check_runs', 'source_sampling_reviews',
+    'budget_versions', 'budget_version_lines', 'budget_check_runs', 'budget_fixes',
+    'shooting_scene_results', 'shooting_day_records', 'shooting_day_report_items',
+    'post_cuts', 'post_notes', 'post_note_actions', 'post_tasks', 'post_task_events', 'post_deliverable_items', 'post_deliverable_events',
+    'budget_templates', 'budget_template_versions', 'budget_template_items', 'budget_version_templates', 'budget_line_items',
+    'mfg_products', 'mfg_product_versions', 'mfg_step_events', 'mfg_purchase_orders', 'mfg_purchase_order_lines', 'mfg_po_events', 'mfg_receipts', 'mfg_po_expenses',
+    'produce_tasks', 'produce_task_events', 'produce_task_checks', 'produce_task_posts', 'produce_task_links', 'produce_task_templates', 'produce_task_template_items',
+    'planning_documents', 'planning_profile_versions', 'planning_profile_people', 'planning_trial_versions', 'planning_trial_rates', 'planning_trial_lines',
+    'planning_trial_investments', 'project_owner_versions', 'planning_materials', 'planning_facts',
+  ].filter((name) => !names.has(name)), []);
   const restored = await restorePgDatabase({db: new PgDatabase(target.client), bucket, manifestKey: result.manifestKey,
     schemaSql: readFileSync(new URL('../pg/schema.sql', import.meta.url), 'utf8')});
   assert.deepEqual(compareReconciliation(result.manifest, restored), {equal: true, differences: []});
@@ -175,6 +196,16 @@ test('FR-CORE-DATA-043 定時実行は接続失敗の中身をログにも例外
     {event: 'pg_daily_export_failed', cause: '08006', elapsed_ms: 0, tables: 0, rows: 0},
     {event: 'pg_daily_export_close_failed', cause: 'unexpected', elapsed_ms: 0},
   ]);
+  // 書き出しの束ね（RLS の外のロール。HYPERDRIVE_EXPORT）があれば、アプリの束ねより先に使う
+  const used = [];
+  class Recorder {
+    constructor({connectionString}) { used.push(connectionString); }
+    async connect() { throw Object.assign(new Error('fictional'), {code: '08006'}); }
+    async end() {}
+  }
+  await assert.rejects(runScheduledPgExport({DATABASE_ENGINE: 'postgres', PG_EXPORTS: {}, HYPERDRIVE: {connectionString: 'fictional-app'}, HYPERDRIVE_EXPORT: {connectionString: 'fictional-export'}},
+    {loadClient: async () => Recorder, report: () => {}, clock: () => 0}), {message: 'pg_daily_export_failed'});
+  assert.deepEqual(used, ['fictional-export']);
   const worker = readFileSync(new URL('../src/cloud-worker.mjs', import.meta.url), 'utf8');
   assert.match(worker, /async scheduled\([^)]*\)\s*\{\s*await runScheduledPgExport\(env, \{loadClient: loadPgClient\}\)/);
 });

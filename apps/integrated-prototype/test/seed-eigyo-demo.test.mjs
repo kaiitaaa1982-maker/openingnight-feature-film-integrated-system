@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import {openTestDb} from './test-db.mjs';
 import {createApp} from '../src/app.mjs';
 import {decodeXlsx} from '../src/xlsx.mjs';
+import {INITIAL_SHEET_COLUMNS, ROYALTY_AMOUNT_KEYS} from '../src/sales-sheet/column-registry.mjs';
 import {seedSalesDemo, SALES_DEMO} from '../scripts/seed-sales-demo.mjs';
 import {seedEigyoDemo, windowPlan, WARNING_FIXTURES, EIGYO_DEMO, partnerListPlan, SALES_SHEET_RATES, THEATRE_ATTRIBUTES, SALES_SHEET_VIEWS,
   PROPOSAL_DEMO, proposalWindowPlan, svodPricePlan, proposalRightsPlan} from '../scripts/seed-eigyo-demo.mjs';
@@ -247,46 +248,51 @@ async function sheetLines(where, params = []) {
     WHERE s.org_id=? AND r.status='active' AND ${where} ORDER BY w.code,s.accounting_month,s.id`, [orgId, ...params]);
 }
 
-test('売上集計シート: 83列と追加28列を1回だけ採用し、保存した形が2つある', async () => {
+// 架空データにはロイヤリティ計上の基準が無い（食い違い0件）ので、辞書の採用の列のうちロイヤリティ計上の額の4列は入らない（裁定3 (a)）
+const ADOPTED_COLUMNS = INITIAL_SHEET_COLUMNS.filter((column) => !ROYALTY_AMOUNT_KEYS.includes(column.column_key));
+test('売上集計シート: 辞書の列（追加の列を含む）を1回だけ採用し、保存した形が2つある', async () => {
   assert.equal(summary.salesSheet.skipped, false);
   assert.equal(again.result.salesSheet.skipped, true);
   assert.equal(again.before.sales_sheet_views, SALES_SHEET_VIEWS.length);
   const catalog = (await api('GET', '/sales-sheet/columns')).body;
   assert.equal(catalog.adopted, true);
-  assert.equal(catalog.columns.filter((column) => column.legacyPosition).length, 83);
-  assert.deepEqual(summary.salesSheet.additional, {skipped: false, columns: 28});
+  assert.deepEqual(catalog.columns.map((column) => column.key).sort(), ADOPTED_COLUMNS.map((column) => column.column_key).sort());
+  assert.equal(catalog.columns.filter((column) => column.legacyPosition).length, ADOPTED_COLUMNS.filter((column) => column.legacy_position).length);
+  assert.deepEqual(summary.salesSheet.additional, {skipped: true}, '辞書で採用した組織には追加の列を補わない');
   assert.deepEqual(again.result.salesSheet.additional, {skipped: true});
   assert.equal(catalog.additionalPending, 0);
-  for (const [set, expected] of [['additional', 28], ['all_plus', 111]]) {
+  const all = catalog.sets.find((set) => set.key === 'all').columns;
+  for (const set of ['additional', 'all_plus']) {
     const sheet = (await api('GET', `/sales-sheet?set=${set}&hideEmpty=0`)).body;
-    assert.equal(sheet.columns.length, expected);
-    assert.equal(sheet.selected.length, expected);
+    assert.deepEqual(sheet.selected, all, `${set} は全列の別名`);
+    assert.equal(sheet.columns.length, all.length);
     assert.ok(sheet.rows.length > 0);
   }
-  const audits = await db.all(`SELECT detail_json FROM audit_log WHERE org_id=? AND entity_type='sales_sheet_column'
-    AND action='adopt' AND json_extract(detail_json,'$.template')='sales-sheet-additional-v1'`, [orgId]);
-  assert.equal(audits.length, 1);
+  const audits = await db.all(`SELECT detail_json FROM audit_log WHERE org_id=? AND entity_type='sales_sheet_column' AND action='adopt' ORDER BY id`, [orgId]);
+  assert.deepEqual(audits.map((row) => JSON.parse(row.detail_json).template), ['sales-sheet-v2']);
+  assert.equal(JSON.parse(audits[0].detail_json).columns, ADOPTED_COLUMNS.length);
   assert.match(JSON.parse(audits[0].detail_json).reason, /架空.*seed-eigyo-demo/);
   const views = (await api('GET', '/sales-sheet/views')).body.views;
   assert.deepEqual(views.map((view) => view.name).sort(), SALES_SHEET_VIEWS.map((view) => view.name).sort());
 });
 
-test('既存の架空組織で83列だけ採用済みでも追加28列を補い、再実行では版・監査を増やさない', async (t) => {
+test('既存の架空組織で列だけ採用済みなら、列の版を足さずに値と保存した形を入れ、再実行では版・監査を増やさない', async (t) => {
   const existing = await openTestDb({t});
   try {
     await seedSalesDemo(existing);
     const app = createApp({db: existing, mode: 'local'});
     const login = await app.request('/api/local/login', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({email: SALES_DEMO.adminEmail})});
     const cookie = login.headers.get('set-cookie').split(';')[0];
-    const adopt = await app.request('/api/sales-sheet/columns/adopt', {method: 'POST', headers: {cookie, 'content-type': 'application/json'}, body: JSON.stringify({reason: '追加列の導入前に83列だけ採用（架空）'})});
+    const adopt = await app.request('/api/sales-sheet/columns/adopt', {method: 'POST', headers: {cookie, 'content-type': 'application/json'}, body: JSON.stringify({reason: 'seed の前に列だけ採用（架空）'})});
     assert.equal(adopt.status, 201);
     const initial = await existing.all('SELECT * FROM sales_sheet_column_versions ORDER BY column_key');
-    assert.equal(initial.length, 103);
+    assert.equal(initial.length, ADOPTED_COLUMNS.length);
     const result = await seedEigyoDemo(existing);
-    assert.equal(result.salesSheet.skipped, false, '追加の採用があれば営業seedも実行済みとして報告する');
-    assert.deepEqual(result.salesSheet.additional, {skipped: false, columns: 28});
+    assert.equal(result.salesSheet.skipped, false, '値と保存した形を入れたので実行済みとして報告する');
+    assert.equal(result.salesSheet.views, SALES_SHEET_VIEWS.length);
+    assert.deepEqual(result.salesSheet.additional, {skipped: true});
     const columns = await existing.all('SELECT * FROM sales_sheet_column_versions ORDER BY column_key');
-    assert.deepEqual(columns.filter((c) => initial.some((before) => before.column_key === c.column_key)), initial);
+    assert.deepEqual(columns, initial, '列の版は足さない');
     const audits = await existing.all('SELECT * FROM audit_log ORDER BY id');
     const repeated = await seedEigyoDemo(existing);
     assert.equal(repeated.salesSheet.skipped, true);

@@ -14,6 +14,7 @@ export const DB_ERROR_KINDS = Object.freeze({
   read_only: '読み取りの一括の中の書き込み',
   unsupported_type: 'SQLite の入口に無い型（配列など）',
   invalid_input: '型に読めない値（読み取りの条件など）',
+  row_security: '行単位の権限（RLS）の拒否。所属しない組織の行を作る・移そうとした（pg/rls.sql）',
 });
 
 // 制約の違反（SQLite の「… constraint failed」にあたるもの）。トリガーの拒否（raise）は含めない
@@ -33,7 +34,7 @@ export class DbError extends Error {
 // （attachDbError の inWrite。PostgreSQL の入口が文を見て渡す）。読み取りの型の誤りを制約の違反（409）にしない
 const PG_CODES = {
   '23505': 'unique', '23514': 'check', '23503': 'foreign_key', '23502': 'not_null', P0001: 'raise', '22P02': 'invalid_input', '22003': 'invalid_input',
-  '25006': 'read_only',
+  '25006': 'read_only', '42501': 'row_security',
 };
 
 // node:sqlite の拡張の結果コード → 種類（https://sqlite.org/rescode.html）

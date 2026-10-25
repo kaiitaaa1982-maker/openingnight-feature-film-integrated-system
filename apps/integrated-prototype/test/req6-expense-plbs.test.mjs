@@ -8,6 +8,7 @@ import {tableLinks,columnRows} from '../src/admin/er-model.mjs';
 import {loadCommitteeExpenseLines} from '../src/committee/committee-income.mjs';
 import {expenseTemplate} from '../src/expense-sheet/expense-workbook.mjs';
 import {requiredPreviewApiUrls} from '../scripts/build-preview.mjs';
+import {SET_LABELS} from '../src/expense-sheet/sheet-model.mjs';
 import {splitPreviewData,mergePreviewData,snapshotKey} from '../src/preview/snapshot-client.mjs';
 
 const reportPath='/reports/pl-bs?from=2026-09&to=2026-11&asOf=2026-11';
@@ -126,7 +127,9 @@ test('経費プレビューは全列セット・請求書・取込・予定・�
  const source=new Map([[snapshotKey('GET','/api/expense-sheet?asOf=2026-09-28&set=basic&page=1&pageSize=100'),{status:200,body:{total:101,rows:[{id:123}]}}],['GET /api/expense-invoices',{status:200,body:{rows:[{id:456}]}}]]);
  const urls=requiredPreviewApiUrls(source);
  for(const path of ['/api/expense-invoices/456','/api/expense-imports','/api/expense-imports/holds','/api/expense-accounting/settings','/api/expense-journal?to=2026-09-28','/api/expense-sheet/123?asOf=2026-09-28'])assert.ok(urls.includes(path),path);
- for(const set of ['basic','legacy','accounting','payout'])assert.ok(urls.some(u=>u.includes('set='+set)&&u.includes('page=2')),set);
+ // 画面の列セットのボタン（SET_LABELS。標準25列（互換）を含む）は全部、2ページ目まで記録する
+ const recorded=urls.filter(u=>u.startsWith('/api/expense-sheet?')).map(u=>new URLSearchParams(u.slice(u.indexOf('?')+1)));
+ for(const set of Object.keys(SET_LABELS))assert.ok(recorded.some(q=>q.get('set')===set&&q.get('page')==='2'),set);
  const responses=new Map(urls.map((u,n)=>[snapshotKey('GET',u),{status:200,body:{id:n,text:'架空'.repeat(18000)}}]));
  const {index,parts}=splitPreviewData({},responses,{limitBytes:1000000});assert.ok(parts.length>1);
  for(const text of [index,...parts.map(p=>p.text)])assert.ok(Buffer.byteLength(text)<16000000);

@@ -1,0 +1,80 @@
+/* ポスプロの画面。見た目の決まり docs/design/integrated-system-visual.md（黒・白・灰＋赤1色、角丸0、影なし、状態は文字の札）に従う。
+   赤は「いま確認すること」（期限超・残りの指示）と止まっている印だけ。済みも黒で、意味は文字で示す */
+.pp {
+  --pp-ink: #111111; --pp-paper: #ffffff; --pp-soft: #f3f1ec; --pp-sub: #5e5850; --pp-faint: #6b655c; --pp-rule: #cfc8ba; --pp-red: #b3261e;
+  max-width: 1100px; color: var(--pp-ink);
+}
+.pp button { color: var(--pp-ink); border-radius: 0; box-shadow: none; }
+.pp input, .pp select, .pp textarea { border-radius: 0; }
+.pp-head { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; border-bottom: 2px solid var(--pp-ink); padding-bottom: 6px; }
+.pp-head h2 { margin: 0; font-weight: 800; }
+.pp-head small, .pp-work-title small { color: var(--pp-faint); font-size: 12px; margin-left: 8px; font-weight: normal; }
+.pp .pp-head button { background: var(--pp-paper); border: 1px solid var(--pp-ink); padding: 3px 10px; }
+.pp-mute { color: var(--pp-faint); font-size: 12px; }
+.pp-label { font-size: 12px; color: var(--pp-sub); margin: 12px 0 6px; }
+.pp-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--pp-ink); margin-bottom: 12px; }
+.pp .pp-tabs button { background: var(--pp-paper); border: 1px solid var(--pp-ink); border-bottom: none; margin-right: -1px; padding: 6px 14px; cursor: pointer; }
+.pp .pp-tabs button[aria-selected="true"] { background: var(--pp-ink); color: var(--pp-paper); }
+.pp-big { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom: 12px; }
+.pp-big div { border: 1px solid var(--pp-ink); padding: 10px; text-align: center; }
+.pp-big b { display: block; font-size: 30px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.pp-big span { font-size: 12px; color: var(--pp-sub); }
+.pp-big .bad { background: var(--pp-red); border-color: var(--pp-red); }
+.pp-big .bad b, .pp-big .bad span { color: var(--pp-paper); }
+.pp .bad { color: var(--pp-red); }
+.pp-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.pp .pp-card { display: flex; flex-direction: column; gap: 4px; text-align: left; border: 1px solid var(--pp-ink); padding: 10px; background: var(--pp-paper); cursor: pointer; }
+.pp .pp-card.late { border: 2px solid var(--pp-red); }
+.pp-card-name { font-weight: bold; }
+.pp-card-num { font-size: 22px; font-weight: bold; font-variant-numeric: tabular-nums; }
+.pp-card-num small { font-size: 13px; color: var(--pp-faint); font-weight: normal; }
+.pp-card-goal { font-size: 11px; color: var(--pp-sub); min-height: 1em; }
+.pp-card.late .pp-card-goal { color: var(--pp-red); font-weight: bold; }
+.pp-bar { height: 6px; background: var(--pp-soft); border: 1px solid var(--pp-rule); overflow: hidden; }
+.pp-bar i { display: block; height: 100%; background: var(--pp-ink); }
+.pp-works { display: grid; gap: 8px; }
+.pp .pp-work { display: flex; gap: 16px; align-items: center; text-align: left; border: 1px solid var(--pp-ink); padding: 10px 14px; background: var(--pp-paper); cursor: pointer; }
+.pp-work-title { flex: 1; font-weight: bold; }
+.pp-work-nums { display: flex; gap: 16px; }
+.pp-work-nums > span { font-size: 20px; font-weight: bold; text-align: center; min-width: 52px; font-variant-numeric: tabular-nums; }
+.pp-work-nums small { display: block; font-size: 11px; color: var(--pp-faint); font-weight: normal; }
+.pp-tag { display: inline-block; font-size: 11px; padding: 0 6px; border: 1px solid var(--pp-ink); white-space: nowrap; color: var(--pp-ink); }
+.pp-tag.bad, .pp-tag.needs_review { border-color: var(--pp-red); color: var(--pp-red); }
+.pp-tag.done, .pp-tag.ok { background: var(--pp-ink); color: var(--pp-paper); }
+.pp-tag.not_started { border-color: var(--pp-rule); color: var(--pp-faint); }
+.pp-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+.pp .pp-chips button { border: 1px solid var(--pp-ink); background: var(--pp-paper); padding: 3px 10px; cursor: pointer; font-size: 12px; }
+.pp .pp-chips button[aria-pressed="true"] { background: var(--pp-ink); color: var(--pp-paper); }
+.pp-table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.pp-table th, .pp-table td { padding: 4px 6px; border-bottom: 1px solid var(--pp-rule); text-align: left; white-space: nowrap; vertical-align: middle; }
+.pp-table th { color: var(--pp-sub); font-weight: normal; background: var(--pp-soft); border-bottom: 1px solid var(--pp-ink); }
+.pp-table td.wrap { white-space: normal; }
+.pp-table tr.mute td { color: var(--pp-faint); }
+.pp-table input[type="date"] { width: auto; }
+.pp .pp-check { border: none; background: none; font-size: 18px; cursor: pointer; color: var(--pp-rule); }
+.pp .pp-check.on { color: var(--pp-ink); }
+.pp-mark { font-size: 16px; color: var(--pp-rule); text-align: center; }
+.pp-mark.ok { color: var(--pp-ink); font-weight: bold; }
+.pp .pp-acts button { font-size: 12px; margin-right: 4px; background: var(--pp-paper); border: 1px solid var(--pp-ink); padding: 1px 8px; }
+.pp .pp-tc { border: none; background: none; text-decoration: underline; cursor: pointer; font-variant-numeric: tabular-nums; }
+.pp-form { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; align-items: center; }
+.pp-form input { flex: 1 1 200px; }
+.pp-form input.s { flex: 0 0 56px; }
+.pp-form input.m { flex: 0 1 130px; }
+.pp-form input.l { flex: 2 1 280px; }
+.pp .pp-form button[type="submit"], .pp .pp-note button[type="submit"] { background: var(--pp-ink); color: var(--pp-paper); border: 1px solid var(--pp-ink); padding: 4px 14px; }
+.pp .pp-form button[type="button"] { background: var(--pp-paper); border: 1px solid var(--pp-ink); padding: 4px 14px; }
+.pp-review { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 12px; align-items: start; }
+@media (max-width: 900px) { .pp-review { grid-template-columns: 1fr; } }
+.pp-player { position: relative; padding-top: 56.25%; background: var(--pp-ink); overflow: hidden; }
+.pp-player iframe, .pp-noplayer { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.pp-noplayer { display: flex; align-items: center; justify-content: center; text-align: center; color: var(--pp-paper); font-size: 13px; }
+.pp-noplayer a { color: var(--pp-paper); }
+.pp-note { display: flex; flex-direction: column; gap: 6px; }
+.pp-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.pp-row select { flex: 1 1 100px; width: auto; }
+.pp-note input.tc { flex: 1 1 100px; }
+.pp-note textarea { min-height: 80px; }
+.pp .pp-grab { background: var(--pp-red); color: var(--pp-paper); border: 1px solid var(--pp-red); padding: 4px 10px; cursor: pointer; }
+.pp .pp-grab:disabled { background: var(--pp-soft); color: var(--pp-faint); border-color: var(--pp-rule); cursor: default; }
+.pp-status { width: auto; }

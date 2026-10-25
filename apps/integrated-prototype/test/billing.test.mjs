@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {foreignKeyViolations, openTestDb} from './test-db.mjs';
 import {createApp} from '../src/app.mjs';
 
@@ -51,3 +52,104 @@ test('FR-REV-INTAKE-030 invoice and receipt events preserve source sales, balanc
 }finally{await f.db.close()}});
 
 test('billing endpoints deny production and keep tax as source values',async(t)=>{const f=await fixture(t);try{const production=await f.login('production@openingnight.invalid');assert.equal((await f.req('/billing?workId=1&asOf=2026-11-30',null,{cookie:production})).status,403);assert.equal((await f.req('/sales-materials?workId=1',null,{cookie:production})).status,403);const candidate=good(await f.req('/billing?workId=1&asOf=2026-11-30')).candidates[0];assert.equal(candidate.amountExTax,600000);assert.equal(candidate.taxAmount,60000);assert.equal(candidate.amountIncTax,660000)}finally{await f.db.close()}});
+
+// Z3 がわざと壊した版で見つけた消込の反例（formal/receipt_matching_cases.json。入金の確認の計画 #4）を、いまの API と DB へ流す。
+// 正しい版が断る最後の入金だけが断られ、それまでの入金・取消は通り、断られた入金は1行も残らない。取引先はすべて架空配信（2）
+const {cases:formalCases,registration_order:formalOrders}=JSON.parse(readFileSync(new URL('../formal/receipt_matching_cases.json',import.meta.url),'utf8'));
+
+async function formalFixture(t,invoices){
+  const db=await openTestDb({t}),app=createApp({db});
+  const login=await app.request('/api/local/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:'admin@openingnight.invalid'})});
+  assert.equal(login.status,200);
+  const cookie=login.headers.get('set-cookie').split(';')[0];
+  async function req(path,payload,headers={}){
+    const response=await app.request(`/api${path}`,{method:payload?'POST':'GET',headers:{cookie,...(payload?{'content-type':'application/json'}:{}),...headers},body:payload?JSON.stringify(payload):undefined});
+    return {status:response.status,data:await response.json()};
+  }
+  const invoiceIds={};
+  for(const invoice of invoices){
+    // 請求は税込の額（11で割り切れる）を、税抜＝額×10/11 の架空の売上1行から作る
+    const reportKey=`FORMAL-${invoice.key}`,exTax=invoice.amount_yen*10/11;
+    assert.ok(Number.isInteger(exTax),`${invoice.key} の額は11で割り切れる額にする`);
+    good(await req('/sales',{workId:1,report_key:reportKey,kind:'digital',partner_id:2,product_id:1,period_from:'2026-09-01',period_to:'2026-09-30',recognition_basis_id:2,report_received_on:'2026-10-05',basis_reason:'架空の報告受領月',description:`架空配信売上 ${invoice.key}`,quantity:1,amount_ex_tax:exTax,tax_amount:invoice.amount_yen-exTax,amount_inc_tax:invoice.amount_yen}));
+    const report=await db.get('SELECT id FROM report_imports WHERE report_key=?',[reportKey]);
+    const made=good(await req('/billing/invoices',{workId:1,reportIds:[report.id],invoiceDate:invoice.invoice_date,dueDate:'2026-12-31',sourceAmountBasis:'platform_net',note:'架空請求'}));
+    assert.equal(made.amountIncTax,invoice.amount_yen);
+    invoiceIds[invoice.key]=made.invoiceId;
+  }
+  const receiptBody=step=>({partnerId:2,reference:`FORMAL-${step.receipt}`,receivedOn:step.received_on,amountYen:step.amount_yen,
+    allocations:step.allocations.map(a=>({invoiceId:invoiceIds[a.invoice],amountYen:a.amount_yen})),
+    ...(step.deductions?{deductions:step.deductions.map(d=>({kind:d.kind,amountYen:d.amount_yen}))}:{})});
+  const receiptIds={};
+  async function run(step){
+    if(step.reverse)return good(await req(`/billing/receipts/${receiptIds[step.reverse]}/reverse`,{reversedOn:step.reversed_on,reason:'架空の誤登録の逆仕訳'},{'If-Match':'1'}));
+    const made=good(await req('/billing/receipts',receiptBody(step)));
+    receiptIds[step.receipt]=made.receiptId;
+    return made;
+  }
+  const rows=async()=>({receipts:await db.all('SELECT * FROM billing_receipts ORDER BY id'),allocations:await db.all('SELECT * FROM billing_receipt_allocations ORDER BY receipt_id,invoice_id'),
+    reversals:await db.all('SELECT receipt_id,reversed_on FROM billing_receipt_reversals ORDER BY receipt_id')});
+  return {db,req,run,rows,receiptBody,invoiceIds};
+}
+
+// rejected_now があるものは、いまの API が rejected_by と別の決まりで断る（控除を受けない間）。試験の名前にその決まりを出す
+for(const c of formalCases.filter(row=>row.replay?.api)){
+  const how=c.replay.api.rejected_now?`（いまは「${c.replay.api.rejected_now}」の検査で）`:'';
+  test(`Z3 の消込の反例（${c.broken}）を API と DB が断る${how}: ${c.name}`,async(t)=>{const f=await formalFixture(t,c.invoices);try{
+    for(const step of c.steps.slice(0,-1))await f.run(step);
+    const before=await f.rows();
+    const result=await f.req('/billing/receipts',f.receiptBody(c.steps.at(-1)));
+    assert.equal(result.status,c.replay.api.status,JSON.stringify(result.data));
+    assert.equal(result.data.ok,false);
+    assert.equal(result.data.error,c.replay.api.error);
+    assert.deepEqual(await f.rows(),before,'断った入金は入金・消込のどちらにも残らない');
+  }finally{await f.db.close()}});
+}
+
+test('Z3 の消込の反例のうち API に流さないものは、流さない理由と流す時（#6）を持つ',()=>{
+  const pending=formalCases.filter(c=>!c.replay?.api);
+  assert.deepEqual(pending.map(c=>c.broken),['合計が控除を数えない'],'API に流さない反例を足すときは、ここに名前を足して理由を書く');
+  for(const c of pending)assert.match(c.pending?.api??'',/#6/,c.name);
+});
+
+test('Z3 の消込の反例のうち API が別の決まりで断るものは、その理由と直す時（#6）を持つ',()=>{
+  const interim=formalCases.filter(c=>c.replay?.api?.rejected_now);
+  assert.deepEqual(interim.map(c=>c.broken),['控除の種類の検査なし'],'API が rejected_by と別の決まりで断る反例を足すときは、ここに名前を足して理由を書く');
+  for(const c of interim){
+    assert.ok(!c.rejected_by.includes(c.replay.api.rejected_now),`${c.name}: rejected_now は rejected_by と別の決まりにする`);
+    assert.match(c.replay.api.note??'',/#6/,c.name);
+  }
+});
+
+// 取消の登録順（formal/receipt_matching.py の released_at_receipt_date の reversed_before<=r）は、どの不変条件にも効かないので、
+// 同じ入力（registration_order）を模型と API の両方で流す。取消を登録する前の入金は断り、取消を登録したあとの同じ入金は通る
+for(const o of formalOrders){
+  test(`取消の登録順: ${o.name}`,async(t)=>{const f=await formalFixture(t,o.invoices);try{
+    for(const step of o.before)await f.run(step);
+    const before=await f.rows();
+    const early=await f.req('/billing/receipts',f.receiptBody(o.receipt));
+    assert.equal(early.status,o.replay.api.status,JSON.stringify(early.data));
+    assert.equal(early.data.error,o.replay.api.error);
+    assert.deepEqual(await f.rows(),before,'断った入金は入金・消込のどちらにも残らない');
+    await f.run(o.reversal);
+    const late=await f.run(o.receipt);
+    assert.equal(late.reference,`FORMAL-${o.receipt.receipt}`);
+    const after=await f.rows();
+    assert.deepEqual(after.reversals.map(x=>[x.receipt_id,x.reversed_on]),[[1,o.reversal.reversed_on]]);
+    assert.equal(after.receipts.length,o.before.length+1);
+  }finally{await f.db.close()}});
+}
+
+test('取り消した入金の分は、取消日以後の入金日でだけ入れ直せる（取消日の前日は断り、当日は通る）',async(t)=>{const f=await formalFixture(t,[{key:'A',amount_yen:110000,invoice_date:'2026-11-02'}]);try{
+  const step=(receipt,receivedOn)=>({receipt,received_on:receivedOn,amount_yen:110000,allocations:[{invoice:'A',amount_yen:110000}]});
+  await f.run(step('R1','2026-11-10'));
+  await f.run({reverse:'R1',reversed_on:'2026-11-20'});
+  const dayBefore=await f.req('/billing/receipts',f.receiptBody(step('R2','2026-11-19')));
+  assert.equal(dayBefore.status,409,JSON.stringify(dayBefore.data));
+  assert.equal(dayBefore.data.error,'receipt exceeds invoice balance');
+  const sameDay=await f.run(step('R3','2026-11-20'));
+  assert.equal(sameDay.reference,'FORMAL-R3');
+  const after=await f.rows();
+  assert.deepEqual(after.allocations.map(a=>[a.receipt_id,a.amount_yen]),[[1,110000],[2,110000]]);
+  assert.deepEqual(after.reversals.map(x=>[x.receipt_id,x.reversed_on]),[[1,'2026-11-20']]);
+}finally{await f.db.close()}});

@@ -11,6 +11,8 @@ import {labelOf} from '../ui/labels.mjs';
 import {todayJst, STAGE_ORDER} from './pipeline-routes.mjs';
 import '../reports/reports.css';
 import './sales-ops.css';
+import {LaunchMonth} from './proposals/LaunchMonth.jsx';
+import {ProposalReview} from './proposals/ProposalReview.jsx';
 
 // 状態の表示（色＋文字）。tone: ok | warn | bad | info
 export function ToneLabel({tone = 'info', children}) {
@@ -70,7 +72,7 @@ export function PipelineTiles({summary, children}) {
       <div role="listitem" className={tileClass(summary.nextActionOverdue, 'bad')}>
         <span>次の行動が期限切れ</span>
         <strong>{int(summary.nextActionOverdue)}件</strong>
-        <small>{summary.nextActionOverdue ? '期限を過ぎています' : '期限切れはありません'}</small>
+        
       </div>
       <div role="listitem" className={tileClass(summary.deliverableOverdue, 'bad')}>
         <span>納期超過（未提出）</span>
@@ -80,7 +82,7 @@ export function PipelineTiles({summary, children}) {
       <div role="listitem" className={tileClass(summary.lateSubmitted, 'warn')}>
         <span>遅延提出（期限後に提出）</span>
         <strong>{int(summary.lateSubmitted)}件</strong>
-        <small>{summary.lateSubmitted ? '提出済みでも期限後の提出として数えます' : '期限後の提出はありません'}</small>
+        
       </div>
       {children}
     </div>
@@ -126,9 +128,8 @@ export function PipelineBoard({request: requestProp}) {
         <header className="so-head">
           <div>
             <h2>営業パイプライン（全作品）</h2>
-            <p className="rp-muted">{body?.scopeNote || '営業（財務）の権限がある作品だけを集計します。'}</p>
           </div>
-          <FormField type="date" label="期限の判定日" value={asOf} hint="この日を基準に期限切れ・納期超過を数えます"
+          <FormField type="date" label="期限の判定日" value={asOf}
             onChange={(value) => shell.setParam('asOf', value && value !== today ? value : null, {replace: true})} />
         </header>
         {state.error && <Notice error={state.error} onRetry={load} />}
@@ -145,7 +146,7 @@ export function PipelineBoard({request: requestProp}) {
             {(active) => (active === 'deliverables'
               ? (
                 <DataGrid columns={DELIVERABLE_COLUMNS} rows={deliverables} rowKey="id" persistKey="sales-pipeline-deliverables"
-                  emptyText="納品項目はまだありません。作品の営業画面の「契約版ごとの納品」で登録します。" initialSort={{key: 'due_on', dir: 'asc'}}
+                  emptyText="0件" initialSort={{key: 'due_on', dir: 'asc'}}
                   exportSpec={{name: '営業パイプライン_納品', title: '営業パイプライン（納品）', conditions: exportConditions, dataAsOf: dateJst(today),
                     notes: ['判定: 提出日が期限より後の納品は「遅延提出（n日）」、未提出で期限を過ぎた納品は「納期超過（n日）」。']}}
                   renderDetail={(row) => (
@@ -167,7 +168,7 @@ export function PipelineBoard({request: requestProp}) {
                     ))}
                   </div>
                   <DataGrid columns={OPPORTUNITY_COLUMNS} rows={opportunities} rowKey="id" persistKey="sales-pipeline-opportunities"
-                    emptyText={stageFilter ? 'この条件に合う営業案件はありません。' : '営業案件はまだありません。作品の営業画面で登録します。'}
+                    emptyText="0件"
                     initialSort={{key: 'next_due_on', dir: 'asc'}}
                     exportSpec={{name: '営業パイプライン_営業案件', title: '営業パイプライン（営業案件）', dataAsOf: dateJst(today),
                       conditions: [...exportConditions, ['段階', STAGE_FILTERS.find((filter) => filter.id === stageFilter)?.label || 'すべて']],
@@ -191,14 +192,16 @@ export function PipelineBoard({request: requestProp}) {
   );
 }
 
-// 「商品・営業」の切替。workView には選択中の作品の営業画面（商品・配賦・営業案件・契約・納品）を渡す。
+// 「商品・営業」の切替。workView には選択中の作品の営業画面（商品・配賦・営業案件・契約・納品）を渡す。解禁月と提案の振り返りは営業管理（src/sales-ops/proposals/）。
 export function SalesViewSwitch({workView, workTitle, request}) {
   return (
     <Tabs urlKey="view" label="営業の表示" className="so-view-switch" tabs={[
       {id: 'work', label: workTitle ? `選択中の作品（${workTitle}）` : '選択中の作品'},
       {id: 'pipeline', label: '全作品のパイプライン'},
+      {id: 'launch', label: '解禁月'},
+      {id: 'proposals', label: '提案の振り返り'},
     ]}>
-      {(active) => (active === 'pipeline' ? <PipelineBoard request={request} /> : workView)}
+      {(active) => (active === 'pipeline' ? <PipelineBoard request={request} /> : active === 'launch' ? <LaunchMonth request={request} /> : active === 'proposals' ? <ProposalReview request={request} /> : workView)}
     </Tabs>
   );
 }

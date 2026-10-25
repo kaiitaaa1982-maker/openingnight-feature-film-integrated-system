@@ -254,7 +254,7 @@
   "src/royalty/royalty-model.mjs": 1
  },
  "rateFormula": {
-  "src/app.mjs": 3,
+  "src/app.mjs": 1,
   "src/committee-finance.mjs": 1,
   "src/committee-joint.mjs": 1,
   "src/committee.mjs": 1,

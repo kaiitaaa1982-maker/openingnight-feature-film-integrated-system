@@ -40,6 +40,14 @@ erDiagram
     TEXT id_hash PK "セッションの鍵（ブラウザに渡す値）の SHA-256"
     INTEGER user_id FK "ログインした利用者（users）"
   }
+  source_document_moves {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER document_id FK "場所が動いた原本（同じ組織の source_documents）"
+  }
+  source_documents {
+    INTEGER id PK "行のID"
+  }
   transaction_guards {
   }
   users {
@@ -49,6 +57,7 @@ erDiagram
   memberships }o--|| users : "user_id"
   project_memberships }o--|| projects : "project_id"
   sessions }o--|| users : "user_id"
+  source_document_moves }o--|| source_documents : "document_id"
 ```
 
 主キーと参照の列だけを載せる。組織（organizations・memberships）への参照は省く。
@@ -66,6 +75,8 @@ erDiagram
 | [organizations](#organizations) | 組織 | システムを使う組織（データの持ち主）1つ。初期データや投入の手順で作り、画面からは作らない。 |
 | [project_memberships](#project_memberships) | 案件ごとの権限 | 管理者以外の利用者が、どの案件にどの権限で入れるか。管理者以外が案件を作ったときや、招待の参加を確定したときに作り、参加済みの招待を取り消すと消す |
 | [sessions](#sessions) | ログインのセッション | 手元の試作でログインしたときのセッション1件。ログインで作り、退出で消す。本番は Cloudflare Access で入るので使わない。 |
+| [source_document_moves](#source_document_moves) | 原本の場所の移動 | external 原本の場所の移動を追記する履歴。原本の行は変えない。最大のIDの移動先を現在地として読み、原本の最初の場所も残す。変更・削除・inline 原本の移動はDBが断る |
+| [source_documents](#source_documents) | 共通の原本 | 業務を問わず受け取った原本を1通1行で持つ（追加のみ。変更・削除は DB が断る）。同じ組織で同じ中身（SHA-256）は1行だけ。中身は元の大きさ 12MB まで inline（base64）で持ち、それより大きい映像などは external で名前・大きさ・ハッシュ・外の置き場の名前だけを持つ。業務の表は原本を持たず、この表の ID を指す結び付きの表を業務ごとに持つ |
 | [transaction_guards](#transaction_guards) | 書き込みの条件確認 | まとめて行う書き込みの途中で条件を確かめるための表。条件に合わないときに値0を入れて失敗させ、同じまとまりの書き込みをすべて取り消す。行は残らない。 |
 | [users](#users) | 利用者 | ログインする利用者1人。メールで本人を見分ける。招待の参加を確定したときや初期データで作る。 |
 
@@ -226,6 +237,65 @@ erDiagram
 表の制約:
 
 - 複合の参照: (org_id, user_id) → memberships(org_id, user_id)
+
+## source_document_moves
+
+**原本の場所の移動** — external 原本の場所の移動を追記する履歴。原本の行は変えない。最大のIDの移動先を現在地として読み、原本の最初の場所も残す。変更・削除・inline 原本の移動はDBが断る
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | document_id | INTEGER | 場所が動いた原本（同じ組織の source_documents） | 不可 | - | FK（複合）→ source_documents |
+| 4 | from_location | TEXT | 移動前の現在の場所（1〜500字） | 不可 | - | CHECK: length(from_location) BETWEEN 1 AND 500 |
+| 5 | to_location | TEXT | 移動先の場所（1〜500字。移動前と異なる） | 不可 | - | CHECK: length(to_location) BETWEEN 1 AND 500 |
+| 6 | moved_at | TEXT | 移動を記録した日時（UTC） | 不可 | 現在時刻 | - |
+| 7 | moved_by | INTEGER | 移動を記録した利用者（同じ組織の所属者） | 不可 | - | FK（複合）→ memberships |
+| 8 | reason | TEXT | 移動の理由（任意・500字まで） | 可 | - | CHECK: reason IS NULL OR length(reason)<=500 |
+
+表の制約:
+
+- 複合の参照: (org_id, moved_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, document_id) → source_documents(org_id, id)
+- CHECK: from_location<>to_location
+- 索引 source_document_moves_document: (org_id, document_id, id)
+- トリガー source_document_moves_external_only: 追加の前
+- トリガー source_document_moves_no_delete: 削除の前
+- トリガー source_document_moves_no_update: 更新の前
+
+## source_documents
+
+**共通の原本** — 業務を問わず受け取った原本を1通1行で持つ（追加のみ。変更・削除は DB が断る）。同じ組織で同じ中身（SHA-256）は1行だけ。中身は元の大きさ 12MB まで inline（base64）で持ち、それより大きい映像などは external で名前・大きさ・ハッシュ・外の置き場の名前だけを持つ。業務の表は原本を持たず、この表の ID を指す結び付きの表を業務ごとに持つ
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | kind | TEXT（列挙） | 原本の種類（売上報告書・契約書・見積・請求書・領収書・口座の明細・香盤・台本・予算書・企画書・納品ガイド・映像・画像・音声・その他） | 不可 | - | 値: sales_report / contract / estimate / invoice / receipt / bank_statement / schedule / script / budget / planning_deck / delivery_guide / media / image / audio / other |
+| 4 | file_name | TEXT | 受け取ったときのファイル名（1〜240字） | 不可 | - | CHECK: length(trim(file_name)) BETWEEN 1 AND 240 |
+| 5 | media_type | TEXT | 中身の形式（MIME。無ければ空） | 可 | - | CHECK: media_type IS NULL OR length(media_type) BETWEEN 1 AND 160 |
+| 6 | byte_length | INTEGER | 元の中身の大きさ（バイト） | 不可 | - | CHECK: typeof(byte_length)='integer' AND byte_length>0 |
+| 7 | sha256 | TEXT | 元の中身の SHA-256（16進64字・小文字。組織の中で一意） | 不可 | - | CHECK: length(sha256)=64 AND lower(sha256)=sha256 AND length(trim(sha256,'0123456789abcdef'))=0 |
+| 8 | storage | TEXT（列挙） | 中身の置き方（inline は表に base64 で持つ、external は外の置き場の名前だけ） | 不可 | - | 値: inline / external |
+| 9 | content_base64 | TEXT | inline のときの中身（base64。Worker では大きな値を R2 の層が R2 へ逃がす） | 可 | - | - |
+| 10 | external_location | TEXT | external のときの外の置き場の名前 | 可 | - | CHECK: external_location IS NULL OR length(trim(external_location)) BETWEEN 1 AND 500 |
+| 11 | received_on | TEXT | 受けた日（業務の基準日に使う YYYY-MM-DD。登録した時刻とは別） | 不可 | - | CHECK: length(received_on)=10 AND substr(received_on,5,1)='-' AND substr(received_on,8,1)='-' |
+| 12 | received_by | INTEGER | 受け取った利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 13 | legacy_table | TEXT（列挙） | 指している既存の原本の表（sales_source_files・expense_source_files・workflow_raw_artifacts。無ければ空） | 可 | - | 値: sales_source_files / expense_source_files / workflow_raw_artifacts |
+| 14 | legacy_id | INTEGER | 指している既存の原本の表の行の ID（legacy_table と組で持つ） | 可 | - | CHECK: legacy_id IS NULL OR (typeof(legacy_id)='integer' AND legacy_id>0) |
+| 15 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, sha256)
+- 複合の一意: (org_id, legacy_table, legacy_id)
+- 複合の参照: (org_id, received_by) → memberships(org_id, user_id)
+- CHECK: (storage='inline' AND content_base64 IS NOT NULL AND external_location IS NULL AND byte_length<=12582912) OR (storage='external' AND content_base64 IS NULL AND external_location IS NOT NULL)
+- CHECK: (legacy_table IS NULL AND legacy_id IS NULL) OR (legacy_table IS NOT NULL AND legacy_id IS NOT NULL)
+- 索引 source_documents_kind_received: (org_id, kind, received_on)
+- トリガー source_documents_no_delete: 削除の前
+- トリガー source_documents_no_update: 更新の前
 
 ## transaction_guards
 

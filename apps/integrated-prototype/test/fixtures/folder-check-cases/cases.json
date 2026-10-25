@@ -1,0 +1,228 @@
+{
+  "fictional": true,
+  "note": "架空の取引先と架空の金額だけ。実在の原本は入れない。skipRules は持っているが、この単位では適用しない。",
+  "types": [
+    {
+      "partnerName": "架空配信",
+      "kind": "digital",
+      "headerColumns": ["商品", "税抜", "税額", "税込"],
+      "moneyColumns": {"amountExTax": "税抜", "taxAmount": "税額", "amountIncTax": "税込"},
+      "splitByProduct": true,
+      "checks": [{"type": "difference", "left": "税込", "right": "税額", "result": "税抜"}],
+      "skipRules": [],
+      "cases": [
+        {
+          "origin": "normal",
+          "label": "ふつうの通",
+          "input": {
+            "source": {
+              "headers": ["商品", "税抜", "税額", "税込"],
+              "rows": [
+                {"sourceRow": 2, "values": {"商品": "A", "税抜": "1000", "税額": "100", "税込": "1100"}, "date": "2026-05-15", "month": "2026-05"},
+                {"sourceRow": 3, "values": {"商品": "B", "税抜": "2000", "税額": "200", "税込": "2200"}, "date": "2026-05-20", "month": "2026-05"}
+              ]
+            },
+            "planned": {
+              "lines": [
+                {"sourceRow": 2, "workId": 10, "productId": 100, "partnerId": 7, "amountExTax": 1000, "taxAmount": 100, "amountIncTax": 1100},
+                {"sourceRow": 3, "workId": 10, "productId": 101, "partnerId": 7, "amountExTax": 2000, "taxAmount": 200, "amountIncTax": 2200}
+              ],
+              "excluded": []
+            },
+            "terms": {"partnerId": 7, "kind": "digital", "periodFrom": "2026-05-01", "periodTo": "2026-05-31", "declared": null},
+            "expected": {"targetMonth": "2026-05"},
+            "roundTrip": {
+              "headers": ["商品", "税抜", "税額", "税込"],
+              "rows": [
+                {"sourceRow": 2, "values": {"商品": "A", "税抜": "1000", "税額": "100", "税込": "1100"}},
+                {"sourceRow": 3, "values": {"商品": "B", "税抜": "2000", "税額": "200", "税込": "2200"}}
+              ]
+            },
+            "activeReports": []
+          },
+          "expected": {"row_count": true, "totals": true, "period": true, "linkage": true, "round_trip": true, "arithmetic": true, "overlap": true}
+        },
+        {
+          "origin": "fractional",
+          "label": "端数のある通",
+          "input": {
+            "source": {
+              "headers": ["商品", "税抜", "税額", "税込"],
+              "rows": [
+                {"sourceRow": 2, "values": {"商品": "A", "税抜": "1001", "税額": "100", "税込": "1101"}, "date": "2026-05-15", "month": "2026-05"},
+                {"sourceRow": 3, "values": {"商品": "B", "税抜": "2003", "税額": "200", "税込": "2203"}, "date": "2026-05-31", "month": "2026-05"}
+              ]
+            },
+            "planned": {
+              "lines": [
+                {"sourceRow": 2, "workId": 10, "productId": 100, "partnerId": 7, "amountExTax": 1001, "taxAmount": 100, "amountIncTax": 1101},
+                {"sourceRow": 3, "workId": 10, "productId": 101, "partnerId": 7, "amountExTax": 2003, "taxAmount": 200, "amountIncTax": 2203}
+              ],
+              "excluded": []
+            },
+            "terms": {"partnerId": 7, "kind": "digital", "periodFrom": "2026-05-01", "periodTo": "2026-05-31", "declared": null},
+            "expected": {"targetMonth": "2026-05"},
+            "roundTrip": {
+              "headers": ["商品", "税抜", "税額", "税込"],
+              "rows": [
+                {"sourceRow": 2, "values": {"商品": "A", "税抜": "1001", "税額": "100", "税込": "1101"}},
+                {"sourceRow": 3, "values": {"商品": "B", "税抜": "2003", "税額": "200", "税込": "2203"}}
+              ]
+            },
+            "activeReports": []
+          },
+          "expected": {"row_count": true, "totals": true, "period": true, "linkage": true, "round_trip": true, "arithmetic": true, "overlap": true}
+        },
+        {
+          "origin": "excluded",
+          "label": "取り込まない行のある通",
+          "input": {
+            "source": {
+              "headers": ["商品", "税抜", "税額", "税込"],
+              "rows": [
+                {"sourceRow": 2, "values": {"商品": "A", "税抜": "1000", "税額": "100", "税込": "1100"}, "date": "2026-05-15", "month": "2026-05"},
+                {"sourceRow": 3, "values": {"商品": "B", "税抜": "2000", "税額": "200", "税込": "2200"}, "date": "2026-05-20", "month": "2026-05"},
+                {"sourceRow": 4, "values": {"商品": "C", "税抜": "500", "税額": "50", "税込": "550"}, "date": "2026-05-21", "month": "2026-05"}
+              ]
+            },
+            "planned": {
+              "lines": [
+                {"sourceRow": 2, "workId": 10, "productId": 100, "partnerId": 7, "amountExTax": 1000, "taxAmount": 100, "amountIncTax": 1100},
+                {"sourceRow": 3, "workId": 10, "productId": 101, "partnerId": 7, "amountExTax": 2000, "taxAmount": 200, "amountIncTax": 2200}
+              ],
+              "excluded": [{"sourceRow": 4, "reason": "返品のため取り込まない"}]
+            },
+            "terms": {"partnerId": 7, "kind": "digital", "periodFrom": "2026-05-01", "periodTo": "2026-05-31", "declared": null},
+            "expected": {"targetMonth": "2026-05"},
+            "roundTrip": {
+              "headers": ["商品", "税抜", "税額", "税込"],
+              "rows": [
+                {"sourceRow": 2, "values": {"商品": "A", "税抜": "1000", "税額": "100", "税込": "1100"}},
+                {"sourceRow": 3, "values": {"商品": "B", "税抜": "2000", "税額": "200", "税込": "2200"}},
+                {"sourceRow": 4, "values": {"商品": "C", "税抜": "500", "税額": "50", "税込": "550"}}
+              ]
+            },
+            "activeReports": []
+          },
+          "expected": {"row_count": true, "totals": true, "period": true, "linkage": true, "round_trip": true, "arithmetic": true, "overlap": true}
+        }
+      ]
+    },
+    {
+      "partnerName": "架空ストア",
+      "kind": "package",
+      "headerColumns": ["商品", "税抜", "税額", "税込"],
+      "moneyColumns": {"amountExTax": "税抜", "taxAmount": "税額", "amountIncTax": "税込"},
+      "splitByProduct": true,
+      "checks": [{"type": "product", "left": "税抜", "right": "税額", "result": "税込"}],
+      "skipRules": [{"note": "形は未定。この配列は正答率に使わない"}],
+      "cases": [
+        {
+          "origin": "normal",
+          "label": "ふつうの通",
+          "input": {
+            "source": {
+              "headers": ["商品", "税抜", "税額", "税込"],
+              "rows": [
+                {"sourceRow": 2, "values": {"商品": "A", "税抜": "1000", "税額": "100", "税込": "1100"}, "date": "2026-05-15", "month": "2026-05"},
+                {"sourceRow": 3, "values": {"商品": "B", "税抜": "2000", "税額": "200", "税込": "2200"}, "date": "2026-05-20", "month": "2026-05"}
+              ]
+            },
+            "planned": {
+              "lines": [
+                {"sourceRow": 2, "workId": 10, "productId": 100, "partnerId": 7, "amountExTax": 1000, "taxAmount": 100, "amountIncTax": 1100},
+                {"sourceRow": 3, "workId": 10, "productId": 101, "partnerId": 7, "amountExTax": 2000, "taxAmount": 200, "amountIncTax": 2200}
+              ],
+              "excluded": []
+            },
+            "terms": {"partnerId": 7, "kind": "package", "periodFrom": "2026-05-01", "periodTo": "2026-05-31", "declared": null},
+            "expected": {"targetMonth": "2026-05"},
+            "roundTrip": {
+              "headers": ["商品", "税抜", "税額", "税込"],
+              "rows": [
+                {"sourceRow": 2, "values": {"商品": "A", "税抜": "1000", "税額": "100", "税込": "1100"}},
+                {"sourceRow": 3, "values": {"商品": "B", "税抜": "2000", "税額": "200", "税込": "2200"}}
+              ]
+            },
+            "activeReports": []
+          },
+          "expected": {"row_count": true, "totals": true, "period": true, "linkage": true, "round_trip": true, "arithmetic": true, "overlap": true}
+        },
+        {
+          "origin": "fractional",
+          "label": "端数のある通",
+          "input": {
+            "source": {
+              "headers": ["商品", "税抜", "税額", "税込"],
+              "rows": [
+                {"sourceRow": 2, "values": {"商品": "A", "税抜": "1001", "税額": "100", "税込": "1101"}, "date": "2026-05-15", "month": "2026-05"},
+                {"sourceRow": 3, "values": {"商品": "B", "税抜": "2003", "税額": "200", "税込": "2203"}, "date": "2026-05-31", "month": "2026-05"}
+              ]
+            },
+            "planned": {
+              "lines": [
+                {"sourceRow": 2, "workId": 10, "productId": 100, "partnerId": 7, "amountExTax": 1001, "taxAmount": 100, "amountIncTax": 1101},
+                {"sourceRow": 3, "workId": 10, "productId": 101, "partnerId": 7, "amountExTax": 2003, "taxAmount": 200, "amountIncTax": 2203}
+              ],
+              "excluded": []
+            },
+            "terms": {"partnerId": 7, "kind": "package", "periodFrom": "2026-05-01", "periodTo": "2026-05-31", "declared": null},
+            "expected": {"targetMonth": "2026-05"},
+            "roundTrip": {
+              "headers": ["商品", "税抜", "税額", "税込"],
+              "rows": [
+                {"sourceRow": 2, "values": {"商品": "A", "税抜": "1001", "税額": "100", "税込": "1101"}},
+                {"sourceRow": 3, "values": {"商品": "B", "税抜": "2003", "税額": "200", "税込": "2203"}}
+              ]
+            },
+            "activeReports": []
+          },
+          "expected": {"row_count": true, "totals": true, "period": true, "linkage": true, "round_trip": true, "arithmetic": true, "overlap": true}
+        },
+        {
+          "origin": "excluded",
+          "label": "取り込まない行のある通",
+          "input": {
+            "source": {
+              "headers": ["商品", "税抜", "税額", "税込"],
+              "rows": [
+                {"sourceRow": 2, "values": {"商品": "A", "税抜": "1000", "税額": "100", "税込": "1100"}, "date": "2026-05-15", "month": "2026-05"},
+                {"sourceRow": 3, "values": {"商品": "B", "税抜": "2000", "税額": "200", "税込": "2200"}, "date": "2026-05-20", "month": "2026-05"},
+                {"sourceRow": 4, "values": {"商品": "C", "税抜": "500", "税額": "50", "税込": "550"}, "date": "2026-05-21", "month": "2026-05"}
+              ]
+            },
+            "planned": {
+              "lines": [
+                {"sourceRow": 2, "workId": 10, "productId": 100, "partnerId": 7, "amountExTax": 1000, "taxAmount": 100, "amountIncTax": 1100},
+                {"sourceRow": 3, "workId": 10, "productId": 101, "partnerId": 7, "amountExTax": 2000, "taxAmount": 200, "amountIncTax": 2200}
+              ],
+              "excluded": [{"sourceRow": 4, "reason": "返品のため取り込まない"}]
+            },
+            "terms": {"partnerId": 7, "kind": "package", "periodFrom": "2026-05-01", "periodTo": "2026-05-31", "declared": null},
+            "expected": {"targetMonth": "2026-05"},
+            "roundTrip": {
+              "headers": ["商品", "税抜", "税額", "税込"],
+              "rows": [
+                {"sourceRow": 2, "values": {"商品": "A", "税抜": "1000", "税額": "100", "税込": "1100"}},
+                {"sourceRow": 3, "values": {"商品": "B", "税抜": "2000", "税額": "200", "税込": "2200"}},
+                {"sourceRow": 4, "values": {"商品": "C", "税抜": "500", "税額": "50", "税込": "550"}}
+              ]
+            },
+            "activeReports": []
+          },
+          "expected": {"row_count": true, "totals": true, "period": true, "linkage": true, "round_trip": true, "arithmetic": true, "overlap": true}
+        }
+      ]
+    },
+    {
+      "partnerName": "架空シネマ",
+      "kind": "theatrical",
+      "headerColumns": ["商品", "税抜", "税額", "税込"],
+      "moneyColumns": {"amountExTax": "税抜", "taxAmount": "税額", "amountIncTax": "税込"},
+      "splitByProduct": false,
+      "checks": [],
+      "skipRules": [],
+      "cases": []
+    }
+  ]
+}

@@ -124,10 +124,13 @@ const NOT_MONEY = new Map([
   ['src/IncomeDashboard.jsx', {floatLiteral: 2}],        // グラフの棒の位置
   ['src/import/header-detect.mjs', {floatLiteral: 2, roundScaled: 1}], // 見出し行の推定の点数
   ['src/main.jsx', {floatLiteral: 1}],                   // 時刻（分をミリ秒に）
+  ['src/production/post/PostProduction.jsx', {roundScaled: 1, roundBare: 1}], // ポスプロの TC（秒を時:分:秒に）と工程の進み具合の％
+  ['src/production/post/post-model.mjs', {roundBare: 1}], // ポスプロの TC（秒を時:分:秒に）
   ['src/production-plans.mjs', {roundScaled: 2}],        // 見取り図の座標と線幅（0〜1 の値を小数4桁に）
   ['src/ProductionLocationPlan.jsx', {roundScaled: 1}],  // 見取り図の座標（同上）
   ['src/reporting.mjs', {floatLiteral: 1}],              // 時刻（日本時間へ9時間ずらす）
   ['src/reports/scroll-follow.mjs', {parseFloat: 1}],    // CSS の scroll-margin-top
+  ['src/revenue/scenario/scenario-model.mjs', {roundScaled: 1}], // 確率（0〜1 の Float64。金額ではない）を出すときに bp へ half_up（計画の「確率」。分布の金額は money-scenario.mjs の BigInt）
   ['src/shell/unsaved.mjs', {roundBare: 1}],             // 未保存の件数
   ['src/work/production-print.mjs', {roundBare: 1}],     // 台本の頁（1/8頁単位）
 ]);

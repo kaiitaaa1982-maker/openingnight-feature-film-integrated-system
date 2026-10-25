@@ -16,6 +16,7 @@ import {toCsv} from '../src/csv.mjs';
 import {seedSalesDemo, SALES_DEMO, DEMO_CLASSIFY_REASON, DEMO_DISTRIBUTION} from '../scripts/seed-sales-demo.mjs';
 import {reclassifyDemoSalesDistribution, RECLASSIFY_REASON} from '../scripts/seed-sales-distribution.mjs';
 import {seedAllDemo, recordingDatabase, businessBatches, d1LimitViolations, tableCounts, countDifferences, checkDemoApis} from '../scripts/seed-all-demo.mjs';
+import {insertPreIntegrationCatalog} from '../scripts/sales-sheet-grain-fixtures.mjs';
 
 const FIXTURE_ADMIN = 'admin@openingnight.invalid';
 // 付け替えで分類の区分が変わってはいけない（独立に書いた対応。旧区分 → ロイヤリティ・委員会の区分、流通ID → 区分）
@@ -112,9 +113,13 @@ async function snapshot() {
 }
 
 before(async (t) => {
-  // 2026-09-25 の本番の形: 売上は旧区分で分類。営業基幹・番販・PL・BS も入れる（制作の台本は売上に関わらないので入れない）
+  // 2026-09-25 の本番の形: 売上は旧区分で分類。営業基幹・番販・PL・BS も入れる（制作の台本は売上に関わらないので入れない）。
+  // 売上集計シートは列の辞書の統合（plans/2026-10-09-sheet-columns-by-grain.md）の前に採用した形（統合前の初期の列。追加の列は営業基幹の seed が入れる）
   legacyDb = await openTestDb({t});
   await seedSalesDemo(legacyDb, {legacyDistribution: true});
+  const demoOrg = await legacyDb.get('SELECT id FROM organizations WHERE code=?', [SALES_DEMO.orgCode]);
+  const demoAdmin = await legacyDb.get('SELECT id FROM users WHERE email=?', [SALES_DEMO.adminEmail]);
+  await insertPreIntegrationCatalog(legacyDb, Number(demoOrg.id), Number(demoAdmin.id), {reason: '統合前に採用した初期の列（架空データ・2026-09-25 の形）'});
   await seedAllDemo(legacyDb, {only: ['eigyo', 'broadcast', 'plbs']});
   app = createApp({db: legacyDb, mode: 'local'});
   orgId = (await legacyDb.get('SELECT id FROM organizations WHERE code=?', [SALES_DEMO.orgCode])).id;
@@ -251,7 +256,9 @@ test('売上集計シート: 金額の列の合計は同じ。流通ID列は流�
     const b = before1.sheet[from], a = after1.sheet[from];
     assert.equal(a.total, b.total);
     for (const key of amountKeys) assert.equal(a.totals[key], b.totals[key], `${from} ${key}`);
-    for (const key of Object.keys(b.totals).filter((k) => !blocks.includes(k) && !derivedOfBlocks.has(k) && k !== 'distribution_code' && k !== 'ref_transaction_method' && k !== 'ref_distribution_name' && k !== 'ref_sales_type')) {
+    // 区分の表示（流通ID・流通名・取引方法・販売種別と、全列に入った追加の列の 流通分類の版・精算方式）は付け替えで変わる
+    const display = ['distribution_code', 'ref_transaction_method', 'ref_distribution_name', 'ref_sales_type', 'distribution_version', 'settlement_method'];
+    for (const key of Object.keys(b.totals).filter((k) => !blocks.includes(k) && !derivedOfBlocks.has(k) && !display.includes(k))) {
       assert.deepEqual(a.totals[key], b.totals[key], `${from} ${key}`);
     }
     // 当社売上の5つの列: 付け替えの前は レンタルが RS、海外がどの列にも入らなかった。後は レンタルが レンタル（RSS）、海外が 定額（A001）・最低保証（A003）

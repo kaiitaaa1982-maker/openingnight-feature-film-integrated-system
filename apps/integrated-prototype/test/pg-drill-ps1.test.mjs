@@ -31,6 +31,7 @@ import {PgDatabase} from '../src/data-platform/pg-db.mjs';
 import {exportPgDatabase, sha256} from '../src/data-platform/pg-export-store.mjs';
 import {restorePgDatabase} from '../src/data-platform/pg-restore-store.mjs';
 import {directoryBucket} from '../../../scripts/ops/pg-restore.mjs';
+import {removeStaleTestContainers} from './docker-test-containers.mjs';
 
 const APP = resolve(import.meta.dirname, '..');
 const F_PS1 = join(APP, 'scripts', 'pg-drill-restore.ps1');
@@ -52,6 +53,8 @@ const image = docker && spawnSync('docker', ['image', 'inspect', '--format', '{{
 const SKIP = !powershell ? 'Windows PowerShell 5.1（powershell.exe）が無い環境（CI の WSL など）'
   : !docker ? 'Docker が無いか20秒のうちに応えない環境'
     : !image ? `${IMAGE} の像が手元に無い（docker pull ${IMAGE} のあとに流す）` : false;
+// 前の回が途中で殺されて残したコンテナ（名前の pid のプロセスがもう無いもの）を、始めに片づける
+if (!SKIP) removeStaleTestContainers();
 
 const cleanups = [];
 after(async () => { for (const step of cleanups.reverse()) await step(); });
@@ -303,7 +306,19 @@ function global:Read-Host {
     if ($global:fakeConfig.sleepAt -and ([string]$Prompt).Contains([string]$global:fakeConfig.sleepAt)) { Start-Sleep -Seconds ([int]$global:fakeConfig.sleepSeconds) }
     if ($global:fakeAnswers.Count -eq 0) { return $null }
     $next = $global:fakeAnswers.Dequeue()
-    if ($AsSecureString) { return (ConvertTo-SecureString $next -AsPlainText -Force) }
+    if ($AsSecureString) {
+        try {
+            $secret = New-Object System.Security.SecureString
+            foreach ($character in $next.ToCharArray()) { $secret.AppendChar($character) }
+            $secret.MakeReadOnly()
+            return $secret
+        }
+        catch {
+            $failure = @{ conversionFailure = $_.Exception.GetType().FullName; remaining = $global:fakeAnswers.Count } | ConvertTo-Json -Compress
+            [IO.File]::AppendAllText($global:fakeConfig.log, $failure + [Environment]::NewLine, (New-Object System.Text.UTF8Encoding($false)))
+            throw
+        }
+    }
     return $next
 }
 $splat = @{}
@@ -334,7 +349,7 @@ function runPs1Console(t, script, params, {answers = [], env = {}, pathPrefix = 
     child.on('close', (code) => {
       const stdout = existsSync(files.out) ? readFileSync(files.out).toString('utf16le').replace(/^﻿/, '').replace(/\r\n/g, '\n') : '';
       const prompts = readFileSync(files.log, 'utf8').split(/\r?\n/).filter(Boolean).map((line) => JSON.parse(line));
-      done({code, stdout, output: stdout, prompts});
+      done({code, stdout, output: stdout + '\n' + JSON.stringify(prompts.filter((p) => p.conversionFailure)), prompts});
     });
   });
 }

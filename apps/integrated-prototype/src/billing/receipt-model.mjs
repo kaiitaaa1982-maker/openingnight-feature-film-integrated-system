@@ -4,6 +4,7 @@
 // - 既定の消込額 = min(入金の未充当, 請求の未消込)。利用者が消込額を直した請求はその額を保つ（触るまでは既定に追従）。
 // - 二重登録の検出: 同じ取引先・入金日・金額・参照番号の有効な入金があれば警告し、理由がなければ登録へ進ませない。
 // - サーバー（POST /api/billing/receipts）の条件に合わせる: 消込先は10請求まで、消込合計＝入金額、請求日≦入金日。
+//   未消込は入金日の時点で数える（入金日より後の日付の取消はまだ効いていない。DB のトリガー billing_receipt_allocation_validate と同じ）。
 // node:* を使わない（ブラウザ・Node・Worker で同じに動く）。
 import {parseYen, formatNumberInput, isBlankInput} from '../ui/parse-input.mjs';
 import {labelOf} from '../ui/labels.mjs';
@@ -34,10 +35,11 @@ export function daysBetween(from, to) {
 }
 
 // 請求1件を共通の形に直す。allocated は取消していない入金の消込額の合計（入金日を問わない）。
-export function normalizeInvoice(row) {
+// asOf を渡すと、取消日が asOf より後の入金はまだ取り消されていないとして数える（入金日 asOf の入金を登録するときの未消込）。
+export function normalizeInvoice(row, {asOf = OPEN_BALANCE_AS_OF} = {}) {
   const events = Array.isArray(row?.events) ? row.events : Array.isArray(row?.receipts) ? row.receipts : [];
   const amount = toInt(row?.amount_inc_tax ?? row?.amount ?? 0);
-  const allocated = events.filter((event) => !event.reversed_on).reduce((sum, event) => sum + toInt(event.amount_yen), 0);
+  const allocated = events.filter((event) => !event.reversed_on || event.reversed_on > asOf).reduce((sum, event) => sum + toInt(event.amount_yen), 0);
   const isVoid = row?.status === 'void' || Boolean(row?.voided_on) || Boolean(row?.isVoid);
   const dueDate = row?.due_date ?? row?.dueDate ?? '';
   return {
@@ -58,10 +60,11 @@ export function normalizeInvoice(row) {
 const byDue = (a, b) => (a.plannedDate || '').localeCompare(b.plannedDate || '') || (a.invoiceDate || '').localeCompare(b.invoiceDate || '') || a.invoiceId - b.invoiceId;
 
 // 消し込める請求（取消済みでなく、未消込が残るもの）。期日の古い順。
-// receivedOn を渡すと、請求日が入金日より後の請求は eligible=false と理由を付ける（サーバーが拒否するため）。
+// receivedOn を渡すと、未消込をその入金日の時点で数え、請求日が入金日より後の請求は eligible=false と理由を付ける（サーバーが拒否するため）。
 export function receiptCandidates(rows, {partnerId = null, receivedOn = ''} = {}) {
   const partner = partnerId === null || partnerId === undefined || partnerId === '' ? null : toInt(partnerId);
-  return (Array.isArray(rows) ? rows : []).map(normalizeInvoice)
+  const asOf = receivedOn || OPEN_BALANCE_AS_OF;
+  return (Array.isArray(rows) ? rows : []).map((row) => normalizeInvoice(row, {asOf}))
     .filter((invoice) => !invoice.isVoid && invoice.open > 0 && (partner === null || invoice.partnerId === partner))
     .map((invoice) => {
       const eligible = !receivedOn || !invoice.invoiceDate || invoice.invoiceDate <= receivedOn;

@@ -1,10 +1,15 @@
+// 売上集計シートの追加の列（互換の入口 adopt-additional）と、追加の列の値の読み方の試験。
+// この組織は「統合前に初期の列だけを採用した組織」（統合前の初期の列を fixture の catalog-v1.json から版1で入れる。採用の入口は辞書の v2 を入れるため）。
+// 列セット名 additional・all_plus は全列の別名（会社ルートの plans/2026-10-09-sheet-columns-by-grain.md の決定ログ）。CSV は全列（列の並び順）で、
+// 最後に adopt-v2 で辞書の v2 にそろえると、CSV は辞書の順になる
 import test, {before, after} from 'node:test';
 import assert from 'node:assert/strict';
 import {openTestDb} from './test-db.mjs';
 import {createApp} from '../src/app.mjs';
 import {toCsv, parseCsv} from '../src/csv.mjs';
 import {decodeXlsx} from '../src/xlsx.mjs';
-import {INITIAL_SHEET_COLUMNS, ADDITIONAL_SHEET_COLUMNS, ADDITIONAL_KEYS} from '../src/sales-sheet/column-registry.mjs';
+import {SHEET_COLUMNS, ADDITIONAL_KEYS} from '../src/sales-sheet/column-registry.mjs';
+import {insertPreIntegrationCatalog} from '../scripts/sales-sheet-grain-fixtures.mjs';
 
 let db, app, admin, editor, production, beforeCatalog, beforeEditorCatalog, beforeAdditionalSheets, beforeCsv, afterCsv, savedView;
 const ids = {};
@@ -32,7 +37,18 @@ async function importOne(key, kind, extra = {}) {
   await ok('/imports/commit', {token: preview.token});
   return db.get('SELECT s.id,s.report_id FROM sale_lines s JOIN report_imports r ON r.org_id=s.org_id AND r.id=s.report_id WHERE r.report_key=? AND r.status=?', [key, 'active']);
 }
-const additionalRows = async (suffix = '') => (await ok(`/sales-sheet?set=additional&hideEmpty=0&q=DEMO-REQ5-${suffix}`)).rows;
+const additionalRows = async (suffix = '') => (await ok(`/sales-sheet?columns=${ADDITIONAL_KEYS.join(',')}&hideEmpty=0&q=DEMO-REQ5-${suffix}`)).rows;
+const allSetOf = (catalog) => catalog.sets.find((set) => set.key === 'all').columns;
+const csvColumns = (text) => {
+  const rows = parseCsv(text.replace(/^\uFEFF/, ''));
+  return {headers: Object.keys(rows[0].values), rows};
+};
+// 統合前に初期の列だけを採用した組織にする（統合前の採用と同じ形で版1を入れる）
+async function adoptPreIntegration(database) {
+  const user = await database.get("SELECT id FROM users WHERE email='admin@openingnight.invalid'");
+  return insertPreIntegrationCatalog(database, 1, Number(user.id), {reason: '統合前に採用した初期の列（架空）'});
+}
+let v1Count;
 
 before(async (t) => {
   db = await openTestDb({t});
@@ -41,7 +57,7 @@ before(async (t) => {
   editor = await login('editor@openingnight.invalid');
   production = await login('production@openingnight.invalid');
   assert.equal((await admin('/sales-sheet/columns/adopt-additional', {reason: '前提確認（架空）'})).status, 409);
-  await ok('/sales-sheet/columns/adopt', {reason: '互換列を採用（架空）'}, 201);
+  v1Count = await adoptPreIntegration(db);
   ids.digital = await importOne('DEMO-REQ5-DIGITAL', 'digital', {digital_model: 'svod', service_code: 'DEMO-SERVICE', view_count: 100, holder_unit_price_ex_tax: 12,
     reported_actual_ex_tax: 2500, reported_recognized_ex_tax: 1200, calculated_actual_ex_tax: 1200});
   ids.package = await importOne('DEMO-REQ5-PACKAGE', 'package', {package_model: 'rental', turns_count: 8, average_rental_price_ex_tax: 200, holder_unit_price_ex_tax: 150,
@@ -66,20 +82,22 @@ before(async (t) => {
 });
 after(() => db?.close());
 
-test('83列だけ採用済み: 追加の未採用一覧と依頼先を返し、採用後は追加28列・全列＋追加111列が出る', async () => {
+test('統合前に初期の列だけ採用済み: 追加の未採用一覧と依頼先を返し、採用後は追加の列が全列（additional・all_plus はその別名）に入る', async () => {
   assert.equal(beforeCatalog.adopted, true);
-  assert.equal(beforeCatalog.additionalPending, 28);
+  assert.equal(beforeCatalog.additionalPending, ADDITIONAL_KEYS.length);
   assert.deepEqual(beforeCatalog.additionalColumns.map((c) => c.key), ADDITIONAL_KEYS);
   assert.deepEqual(beforeCatalog.admins, []);
   assert.deepEqual(beforeEditorCatalog.admins, ['管理者']);
   assert.equal(beforeEditorCatalog.canAdmin, false);
+  const afterCatalog = await ok('/sales-sheet/columns');
+  assert.deepEqual(allSetOf(afterCatalog), [...allSetOf(beforeCatalog), ...ADDITIONAL_KEYS], '追加の列は全列の後ろに入る（並び順 2000〜）');
   for (const [i, set] of ['additional', 'all_plus'].entries()) {
     const before = beforeAdditionalSheets[i];
-    assert.equal(before.selected.length, i ? 83 : 0);
-    assert.equal(before.columns.length, i ? 83 : 0);
+    assert.deepEqual(before.selected, allSetOf(beforeCatalog), `採用前の ${set} は全列`);
+    assert.equal(before.columns.length, allSetOf(beforeCatalog).length);
     const after = await ok(`/sales-sheet?set=${set}&hideEmpty=0`);
-    assert.equal(after.selected.length, i ? 111 : 28);
-    assert.equal(after.columns.length, i ? 111 : 28);
+    assert.deepEqual(after.selected, allSetOf(afterCatalog), `採用後の ${set} は全列`);
+    assert.equal(after.columns.length, allSetOf(afterCatalog).length);
     assert.ok(after.rows.length > 0);
     assert.ok(after.columns.some((c) => c.key === 'sales_period_to'));
   }
@@ -88,17 +106,22 @@ test('83列だけ採用済み: 追加の未採用一覧と依頼先を返し、�
   assert.equal(adopted.admins, undefined);
 });
 
-test('追加採用は既存83列・既存セット・保存した形を変更せず、83列CSVがバイト単位で一致する', async () => {
+test('追加採用は既存の列・7組の列セット・保存した形を変更せず、CSV は全列で、採用前の列の値は列ごとに同じ', async () => {
   const catalog = await ok('/sales-sheet/columns');
-  assert.equal(catalog.columns.length, 131);
+  assert.equal(catalog.columns.length, v1Count + ADDITIONAL_KEYS.length);
   assert.deepEqual(catalog.columns.filter((c) => beforeCatalog.columns.some((b) => b.key === c.key)), beforeCatalog.columns);
-  for (const set of beforeCatalog.sets.filter((s) => !['additional', 'all_plus'].includes(s.key))) assert.deepEqual(catalog.sets.find((s) => s.key === set.key), set);
-  assert.equal(afterCsv, beforeCsv);
-  assert.equal(Object.keys(parseCsv(afterCsv)[0].values).length, 83);
+  for (const set of beforeCatalog.sets.filter((s) => !['additional', 'all_plus', 'all'].includes(s.key))) assert.deepEqual(catalog.sets.find((s) => s.key === set.key), set);
+  // CSV（export.csv）は全列。追加の列を採用すると後ろに追加の列が増え、採用前の列の値は行ごとに同じ（並び・値を変えない）
+  const before = csvColumns(beforeCsv), afterAll = csvColumns(afterCsv);
+  const labelOf = new Map(catalog.columns.map((c) => [c.key, c.label]));
+  assert.deepEqual(before.headers, allSetOf(beforeCatalog).map((key) => labelOf.get(key)));
+  assert.deepEqual(afterAll.headers, allSetOf(catalog).map((key) => labelOf.get(key)));
+  assert.deepEqual(afterAll.headers.slice(0, before.headers.length), before.headers);
+  assert.equal(afterAll.rows.length, before.rows.length);
+  afterAll.rows.forEach((row, n) => assert.deepEqual(Object.fromEntries(before.headers.map((h) => [h, row.values[h]])), before.rows[n].values, `${n + 1}行目`));
   const views = await ok('/sales-sheet/views');
   assert.deepEqual(views.views.find((v) => v.id === savedView.id).definition.columns, ['work_code', 'amount_ex_tax', 'tax_amount']);
-  assert.deepEqual(catalog.sets.find((s) => s.key === 'additional').columns, ADDITIONAL_KEYS);
-  assert.deepEqual(catalog.sets.find((s) => s.key === 'all_plus').columns, [...INITIAL_SHEET_COLUMNS.filter((c) => c.legacy_position).map((c) => c.column_key), ...ADDITIONAL_KEYS]);
+  for (const key of ['additional', 'all_plus']) assert.deepEqual(catalog.sets.find((s) => s.key === key).columns, allSetOf(catalog), `${key} は全列の別名`);
 });
 
 test('追加採用は管理者・理由必須で監査に残り、再採用しても版を増やさない', async () => {
@@ -112,7 +135,7 @@ test('追加採用は管理者・理由必須で監査に残り、再採用し�
   const audit = await db.all("SELECT detail_json FROM audit_log WHERE entity_type='sales_sheet_column' AND action='adopt'");
   const additional = audit.map((r) => JSON.parse(r.detail_json)).filter((r) => r.template === 'sales-sheet-additional-v1');
   assert.equal(additional.length, 1);
-  assert.equal(additional[0].columns, 28);
+  assert.equal(additional[0].columns, ADDITIONAL_KEYS.length);
   assert.equal((await ok('/sales-sheet/columns')).additionalPending, 0);
 });
 
@@ -170,8 +193,9 @@ test('未登録はNULL、原数量と税額の0は0。追加金額・数量を�
   assert.equal((await admin('/sales-sheet/values', {reason: '参照値の変更禁止（架空）', changes: [{saleId: ids.digital.id, columnKey: 'raw_quantity', baseVersion: 0, value: 99}]})).status, 400);
 });
 
-test('追加と全列＋追加がCSV・Excelの見出し・明細・条件定義に反映される', async () => {
-  for (const [set, count] of [['additional', 28], ['all_plus', 111]]) {
+test('追加と全列＋追加（どちらも全列の別名）がCSV・Excelの見出し・明細・条件定義に反映される', async () => {
+  const count = allSetOf(await ok('/sales-sheet/columns')).length;
+  for (const set of ['additional', 'all_plus']) {
     const csv = parseCsv(await ok(`/sales-sheet/export-selected.csv?set=${set}&q=DEMO-REQ5-DIGITAL&hideEmpty=0`));
     assert.equal(Object.keys(csv[0].values).length, count);
     assert.equal(csv[0].values['販売期間末日'], '2026/05/29');
@@ -186,9 +210,9 @@ test('追加と全列＋追加がCSV・Excelの見出し・明細・条件定義
   }
 });
 
-test('追加列セットを保存して再現でき、定義一覧に型・意味・取得元が揃う', async () => {
+test('追加の列を保存して再現でき、定義一覧に型・意味・取得元が揃う', async () => {
   const catalog = await ok('/sales-sheet/columns');
-  const columns = catalog.sets.find((s) => s.key === 'additional').columns;
+  const columns = ADDITIONAL_KEYS;
   const view = await ok('/sales-sheet/views', {name: '根拠を確認する形（架空）', reason: '追加列保存（架空）', definition: {columns, grain: 'detail'}}, 201);
   const saved = (await ok('/sales-sheet/views')).views.find((v) => v.id === view.id);
   assert.deepEqual(saved.definition.columns, columns);
@@ -228,13 +252,13 @@ test('既存の独自列とキーが衝突すると、追加採用を全件止�
   const isolated = await openTestDb({t});
   try {
     const call = await login('admin@openingnight.invalid', createApp({db: isolated, mode: 'local'}));
-    assert.equal((await call('/sales-sheet/columns/adopt', {reason: '互換確認（架空）'})).status, 201);
+    const initial = await adoptPreIntegration(isolated);
     assert.equal((await call('/sales-sheet/columns', {columnKey: 'raw_quantity', label: '独自の数量（架空）', groupKey: 'custom', valueType: 'integer', aggregation: 'sum', reason: '既存定義（架空）'})).status, 201);
     const result = await call('/sales-sheet/columns/adopt-additional', {reason: '衝突確認（架空）'});
     assert.equal(result.status, 409);
     assert.match(result.body.error, /raw_quantity/);
     const catalog = (await call('/sales-sheet/columns')).body;
-    assert.equal(catalog.columns.length, 104);
+    assert.equal(catalog.columns.length, initial + 1);
     assert.equal(catalog.columns.find((c) => c.key === 'raw_quantity').sourceKind, 'attribute');
   } finally { await isolated.close(); }
 });
@@ -254,4 +278,30 @@ test('取込の来歴がある行には種類付きの追跡参照を出し、�
   const sale = await db.get('SELECT report_id FROM sale_lines WHERE id=?', [row.__id]);
   assert.equal(row.source_reference_id, `mapping:report:${sale.report_id}:version:${version.id}`);
   assert.equal(row.source_row_number, 2);
+});
+
+// 最後に流す（この組織を辞書の v2 にそろえる）。req5-sales-columns の「83列の CSV のバイト一致」は、辞書の順の CSV の固定に置き換えた
+test('adopt-v2 のあと、CSV（export.csv）は辞書の順の全列で、残す列の値は行ごとに採用前と同じ。辞書から外した列は CSV から抜ける', async () => {
+  const before = csvColumns(await ok('/sales-sheet/export.csv?q=DEMO-REQ5-'));
+  const beforeCatalog = await ok('/sales-sheet/columns');
+  const keyOfLabel = new Map(beforeCatalog.columns.map((c) => [c.label, c.key]));
+  const adopted = await ok('/sales-sheet/columns/adopt-v2', {reason: '辞書の v2 にそろえる（架空）'}, 201);
+  assert.deepEqual(adopted.kept.sort(), ['foreign_royalty_amount', 'royalty_amount_ex_tax', 'royalty_amount_inc_tax', 'royalty_tax_amount'], 'ロイヤリティ計上の額が売上と食い違う版があるので4列を残す');
+  const catalog = await ok('/sales-sheet/columns');
+  const used = new Map(catalog.columns.filter((c) => c.active).map((c) => [c.key, c]));
+  const dictionaryOrder = SHEET_COLUMNS.filter((column) => used.has(column.key) && !column.key.startsWith('h_')).map((column) => column.key);
+  assert.deepEqual(allSetOf(catalog), dictionaryOrder, '全列は辞書の順');
+  const text = await ok('/sales-sheet/export.csv?q=DEMO-REQ5-');
+  assert.equal(await ok('/sales-sheet/export.csv?q=DEMO-REQ5-'), text, '同じ条件の CSV はバイト単位で同じ');
+  const afterCsvBody = csvColumns(text);
+  assert.deepEqual(afterCsvBody.headers, dictionaryOrder.map((key) => used.get(key).label), '見出しは辞書の順');
+  const removed = new Set(SHEET_COLUMNS.filter((column) => column.removed).map((column) => column.key));
+  const labelAfter = new Map(catalog.columns.map((c) => [c.key, c.label]));
+  assert.deepEqual(before.headers.map((label) => keyOfLabel.get(label)).filter((key) => !used.has(key)).sort(), [...removed].filter((key) => !key.startsWith('h_')).sort(), '抜けるのは辞書から外した列だけ');
+  afterCsvBody.rows.forEach((row, n) => {
+    for (const label of before.headers) {
+      const key = keyOfLabel.get(label);
+      if (used.has(key)) assert.equal(row.values[labelAfter.get(key)], before.rows[n].values[label], `${n + 1}行目 ${key}`);
+    }
+  });
 });

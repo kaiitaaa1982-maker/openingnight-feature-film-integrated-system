@@ -2,6 +2,7 @@ import {isDbConflict} from '../data-platform/db-errors.mjs';
 import {adoptionPreview,adoptExpenseCategories} from '../expense-accounting/adoption.mjs';
 import {importService} from './import-service.mjs';
 import {registerSheetRoutes} from './sheet-routes.mjs';
+import {registerKeihiRoutes} from './keihi-routes.mjs';
 import {expenseChangeGuard} from '../expense-accounting/settlement-service.mjs';
 import {registerSettlementRoutes,allFinance} from '../expense-accounting/settlement-routes.mjs';
 import {loadSettlement,settlementProjection} from '../expense-accounting/settlement-model.mjs';
@@ -18,6 +19,7 @@ export function registerExpenseRoutes(app,deps){
  const admin=async i=>{await s.finance(i);if(i.role!=='admin')fail('会計の設定は管理者だけが変更できます',403);};
  registerSettlementRoutes(app,s,{wrap,input,identity});
  registerSheetRoutes(app,s,{wrap,input,identity});
+ registerKeihiRoutes(app,s,{wrap,input,identity});
  app.get('/api/expense-accounting/settings',wrap(async c=>{const i=identity(c);await s.finance(i);const settings={};for(const [key,spec] of Object.entries(ACCOUNTING_SPECS))settings[key]=await db.all(`SELECT v.*${spec.identity?',m.code':''} FROM ${spec.table} v ${spec.identity?`JOIN ${spec.identity} m ON m.org_id=v.org_id AND m.id=v.${spec.parent}`:''} WHERE v.org_id=? ORDER BY v.version_no`,[i.org_id]);return c.json({ok:true,settings,columnVersion:EXPENSE_COLUMN_VERSION,columnSets:EXPENSE_COLUMN_SETS});}));
  app.get('/api/expense-accounting/adoption-preview',wrap(async c=>{const i=identity(c);await admin(i);return c.json({ok:true,...await adoptionPreview(db,i.org_id)});}));
  app.post('/api/expense-accounting/adopt',wrap(async c=>{const i=identity(c);await admin(i);return c.json({ok:true,...await adoptExpenseCategories(s,i,await input(c))},201);}));

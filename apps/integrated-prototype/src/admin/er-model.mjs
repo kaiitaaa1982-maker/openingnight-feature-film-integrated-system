@@ -16,6 +16,62 @@ export const TABLE_LABELS = Object.freeze({
   org_profile_versions: '会社の法人情報（版）', gl_accounts: '勘定科目', gl_manual_amounts: 'PL・BSの手入力の額',
   expense_payments: '経費の出金', committee_investment_payments: '委員会への出資の払込',
   projects: '案件', works: '作品', products: '商品', product_works: '商品の作品配賦', partners: '取引先',
+  // 案件の型・稼ぎ方・段階（移行 0012。フェーズ1 #10）
+  earning_types: '稼ぎ方', action_steps: '行動のステップ', project_stages: '案件の段階', project_stage_meanings: '案件の段階の稼ぎ方ごとの意味',
+  project_stage_events: '案件の段階の履歴', earning_type_rate_versions: '稼ぎ方の既定の売上率（版）', cashflow_categories: '入出金の区分',
+  // 受託制作の契約の版（移行 0013。フェーズ1 #10b）
+  contract_production_versions: '受託制作の契約（版）', contract_production_milestones: '受託制作の契約の支払いの節目',
+  // 案件収支の予実の目標・計画の版と期間、行動の設定（移行 0014。フェーズ1 #11）
+  yojitsu_periods: '予実の期間', yojitsu_target_versions: '予実の目標（版）', yojitsu_plan_versions: '予実の計画（版）',
+  yojitsu_plan_amounts: '予実の計画の稼ぎ方別の額', plan_adoptions: '計画の採用の記録', yojitsu_variables: '予実の設定の変数',
+  yojitsu_setting_versions: '予実の設定（版）',
+  // 案件収支の予実の予測の版と活動記録（移行 0015。フェーズ1 #13）
+  yojitsu_forecast_versions: '予実の予測（版）', yojitsu_forecast_lines: '予実の予測の行', yojitsu_activity_records: '予実の活動記録',
+  yojitsu_activity_cancellations: '予実の活動記録の取消',
+  // 制作費の版（移行 0016。フェーズ1 #5）
+  production_cost_versions: '制作費の版',
+  // 指標マスタ（移行 0017。行動指標の計画 段B #9）
+  kpi_metric_versions: '指標マスタ（版）', kpi_metric_steps: '指標マスタの段',
+  // 案件収支の予実の語を選ぶ設定と月の設定（移行 0018。フェーズ1 #14）
+  yojitsu_choice_versions: '予実の語と月の設定（版）',
+  // 稟議の版（移行 0019。行動指標の計画 段B #4）
+  investment_approval_versions: '稟議（版）',
+  // 1通の原本の条件の版と、報告の取消の記録（移行 0021。フォルダ型の画面の最初の一切れ U1。#131 の仮の 0019 を振り直した）
+  sales_source_file_terms: '売上原本の1通の条件（版）', report_voids: '報告の取消の記録',
+  // 検査の決まりの版・正解表・検査の結果・抜き取りの記録（移行 0023。フォルダ型の画面 U2a 後半）
+  report_check_versions: '検査の決まり（版）', report_check_cases: '検査の正解表',
+  source_check_runs: '検査の結果（回）', source_sampling_reviews: '抜き取りの記録',
+  // 予算書の版・行・検査の結果・確定の記録（移行 0024。予算書作成）
+  // ポストプロダクションの版・指摘・対応・タスク・納品物（移行 0048）
+  post_cuts: '編集の版', post_notes: 'ポスプロの指摘', post_note_actions: '指摘への対応', post_tasks: 'ポスプロの工程のタスク', post_task_events: 'タスクの記録',
+  post_deliverable_items: '納品物の行', post_deliverable_events: '納品物の状態の記録',
+  budget_versions: '予算書（版）', budget_version_lines: '予算書の行', budget_check_runs: '予算書の検査の結果（回）', budget_fixes: '予算書の確定の記録', source_documents: '共通の原本', source_document_moves: '原本の場所の移動',
+  // プロデュース管理の進行表（移行 0047）
+  produce_tasks: '進行表のチケット（版）', produce_task_events: '進行表の着手・完了の記録', produce_task_checks: '進行表のチェック項目',
+  produce_task_posts: '進行表の掲示板', produce_task_links: '進行表の関連する場所', produce_task_templates: '進行表のテンプレート（版）', produce_task_template_items: '進行表のテンプレートの行',
+  // 製造の商品・版・工程の記録・発注書・明細・段・納品・経費の結び（移行 0046。製造）
+  mfg_products: '製造の商品', mfg_product_versions: '製造の商品（版）', mfg_step_events: '製造の工程の記録', mfg_purchase_orders: '製造の発注書',
+  mfg_purchase_order_lines: '製造の発注書の明細', mfg_po_events: '製造の発注書の段', mfg_receipts: '製造の納品と検品', mfg_po_expenses: '製造の明細と経費の結び',
+  // 口座・銀行の明細・仕訳（移行 0045_cashbook。会計の最初の組）
+  bank_accounts: '口座', bank_statement_imports: '取り込んだ銀行の明細', bank_statement_lines: '銀行の明細の行', journal_entries: '仕訳', journal_lines: '仕訳の行',
+  // 予算書の型（テンプレ）と行の内訳（移行 0028）
+  budget_templates: '予算書の型', budget_template_versions: '予算書の型（版）', budget_template_items: '予算書の型の費目',
+  budget_version_templates: '予算書の版の型', budget_line_items: '予算書の行の内訳',
+  // 企画（移行 0050）
+  planning_documents: '企画の原本の結び付き', planning_profile_versions: '企画の項目（版）', planning_profile_people: '企画の体制の候補',
+  planning_trial_versions: '試算（版）', planning_trial_rates: '試算の率', planning_trial_lines: '試算の詳細の行', planning_trial_investments: '試算の出資',
+  project_owner_versions: '案件の担当者（版）', planning_materials: '企画の素材', planning_facts: '企画の事実（抜き出し）',
+  // 撮影の結果・撮影日の記録の原本・日報の項目（移行 0051。プロダクションの撮影の記録）
+  shooting_scene_results: '撮影の結果', shooting_day_records: '撮影日の記録の原本', shooting_day_report_items: '日報の項目',
+  chotatsu_cases: '調達の案件', chotatsu_case_versions: '調達の案件の版', chotatsu_stage_events: '調達の段の出来事', chotatsu_estimates: '調達の試算の版', chotatsu_estimate_lines: '調達の試算の見積の行',
+  chotatsu_agreements: '調達の合意', chotatsu_ringi: '調達の稟議', chotatsu_contracts: '調達の契約', chotatsu_materials: '調達の素材の受領', chotatsu_handoffs: '調達から製造への引き渡し',
+  chotatsu_handoff_events: '調達から製造への引き渡しの段', chotatsu_documents: '調達の原本の結び付き', chotatsu_case_expenses: '調達の経費の結び付き',
+  // プリプロの手配・美術の項目・シーンの撮影の方針（移行 0053）
+  production_arrangement_versions: '手配の版', scene_art_item_versions: '美術の項目の版', scene_shoot_plan_versions: 'シーンの撮影の方針の版',
+  // プリプロの保管庫の置き場（移行 0054）
+  preprod_document_placements: 'プリプロの保管庫の置き場',
+  // 現場の連絡帳（移行 0055。共通の部品 src/notebook/）
+  notebook_spaces: '連絡帳のスペース', notebook_posts: '連絡帳の連絡', notebook_receipts: '連絡帳の既読と了解',
   partner_profile_versions: '取引先の請求・連絡先（版）', distribution_master: '流通区分マスタ', distribution_types: '流通の種類',
   catalog_profiles: '作品の基本情報', catalog_credits: 'クレジット', catalog_editions: '作品の版（エディション）',
   catalog_edition_tags: '版の属性（国・言語など）', catalog_product_editions: '商品と版の対応', catalog_product_windows: '商品の販売ウィンドウ',
@@ -35,7 +91,7 @@ export const TABLE_LABELS = Object.freeze({
   tax_invoice_rate_totals: '請求の税率別合計', tax_invoice_links: '税計算と請求の対応',
   expenses: '経費', campaigns: '宣伝施策', exposures: '露出', observations: '指標の観測値', metric_definitions: '指標の定義',
   change_proposals: '追加項目の提案',
-  sales_opportunities: '営業案件', sales_activities: '営業の活動記録', sales_agreements: '販売契約',
+  sales_opportunities: '営業案件', sales_activities: '営業の活動記録', sales_agreements: '販売契約', sales_proposals: '営業の1回の提案', sales_proposal_windows: '提案で結んだウィンドウ', sales_proposal_reviews: '提案の結果と自己評価', sales_proposal_review_factors: '提案の効いた要因', sales_activity_notes: '接点の言葉',
   sales_agreement_term_versions: '販売契約の条件版', sales_deliverables: '納品物', sales_report_links: '販売契約と売上報告の対応',
   sales_availability_versions: '流通別の販売条件（版）', sales_material_snapshots: '営業資料の版',
   broadcast_slots: '放送枠', broadcast_slot_versions: '放送枠の版', broadcast_airings: '放送実績', broadcast_sale_links: '放送と売上の対応',
@@ -48,6 +104,7 @@ export const TABLE_LABELS = Object.freeze({
   committee_term_windows: '委員会の窓口（流通別）', committee_term_investments: '委員会の出資額', committee_term_funding: '委員会の出資の形', committee_term_window_fee_shares: '委員会の窓口手数料の取り分', committee_term_version_effective: '委員会の条件版の適用開始月',
   committee_schedule_phases: '委員会の報告・支払日程', committee_report_previews: '委員会報告（作成中）', committee_report_snapshots: '委員会報告の下書き',
   committee_snapshot_reports: '委員会報告に含めた売上報告', committee_snapshot_expenses: '委員会報告の経費', committee_snapshot_deductions: '委員会報告の控除',
+  committee_term_templates: '委員会の契約の型（版）', committee_term_version_templates: '委員会の条件版と型の結び付き', committee_term_businesses: '委員会の事業化権利（条件版）', committee_term_business_steps: '委員会の事業の式の段', committee_term_committee_steps: '委員会全体の式の段', committee_term_budget_lines: '委員会の総事業費の内訳', committee_schedule_versions: '委員会の日程の版', committee_schedule_version_phases: '委員会の日程のフェーズ', committee_round_overrides: '委員会の回だけの変更', committee_ledger_entries: '委員会の収支の台帳',
   committee_snapshot_lines: '委員会報告の明細', committee_snapshot_member_amounts: '委員会報告の分配額',
   joint_committee_contracts: '共同製作の契約', joint_committee_members: '共同製作の参加者', joint_committee_windows: '共同製作の窓口',
   joint_committee_periods: '共同製作の報告期間', joint_committee_sales: '共同製作の売上', joint_committee_costs: '共同製作の費用',
@@ -57,6 +114,10 @@ export const TABLE_LABELS = Object.freeze({
   royalty_term_expense_categories: 'ロイヤリティ条件版の控除する経費の費目', royalty_schedule_versions: 'ロイヤリティのサイクルの版', royalty_schedule_phases: 'ロイヤリティのサイクルのフェーズ',
   royalty_manual_accruals: 'ロイヤリティの実額の計上', royalty_irregular_entries: 'ロイヤリティのイレギュラーの台帳', royalty_statements: 'ロイヤリティ報告書（確定版）',
   royalty_statement_voids: 'ロイヤリティ報告書の取消', royalty_statement_lines: 'ロイヤリティ報告書の明細', royalty_statement_events: 'ロイヤリティの報告・支払の記録', royalty_statement_calculation_parts: 'ロイヤリティ報告書の計算の内容（分割保存）',
+  expense_file_placements: '経費の原本を置いた月', expense_file_placement_voids: '経費の原本を外した記録', expense_month_closures: '経費の月の締め',
+  acq_mg_contracts: '支払うMGの契約', acq_mg_term_versions: '支払うMGの条件版', acq_mg_term_works: '支払うMGの対象作品', acq_mg_term_deductions: '分配の前に引く費目',
+  acq_mg_term_phases: '分配報告の周期', acq_mg_term_media_allocations: '媒体ごとのMGの配分', acq_mg_payment_schedule: 'MGの支払予定',
+  acq_mg_report_links: '売上報告と支払うMGの結び付け', acq_mg_statements: '支払うMGの分配報告書', acq_mg_documents: '支払うMGの原本の結び付き', acq_mg_payments: '支払うMGの支払',
   mg_suppliers: 'MGの仕入先', mg_incoming_contracts: '受取MGの契約', mg_outgoing_contracts: '支払MGの契約', mg_term_versions: 'MG契約の条件版',
   mg_version_products: 'MG条件版の対象商品', mg_version_phases: 'MG条件版の日程', mg_contract_links: 'MG契約の対応', mg_ledger_entries: 'MG台帳の記帳',
   scenes: 'シーン', shooting_days: '撮影日', day_scene_assignments: '撮影日ごとのシーン', prep_tasks: '撮影準備の作業',

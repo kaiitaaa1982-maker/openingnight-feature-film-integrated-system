@@ -90,7 +90,7 @@ export function InvestmentPayments({workId, title, onChanged}) {
         emptyText="この作品の委員会に出資額の登録がありません" exportSpec={{name: '出資と払込'}} />
       {current && (
         <>
-          {!current.latest && <p className="rp-muted">古い条件版（版{current.versionNo}）の行です。払込の記録と未払込は、最新の条件版の行に全部の版をまとめて出します。</p>}
+          {!current.latest && <p className="rp-muted">旧版 {current.versionNo}</p>}
           {current.latest && <PaymentHistory payments={current.payments} onReverse={shell.readOnly ? null : (payment) => setReverse({...payment, reversedOn: payment.paidOn, reason: ''})} />}
           {current.latest && current.unpaidYen > 0 && !shell.readOnly && (
             <form className="plbs-form" onSubmit={async (event) => {

@@ -1,17 +1,20 @@
 // 帳票・一覧の出力ボタン。文言は全画面で「Excel」「CSV」「印刷・PDF」「印刷用HTML」にそろえる。
 // sheets は出力時に呼ぶ関数（xlsx-report.mjs のシート定義の配列を返す）。配列をそのまま渡してもよい。
 // シートが複数あるとき、CSV は1枚を、印刷は全シートか1枚を、その場で選んでから出力する。
+// document（帳票の文書データ。計画の K-5）を渡すと、sheets の代わりにその文書データから出す。照合（checks）が全部 OK でない文書は
+// どの形式も出さず、ボタンを押せなくして理由を出す（report-output.mjs の documentExportBlock）。
 import React, {useState} from 'react';
-import {exportReport} from '../report-output.mjs';
+import {exportReport, exportDocument, documentSheets, documentExportBlock} from '../report-output.mjs';
 import {reportBaseName} from '../xlsx-report.mjs';
 import './data-grid.css';
 
 export const OUTPUT_LABELS = Object.freeze({xlsx: 'Excel', csv: 'CSV', print: '印刷・PDF', html: '印刷用HTML'});
 const ORDER = ['xlsx', 'csv', 'print', 'html'];
 
-export function ReportOutputBar({sheets, name, period, formats = ORDER, title, subtitle, disabled = false, onError, label = '出力'}) {
+export function ReportOutputBar({sheets, document: doc, name, period, formats = ORDER, title, subtitle, disabled = false, onError, label = '出力'}) {
   const [pending, setPending] = useState(null);
   const [error, setError] = useState('');
+  const blocked = doc === undefined ? null : documentExportBlock(doc);
 
   function fail(cause) {
     const message = cause?.message || '出力できませんでした';
@@ -20,6 +23,10 @@ export function ReportOutputBar({sheets, name, period, formats = ORDER, title, s
   }
 
   function resolveSheets() {
+    if (doc !== undefined) {
+      if (blocked) throw Error(blocked);
+      return documentSheets(doc);
+    }
     const list = typeof sheets === 'function' ? sheets() : sheets;
     if (!Array.isArray(list) || !list.length) throw Error('出力する表がありません');
     return list;
@@ -30,7 +37,8 @@ export function ReportOutputBar({sheets, name, period, formats = ORDER, title, s
     try {
       const first = list[0] || {};
       const filename = reportBaseName(name || first.title || first.name, period);
-      exportReport(format, {filename, title: title ?? first.title ?? name, subtitle, sheets: list, sheetIndex, generatedAt: new Date().toISOString()});
+      if (doc !== undefined) exportDocument(format, doc, {filename, sheetIndex, generatedAt: new Date().toISOString()});
+      else exportReport(format, {filename, title: title ?? first.title ?? name, subtitle, sheets: list, sheetIndex, generatedAt: new Date().toISOString()});
     } catch (cause) {
       fail(cause);
     }
@@ -58,7 +66,7 @@ export function ReportOutputBar({sheets, name, period, formats = ORDER, title, s
     <div className="report-output" role="group" aria-label={label}>
       <div className="report-output-buttons">
         {shown.map((format) => (
-          <button key={format} type="button" className="secondary" disabled={disabled} onClick={() => start(format)}>
+          <button key={format} type="button" className="secondary" disabled={disabled || Boolean(blocked)} onClick={() => start(format)}>
             {OUTPUT_LABELS[format]}
           </button>
         ))}
@@ -76,6 +84,7 @@ export function ReportOutputBar({sheets, name, period, formats = ORDER, title, s
           <button type="button" className="secondary" onClick={() => setPending(null)}>閉じる</button>
         </div>
       )}
+      {blocked && <p className="report-output-error" role="status">{blocked}</p>}
       {error && <p className="report-output-error" role="alert">{error}</p>}
     </div>
   );

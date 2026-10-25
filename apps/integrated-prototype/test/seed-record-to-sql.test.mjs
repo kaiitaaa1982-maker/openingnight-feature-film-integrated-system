@@ -330,7 +330,9 @@ test('指紋が違う写し（利用者が1人増えた・行を消して足し�
     assert.equal(applied.ok, false, name);
     assert.match(applied.error, /CHECK constraint failed/);
     assert.match(applied.failed.label, label);
-    assert.ok(applied.failed.line < 500, `先頭の確かめで落ちる（${applied.failed.line}行目）`);
+    const recordLine = converted.sql.split('\n').findIndex(line => line.startsWith('-- ---- 2. 記録')) + 1;
+    assert.ok(recordLine > 1, '記録の節がある');
+    assert.ok(applied.failed.line < recordLine, `先頭の確かめで落ちる（${applied.failed.line}行目。記録は ${recordLine}行目）`);
     const diff = compare(path, untouched);
     assert.deepEqual([diff.counts, diff.content, diff.skipped], [[], [], {}], `${name}: 1行も変わらない`);
   }

@@ -1,1 +1,40 @@
-.es-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:12px 0}.es-field{display:flex;flex-direction:column;gap:5px;font-size:14px}.es-field input,.es-field select{font:inherit;min-height:36px;border:1px solid #c8cdd4;border-radius:5px;padding:7px;background:var(--surface,#fff);color:inherit}.es-tabs{display:flex;gap:8px;flex-wrap:wrap}.es-tabs [aria-pressed=true]{background:#223f60;color:#fff}.es-detail{padding:18px;border:1px solid #b7c8da;border-radius:8px;background:#f7f9fc}.es-detail dl{display:grid;grid-template-columns:minmax(150px,1fr) 3fr;gap:8px}.es-detail dd{margin:0;overflow-wrap:anywhere}.es-field input[readonly]{background:#f0f2f5}.es-fields+button{margin-top:8px}
+.es-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:12px 0}.es-field{display:flex;flex-direction:column;gap:5px;font-size:14px}.es-field input,.es-field select{font:inherit;min-height:36px;border:1px solid #111111;border-radius:0;padding:7px;background:#ffffff;color:inherit}.es-tabs{display:flex;gap:8px;flex-wrap:wrap}.es-tabs button{background:#ffffff;color:#111111;border:1px solid #111111;border-radius:0;box-shadow:none}.es-tabs [aria-pressed=true]{background:#111111;color:#ffffff}.es-detail{padding:18px;border:1px solid #111111;border-radius:0;background:#ffffff}.es-detail dl{display:grid;grid-template-columns:minmax(150px,1fr) 3fr;gap:8px}.es-detail dd{margin:0;overflow-wrap:anywhere}.es-field input[readonly]{background:#f3f1ec}.es-fields+button{margin-top:8px}
+
+/* 経費管理のフォルダ（販売の経費）。見た目は core docs/design/integrated-system-visual.md（黒・白・灰と赤1色・角丸0・影なし・状態は文字の札）。 */
+.kh-folder,.kh-entry{--ink:#111111;--paper:#ffffff;--soft:#f3f1ec;--sub:#5e5850;--faint:#6b655c;--rule:#cfc8ba;--red:#b3261e;--jp:"Noto Sans JP","Yu Gothic","Hiragino Sans","Meiryo",sans-serif;
+ background:var(--paper);color:var(--ink);font-family:var(--jp);border:1px solid var(--ink);border-radius:0;box-shadow:none}
+.kh-folder.kh-folder *,.kh-entry.kh-entry *{border-radius:0;box-shadow:none}
+.kh-folder button,.kh-entry button{background:var(--paper);color:var(--ink);border:1px solid var(--ink);padding:4px 12px;font:inherit;font-size:13px;cursor:pointer}
+.kh-folder button:disabled,.kh-entry button:disabled{color:var(--faint);border-color:var(--rule);cursor:not-allowed}
+.kh-folder button[aria-pressed="true"],.kh-primary{background:var(--ink)!important;color:var(--paper)!important}
+.kh-primary:disabled{background:var(--paper)!important;color:var(--faint)!important;border-color:var(--rule)!important}
+.kh-folder h3,.kh-entry legend{font-weight:800;font-size:14px;margin:12px 0 6px;padding-bottom:2px;border-bottom:2px solid var(--ink)}
+.kh-entry fieldset{border:1px solid var(--rule);padding:8px 10px}
+.kh-folder input,.kh-folder select,.kh-entry input,.kh-entry select{border:1px solid var(--ink);background:var(--paper);color:var(--ink);font:inherit}
+.kh-crumb{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding-bottom:6px;border-bottom:2px solid var(--ink)}
+.kh-crumb button{border:0!important;padding:0!important;background:none!important;text-decoration:underline}
+.kh-sub{color:var(--faint);font-size:12px}
+.kh-tag{display:inline-block;border:1px solid var(--ink);padding:0 4px;font-size:11px;font-weight:700;line-height:1.5}
+.kh-tag.kh-stop{border-color:var(--red);color:var(--red)}
+.kh-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;border-top:1px solid var(--ink);border-left:1px solid var(--ink)}
+.kh-cell{display:flex;flex-direction:column;align-items:flex-start;gap:2px;border:0!important;border-right:1px solid var(--ink)!important;border-bottom:1px solid var(--ink)!important;padding:8px!important;text-align:left;min-height:72px}
+.kh-cell b{font-weight:800}.kh-cell.kh-empty{color:var(--faint)}
+.kh-judge{display:inline-block;font-weight:800;padding:4px 10px;border:1px solid var(--ink)}
+.kh-judge.kh-alert{background:var(--red);color:#fff;border-color:var(--red)}
+.kh-chips{display:flex;gap:0;flex-wrap:wrap}.kh-chips button{font-size:12px;margin:0 -1px -1px 0}
+.kh-drop{display:block;border:1px dashed var(--ink);padding:12px;text-align:center;color:var(--sub);cursor:pointer;background:var(--soft)}
+.kh-drop.kh-over{border-style:solid;color:var(--ink)}
+.kh-drop input{display:block;margin:6px auto 0}
+.kh-files{list-style:none;padding:0;margin:0}.kh-files li{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--rule)}
+.kh-scroll{overflow-x:auto}
+.kh-list{border-collapse:collapse;width:100%;font-size:12px}.kh-list th,.kh-list td{border-bottom:1px solid var(--rule);padding:4px 6px;text-align:left;white-space:nowrap}.kh-list th{background:var(--soft);color:var(--sub);font-weight:700;border-bottom:1px solid var(--ink)}
+.kh-num{text-align:right!important;font-variant-numeric:tabular-nums}
+.kh-lr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:12px;align-items:start}
+.kh-orig{position:sticky;top:8px;border:1px solid var(--ink);min-height:480px;background:var(--soft)}
+.kh-orig iframe{width:100%;height:80vh;border:0}.kh-orig img{max-width:100%;display:block}
+.kh-line{border-bottom:1px solid var(--rule);padding:6px 0}
+.kh-checks{list-style:none;padding:0;margin:4px 0;font-size:12px}
+.kh-ok{color:var(--sub)}.kh-ng{color:var(--red);font-weight:700}
+.kh-match{border-collapse:collapse;font-size:12px;margin:4px 0;font-variant-numeric:tabular-nums}.kh-match td,.kh-match th{border:1px solid var(--rule);padding:2px 8px;text-align:right}
+.kh-match-ok{border:2px solid var(--ink)}.kh-match-ng{border:2px solid var(--red)}
+@media (max-width:860px){.kh-lr{grid-template-columns:1fr}.kh-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.kh-orig{position:static}}

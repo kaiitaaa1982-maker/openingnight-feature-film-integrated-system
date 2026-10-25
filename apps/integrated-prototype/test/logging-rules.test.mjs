@@ -25,7 +25,7 @@ const EMPTY_CATCH_DEBT = new Map([
   ['src/tax.mjs', 1],
   ['src/workbench.mjs', 2],
   ['src/workbench-analytics-local.mjs', 1],
-  ['src/main.jsx', 6],               // 画面遷移の失敗
+  ['src/main.jsx', 5],               // 画面遷移の失敗
 ]);
 
 const CONSOLE = /\bconsole\.(log|error|warn|info|debug)\s*\(/g;

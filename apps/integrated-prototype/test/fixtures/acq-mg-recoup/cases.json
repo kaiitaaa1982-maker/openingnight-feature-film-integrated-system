@@ -1,0 +1,173 @@
+{
+  "note": "支払う MG の回収の正解表。期待値は実装を使わずに手で計算した（架空のデータ）。シナリオ番号は docs/requirements/planning/rights-acquisition.md の受け入れシナリオ、H は会社ルートの plans/2026-10-22-folder-mg-buy.md の仮説",
+  "cases": [
+    {
+      "name": "シナリオ1: PF 50%・手数料 20%・手数料の控除後。控除前 100,000 → 回収の基礎 40,000、超過 10,000",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "after_fee", "platformRateBps": 5000, "agencyFeeBps": 2000, "overageEnabled": null, "works": [{"workId": "W1"}]},
+      "lines": [{"saleId": "S1", "workId": "W1", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 100000, "reportBasis": "gross"}],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "hold", "base": 40000, "recouped": 30000, "balance": 0, "overage": 10000, "distribution": null}
+    },
+    {
+      "name": "シナリオ2: 超過後の分配の率 10000bp で、超過 10,000 → 分配額 10,000",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "after_fee", "platformRateBps": 5000, "agencyFeeBps": 2000, "overageEnabled": true, "overageRateBps": 10000, "works": [{"workId": "W1"}]},
+      "lines": [{"saleId": "S1", "workId": "W1", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 100000, "reportBasis": "gross"}],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouped", "base": 40000, "recouped": 30000, "balance": 0, "overage": 10000, "distribution": 10000}
+    },
+    {
+      "name": "シナリオ3: 回収中。控除前 50,000 → 回収の基礎 20,000、残高 10,000、分配額は出ない",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "after_fee", "platformRateBps": 5000, "agencyFeeBps": 2000, "overageEnabled": true, "overageRateBps": 10000, "works": [{"workId": "W1"}]},
+      "lines": [{"saleId": "S1", "workId": "W1", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 50000, "reportBasis": "gross"}],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouping", "base": 20000, "recouped": 20000, "balance": 10000, "overage": 0, "distribution": 0}
+    },
+    {
+      "name": "シナリオ4: 買切。売上が買切の額を超えても分配額は出ない",
+      "term": {"consideration": "buyout", "mgAmount": 30000, "recoupBasis": "platform_net", "works": [{"workId": "W1"}]},
+      "lines": [{"saleId": "S1", "workId": "W1", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 40000}],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "buyout", "base": 40000, "recouped": 30000, "balance": 0, "overage": 0, "distribution": 0}
+    },
+    {
+      "name": "シナリオ10: 率 5000bp・超過 10,001 → 分配額 5,000（1円未満切り捨て）",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "platform_net", "overageEnabled": true, "overageRateBps": 5000, "works": [{"workId": "W1"}]},
+      "lines": [{"saleId": "S1", "workId": "W1", "media": "vod", "accountingMonth": "2026-06", "amountExTax": 40001}],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouped", "base": 40001, "recouped": 30000, "balance": 0, "overage": 10001, "distribution": 5000}
+    },
+    {
+      "name": "シナリオ10 の後半: 追加の分配を「無し」で登録した契約は、超過しても分配額 0 で保留にもならない",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "platform_net", "overageEnabled": false, "works": [{"workId": "W1"}]},
+      "lines": [{"saleId": "S1", "workId": "W1", "media": "vod", "accountingMonth": "2026-06", "amountExTax": 40001}],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouped", "base": 40001, "recouped": 30000, "balance": 0, "overage": 10001, "distribution": 0}
+    },
+    {
+      "name": "シナリオ16: X・Y をまたぐ MG 30,000（実績ベース）。X 24,000・Y 16,000 → 分配額 10,000 を X 6,000・Y 4,000",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "platform_net", "overageEnabled": true, "overageRateBps": 10000, "multiWork": "actual", "works": [{"workId": "X"}, {"workId": "Y"}]},
+      "lines": [
+        {"saleId": "S1", "workId": "X", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 24000},
+        {"saleId": "S2", "workId": "Y", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 16000}
+      ],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouped", "base": 40000, "recouped": 30000, "balance": 0, "overage": 10000, "distribution": 10000, "works": {"X": 6000, "Y": 4000}, "statementAllowed": true}
+    },
+    {
+      "name": "シナリオ17 前半: 作品ごとの額を先に決めた X 20,000・Y 10,000。X 25,000・Y 3,000 では全体が超過せず、報告書も出さない",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "platform_net", "overageEnabled": true, "overageRateBps": 10000, "multiWork": "hold_until_total", "holdAgreementRef": "合意書 第3条", "works": [{"workId": "X", "presetAmount": 20000}, {"workId": "Y", "presetAmount": 10000}]},
+      "lines": [
+        {"saleId": "S1", "workId": "X", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 25000},
+        {"saleId": "S2", "workId": "Y", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 3000}
+      ],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouping", "base": 28000, "recouped": 28000, "balance": 2000, "overage": 0, "distribution": 0, "works": {"X": 0, "Y": 0}, "statementAllowed": false}
+    },
+    {
+      "name": "シナリオ17 後半: 翌月 X に 5,000 が足され全体 33,000。超過 3,000 を実績の比 30:3 で X 2,727・Y 273（最大剰余法）",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "platform_net", "overageEnabled": true, "overageRateBps": 10000, "multiWork": "hold_until_total", "holdAgreementRef": "合意書 第3条", "works": [{"workId": "X", "presetAmount": 20000}, {"workId": "Y", "presetAmount": 10000}]},
+      "lines": [
+        {"saleId": "S1", "workId": "X", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 25000},
+        {"saleId": "S2", "workId": "Y", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 3000},
+        {"saleId": "S3", "workId": "X", "media": "rs", "accountingMonth": "2026-07", "amountExTax": 5000}
+      ],
+      "asOfMonth": "2026-07",
+      "expected": {"status": "recouped", "base": 33000, "recouped": 30000, "balance": 0, "overage": 3000, "distribution": 3000, "works": {"X": 2727, "Y": 273}, "statementAllowed": true}
+    },
+    {
+      "name": "締め月より後の売上は数えない（シナリオ17 後半の売上を 2026-06 で締める）",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "platform_net", "overageEnabled": true, "overageRateBps": 10000, "multiWork": "hold_until_total", "holdAgreementRef": "合意書 第3条", "works": [{"workId": "X", "presetAmount": 20000}, {"workId": "Y", "presetAmount": 10000}]},
+      "lines": [
+        {"saleId": "S1", "workId": "X", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 25000},
+        {"saleId": "S2", "workId": "Y", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 3000},
+        {"saleId": "S3", "workId": "X", "media": "rs", "accountingMonth": "2026-07", "amountExTax": 5000}
+      ],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouping", "base": 28000, "recouped": 28000, "balance": 2000, "overage": 0, "distribution": 0, "statementAllowed": false}
+    },
+    {
+      "name": "H1: 媒体ごとに配分（RS 20,000・見放題 10,000）、不足を他の媒体で埋めない。RS 25,000・見放題 4,000 → 超過は RS の 5,000",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "platform_net", "overageEnabled": true, "overageRateBps": 10000, "pooling": "per_media", "mediaAllocations": [{"media": "rs", "amount": 20000}, {"media": "vod", "amount": 10000}], "works": [{"workId": "W1"}]},
+      "lines": [
+        {"saleId": "S1", "workId": "W1", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 25000},
+        {"saleId": "S2", "workId": "W1", "media": "vod", "accountingMonth": "2026-06", "amountExTax": 4000}
+      ],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouped", "base": 29000, "recouped": 24000, "balance": 6000, "overage": 5000, "distribution": 5000, "media": {"rs": {"recouped": 20000, "overage": 5000}, "vod": {"recouped": 4000, "overage": 0}}}
+    },
+    {
+      "name": "H1: 同じ配分でも、不足を他の媒体で埋めてよい契約は全体で数える（29,000 < 30,000 で回収中）",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "platform_net", "overageEnabled": true, "overageRateBps": 10000, "pooling": "per_media", "shortfallFromOtherMedia": true, "mediaAllocations": [{"media": "rs", "amount": 20000}, {"media": "vod", "amount": 10000}], "works": [{"workId": "W1"}]},
+      "lines": [
+        {"saleId": "S1", "workId": "W1", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 25000},
+        {"saleId": "S2", "workId": "W1", "media": "vod", "accountingMonth": "2026-06", "amountExTax": 4000}
+      ],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouping", "base": 29000, "recouped": 29000, "balance": 1000, "overage": 0, "distribution": 0}
+    },
+    {
+      "name": "H1: 配分の無い媒体（定額）の売上は数えず、例外にする",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "platform_net", "overageEnabled": true, "overageRateBps": 10000, "pooling": "per_media", "mediaAllocations": [{"media": "rs", "amount": 30000}], "works": [{"workId": "W1"}]},
+      "lines": [
+        {"saleId": "S1", "workId": "W1", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 10000},
+        {"saleId": "S2", "workId": "W1", "media": "flat", "accountingMonth": "2026-06", "amountExTax": 50000}
+      ],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouping", "base": 10000, "recouped": 10000, "balance": 20000, "overage": 0, "distribution": 0, "exceptionKinds": ["media_not_allocated"]}
+    },
+    {
+      "name": "H3: 字幕費の上限 3,000 に対して 5,000、契約に無い宣伝費 2,000。引くのは 3,000 だけで、2つとも例外",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "platform_net", "overageEnabled": true, "overageRateBps": 10000, "deductions": [{"category": "字幕費", "capAmount": 3000}], "works": [{"workId": "W1"}]},
+      "lines": [{"saleId": "S1", "workId": "W1", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 40000}],
+      "expenses": [{"category": "字幕費", "amount": 5000}, {"category": "宣伝費", "amount": 2000}],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouped", "deducted": 3000, "base": 37000, "recouped": 30000, "balance": 0, "overage": 7000, "distribution": 7000, "exceptionKinds": ["deduction_cap_exceeded", "deduction_not_in_contract"], "failedChecks": ["deduction_cap"]}
+    },
+    {
+      "name": "H3: 上限を MG に対する率（1000bp＝3,000）で持つ。字幕費 2,500 は全額引く",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "platform_net", "overageEnabled": true, "overageRateBps": 10000, "deductions": [{"category": "字幕費", "capBps": 1000}], "works": [{"workId": "W1"}]},
+      "lines": [{"saleId": "S1", "workId": "W1", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 40000}],
+      "expenses": [{"category": "字幕費", "amount": 2500}],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouped", "deducted": 2500, "base": 37500, "recouped": 30000, "balance": 0, "overage": 7500, "distribution": 7500, "exceptionKinds": []}
+    },
+    {
+      "name": "H4: 支払予定の和（9,000＋20,000）が MG の額 30,000 と合わない",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "platform_net", "overageEnabled": true, "overageRateBps": 10000, "paymentSchedule": [{"installment": 1, "trigger": "signing", "amount": 9000}, {"installment": 2, "trigger": "delivery", "amount": 20000}], "works": [{"workId": "W1"}]},
+      "lines": [],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouping", "base": 0, "recouped": 0, "balance": 30000, "overage": 0, "distribution": 0, "failedChecks": ["payment_schedule_sum"]}
+    },
+    {
+      "name": "検査6: 数量×単価が当社売上と合わない行（10 × 100 ≠ 1,500）は例外。253 × 400 ＝ 101,200 と 3 × 333.33 ≒ 1,000 は合う",
+      "term": {"consideration": "mg", "mgAmount": 300000, "recoupBasis": "platform_net", "overageEnabled": true, "overageRateBps": 10000, "works": [{"workId": "W1"}]},
+      "lines": [
+        {"saleId": "S1", "workId": "W1", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 101200, "quantity": 253, "unitPrice": 400},
+        {"saleId": "S2", "workId": "W1", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 1000, "quantity": 3, "unitPrice": 333.33},
+        {"saleId": "S3", "workId": "W1", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 1500, "quantity": 10, "unitPrice": 100}
+      ],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouping", "base": 103700, "recouped": 103700, "balance": 196300, "overage": 0, "distribution": 0, "exceptionKinds": ["quantity_price_mismatch"], "failedChecks": ["quantity_price"]}
+    },
+    {
+      "name": "対象でない作品の売上は数えず、例外にする（作品をまたぐ相殺をしない。仮説 H2）",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "platform_net", "overageEnabled": true, "overageRateBps": 10000, "works": [{"workId": "W1"}]},
+      "lines": [
+        {"saleId": "S1", "workId": "W1", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 10000},
+        {"saleId": "S2", "workId": "W9", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 90000}
+      ],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouping", "base": 10000, "recouped": 10000, "balance": 20000, "overage": 0, "distribution": 0, "exceptionKinds": ["work_not_in_term"]}
+    },
+    {
+      "name": "返品などのマイナスの売上も、そのまま差し引く",
+      "term": {"consideration": "mg", "mgAmount": 30000, "recoupBasis": "platform_net", "overageEnabled": true, "overageRateBps": 10000, "works": [{"workId": "W1"}]},
+      "lines": [
+        {"saleId": "S1", "workId": "W1", "media": "rs", "accountingMonth": "2026-06", "amountExTax": 35000},
+        {"saleId": "S2", "workId": "W1", "media": "rs", "accountingMonth": "2026-06", "amountExTax": -8000}
+      ],
+      "asOfMonth": "2026-06",
+      "expected": {"status": "recouping", "base": 27000, "recouped": 27000, "balance": 3000, "overage": 0, "distribution": 0}
+    }
+  ]
+}

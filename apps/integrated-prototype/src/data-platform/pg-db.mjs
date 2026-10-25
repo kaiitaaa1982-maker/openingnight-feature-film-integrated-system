@@ -362,6 +362,8 @@ const prepareParam = (value) => (typeof value === 'bigint' ? value.toString() : 
 
 const TX_WRITE = 'BEGIN';
 const TX_READ = 'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY';
+// 行単位の権限（pg/rls.sql）に渡す利用者。BEGIN の直後に、そのトランザクション限りの設定値として置く（FR-CORE-DATA-053）
+const SET_SESSION = "SELECT set_config('app.user_id', $1, true), set_config('app.login_email', $2, true)";
 const quoteIdent = (name) => `"${String(name).replaceAll('"', '""')}"`;
 // 文字の列（json_extract の値をそのまま入れてよい列）
 const TEXT_TYPES = new Set(['text', 'character varying', 'character']);
@@ -389,6 +391,18 @@ export class PgDatabase {
     this.catalog = memo.catalog;
     this.cacheSize = cacheSize;
     this.lock = Promise.resolve();
+    this.session = null;
+  }
+
+  // 行単位の権限（RLS。pg/rls.sql）に渡す利用者。{userId}（Cloudflare Access で確かめた利用者）か {loginEmail}（ログインの照会だけ）。
+  // 置くと、1文ずつの問い合わせも BEGIN〜COMMIT で包み、BEGIN の直後に set_config(…, true) で渡す。トランザクションの外の SET は使わない
+  // （Hyperdrive はトランザクションの外の文を別の接続へ振り分けうる。src/data-platform/cloud-db.mjs）。null で外す（RLS の下では0行になる）
+  setSession(session) {
+    if (session == null) { this.session = null; return; }
+    const {userId = null, loginEmail = null} = session;
+    if (userId != null && !(Number.isSafeInteger(Number(userId)) && Number(userId) > 0)) throw new Error('PgDatabase: 利用者 ID は正の整数');
+    if (loginEmail != null && typeof loginEmail !== 'string') throw new Error('PgDatabase: ログインのメールは文字列');
+    this.session = {userId: userId == null ? '' : String(Number(userId)), loginEmail: loginEmail ?? ''};
   }
 
   // IDENTITY の列（表 → 列）と列の型（表 → 列 → 型）。控え（shared.catalog）に置く
@@ -506,6 +520,8 @@ export class PgDatabase {
   }
 
   async single(sql, params) {
+    // 利用者を置いた入口は、1文でもトランザクションの中で流す（設定値をトランザクションの外に持たない）
+    if (this.session) return (await this.transaction(TX_WRITE, [{sql, params}]))[0];
     if (this.isPool) {
       const found = this.statement(sql);
       // ID を指定した INSERT は、順番の値を同じ接続で進める
@@ -523,6 +539,7 @@ export class PgDatabase {
     return this.withConnection(async (client, discard) => {
       try {
         await client.query(begin);
+        if (this.session) await client.query({text: SET_SESSION, values: [this.session.userId, this.session.loginEmail], types: RAW_TYPES});
       } catch (error) {
         discard(error); // BEGIN が通らない接続は使わない
         throw attachDbError(error);

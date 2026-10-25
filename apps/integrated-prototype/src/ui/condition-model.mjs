@@ -13,6 +13,8 @@ export const CONDITION_KEYS = Object.freeze({
   from: 'from',
   to: 'to',
   basis: 'basis',
+  // 計上と入金（フェーズ1 #16。API の basis=accrual|cash と同じ URL のキー）。年間売上の basis（計上月・販売月）と同じ画面では使わない
+  cashBasis: 'basis',
   tax: 'tax',
   work: 'workId',
   partner: 'partnerId',
@@ -22,7 +24,7 @@ export const CONDITION_KEYS = Object.freeze({
   month: 'month',
 });
 
-export const CONDITION_NAMES = Object.freeze(['fiscalYear', 'period', 'basis', 'tax', 'work', 'partner', 'distribution', 'axis', 'direction', 'month']);
+export const CONDITION_NAMES = Object.freeze(['fiscalYear', 'period', 'basis', 'cashBasis', 'tax', 'work', 'partner', 'distribution', 'axis', 'direction', 'month']);
 
 export const PERIOD_PRESETS = Object.freeze([
   {id: 'fy', label: '年度'},
@@ -38,6 +40,12 @@ export const PERIOD_PRESETS = Object.freeze([
 export const BASIS_OPTIONS = Object.freeze([
   {value: 'accounting', label: '計上月'},
   {value: 'sales', label: '販売月'},
+]);
+
+// 計上と入金。既定は計上（会社の帳票は呼び出し側が defaults.cashBasis に入金を渡す）。値は API の basis と同じ
+export const CASH_BASIS_OPTIONS = Object.freeze([
+  {value: 'accrual', label: '計上'},
+  {value: 'cash', label: '入金'},
 ]);
 
 export const TAX_OPTIONS = Object.freeze([
@@ -60,7 +68,7 @@ export const AXIS_OPTIONS = Object.freeze([
 ]);
 
 export const CONDITION_LABELS = Object.freeze({
-  fiscalYear: '年度', period: '期間', basis: '集計の基準', tax: '税', work: '作品', partner: '取引先',
+  fiscalYear: '年度', period: '期間', basis: '集計の基準', cashBasis: '基準', tax: '税', work: '作品', partner: '取引先',
   distribution: '流通', axis: '集計の軸', direction: 'MGの向き', month: '基準月',
 });
 
@@ -252,6 +260,8 @@ export function readConditions(getParam, conditions = [], options = {}) {
       : `${fy}年度 ${PERIOD_PRESETS.find((preset) => preset.id === period).label}（${monthText(values.from)}〜${monthText(values.to)}）`;
   }
   if (want.has('basis')) values.basis = optionValue(BASIS_OPTIONS, read(CONDITION_KEYS.basis), defaults.basis ?? 'accounting');
+  // 読めない値（年間売上の計上月・販売月など）は既定に戻す（API には accrual・cash だけを渡す）
+  if (want.has('cashBasis')) values.cashBasis = optionValue(CASH_BASIS_OPTIONS, read(CONDITION_KEYS.cashBasis), defaults.cashBasis ?? 'accrual');
   if (want.has('tax')) values.tax = optionValue(TAX_OPTIONS, read(CONDITION_KEYS.tax), defaults.tax ?? 'ex');
   if (want.has('direction')) values.direction = optionValue(DIRECTION_OPTIONS, read(CONDITION_KEYS.direction), defaults.direction ?? 'incoming');
   if (want.has('axis')) {
@@ -310,7 +320,7 @@ export function conditionsToQuery(values, conditions = CONDITION_NAMES) {
     params.set('from', values.from);
     params.set('to', values.to);
   }
-  const pairs = [['basis', 'basis', values.basis], ['tax', 'tax', values.tax], ['axis', 'axis', values.axis],
+  const pairs = [['basis', 'basis', values.basis], ['cashBasis', 'basis', values.cashBasis], ['tax', 'tax', values.tax], ['axis', 'axis', values.axis],
     ['direction', 'direction', values.direction], ['month', 'month', values.month], ['work', 'workId', values.workId],
     ['partner', 'partnerId', values.partnerId], ['distribution', 'distribution', values.distribution]];
   for (const [name, key, value] of pairs) if (want.has(name) && !blank(value)) params.set(key, String(value));
@@ -326,6 +336,7 @@ export function describeConditions(values, conditions = CONDITION_NAMES, {names 
   const nameOf = (source, id) => (typeof source === 'function' ? source(id) : source?.[String(id)]);
   if (want.has('fiscalYear') || want.has('period')) rows.push(['期間', values.periodLabel || rangeText(values.from, values.to)]);
   if (want.has('basis')) rows.push([CONDITION_LABELS.basis, labelFrom(BASIS_OPTIONS, values.basis)]);
+  if (want.has('cashBasis')) rows.push([CONDITION_LABELS.cashBasis, labelFrom(CASH_BASIS_OPTIONS, values.cashBasis)]);
   if (want.has('tax')) rows.push([CONDITION_LABELS.tax, labelFrom(TAX_OPTIONS, values.tax)]);
   if (want.has('axis')) rows.push([CONDITION_LABELS.axis, labelFrom(axisOptions, values.axis)]);
   if (want.has('direction')) rows.push([CONDITION_LABELS.direction, labelFrom(DIRECTION_OPTIONS, values.direction)]);

@@ -1,6 +1,6 @@
 {
-  "tables": 259,
-  "triggers": 540,
-  "indexes": 125,
+  "tables": 390,
+  "triggers": 912,
+  "indexes": 256,
   "views": 0
 }

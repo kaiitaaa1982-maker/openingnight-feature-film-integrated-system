@@ -1,0 +1,6745 @@
+{
+  "fictional": true,
+  "notice": "架空データ。入金の確認の試験専用で、実在の取引先・作品・金額ではない",
+  "month": "2026-11",
+  "as_of": "2026-11-30",
+  "dictionary_version": "RM-DICT-1",
+  "partners": [
+    {
+      "partner_code": "RM-PF-A",
+      "name": "配信会社A（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-TH-B",
+      "name": "劇場チェーンB（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-OS-C",
+      "name": "海外セールスC（架空・米国）",
+      "country": "US",
+      "currency": "USD"
+    },
+    {
+      "partner_code": "RM-SEL-D",
+      "name": "パッケージ販売D（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-PF-E",
+      "name": "配信会社E（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-DS-F",
+      "name": "配給会社F（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-OS-G",
+      "name": "海外配給G（架空・ドイツ）",
+      "country": "DE",
+      "currency": "EUR"
+    },
+    {
+      "partner_code": "RM-DS-H",
+      "name": "配給会社H（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-DS-J",
+      "name": "配給会社J（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-PF-K",
+      "name": "配信会社K（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-PF-L",
+      "name": "配信会社L（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-PF-M",
+      "name": "配信会社M（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-TV-N",
+      "name": "放送局N（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-TV-P",
+      "name": "放送局P（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-RNT-Q",
+      "name": "レンタルチェーンQ（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-RNT-R",
+      "name": "レンタルチェーンR（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-SEL-S",
+      "name": "パッケージ販売S（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-SEL-T",
+      "name": "パッケージ販売T（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-TH-U",
+      "name": "劇場U（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-TH-V",
+      "name": "劇場V（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-PF-W",
+      "name": "配信会社W（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-AIR-X",
+      "name": "機内上映X（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-EDU-Y",
+      "name": "教育配給Y（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    {
+      "partner_code": "RM-HTL-Z",
+      "name": "ホテル配信Z（架空）",
+      "country": "JP",
+      "currency": "JPY"
+    }
+  ],
+  "contracts": [
+    {
+      "contract_code": "C-RM-01",
+      "partner_code": "RM-PF-A",
+      "clause": "第5条",
+      "bank_fee_borne_by": "payee",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-02",
+      "partner_code": "RM-TH-B",
+      "clause": "第6条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-03",
+      "partner_code": "RM-OS-C",
+      "clause": "第8条",
+      "bank_fee_borne_by": "payee",
+      "foreign_withholding_bps": 1000
+    },
+    {
+      "contract_code": "C-RM-04",
+      "partner_code": "RM-SEL-D",
+      "clause": "第7条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-05",
+      "partner_code": "RM-PF-E",
+      "clause": "第5条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-06",
+      "partner_code": "RM-DS-F",
+      "clause": "第9条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-07",
+      "partner_code": "RM-OS-G",
+      "clause": "第8条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": 0
+    },
+    {
+      "contract_code": "C-RM-08",
+      "partner_code": "RM-DS-H",
+      "clause": "第6条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-09",
+      "partner_code": "RM-DS-J",
+      "clause": "第6条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-10",
+      "partner_code": "RM-PF-K",
+      "clause": "第5条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-11",
+      "partner_code": "RM-PF-L",
+      "clause": "第5条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-12",
+      "partner_code": "RM-PF-M",
+      "clause": "第5条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-13",
+      "partner_code": "RM-TV-N",
+      "clause": "第4条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-14",
+      "partner_code": "RM-TV-P",
+      "clause": "第4条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-15",
+      "partner_code": "RM-RNT-Q",
+      "clause": "第7条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-16",
+      "partner_code": "RM-RNT-R",
+      "clause": "第7条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-17",
+      "partner_code": "RM-SEL-S",
+      "clause": "第7条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-18",
+      "partner_code": "RM-SEL-T",
+      "clause": "第7条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-19",
+      "partner_code": "RM-TH-U",
+      "clause": "第6条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-20",
+      "partner_code": "RM-TH-V",
+      "clause": "第6条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-21",
+      "partner_code": "RM-PF-W",
+      "clause": "第5条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-22",
+      "partner_code": "RM-AIR-X",
+      "clause": "第6条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-23",
+      "partner_code": "RM-EDU-Y",
+      "clause": "第6条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    },
+    {
+      "contract_code": "C-RM-24",
+      "partner_code": "RM-HTL-Z",
+      "clause": "第5条",
+      "bank_fee_borne_by": "payer",
+      "foreign_withholding_bps": null
+    }
+  ],
+  "payer_dictionary": [
+    {
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴｰ",
+      "partner_code": "RM-PF-A"
+    },
+    {
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾁｴｰﾝﾋﾞｰ",
+      "partner_code": "RM-TH-B"
+    },
+    {
+      "payer_name": "ｶ)ｹﾞｷｼﾞﾖｳﾁｴｰﾝﾋﾞｰ",
+      "partner_code": "RM-TH-B"
+    },
+    {
+      "payer_name": "OVERSEAS SALES C",
+      "partner_code": "RM-OS-C"
+    },
+    {
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲﾃﾞｲｰ",
+      "partner_code": "RM-SEL-D"
+    },
+    {
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｲｰ",
+      "partner_code": "RM-PF-E"
+    },
+    {
+      "payer_name": "ﾊｲｷﾕｳｶﾞｲｼﾔｴﾌ",
+      "partner_code": "RM-DS-F"
+    },
+    {
+      "payer_name": "GLOBAL FILMS G",
+      "partner_code": "RM-OS-G"
+    },
+    {
+      "payer_name": "ﾊｲｷﾕｳｶﾞｲｼﾔｴｲﾁ",
+      "partner_code": "RM-DS-H"
+    },
+    {
+      "payer_name": "ﾊｲｷﾕｳｶﾞｲｼﾔｼﾞｴｲ",
+      "partner_code": "RM-DS-J"
+    },
+    {
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｹｲ",
+      "partner_code": "RM-PF-K"
+    },
+    {
+      "payer_name": "ｶ)ﾊｲｼﾝｶｲｼﾔｹｲ",
+      "partner_code": "RM-PF-K"
+    },
+    {
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾙ",
+      "partner_code": "RM-PF-L"
+    },
+    {
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾑ",
+      "partner_code": "RM-PF-M"
+    },
+    {
+      "payer_name": "ﾎｳｿｳｷﾖｸｴﾇ",
+      "partner_code": "RM-TV-N"
+    },
+    {
+      "payer_name": "ﾎｳｿｳｷﾖｸﾋﾟｰ",
+      "partner_code": "RM-TV-P"
+    },
+    {
+      "payer_name": "ｶ)ﾎｳｿｳｷﾖｸﾋﾟｰ",
+      "partner_code": "RM-TV-P"
+    },
+    {
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｷﾕｰ",
+      "partner_code": "RM-RNT-Q"
+    },
+    {
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｱｰﾙ",
+      "partner_code": "RM-RNT-R"
+    },
+    {
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲｴｽ",
+      "partner_code": "RM-SEL-S"
+    },
+    {
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲﾃｲｰ",
+      "partner_code": "RM-SEL-T"
+    },
+    {
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾕｰ",
+      "partner_code": "RM-TH-U"
+    },
+    {
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾌﾞｲ",
+      "partner_code": "RM-TH-V"
+    },
+    {
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔﾀﾞﾌﾞﾘﾕｰ",
+      "partner_code": "RM-PF-W"
+    },
+    {
+      "payer_name": "ｷﾅｲｼﾞﾖｳｴｲｴﾂｸｽ",
+      "partner_code": "RM-AIR-X"
+    },
+    {
+      "payer_name": "ｷﾖｳｲｸﾊｲｷﾕｳﾜｲ",
+      "partner_code": "RM-EDU-Y"
+    },
+    {
+      "payer_name": "ﾎﾃﾙﾊｲｼﾝｾﾞﾂﾄ",
+      "partner_code": "RM-HTL-Z"
+    }
+  ],
+  "projects": [
+    {
+      "project_code": "YJ-P01",
+      "title": "架空案件01（架空）",
+      "earning_type": "自社出資"
+    },
+    {
+      "project_code": "YJ-P02",
+      "title": "架空案件02（架空）",
+      "earning_type": "自社出資"
+    },
+    {
+      "project_code": "YJ-P03",
+      "title": "架空案件03（架空）",
+      "earning_type": "自社出資"
+    },
+    {
+      "project_code": "YJ-P04",
+      "title": "架空案件04（架空）",
+      "earning_type": "自社出資"
+    },
+    {
+      "project_code": "YJ-P05",
+      "title": "架空案件05（架空）",
+      "earning_type": "製作委員会"
+    },
+    {
+      "project_code": "YJ-P06",
+      "title": "架空案件06（架空）",
+      "earning_type": "製作委員会"
+    },
+    {
+      "project_code": "YJ-P07",
+      "title": "架空案件07（架空）",
+      "earning_type": "製作委員会"
+    },
+    {
+      "project_code": "YJ-P08",
+      "title": "架空案件08（架空）",
+      "earning_type": "買付"
+    },
+    {
+      "project_code": "YJ-P09",
+      "title": "架空案件09（架空）",
+      "earning_type": "買付"
+    },
+    {
+      "project_code": "YJ-P10",
+      "title": "架空案件10（架空）",
+      "earning_type": "買付"
+    }
+  ],
+  "works": [
+    {
+      "work_id": 1,
+      "work_code": "YJ-W01",
+      "title": "架空作品01（架空）",
+      "project_code": "YJ-P01"
+    },
+    {
+      "work_id": 2,
+      "work_code": "YJ-W02",
+      "title": "架空作品02（架空）",
+      "project_code": "YJ-P01"
+    },
+    {
+      "work_id": 3,
+      "work_code": "YJ-W03",
+      "title": "架空作品03（架空）",
+      "project_code": "YJ-P02"
+    },
+    {
+      "work_id": 4,
+      "work_code": "YJ-W04",
+      "title": "架空作品04（架空）",
+      "project_code": "YJ-P03"
+    },
+    {
+      "work_id": 5,
+      "work_code": "YJ-W05",
+      "title": "架空作品05（架空）",
+      "project_code": "YJ-P03"
+    },
+    {
+      "work_id": 6,
+      "work_code": "YJ-W06",
+      "title": "架空作品06（架空）",
+      "project_code": "YJ-P04"
+    },
+    {
+      "work_id": 7,
+      "work_code": "YJ-W07",
+      "title": "架空作品07（架空）",
+      "project_code": "YJ-P05"
+    },
+    {
+      "work_id": 8,
+      "work_code": "YJ-W08",
+      "title": "架空作品08（架空）",
+      "project_code": "YJ-P05"
+    },
+    {
+      "work_id": 9,
+      "work_code": "YJ-W09",
+      "title": "架空作品09（架空）",
+      "project_code": "YJ-P06"
+    },
+    {
+      "work_id": 10,
+      "work_code": "YJ-W10",
+      "title": "架空作品10（架空）",
+      "project_code": "YJ-P07"
+    },
+    {
+      "work_id": 11,
+      "work_code": "YJ-W11",
+      "title": "架空作品11（架空）",
+      "project_code": "YJ-P08"
+    },
+    {
+      "work_id": 12,
+      "work_code": "YJ-W12",
+      "title": "架空作品12（架空）",
+      "project_code": "YJ-P08"
+    },
+    {
+      "work_id": 13,
+      "work_code": "YJ-W13",
+      "title": "架空作品13（架空）",
+      "project_code": "YJ-P09"
+    },
+    {
+      "work_id": 14,
+      "work_code": "YJ-W14",
+      "title": "架空作品14（架空）",
+      "project_code": "YJ-P09"
+    },
+    {
+      "work_id": 15,
+      "work_code": "YJ-W15",
+      "title": "架空作品15（架空）",
+      "project_code": "YJ-P10"
+    },
+    {
+      "work_id": 16,
+      "work_code": "YJ-W16",
+      "title": "架空作品16（架空）",
+      "project_code": "YJ-P10"
+    }
+  ],
+  "work_projects_note": "作品→案件は仮の対応。フェーズ1 #23a が種の作品・案件として持つ（コードを変えるなら generate.py を直して作り直す）",
+  "invoices": [
+    {
+      "invoice_id": 1,
+      "invoice_number": "RM-INV-202609-001",
+      "partner_code": "RM-DS-H",
+      "invoice_date": "2026-09-01",
+      "due_date": "2026-10-15",
+      "period": "2026-08",
+      "report_ref": "RM-R-0001",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 915738,
+      "tax_amount": 91573,
+      "amount_inc_tax": 1007311,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0001-1",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "配給 2026-08分（架空作品16（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 199709,
+          "tax_amount": 19971,
+          "amount_inc_tax": 219680
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0001-2",
+          "work_id": 9,
+          "work_code": "YJ-W09",
+          "description": "配給 2026-08分（架空作品09（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 716029,
+          "tax_amount": 71602,
+          "amount_inc_tax": 787631
+        }
+      ]
+    },
+    {
+      "invoice_id": 2,
+      "invoice_number": "RM-INV-202609-002",
+      "partner_code": "RM-RNT-Q",
+      "invoice_date": "2026-09-01",
+      "due_date": "2026-10-10",
+      "period": "2026-08",
+      "report_ref": "RM-R-0002",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 177307,
+      "tax_amount": 17730,
+      "amount_inc_tax": 195037,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0002-1",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "レンタル 2026-08分（架空作品12（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 177307,
+          "tax_amount": 17730,
+          "amount_inc_tax": 195037
+        }
+      ]
+    },
+    {
+      "invoice_id": 3,
+      "invoice_number": "RM-INV-202609-003",
+      "partner_code": "RM-TV-P",
+      "invoice_date": "2026-09-03",
+      "due_date": "2026-10-15",
+      "period": "2026-08",
+      "report_ref": "RM-R-0003",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 2423683,
+      "tax_amount": 242368,
+      "amount_inc_tax": 2666051,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0003-1",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "放送 2026-08分（架空作品08（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 1185502,
+          "tax_amount": 118550,
+          "amount_inc_tax": 1304052
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0003-2",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "放送 2026-08分（架空作品12（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 578538,
+          "tax_amount": 57854,
+          "amount_inc_tax": 636392
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0003-3",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "放送 2026-08分（架空作品13（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 659643,
+          "tax_amount": 65964,
+          "amount_inc_tax": 725607
+        }
+      ]
+    },
+    {
+      "invoice_id": 4,
+      "invoice_number": "RM-INV-202609-004",
+      "partner_code": "RM-RNT-R",
+      "invoice_date": "2026-09-03",
+      "due_date": "2026-10-20",
+      "period": "2026-08",
+      "report_ref": "RM-R-0004",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 574259,
+      "tax_amount": 57425,
+      "amount_inc_tax": 631684,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0004-1",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "レンタル 2026-08分（架空作品12（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 297736,
+          "tax_amount": 29773,
+          "amount_inc_tax": 327509
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0004-2",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "レンタル 2026-08分（架空作品01（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 276523,
+          "tax_amount": 27652,
+          "amount_inc_tax": 304175
+        }
+      ]
+    },
+    {
+      "invoice_id": 5,
+      "invoice_number": "RM-INV-202609-005",
+      "partner_code": "RM-PF-L",
+      "invoice_date": "2026-09-04",
+      "due_date": "2026-10-20",
+      "period": "2026-08",
+      "report_ref": "RM-R-0005",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 352297,
+      "tax_amount": 35229,
+      "amount_inc_tax": 387526,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0005-1",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "配信 2026-08分（架空作品02（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 186772,
+          "tax_amount": 18677,
+          "amount_inc_tax": 205449
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0005-2",
+          "work_id": 9,
+          "work_code": "YJ-W09",
+          "description": "配信 2026-08分（架空作品09（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 165525,
+          "tax_amount": 16552,
+          "amount_inc_tax": 182077
+        }
+      ]
+    },
+    {
+      "invoice_id": 6,
+      "invoice_number": "RM-INV-202609-006",
+      "partner_code": "RM-PF-W",
+      "invoice_date": "2026-09-04",
+      "due_date": "2026-10-10",
+      "period": "2026-08",
+      "report_ref": "RM-R-0006",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1240137,
+      "tax_amount": 124013,
+      "amount_inc_tax": 1364150,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0006-1",
+          "work_id": 3,
+          "work_code": "YJ-W03",
+          "description": "配信 2026-08分（架空作品03（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 445359,
+          "tax_amount": 44536,
+          "amount_inc_tax": 489895
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0006-2",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "配信 2026-08分（架空作品08（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 794778,
+          "tax_amount": 79477,
+          "amount_inc_tax": 874255
+        }
+      ]
+    },
+    {
+      "invoice_id": 7,
+      "invoice_number": "RM-INV-202609-007",
+      "partner_code": "RM-TV-N",
+      "invoice_date": "2026-09-09",
+      "due_date": "2026-10-31",
+      "period": "2026-08",
+      "report_ref": "RM-R-0007",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1044840,
+      "tax_amount": 104484,
+      "amount_inc_tax": 1149324,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0007-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "放送 2026-08分（架空作品04（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 567293,
+          "tax_amount": 56729,
+          "amount_inc_tax": 624022
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0007-2",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "放送 2026-08分（架空作品07（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 477547,
+          "tax_amount": 47755,
+          "amount_inc_tax": 525302
+        }
+      ]
+    },
+    {
+      "invoice_id": 8,
+      "invoice_number": "RM-INV-202609-008",
+      "partner_code": "RM-RNT-R",
+      "invoice_date": "2026-09-09",
+      "due_date": "2026-10-20",
+      "period": "2026-08",
+      "report_ref": "RM-R-0008",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 531297,
+      "tax_amount": 53129,
+      "amount_inc_tax": 584426,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0008-1",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "レンタル 2026-08分（架空作品10（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 355531,
+          "tax_amount": 35553,
+          "amount_inc_tax": 391084
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0008-2",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "レンタル 2026-08分（架空作品14（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 175766,
+          "tax_amount": 17576,
+          "amount_inc_tax": 193342
+        }
+      ]
+    },
+    {
+      "invoice_id": 9,
+      "invoice_number": "RM-INV-202609-009",
+      "partner_code": "RM-DS-J",
+      "invoice_date": "2026-09-14",
+      "due_date": "2026-10-31",
+      "period": "2026-08",
+      "report_ref": "RM-R-0009",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 542553,
+      "tax_amount": 54255,
+      "amount_inc_tax": 596808,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0009-1",
+          "work_id": 9,
+          "work_code": "YJ-W09",
+          "description": "配給 2026-08分（架空作品09（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 542553,
+          "tax_amount": 54255,
+          "amount_inc_tax": 596808
+        }
+      ]
+    },
+    {
+      "invoice_id": 10,
+      "invoice_number": "RM-INV-202609-010",
+      "partner_code": "RM-TH-V",
+      "invoice_date": "2026-09-15",
+      "due_date": "2026-10-31",
+      "period": "2026-08",
+      "report_ref": "RM-R-0010",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1549290,
+      "tax_amount": 154929,
+      "amount_inc_tax": 1704219,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0010-1",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "劇場 2026-08分（架空作品12（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 1082598,
+          "tax_amount": 108260,
+          "amount_inc_tax": 1190858
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0010-2",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "劇場 2026-08分（架空作品04（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 466692,
+          "tax_amount": 46669,
+          "amount_inc_tax": 513361
+        }
+      ]
+    },
+    {
+      "invoice_id": 11,
+      "invoice_number": "RM-INV-202609-011",
+      "partner_code": "RM-TH-B",
+      "invoice_date": "2026-09-17",
+      "due_date": "2026-10-31",
+      "period": "2026-08",
+      "report_ref": "RM-R-0011",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 2236633,
+      "tax_amount": 223663,
+      "amount_inc_tax": 2460296,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0011-1",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "劇場 2026-08分（架空作品14（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 861116,
+          "tax_amount": 86111,
+          "amount_inc_tax": 947227
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0011-2",
+          "work_id": 6,
+          "work_code": "YJ-W06",
+          "description": "劇場 2026-08分（架空作品06（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 1375517,
+          "tax_amount": 137552,
+          "amount_inc_tax": 1513069
+        }
+      ]
+    },
+    {
+      "invoice_id": 12,
+      "invoice_number": "RM-INV-202609-012",
+      "partner_code": "RM-SEL-D",
+      "invoice_date": "2026-09-17",
+      "due_date": "2026-10-20",
+      "period": "2026-08",
+      "report_ref": "RM-R-0012",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1092529,
+      "tax_amount": 109252,
+      "amount_inc_tax": 1201781,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0012-1",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "パッケージ 2026-08分（架空作品01（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 491301,
+          "tax_amount": 49130,
+          "amount_inc_tax": 540431
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0012-2",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "パッケージ 2026-08分（架空作品08（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 601228,
+          "tax_amount": 60122,
+          "amount_inc_tax": 661350
+        }
+      ]
+    },
+    {
+      "invoice_id": 13,
+      "invoice_number": "RM-INV-202609-013",
+      "partner_code": "RM-DS-J",
+      "invoice_date": "2026-09-25",
+      "due_date": "2026-10-31",
+      "period": "2026-08",
+      "report_ref": "RM-R-0013",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 923009,
+      "tax_amount": 92300,
+      "amount_inc_tax": 1015309,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0013-1",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "配給 2026-08分（架空作品05（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 601188,
+          "tax_amount": 60118,
+          "amount_inc_tax": 661306
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0013-2",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "配給 2026-08分（架空作品14（架空））",
+          "accounting_month": "2026-08",
+          "amount_ex_tax": 321821,
+          "tax_amount": 32182,
+          "amount_inc_tax": 354003
+        }
+      ]
+    },
+    {
+      "invoice_id": 14,
+      "invoice_number": "RM-INV-202610-001",
+      "partner_code": "RM-PF-M",
+      "invoice_date": "2026-10-01",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0014",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 599164,
+      "tax_amount": 59916,
+      "amount_inc_tax": 659080,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0014-1",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "配信 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 599164,
+          "tax_amount": 59916,
+          "amount_inc_tax": 659080
+        }
+      ]
+    },
+    {
+      "invoice_id": 15,
+      "invoice_number": "RM-INV-202610-002",
+      "partner_code": "RM-PF-M",
+      "invoice_date": "2026-10-01",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0015",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 518945,
+      "tax_amount": 51894,
+      "amount_inc_tax": 570839,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0015-1",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "配信 2026-09分（架空作品08（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 265277,
+          "tax_amount": 26527,
+          "amount_inc_tax": 291804
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0015-2",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "配信 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 253668,
+          "tax_amount": 25367,
+          "amount_inc_tax": 279035
+        }
+      ]
+    },
+    {
+      "invoice_id": 16,
+      "invoice_number": "RM-INV-202610-003",
+      "partner_code": "RM-TV-P",
+      "invoice_date": "2026-10-01",
+      "due_date": "2026-11-15",
+      "period": "2026-09",
+      "report_ref": "RM-R-0016",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 704451,
+      "tax_amount": 70445,
+      "amount_inc_tax": 774896,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0016-1",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "放送 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 704451,
+          "tax_amount": 70445,
+          "amount_inc_tax": 774896
+        }
+      ]
+    },
+    {
+      "invoice_id": 17,
+      "invoice_number": "RM-INV-202610-004",
+      "partner_code": "RM-RNT-Q",
+      "invoice_date": "2026-10-01",
+      "due_date": "2026-11-10",
+      "period": "2026-09",
+      "report_ref": "RM-R-0017",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 841563,
+      "tax_amount": 84156,
+      "amount_inc_tax": 925719,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0017-1",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "レンタル 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 327731,
+          "tax_amount": 32773,
+          "amount_inc_tax": 360504
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0017-2",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "レンタル 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 309884,
+          "tax_amount": 30988,
+          "amount_inc_tax": 340872
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0017-3",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "レンタル 2026-09分（架空作品15（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 203948,
+          "tax_amount": 20395,
+          "amount_inc_tax": 224343
+        }
+      ]
+    },
+    {
+      "invoice_id": 18,
+      "invoice_number": "RM-INV-202610-005",
+      "partner_code": "RM-SEL-S",
+      "invoice_date": "2026-10-01",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0018",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 217246,
+      "tax_amount": 21724,
+      "amount_inc_tax": 238970,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0018-1",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "パッケージ 2026-09分（架空作品08（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 217246,
+          "tax_amount": 21724,
+          "amount_inc_tax": 238970
+        }
+      ]
+    },
+    {
+      "invoice_id": 19,
+      "invoice_number": "RM-INV-202610-006",
+      "partner_code": "RM-EDU-Y",
+      "invoice_date": "2026-10-01",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0019",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 371890,
+      "tax_amount": 37189,
+      "amount_inc_tax": 409079,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0019-1",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "教育 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 208823,
+          "tax_amount": 20882,
+          "amount_inc_tax": 229705
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0019-2",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "教育 2026-09分（架空作品10（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 163067,
+          "tax_amount": 16307,
+          "amount_inc_tax": 179374
+        }
+      ]
+    },
+    {
+      "invoice_id": 20,
+      "invoice_number": "RM-INV-202610-007",
+      "partner_code": "RM-HTL-Z",
+      "invoice_date": "2026-10-01",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0020",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 239651,
+      "tax_amount": 23965,
+      "amount_inc_tax": 263616,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0020-1",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "ホテル配信 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 135891,
+          "tax_amount": 13589,
+          "amount_inc_tax": 149480
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0020-2",
+          "work_id": 6,
+          "work_code": "YJ-W06",
+          "description": "ホテル配信 2026-09分（架空作品06（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 9502,
+          "tax_amount": 950,
+          "amount_inc_tax": 10452
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0020-3",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "ホテル配信 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 94258,
+          "tax_amount": 9426,
+          "amount_inc_tax": 103684
+        }
+      ]
+    },
+    {
+      "invoice_id": 21,
+      "invoice_number": "RM-INV-202610-008",
+      "partner_code": "RM-DS-H",
+      "invoice_date": "2026-10-02",
+      "due_date": "2026-11-15",
+      "period": "2026-09",
+      "report_ref": "RM-R-0021",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1635045,
+      "tax_amount": 163504,
+      "amount_inc_tax": 1798549,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0021-1",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "配給 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 784796,
+          "tax_amount": 78479,
+          "amount_inc_tax": 863275
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0021-2",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "配給 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 320871,
+          "tax_amount": 32087,
+          "amount_inc_tax": 352958
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0021-3",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "配給 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 529378,
+          "tax_amount": 52938,
+          "amount_inc_tax": 582316
+        }
+      ]
+    },
+    {
+      "invoice_id": 22,
+      "invoice_number": "RM-INV-202610-009",
+      "partner_code": "RM-PF-K",
+      "invoice_date": "2026-10-02",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0022",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 451667,
+      "tax_amount": 45166,
+      "amount_inc_tax": 496833,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0022-1",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "配信 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 347305,
+          "tax_amount": 34730,
+          "amount_inc_tax": 382035
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0022-2",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "配信 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 104362,
+          "tax_amount": 10436,
+          "amount_inc_tax": 114798
+        }
+      ]
+    },
+    {
+      "invoice_id": 23,
+      "invoice_number": "RM-INV-202610-010",
+      "partner_code": "RM-PF-L",
+      "invoice_date": "2026-10-02",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0023",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 700285,
+      "tax_amount": 70028,
+      "amount_inc_tax": 770313,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0023-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "配信 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 199785,
+          "tax_amount": 19978,
+          "amount_inc_tax": 219763
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0023-2",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "配信 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 500500,
+          "tax_amount": 50050,
+          "amount_inc_tax": 550550
+        }
+      ]
+    },
+    {
+      "invoice_id": 24,
+      "invoice_number": "RM-INV-202610-011",
+      "partner_code": "RM-PF-M",
+      "invoice_date": "2026-10-02",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0024",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 658565,
+      "tax_amount": 65856,
+      "amount_inc_tax": 724421,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0024-1",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "配信 2026-09分（架空作品15（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 658565,
+          "tax_amount": 65856,
+          "amount_inc_tax": 724421
+        }
+      ]
+    },
+    {
+      "invoice_id": 25,
+      "invoice_number": "RM-INV-202610-012",
+      "partner_code": "RM-RNT-Q",
+      "invoice_date": "2026-10-02",
+      "due_date": "2026-11-10",
+      "period": "2026-09",
+      "report_ref": "RM-R-0025",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 35337,
+      "tax_amount": 3533,
+      "amount_inc_tax": 38870,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0025-1",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "レンタル 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 35337,
+          "tax_amount": 3533,
+          "amount_inc_tax": 38870
+        }
+      ]
+    },
+    {
+      "invoice_id": 26,
+      "invoice_number": "RM-INV-202610-013",
+      "partner_code": "RM-RNT-R",
+      "invoice_date": "2026-10-02",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0026",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 305359,
+      "tax_amount": 30535,
+      "amount_inc_tax": 335894,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0026-1",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "レンタル 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 271815,
+          "tax_amount": 27181,
+          "amount_inc_tax": 298996
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0026-2",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "レンタル 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 33544,
+          "tax_amount": 3354,
+          "amount_inc_tax": 36898
+        }
+      ]
+    },
+    {
+      "invoice_id": 27,
+      "invoice_number": "RM-INV-202610-014",
+      "partner_code": "RM-TH-V",
+      "invoice_date": "2026-10-02",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0027",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1856188,
+      "tax_amount": 185618,
+      "amount_inc_tax": 2041806,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0027-1",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "劇場 2026-09分（架空作品15（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 615170,
+          "tax_amount": 61517,
+          "amount_inc_tax": 676687
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0027-2",
+          "work_id": 3,
+          "work_code": "YJ-W03",
+          "description": "劇場 2026-09分（架空作品03（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1241018,
+          "tax_amount": 124101,
+          "amount_inc_tax": 1365119
+        }
+      ]
+    },
+    {
+      "invoice_id": 28,
+      "invoice_number": "RM-INV-202610-015",
+      "partner_code": "RM-PF-W",
+      "invoice_date": "2026-10-02",
+      "due_date": "2026-11-10",
+      "period": "2026-09",
+      "report_ref": "RM-R-0028",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1782163,
+      "tax_amount": 178216,
+      "amount_inc_tax": 1960379,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0028-1",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "配信 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 456830,
+          "tax_amount": 45683,
+          "amount_inc_tax": 502513
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0028-2",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "配信 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 822878,
+          "tax_amount": 82288,
+          "amount_inc_tax": 905166
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0028-3",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "配信 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 502455,
+          "tax_amount": 50245,
+          "amount_inc_tax": 552700
+        }
+      ]
+    },
+    {
+      "invoice_id": 29,
+      "invoice_number": "RM-INV-202610-016",
+      "partner_code": "RM-AIR-X",
+      "invoice_date": "2026-10-02",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0029",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 342136,
+      "tax_amount": 34213,
+      "amount_inc_tax": 376349,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0029-1",
+          "work_id": 9,
+          "work_code": "YJ-W09",
+          "description": "機内上映 2026-09分（架空作品09（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 342136,
+          "tax_amount": 34213,
+          "amount_inc_tax": 376349
+        }
+      ]
+    },
+    {
+      "invoice_id": 30,
+      "invoice_number": "RM-INV-202610-017",
+      "partner_code": "RM-HTL-Z",
+      "invoice_date": "2026-10-02",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0030",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 137688,
+      "tax_amount": 13768,
+      "amount_inc_tax": 151456,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0030-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "ホテル配信 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 137688,
+          "tax_amount": 13768,
+          "amount_inc_tax": 151456
+        }
+      ]
+    },
+    {
+      "invoice_id": 31,
+      "invoice_number": "RM-INV-202610-018",
+      "partner_code": "RM-OS-C",
+      "invoice_date": "2026-10-05",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0031",
+      "currency": "USD",
+      "foreign_amount": "14000.00",
+      "report_date": "2026-09-30",
+      "report_rate": "147.0600",
+      "amount_ex_tax": 2058840,
+      "tax_amount": 0,
+      "amount_inc_tax": 2058840,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0031-1",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "海外 2026-07〜09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 2058840,
+          "tax_amount": 0,
+          "amount_inc_tax": 2058840
+        }
+      ]
+    },
+    {
+      "invoice_id": 32,
+      "invoice_number": "RM-INV-202610-019",
+      "partner_code": "RM-PF-E",
+      "invoice_date": "2026-10-05",
+      "due_date": "2026-11-10",
+      "period": "2026-09",
+      "report_ref": "RM-R-0032",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 836696,
+      "tax_amount": 83669,
+      "amount_inc_tax": 920365,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0032-1",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "配信 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 836696,
+          "tax_amount": 83669,
+          "amount_inc_tax": 920365
+        }
+      ]
+    },
+    {
+      "invoice_id": 33,
+      "invoice_number": "RM-INV-202610-020",
+      "partner_code": "RM-OS-G",
+      "invoice_date": "2026-10-05",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0033",
+      "currency": "EUR",
+      "foreign_amount": "5100.00",
+      "report_date": "2026-09-30",
+      "report_rate": "162.7500",
+      "amount_ex_tax": 830025,
+      "tax_amount": 0,
+      "amount_inc_tax": 830025,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0033-1",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "海外 2026-07〜09分（架空作品15（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 830025,
+          "tax_amount": 0,
+          "amount_inc_tax": 830025
+        }
+      ]
+    },
+    {
+      "invoice_id": 34,
+      "invoice_number": "RM-INV-202610-021",
+      "partner_code": "RM-PF-K",
+      "invoice_date": "2026-10-05",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0034",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1221651,
+      "tax_amount": 122165,
+      "amount_inc_tax": 1343816,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0034-1",
+          "work_id": 3,
+          "work_code": "YJ-W03",
+          "description": "配信 2026-09分（架空作品03（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 613674,
+          "tax_amount": 61367,
+          "amount_inc_tax": 675041
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0034-2",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "配信 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 421109,
+          "tax_amount": 42111,
+          "amount_inc_tax": 463220
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0034-3",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "配信 2026-09分（架空作品10（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 186868,
+          "tax_amount": 18687,
+          "amount_inc_tax": 205555
+        }
+      ]
+    },
+    {
+      "invoice_id": 35,
+      "invoice_number": "RM-INV-202610-022",
+      "partner_code": "RM-TV-N",
+      "invoice_date": "2026-10-05",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0035",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 418000,
+      "tax_amount": 41800,
+      "amount_inc_tax": 459800,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0035-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "放送 定額の放送権料 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 418000,
+          "tax_amount": 41800,
+          "amount_inc_tax": 459800
+        }
+      ]
+    },
+    {
+      "invoice_id": 36,
+      "invoice_number": "RM-INV-202610-023",
+      "partner_code": "RM-RNT-Q",
+      "invoice_date": "2026-10-05",
+      "due_date": "2026-11-10",
+      "period": "2026-09",
+      "report_ref": "RM-R-0036",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 574700,
+      "tax_amount": 57470,
+      "amount_inc_tax": 632170,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0036-1",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "レンタル 2026-09分（架空作品10（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 265479,
+          "tax_amount": 26548,
+          "amount_inc_tax": 292027
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0036-2",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "レンタル 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 309221,
+          "tax_amount": 30922,
+          "amount_inc_tax": 340143
+        }
+      ]
+    },
+    {
+      "invoice_id": 37,
+      "invoice_number": "RM-INV-202610-024",
+      "partner_code": "RM-RNT-R",
+      "invoice_date": "2026-10-05",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0037",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 254102,
+      "tax_amount": 25410,
+      "amount_inc_tax": 279512,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0037-1",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "レンタル 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 254102,
+          "tax_amount": 25410,
+          "amount_inc_tax": 279512
+        }
+      ]
+    },
+    {
+      "invoice_id": 38,
+      "invoice_number": "RM-INV-202610-025",
+      "partner_code": "RM-AIR-X",
+      "invoice_date": "2026-10-05",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0038",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 409589,
+      "tax_amount": 40958,
+      "amount_inc_tax": 450547,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0038-1",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "機内上映 2026-09分（架空作品14（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 409589,
+          "tax_amount": 40958,
+          "amount_inc_tax": 450547
+        }
+      ]
+    },
+    {
+      "invoice_id": 39,
+      "invoice_number": "RM-INV-202610-026",
+      "partner_code": "RM-DS-H",
+      "invoice_date": "2026-10-06",
+      "due_date": "2026-11-15",
+      "period": "2026-09",
+      "report_ref": "RM-R-0039",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 738419,
+      "tax_amount": 73841,
+      "amount_inc_tax": 812260,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0039-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "配給 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 431912,
+          "tax_amount": 43191,
+          "amount_inc_tax": 475103
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0039-2",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "配給 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 306507,
+          "tax_amount": 30650,
+          "amount_inc_tax": 337157
+        }
+      ]
+    },
+    {
+      "invoice_id": 40,
+      "invoice_number": "RM-INV-202610-027",
+      "partner_code": "RM-PF-K",
+      "invoice_date": "2026-10-06",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0040",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 785769,
+      "tax_amount": 78576,
+      "amount_inc_tax": 864345,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0040-1",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "配信 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 32950,
+          "tax_amount": 3295,
+          "amount_inc_tax": 36245
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0040-2",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "配信 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 752819,
+          "tax_amount": 75281,
+          "amount_inc_tax": 828100
+        }
+      ]
+    },
+    {
+      "invoice_id": 41,
+      "invoice_number": "RM-INV-202610-028",
+      "partner_code": "RM-TV-P",
+      "invoice_date": "2026-10-06",
+      "due_date": "2026-11-15",
+      "period": "2026-09",
+      "report_ref": "RM-R-0041",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 2877570,
+      "tax_amount": 287757,
+      "amount_inc_tax": 3165327,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0041-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "放送 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 580766,
+          "tax_amount": 58077,
+          "amount_inc_tax": 638843
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0041-2",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "放送 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1105054,
+          "tax_amount": 110505,
+          "amount_inc_tax": 1215559
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0041-3",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "放送 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1191750,
+          "tax_amount": 119175,
+          "amount_inc_tax": 1310925
+        }
+      ]
+    },
+    {
+      "invoice_id": 42,
+      "invoice_number": "RM-INV-202610-029",
+      "partner_code": "RM-TH-V",
+      "invoice_date": "2026-10-06",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0042",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 2099824,
+      "tax_amount": 209982,
+      "amount_inc_tax": 2309806,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0042-1",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "劇場 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1361932,
+          "tax_amount": 136193,
+          "amount_inc_tax": 1498125
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0042-2",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "劇場 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 737892,
+          "tax_amount": 73789,
+          "amount_inc_tax": 811681
+        }
+      ]
+    },
+    {
+      "invoice_id": 43,
+      "invoice_number": "RM-INV-202610-030",
+      "partner_code": "RM-SEL-D",
+      "invoice_date": "2026-10-07",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0043",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 795287,
+      "tax_amount": 79528,
+      "amount_inc_tax": 874815,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0043-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "パッケージ 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 384798,
+          "tax_amount": 38479,
+          "amount_inc_tax": 423277
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0043-2",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "パッケージ 2026-09分（架空作品08（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 113249,
+          "tax_amount": 11325,
+          "amount_inc_tax": 124574
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0043-3",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "パッケージ 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 297240,
+          "tax_amount": 29724,
+          "amount_inc_tax": 326964
+        }
+      ]
+    },
+    {
+      "invoice_id": 44,
+      "invoice_number": "RM-INV-202610-031",
+      "partner_code": "RM-TV-N",
+      "invoice_date": "2026-10-07",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0044",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 2370037,
+      "tax_amount": 237003,
+      "amount_inc_tax": 2607040,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0044-1",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "放送 2026-09分（架空作品14（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1075165,
+          "tax_amount": 107516,
+          "amount_inc_tax": 1182681
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0044-2",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "放送 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 682723,
+          "tax_amount": 68272,
+          "amount_inc_tax": 750995
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0044-3",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "放送 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 612149,
+          "tax_amount": 61215,
+          "amount_inc_tax": 673364
+        }
+      ]
+    },
+    {
+      "invoice_id": 45,
+      "invoice_number": "RM-INV-202610-032",
+      "partner_code": "RM-SEL-S",
+      "invoice_date": "2026-10-07",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0045",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 531932,
+      "tax_amount": 53193,
+      "amount_inc_tax": 585125,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0045-1",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "パッケージ 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 229595,
+          "tax_amount": 22959,
+          "amount_inc_tax": 252554
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0045-2",
+          "work_id": 6,
+          "work_code": "YJ-W06",
+          "description": "パッケージ 2026-09分（架空作品06（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 302337,
+          "tax_amount": 30234,
+          "amount_inc_tax": 332571
+        }
+      ]
+    },
+    {
+      "invoice_id": 46,
+      "invoice_number": "RM-INV-202610-033",
+      "partner_code": "RM-TH-V",
+      "invoice_date": "2026-10-07",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0046",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 415729,
+      "tax_amount": 41572,
+      "amount_inc_tax": 457301,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0046-1",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "劇場 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 231071,
+          "tax_amount": 23107,
+          "amount_inc_tax": 254178
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0046-2",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "劇場 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 184658,
+          "tax_amount": 18465,
+          "amount_inc_tax": 203123
+        }
+      ]
+    },
+    {
+      "invoice_id": 47,
+      "invoice_number": "RM-INV-202610-034",
+      "partner_code": "RM-TH-V",
+      "invoice_date": "2026-10-07",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0047",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 907005,
+      "tax_amount": 90700,
+      "amount_inc_tax": 997705,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0047-1",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "劇場 2026-09分（架空作品14（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 306996,
+          "tax_amount": 30699,
+          "amount_inc_tax": 337695
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0047-2",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "劇場 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 600009,
+          "tax_amount": 60001,
+          "amount_inc_tax": 660010
+        }
+      ]
+    },
+    {
+      "invoice_id": 48,
+      "invoice_number": "RM-INV-202610-035",
+      "partner_code": "RM-PF-K",
+      "invoice_date": "2026-10-08",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0048",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 399595,
+      "tax_amount": 39959,
+      "amount_inc_tax": 439554,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0048-1",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "配信 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 209762,
+          "tax_amount": 20976,
+          "amount_inc_tax": 230738
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0048-2",
+          "work_id": 6,
+          "work_code": "YJ-W06",
+          "description": "配信 2026-09分（架空作品06（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 189833,
+          "tax_amount": 18983,
+          "amount_inc_tax": 208816
+        }
+      ]
+    },
+    {
+      "invoice_id": 49,
+      "invoice_number": "RM-INV-202610-036",
+      "partner_code": "RM-PF-L",
+      "invoice_date": "2026-10-08",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0049",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 989496,
+      "tax_amount": 98949,
+      "amount_inc_tax": 1088445,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0049-1",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "配信 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 187833,
+          "tax_amount": 18783,
+          "amount_inc_tax": 206616
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0049-2",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "配信 2026-09分（架空作品15（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 360452,
+          "tax_amount": 36045,
+          "amount_inc_tax": 396497
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0049-3",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "配信 2026-09分（架空作品14（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 441211,
+          "tax_amount": 44121,
+          "amount_inc_tax": 485332
+        }
+      ]
+    },
+    {
+      "invoice_id": 50,
+      "invoice_number": "RM-INV-202610-037",
+      "partner_code": "RM-TV-N",
+      "invoice_date": "2026-10-08",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0050",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 2411902,
+      "tax_amount": 241190,
+      "amount_inc_tax": 2653092,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0050-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "放送 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1143616,
+          "tax_amount": 114362,
+          "amount_inc_tax": 1257978
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0050-2",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "放送 2026-09分（架空作品10（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 757412,
+          "tax_amount": 75741,
+          "amount_inc_tax": 833153
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0050-3",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "放送 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 510874,
+          "tax_amount": 51087,
+          "amount_inc_tax": 561961
+        }
+      ]
+    },
+    {
+      "invoice_id": 51,
+      "invoice_number": "RM-INV-202610-038",
+      "partner_code": "RM-RNT-Q",
+      "invoice_date": "2026-10-08",
+      "due_date": "2026-11-10",
+      "period": "2026-09",
+      "report_ref": "RM-R-0051",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 433269,
+      "tax_amount": 43326,
+      "amount_inc_tax": 476595,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0051-1",
+          "work_id": 6,
+          "work_code": "YJ-W06",
+          "description": "レンタル 2026-09分（架空作品06（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 164980,
+          "tax_amount": 16498,
+          "amount_inc_tax": 181478
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0051-2",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "レンタル 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 208020,
+          "tax_amount": 20802,
+          "amount_inc_tax": 228822
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0051-3",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "レンタル 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 60269,
+          "tax_amount": 6026,
+          "amount_inc_tax": 66295
+        }
+      ]
+    },
+    {
+      "invoice_id": 52,
+      "invoice_number": "RM-INV-202610-039",
+      "partner_code": "RM-SEL-S",
+      "invoice_date": "2026-10-08",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0052",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 751039,
+      "tax_amount": 75103,
+      "amount_inc_tax": 826142,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0052-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "パッケージ 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 458028,
+          "tax_amount": 45802,
+          "amount_inc_tax": 503830
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0052-2",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "パッケージ 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 103001,
+          "tax_amount": 10300,
+          "amount_inc_tax": 113301
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0052-3",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "パッケージ 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 190010,
+          "tax_amount": 19001,
+          "amount_inc_tax": 209011
+        }
+      ]
+    },
+    {
+      "invoice_id": 53,
+      "invoice_number": "RM-INV-202610-040",
+      "partner_code": "RM-PF-W",
+      "invoice_date": "2026-10-08",
+      "due_date": "2026-11-10",
+      "period": "2026-09",
+      "report_ref": "RM-R-0053",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 2000159,
+      "tax_amount": 200015,
+      "amount_inc_tax": 2200174,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0053-1",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "配信 2026-09分（架空作品10（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 660932,
+          "tax_amount": 66093,
+          "amount_inc_tax": 727025
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0053-2",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "配信 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 755848,
+          "tax_amount": 75584,
+          "amount_inc_tax": 831432
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0053-3",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "配信 2026-09分（架空作品08（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 583379,
+          "tax_amount": 58338,
+          "amount_inc_tax": 641717
+        }
+      ]
+    },
+    {
+      "invoice_id": 54,
+      "invoice_number": "RM-INV-202610-041",
+      "partner_code": "RM-PF-A",
+      "invoice_date": "2026-10-09",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0054",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 412350,
+      "tax_amount": 41235,
+      "amount_inc_tax": 453585,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0054-1",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "配信 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 412350,
+          "tax_amount": 41235,
+          "amount_inc_tax": 453585
+        }
+      ]
+    },
+    {
+      "invoice_id": 55,
+      "invoice_number": "RM-INV-202610-042",
+      "partner_code": "RM-SEL-D",
+      "invoice_date": "2026-10-09",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0055",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 619452,
+      "tax_amount": 61945,
+      "amount_inc_tax": 681397,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0055-1",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "パッケージ 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 386849,
+          "tax_amount": 38685,
+          "amount_inc_tax": 425534
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0055-2",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "パッケージ 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 232603,
+          "tax_amount": 23260,
+          "amount_inc_tax": 255863
+        }
+      ]
+    },
+    {
+      "invoice_id": 56,
+      "invoice_number": "RM-INV-202610-043",
+      "partner_code": "RM-PF-M",
+      "invoice_date": "2026-10-09",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0056",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1116215,
+      "tax_amount": 111621,
+      "amount_inc_tax": 1227836,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0056-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "配信 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 52048,
+          "tax_amount": 5205,
+          "amount_inc_tax": 57253
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0056-2",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "配信 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 343506,
+          "tax_amount": 34350,
+          "amount_inc_tax": 377856
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0056-3",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "配信 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 720661,
+          "tax_amount": 72066,
+          "amount_inc_tax": 792727
+        }
+      ]
+    },
+    {
+      "invoice_id": 57,
+      "invoice_number": "RM-INV-202610-044",
+      "partner_code": "RM-RNT-R",
+      "invoice_date": "2026-10-09",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0057",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 763781,
+      "tax_amount": 76378,
+      "amount_inc_tax": 840159,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0057-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "レンタル 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 321848,
+          "tax_amount": 32185,
+          "amount_inc_tax": 354033
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0057-2",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "レンタル 2026-09分（架空作品14（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 98456,
+          "tax_amount": 9845,
+          "amount_inc_tax": 108301
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0057-3",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "レンタル 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 343477,
+          "tax_amount": 34348,
+          "amount_inc_tax": 377825
+        }
+      ]
+    },
+    {
+      "invoice_id": 58,
+      "invoice_number": "RM-INV-202610-045",
+      "partner_code": "RM-SEL-T",
+      "invoice_date": "2026-10-09",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0058",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 224818,
+      "tax_amount": 22481,
+      "amount_inc_tax": 247299,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0058-1",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "パッケージ 2026-09分（架空作品08（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 224818,
+          "tax_amount": 22481,
+          "amount_inc_tax": 247299
+        }
+      ]
+    },
+    {
+      "invoice_id": 59,
+      "invoice_number": "RM-INV-202610-046",
+      "partner_code": "RM-TH-U",
+      "invoice_date": "2026-10-09",
+      "due_date": "2026-11-15",
+      "period": "2026-09",
+      "report_ref": "RM-R-0059",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 2119413,
+      "tax_amount": 211941,
+      "amount_inc_tax": 2331354,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0059-1",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "劇場 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 848687,
+          "tax_amount": 84869,
+          "amount_inc_tax": 933556
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0059-2",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "劇場 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 381236,
+          "tax_amount": 38123,
+          "amount_inc_tax": 419359
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0059-3",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "劇場 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 889490,
+          "tax_amount": 88949,
+          "amount_inc_tax": 978439
+        }
+      ]
+    },
+    {
+      "invoice_id": 60,
+      "invoice_number": "RM-INV-202610-047",
+      "partner_code": "RM-TH-U",
+      "invoice_date": "2026-10-09",
+      "due_date": "2026-11-15",
+      "period": "2026-09",
+      "report_ref": "RM-R-0060",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1927001,
+      "tax_amount": 192700,
+      "amount_inc_tax": 2119701,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0060-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "劇場 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 334210,
+          "tax_amount": 33421,
+          "amount_inc_tax": 367631
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0060-2",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "劇場 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1311782,
+          "tax_amount": 131178,
+          "amount_inc_tax": 1442960
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0060-3",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "劇場 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 281009,
+          "tax_amount": 28101,
+          "amount_inc_tax": 309110
+        }
+      ]
+    },
+    {
+      "invoice_id": 61,
+      "invoice_number": "RM-INV-202610-048",
+      "partner_code": "RM-PF-W",
+      "invoice_date": "2026-10-09",
+      "due_date": "2026-11-10",
+      "period": "2026-09",
+      "report_ref": "RM-R-0061",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 821359,
+      "tax_amount": 82135,
+      "amount_inc_tax": 903494,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0061-1",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "配信 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 821359,
+          "tax_amount": 82135,
+          "amount_inc_tax": 903494
+        }
+      ]
+    },
+    {
+      "invoice_id": 62,
+      "invoice_number": "RM-INV-202610-049",
+      "partner_code": "RM-DS-J",
+      "invoice_date": "2026-10-13",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0062",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1243289,
+      "tax_amount": 124328,
+      "amount_inc_tax": 1367617,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0062-1",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "配給 2026-09分（架空作品10（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 614928,
+          "tax_amount": 61492,
+          "amount_inc_tax": 676420
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0062-2",
+          "work_id": 3,
+          "work_code": "YJ-W03",
+          "description": "配給 2026-09分（架空作品03（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 212889,
+          "tax_amount": 21289,
+          "amount_inc_tax": 234178
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0062-3",
+          "work_id": 9,
+          "work_code": "YJ-W09",
+          "description": "配給 2026-09分（架空作品09（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 415472,
+          "tax_amount": 41547,
+          "amount_inc_tax": 457019
+        }
+      ]
+    },
+    {
+      "invoice_id": 63,
+      "invoice_number": "RM-INV-202610-050",
+      "partner_code": "RM-RNT-Q",
+      "invoice_date": "2026-10-13",
+      "due_date": "2026-11-10",
+      "period": "2026-09",
+      "report_ref": "RM-R-0063",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 561353,
+      "tax_amount": 56135,
+      "amount_inc_tax": 617488,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0063-1",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "レンタル 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 41214,
+          "tax_amount": 4121,
+          "amount_inc_tax": 45335
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0063-2",
+          "work_id": 6,
+          "work_code": "YJ-W06",
+          "description": "レンタル 2026-09分（架空作品06（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 286737,
+          "tax_amount": 28674,
+          "amount_inc_tax": 315411
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0063-3",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "レンタル 2026-09分（架空作品15（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 233402,
+          "tax_amount": 23340,
+          "amount_inc_tax": 256742
+        }
+      ]
+    },
+    {
+      "invoice_id": 64,
+      "invoice_number": "RM-INV-202610-051",
+      "partner_code": "RM-SEL-S",
+      "invoice_date": "2026-10-13",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0064",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 661645,
+      "tax_amount": 66164,
+      "amount_inc_tax": 727809,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0064-1",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "パッケージ 2026-09分（架空作品10（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 619370,
+          "tax_amount": 61937,
+          "amount_inc_tax": 681307
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0064-2",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "パッケージ 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 42275,
+          "tax_amount": 4227,
+          "amount_inc_tax": 46502
+        }
+      ]
+    },
+    {
+      "invoice_id": 65,
+      "invoice_number": "RM-INV-202610-052",
+      "partner_code": "RM-TH-V",
+      "invoice_date": "2026-10-13",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0065",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1044407,
+      "tax_amount": 104440,
+      "amount_inc_tax": 1148847,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0065-1",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "劇場 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1044407,
+          "tax_amount": 104440,
+          "amount_inc_tax": 1148847
+        }
+      ]
+    },
+    {
+      "invoice_id": 66,
+      "invoice_number": "RM-INV-202610-053",
+      "partner_code": "RM-PF-K",
+      "invoice_date": "2026-10-14",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0066",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1344803,
+      "tax_amount": 134480,
+      "amount_inc_tax": 1479283,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0066-1",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "配信 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 691424,
+          "tax_amount": 69142,
+          "amount_inc_tax": 760566
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0066-2",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "配信 2026-09分（架空作品08（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 597986,
+          "tax_amount": 59799,
+          "amount_inc_tax": 657785
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0066-3",
+          "work_id": 6,
+          "work_code": "YJ-W06",
+          "description": "配信 2026-09分（架空作品06（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 55393,
+          "tax_amount": 5539,
+          "amount_inc_tax": 60932
+        }
+      ]
+    },
+    {
+      "invoice_id": 67,
+      "invoice_number": "RM-INV-202610-054",
+      "partner_code": "RM-SEL-D",
+      "invoice_date": "2026-10-15",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0067",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 330336,
+      "tax_amount": 33033,
+      "amount_inc_tax": 363369,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0067-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "パッケージ 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 330336,
+          "tax_amount": 33033,
+          "amount_inc_tax": 363369
+        }
+      ]
+    },
+    {
+      "invoice_id": 68,
+      "invoice_number": "RM-INV-202610-055",
+      "partner_code": "RM-DS-F",
+      "invoice_date": "2026-10-15",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0068",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1500000,
+      "tax_amount": 150000,
+      "amount_inc_tax": 1650000,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0068-1",
+          "work_id": 9,
+          "work_code": "YJ-W09",
+          "description": "配給 2026-09分（架空作品09（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1500000,
+          "tax_amount": 150000,
+          "amount_inc_tax": 1650000
+        }
+      ]
+    },
+    {
+      "invoice_id": 69,
+      "invoice_number": "RM-INV-202610-056",
+      "partner_code": "RM-DS-F",
+      "invoice_date": "2026-10-15",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0069",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1267227,
+      "tax_amount": 126722,
+      "amount_inc_tax": 1393949,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0069-1",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "配給 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 887106,
+          "tax_amount": 88710,
+          "amount_inc_tax": 975816
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0069-2",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "配給 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 380121,
+          "tax_amount": 38012,
+          "amount_inc_tax": 418133
+        }
+      ]
+    },
+    {
+      "invoice_id": 70,
+      "invoice_number": "RM-INV-202610-057",
+      "partner_code": "RM-DS-H",
+      "invoice_date": "2026-10-15",
+      "due_date": "2026-11-15",
+      "period": "2026-09",
+      "report_ref": "RM-R-0070",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 70000,
+      "tax_amount": 7000,
+      "amount_inc_tax": 77000,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0070-1",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "配給 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 70000,
+          "tax_amount": 7000,
+          "amount_inc_tax": 77000
+        }
+      ]
+    },
+    {
+      "invoice_id": 71,
+      "invoice_number": "RM-INV-202610-058",
+      "partner_code": "RM-PF-L",
+      "invoice_date": "2026-10-15",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0071",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 510093,
+      "tax_amount": 51009,
+      "amount_inc_tax": 561102,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0071-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "配信 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 40452,
+          "tax_amount": 4045,
+          "amount_inc_tax": 44497
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0071-2",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "配信 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 469641,
+          "tax_amount": 46964,
+          "amount_inc_tax": 516605
+        }
+      ]
+    },
+    {
+      "invoice_id": 72,
+      "invoice_number": "RM-INV-202610-059",
+      "partner_code": "RM-RNT-R",
+      "invoice_date": "2026-10-15",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0072",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 223419,
+      "tax_amount": 22341,
+      "amount_inc_tax": 245760,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0072-1",
+          "work_id": 3,
+          "work_code": "YJ-W03",
+          "description": "レンタル 2026-09分（架空作品03（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 223419,
+          "tax_amount": 22341,
+          "amount_inc_tax": 245760
+        }
+      ]
+    },
+    {
+      "invoice_id": 73,
+      "invoice_number": "RM-INV-202610-060",
+      "partner_code": "RM-TH-V",
+      "invoice_date": "2026-10-15",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0073",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 2141054,
+      "tax_amount": 214105,
+      "amount_inc_tax": 2355159,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0073-1",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "劇場 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 828592,
+          "tax_amount": 82859,
+          "amount_inc_tax": 911451
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0073-2",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "劇場 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1312462,
+          "tax_amount": 131246,
+          "amount_inc_tax": 1443708
+        }
+      ]
+    },
+    {
+      "invoice_id": 74,
+      "invoice_number": "RM-INV-202610-061",
+      "partner_code": "RM-HTL-Z",
+      "invoice_date": "2026-10-15",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0074",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 144863,
+      "tax_amount": 14486,
+      "amount_inc_tax": 159349,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0074-1",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "ホテル配信 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 72675,
+          "tax_amount": 7267,
+          "amount_inc_tax": 79942
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0074-2",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "ホテル配信 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 72188,
+          "tax_amount": 7219,
+          "amount_inc_tax": 79407
+        }
+      ]
+    },
+    {
+      "invoice_id": 75,
+      "invoice_number": "RM-INV-202610-062",
+      "partner_code": "RM-SEL-D",
+      "invoice_date": "2026-10-16",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0075",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 162461,
+      "tax_amount": 16246,
+      "amount_inc_tax": 178707,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0075-1",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "パッケージ 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 162461,
+          "tax_amount": 16246,
+          "amount_inc_tax": 178707
+        }
+      ]
+    },
+    {
+      "invoice_id": 76,
+      "invoice_number": "RM-INV-202610-063",
+      "partner_code": "RM-SEL-D",
+      "invoice_date": "2026-10-16",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0076",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 710892,
+      "tax_amount": 71089,
+      "amount_inc_tax": 781981,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0076-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "パッケージ 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 541125,
+          "tax_amount": 54112,
+          "amount_inc_tax": 595237
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0076-2",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "パッケージ 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 169767,
+          "tax_amount": 16977,
+          "amount_inc_tax": 186744
+        }
+      ]
+    },
+    {
+      "invoice_id": 77,
+      "invoice_number": "RM-INV-202610-064",
+      "partner_code": "RM-DS-F",
+      "invoice_date": "2026-10-16",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0077",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 618722,
+      "tax_amount": 61872,
+      "amount_inc_tax": 680594,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0077-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "配給 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 618722,
+          "tax_amount": 61872,
+          "amount_inc_tax": 680594
+        }
+      ]
+    },
+    {
+      "invoice_id": 78,
+      "invoice_number": "RM-INV-202610-065",
+      "partner_code": "RM-PF-K",
+      "invoice_date": "2026-10-16",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0078",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 613466,
+      "tax_amount": 61346,
+      "amount_inc_tax": 674812,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0078-1",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "配信 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 487752,
+          "tax_amount": 48775,
+          "amount_inc_tax": 536527
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0078-2",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "配信 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 125714,
+          "tax_amount": 12571,
+          "amount_inc_tax": 138285
+        }
+      ]
+    },
+    {
+      "invoice_id": 79,
+      "invoice_number": "RM-INV-202610-066",
+      "partner_code": "RM-PF-K",
+      "invoice_date": "2026-10-16",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0079",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 840132,
+      "tax_amount": 84013,
+      "amount_inc_tax": 924145,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0079-1",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "配信 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 840132,
+          "tax_amount": 84013,
+          "amount_inc_tax": 924145
+        }
+      ]
+    },
+    {
+      "invoice_id": 80,
+      "invoice_number": "RM-INV-202610-067",
+      "partner_code": "RM-TV-N",
+      "invoice_date": "2026-10-16",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0080",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 778619,
+      "tax_amount": 77861,
+      "amount_inc_tax": 856480,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0080-1",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "放送 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 778619,
+          "tax_amount": 77861,
+          "amount_inc_tax": 856480
+        }
+      ]
+    },
+    {
+      "invoice_id": 81,
+      "invoice_number": "RM-INV-202610-068",
+      "partner_code": "RM-SEL-S",
+      "invoice_date": "2026-10-16",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0081",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 814944,
+      "tax_amount": 81494,
+      "amount_inc_tax": 896438,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0081-1",
+          "work_id": 3,
+          "work_code": "YJ-W03",
+          "description": "パッケージ 2026-09分（架空作品03（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 269563,
+          "tax_amount": 26956,
+          "amount_inc_tax": 296519
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0081-2",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "パッケージ 2026-09分（架空作品15（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 545381,
+          "tax_amount": 54538,
+          "amount_inc_tax": 599919
+        }
+      ]
+    },
+    {
+      "invoice_id": 82,
+      "invoice_number": "RM-INV-202610-069",
+      "partner_code": "RM-SEL-T",
+      "invoice_date": "2026-10-16",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0082",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 702457,
+      "tax_amount": 70245,
+      "amount_inc_tax": 772702,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0082-1",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "パッケージ 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 219574,
+          "tax_amount": 21957,
+          "amount_inc_tax": 241531
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0082-2",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "パッケージ 2026-09分（架空作品10（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 482883,
+          "tax_amount": 48288,
+          "amount_inc_tax": 531171
+        }
+      ]
+    },
+    {
+      "invoice_id": 83,
+      "invoice_number": "RM-INV-202610-070",
+      "partner_code": "RM-SEL-T",
+      "invoice_date": "2026-10-16",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0083",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 865263,
+      "tax_amount": 86526,
+      "amount_inc_tax": 951789,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0083-1",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "パッケージ 2026-09分（架空作品14（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 450810,
+          "tax_amount": 45081,
+          "amount_inc_tax": 495891
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0083-2",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "パッケージ 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 414453,
+          "tax_amount": 41445,
+          "amount_inc_tax": 455898
+        }
+      ]
+    },
+    {
+      "invoice_id": 84,
+      "invoice_number": "RM-INV-202610-071",
+      "partner_code": "RM-HTL-Z",
+      "invoice_date": "2026-10-16",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0084",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 69753,
+      "tax_amount": 6975,
+      "amount_inc_tax": 76728,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0084-1",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "ホテル配信 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 69753,
+          "tax_amount": 6975,
+          "amount_inc_tax": 76728
+        }
+      ]
+    },
+    {
+      "invoice_id": 85,
+      "invoice_number": "RM-INV-202610-072",
+      "partner_code": "RM-TH-B",
+      "invoice_date": "2026-10-19",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0085",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 835653,
+      "tax_amount": 83565,
+      "amount_inc_tax": 919218,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0085-1",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "劇場 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 132031,
+          "tax_amount": 13203,
+          "amount_inc_tax": 145234
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0085-2",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "劇場 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 703622,
+          "tax_amount": 70362,
+          "amount_inc_tax": 773984
+        }
+      ]
+    },
+    {
+      "invoice_id": 86,
+      "invoice_number": "RM-INV-202610-073",
+      "partner_code": "RM-DS-F",
+      "invoice_date": "2026-10-19",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0086",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 179064,
+      "tax_amount": 17906,
+      "amount_inc_tax": 196970,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0086-1",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "配給 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 179064,
+          "tax_amount": 17906,
+          "amount_inc_tax": 196970
+        }
+      ]
+    },
+    {
+      "invoice_id": 87,
+      "invoice_number": "RM-INV-202610-074",
+      "partner_code": "RM-PF-K",
+      "invoice_date": "2026-10-19",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0087",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 648457,
+      "tax_amount": 64845,
+      "amount_inc_tax": 713302,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0087-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "配信 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 648457,
+          "tax_amount": 64845,
+          "amount_inc_tax": 713302
+        }
+      ]
+    },
+    {
+      "invoice_id": 88,
+      "invoice_number": "RM-INV-202610-075",
+      "partner_code": "RM-PF-L",
+      "invoice_date": "2026-10-19",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0088",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 853387,
+      "tax_amount": 85338,
+      "amount_inc_tax": 938725,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0088-1",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "配信 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 350483,
+          "tax_amount": 35048,
+          "amount_inc_tax": 385531
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0088-2",
+          "work_id": 9,
+          "work_code": "YJ-W09",
+          "description": "配信 2026-09分（架空作品09（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 502904,
+          "tax_amount": 50290,
+          "amount_inc_tax": 553194
+        }
+      ]
+    },
+    {
+      "invoice_id": 89,
+      "invoice_number": "RM-INV-202610-076",
+      "partner_code": "RM-EDU-Y",
+      "invoice_date": "2026-10-19",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0089",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 189603,
+      "tax_amount": 18960,
+      "amount_inc_tax": 208563,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0089-1",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "教育 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 189603,
+          "tax_amount": 18960,
+          "amount_inc_tax": 208563
+        }
+      ]
+    },
+    {
+      "invoice_id": 90,
+      "invoice_number": "RM-INV-202610-077",
+      "partner_code": "RM-TH-B",
+      "invoice_date": "2026-10-20",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0090",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 604746,
+      "tax_amount": 60474,
+      "amount_inc_tax": 665220,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0090-1",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "劇場 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 604746,
+          "tax_amount": 60474,
+          "amount_inc_tax": 665220
+        }
+      ]
+    },
+    {
+      "invoice_id": 91,
+      "invoice_number": "RM-INV-202610-078",
+      "partner_code": "RM-SEL-D",
+      "invoice_date": "2026-10-20",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0091",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 500000,
+      "tax_amount": 50000,
+      "amount_inc_tax": 550000,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0091-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "パッケージ 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 500000,
+          "tax_amount": 50000,
+          "amount_inc_tax": 550000
+        }
+      ]
+    },
+    {
+      "invoice_id": 92,
+      "invoice_number": "RM-INV-202610-079",
+      "partner_code": "RM-SEL-D",
+      "invoice_date": "2026-10-20",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0092",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1111478,
+      "tax_amount": 111147,
+      "amount_inc_tax": 1222625,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0092-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "パッケージ 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 560565,
+          "tax_amount": 56056,
+          "amount_inc_tax": 616621
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0092-2",
+          "work_id": 3,
+          "work_code": "YJ-W03",
+          "description": "パッケージ 2026-09分（架空作品03（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 550913,
+          "tax_amount": 55091,
+          "amount_inc_tax": 606004
+        }
+      ]
+    },
+    {
+      "invoice_id": 93,
+      "invoice_number": "RM-INV-202610-080",
+      "partner_code": "RM-PF-K",
+      "invoice_date": "2026-10-20",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0093",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 458184,
+      "tax_amount": 45818,
+      "amount_inc_tax": 504002,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0093-1",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "配信 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 458184,
+          "tax_amount": 45818,
+          "amount_inc_tax": 504002
+        }
+      ]
+    },
+    {
+      "invoice_id": 94,
+      "invoice_number": "RM-INV-202610-081",
+      "partner_code": "RM-PF-L",
+      "invoice_date": "2026-10-20",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0094",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 561006,
+      "tax_amount": 56100,
+      "amount_inc_tax": 617106,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0094-1",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "配信 2026-09分（架空作品10（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 561006,
+          "tax_amount": 56100,
+          "amount_inc_tax": 617106
+        }
+      ]
+    },
+    {
+      "invoice_id": 95,
+      "invoice_number": "RM-INV-202610-082",
+      "partner_code": "RM-PF-M",
+      "invoice_date": "2026-10-20",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0095",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1467294,
+      "tax_amount": 146729,
+      "amount_inc_tax": 1614023,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0095-1",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "配信 2026-09分（架空作品14（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 696106,
+          "tax_amount": 69610,
+          "amount_inc_tax": 765716
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0095-2",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "配信 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 771188,
+          "tax_amount": 77119,
+          "amount_inc_tax": 848307
+        }
+      ]
+    },
+    {
+      "invoice_id": 96,
+      "invoice_number": "RM-INV-202610-083",
+      "partner_code": "RM-PF-M",
+      "invoice_date": "2026-10-20",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0096",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1106960,
+      "tax_amount": 110696,
+      "amount_inc_tax": 1217656,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0096-1",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "配信 2026-09分（架空作品08（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 457992,
+          "tax_amount": 45799,
+          "amount_inc_tax": 503791
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0096-2",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "配信 2026-09分（架空作品15（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 311408,
+          "tax_amount": 31141,
+          "amount_inc_tax": 342549
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0096-3",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "配信 2026-09分（架空作品14（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 337560,
+          "tax_amount": 33756,
+          "amount_inc_tax": 371316
+        }
+      ]
+    },
+    {
+      "invoice_id": 97,
+      "invoice_number": "RM-INV-202610-084",
+      "partner_code": "RM-RNT-R",
+      "invoice_date": "2026-10-20",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0097",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 983078,
+      "tax_amount": 98307,
+      "amount_inc_tax": 1081385,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0097-1",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "レンタル 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 345595,
+          "tax_amount": 34559,
+          "amount_inc_tax": 380154
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0097-2",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "レンタル 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 337400,
+          "tax_amount": 33740,
+          "amount_inc_tax": 371140
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0097-3",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "レンタル 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 300083,
+          "tax_amount": 30008,
+          "amount_inc_tax": 330091
+        }
+      ]
+    },
+    {
+      "invoice_id": 98,
+      "invoice_number": "RM-INV-202610-085",
+      "partner_code": "RM-EDU-Y",
+      "invoice_date": "2026-10-20",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0098",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 207008,
+      "tax_amount": 20700,
+      "amount_inc_tax": 227708,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0098-1",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "教育 2026-09分（架空作品15（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 207008,
+          "tax_amount": 20700,
+          "amount_inc_tax": 227708
+        }
+      ]
+    },
+    {
+      "invoice_id": 99,
+      "invoice_number": "RM-INV-202610-086",
+      "partner_code": "RM-DS-H",
+      "invoice_date": "2026-10-21",
+      "due_date": "2026-11-15",
+      "period": "2026-09",
+      "report_ref": "RM-R-0099",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 64809,
+      "tax_amount": 6480,
+      "amount_inc_tax": 71289,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0099-1",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "配給 2026-09分（架空作品10（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 64809,
+          "tax_amount": 6480,
+          "amount_inc_tax": 71289
+        }
+      ]
+    },
+    {
+      "invoice_id": 100,
+      "invoice_number": "RM-INV-202610-087",
+      "partner_code": "RM-PF-L",
+      "invoice_date": "2026-10-21",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0100",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1030438,
+      "tax_amount": 103043,
+      "amount_inc_tax": 1133481,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0100-1",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "配信 2026-09分（架空作品08（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 159975,
+          "tax_amount": 15997,
+          "amount_inc_tax": 175972
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0100-2",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "配信 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 715743,
+          "tax_amount": 71574,
+          "amount_inc_tax": 787317
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0100-3",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "配信 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 154720,
+          "tax_amount": 15472,
+          "amount_inc_tax": 170192
+        }
+      ]
+    },
+    {
+      "invoice_id": 101,
+      "invoice_number": "RM-INV-202610-088",
+      "partner_code": "RM-TV-P",
+      "invoice_date": "2026-10-21",
+      "due_date": "2026-11-15",
+      "period": "2026-09",
+      "report_ref": "RM-R-0101",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 349574,
+      "tax_amount": 34957,
+      "amount_inc_tax": 384531,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0101-1",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "放送 2026-09分（架空作品15（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 349574,
+          "tax_amount": 34957,
+          "amount_inc_tax": 384531
+        }
+      ]
+    },
+    {
+      "invoice_id": 102,
+      "invoice_number": "RM-INV-202610-089",
+      "partner_code": "RM-SEL-S",
+      "invoice_date": "2026-10-21",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0102",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 388442,
+      "tax_amount": 38844,
+      "amount_inc_tax": 427286,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0102-1",
+          "work_id": 6,
+          "work_code": "YJ-W06",
+          "description": "パッケージ 2026-09分（架空作品06（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 310143,
+          "tax_amount": 31014,
+          "amount_inc_tax": 341157
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0102-2",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "パッケージ 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 78299,
+          "tax_amount": 7830,
+          "amount_inc_tax": 86129
+        }
+      ]
+    },
+    {
+      "invoice_id": 103,
+      "invoice_number": "RM-INV-202610-090",
+      "partner_code": "RM-PF-W",
+      "invoice_date": "2026-10-21",
+      "due_date": "2026-11-10",
+      "period": "2026-09",
+      "report_ref": "RM-R-0103",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1678389,
+      "tax_amount": 167838,
+      "amount_inc_tax": 1846227,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0103-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "配信 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 670714,
+          "tax_amount": 67071,
+          "amount_inc_tax": 737785
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0103-2",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "配信 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 614182,
+          "tax_amount": 61418,
+          "amount_inc_tax": 675600
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0103-3",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "配信 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 393493,
+          "tax_amount": 39349,
+          "amount_inc_tax": 432842
+        }
+      ]
+    },
+    {
+      "invoice_id": 104,
+      "invoice_number": "RM-INV-202610-091",
+      "partner_code": "RM-AIR-X",
+      "invoice_date": "2026-10-21",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0104",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1027916,
+      "tax_amount": 102791,
+      "amount_inc_tax": 1130707,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0104-1",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "機内上映 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 254710,
+          "tax_amount": 25471,
+          "amount_inc_tax": 280181
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0104-2",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "機内上映 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 392279,
+          "tax_amount": 39228,
+          "amount_inc_tax": 431507
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0104-3",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "機内上映 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 380927,
+          "tax_amount": 38092,
+          "amount_inc_tax": 419019
+        }
+      ]
+    },
+    {
+      "invoice_id": 105,
+      "invoice_number": "RM-INV-202610-092",
+      "partner_code": "RM-AIR-X",
+      "invoice_date": "2026-10-21",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0105",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 767742,
+      "tax_amount": 76774,
+      "amount_inc_tax": 844516,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0105-1",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "機内上映 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 143697,
+          "tax_amount": 14370,
+          "amount_inc_tax": 158067
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0105-2",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "機内上映 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 289803,
+          "tax_amount": 28980,
+          "amount_inc_tax": 318783
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0105-3",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "機内上映 2026-09分（架空作品15（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 334242,
+          "tax_amount": 33424,
+          "amount_inc_tax": 367666
+        }
+      ]
+    },
+    {
+      "invoice_id": 106,
+      "invoice_number": "RM-INV-202610-093",
+      "partner_code": "RM-TH-B",
+      "invoice_date": "2026-10-22",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0106",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1004762,
+      "tax_amount": 100476,
+      "amount_inc_tax": 1105238,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0106-1",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "劇場 2026-09分（架空作品15（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1004762,
+          "tax_amount": 100476,
+          "amount_inc_tax": 1105238
+        }
+      ]
+    },
+    {
+      "invoice_id": 107,
+      "invoice_number": "RM-INV-202610-094",
+      "partner_code": "RM-TH-B",
+      "invoice_date": "2026-10-22",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0107",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 328559,
+      "tax_amount": 32855,
+      "amount_inc_tax": 361414,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0107-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "劇場 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 328559,
+          "tax_amount": 32855,
+          "amount_inc_tax": 361414
+        }
+      ]
+    },
+    {
+      "invoice_id": 108,
+      "invoice_number": "RM-INV-202610-095",
+      "partner_code": "RM-DS-J",
+      "invoice_date": "2026-10-22",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0108",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 173551,
+      "tax_amount": 17355,
+      "amount_inc_tax": 190906,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0108-1",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "配給 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 173551,
+          "tax_amount": 17355,
+          "amount_inc_tax": 190906
+        }
+      ]
+    },
+    {
+      "invoice_id": 109,
+      "invoice_number": "RM-INV-202610-096",
+      "partner_code": "RM-PF-M",
+      "invoice_date": "2026-10-22",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0109",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1202626,
+      "tax_amount": 120262,
+      "amount_inc_tax": 1322888,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0109-1",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "配信 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 850894,
+          "tax_amount": 85089,
+          "amount_inc_tax": 935983
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0109-2",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "配信 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 351732,
+          "tax_amount": 35173,
+          "amount_inc_tax": 386905
+        }
+      ]
+    },
+    {
+      "invoice_id": 110,
+      "invoice_number": "RM-INV-202610-097",
+      "partner_code": "RM-SEL-T",
+      "invoice_date": "2026-10-22",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0110",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 222176,
+      "tax_amount": 22217,
+      "amount_inc_tax": 244393,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0110-1",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "パッケージ 2026-09分（架空作品10（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 222176,
+          "tax_amount": 22217,
+          "amount_inc_tax": 244393
+        }
+      ]
+    },
+    {
+      "invoice_id": 111,
+      "invoice_number": "RM-INV-202610-098",
+      "partner_code": "RM-TH-U",
+      "invoice_date": "2026-10-22",
+      "due_date": "2026-11-15",
+      "period": "2026-09",
+      "report_ref": "RM-R-0111",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1539954,
+      "tax_amount": 153995,
+      "amount_inc_tax": 1693949,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0111-1",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "劇場 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 164595,
+          "tax_amount": 16459,
+          "amount_inc_tax": 181054
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0111-2",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "劇場 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1375359,
+          "tax_amount": 137536,
+          "amount_inc_tax": 1512895
+        }
+      ]
+    },
+    {
+      "invoice_id": 112,
+      "invoice_number": "RM-INV-202610-099",
+      "partner_code": "RM-PF-A",
+      "invoice_date": "2026-10-23",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0112",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 587650,
+      "tax_amount": 58765,
+      "amount_inc_tax": 646415,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0112-1",
+          "work_id": 3,
+          "work_code": "YJ-W03",
+          "description": "配信 2026-09分（架空作品03（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 587650,
+          "tax_amount": 58765,
+          "amount_inc_tax": 646415
+        }
+      ]
+    },
+    {
+      "invoice_id": 113,
+      "invoice_number": "RM-INV-202610-100",
+      "partner_code": "RM-DS-J",
+      "invoice_date": "2026-10-23",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0113",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 70000,
+      "tax_amount": 7000,
+      "amount_inc_tax": 77000,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0113-1",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "配給 2026-09分（架空作品14（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 70000,
+          "tax_amount": 7000,
+          "amount_inc_tax": 77000
+        }
+      ]
+    },
+    {
+      "invoice_id": 114,
+      "invoice_number": "RM-INV-202610-101",
+      "partner_code": "RM-PF-L",
+      "invoice_date": "2026-10-23",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0114",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 243219,
+      "tax_amount": 24321,
+      "amount_inc_tax": 267540,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0114-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "配信 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 243219,
+          "tax_amount": 24321,
+          "amount_inc_tax": 267540
+        }
+      ]
+    },
+    {
+      "invoice_id": 115,
+      "invoice_number": "RM-INV-202610-102",
+      "partner_code": "RM-PF-M",
+      "invoice_date": "2026-10-23",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0115",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 125803,
+      "tax_amount": 12580,
+      "amount_inc_tax": 138383,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0115-1",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "配信 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 125803,
+          "tax_amount": 12580,
+          "amount_inc_tax": 138383
+        }
+      ]
+    },
+    {
+      "invoice_id": 116,
+      "invoice_number": "RM-INV-202610-103",
+      "partner_code": "RM-TV-P",
+      "invoice_date": "2026-10-23",
+      "due_date": "2026-11-15",
+      "period": "2026-09",
+      "report_ref": "RM-R-0116",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 651944,
+      "tax_amount": 65194,
+      "amount_inc_tax": 717138,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0116-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "放送 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 651944,
+          "tax_amount": 65194,
+          "amount_inc_tax": 717138
+        }
+      ]
+    },
+    {
+      "invoice_id": 117,
+      "invoice_number": "RM-INV-202610-104",
+      "partner_code": "RM-TV-P",
+      "invoice_date": "2026-10-23",
+      "due_date": "2026-11-15",
+      "period": "2026-09",
+      "report_ref": "RM-R-0117",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 790085,
+      "tax_amount": 79008,
+      "amount_inc_tax": 869093,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0117-1",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "放送 2026-09分（架空作品08（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 790085,
+          "tax_amount": 79008,
+          "amount_inc_tax": 869093
+        }
+      ]
+    },
+    {
+      "invoice_id": 118,
+      "invoice_number": "RM-INV-202610-105",
+      "partner_code": "RM-RNT-Q",
+      "invoice_date": "2026-10-23",
+      "due_date": "2026-11-10",
+      "period": "2026-09",
+      "report_ref": "RM-R-0118",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 401126,
+      "tax_amount": 40112,
+      "amount_inc_tax": 441238,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0118-1",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "レンタル 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 227759,
+          "tax_amount": 22776,
+          "amount_inc_tax": 250535
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0118-2",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "レンタル 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 80817,
+          "tax_amount": 8081,
+          "amount_inc_tax": 88898
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0118-3",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "レンタル 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 92550,
+          "tax_amount": 9255,
+          "amount_inc_tax": 101805
+        }
+      ]
+    },
+    {
+      "invoice_id": 119,
+      "invoice_number": "RM-INV-202610-106",
+      "partner_code": "RM-SEL-S",
+      "invoice_date": "2026-10-23",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0119",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 312895,
+      "tax_amount": 31289,
+      "amount_inc_tax": 344184,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0119-1",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "パッケージ 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 312895,
+          "tax_amount": 31289,
+          "amount_inc_tax": 344184
+        }
+      ]
+    },
+    {
+      "invoice_id": 120,
+      "invoice_number": "RM-INV-202610-107",
+      "partner_code": "RM-SEL-T",
+      "invoice_date": "2026-10-23",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0120",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 522733,
+      "tax_amount": 52273,
+      "amount_inc_tax": 575006,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0120-1",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "パッケージ 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 172213,
+          "tax_amount": 17221,
+          "amount_inc_tax": 189434
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0120-2",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "パッケージ 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 216331,
+          "tax_amount": 21633,
+          "amount_inc_tax": 237964
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0120-3",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "パッケージ 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 134189,
+          "tax_amount": 13419,
+          "amount_inc_tax": 147608
+        }
+      ]
+    },
+    {
+      "invoice_id": 121,
+      "invoice_number": "RM-INV-202610-108",
+      "partner_code": "RM-TH-U",
+      "invoice_date": "2026-10-23",
+      "due_date": "2026-11-15",
+      "period": "2026-09",
+      "report_ref": "RM-R-0121",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 2209807,
+      "tax_amount": 220980,
+      "amount_inc_tax": 2430787,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0121-1",
+          "work_id": 6,
+          "work_code": "YJ-W06",
+          "description": "劇場 2026-09分（架空作品06（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1198862,
+          "tax_amount": 119886,
+          "amount_inc_tax": 1318748
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0121-2",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "劇場 2026-09分（架空作品15（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1010945,
+          "tax_amount": 101094,
+          "amount_inc_tax": 1112039
+        }
+      ]
+    },
+    {
+      "invoice_id": 122,
+      "invoice_number": "RM-INV-202610-109",
+      "partner_code": "RM-HTL-Z",
+      "invoice_date": "2026-10-23",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0122",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 133445,
+      "tax_amount": 13344,
+      "amount_inc_tax": 146789,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0122-1",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "ホテル配信 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 118925,
+          "tax_amount": 11892,
+          "amount_inc_tax": 130817
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0122-2",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "ホテル配信 2026-09分（架空作品10（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 14520,
+          "tax_amount": 1452,
+          "amount_inc_tax": 15972
+        }
+      ]
+    },
+    {
+      "invoice_id": 123,
+      "invoice_number": "RM-INV-202610-110",
+      "partner_code": "RM-TH-B",
+      "invoice_date": "2026-10-26",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0123",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 2122256,
+      "tax_amount": 212225,
+      "amount_inc_tax": 2334481,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0123-1",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "劇場 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1327801,
+          "tax_amount": 132780,
+          "amount_inc_tax": 1460581
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0123-2",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "劇場 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 794455,
+          "tax_amount": 79445,
+          "amount_inc_tax": 873900
+        }
+      ]
+    },
+    {
+      "invoice_id": 124,
+      "invoice_number": "RM-INV-202610-111",
+      "partner_code": "RM-PF-K",
+      "invoice_date": "2026-10-26",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0124",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1393259,
+      "tax_amount": 139325,
+      "amount_inc_tax": 1532584,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0124-1",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "配信 2026-09分（架空作品01（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 686765,
+          "tax_amount": 68676,
+          "amount_inc_tax": 755441
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0124-2",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "配信 2026-09分（架空作品14（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 210213,
+          "tax_amount": 21021,
+          "amount_inc_tax": 231234
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0124-3",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "配信 2026-09分（架空作品08（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 496281,
+          "tax_amount": 49628,
+          "amount_inc_tax": 545909
+        }
+      ]
+    },
+    {
+      "invoice_id": 125,
+      "invoice_number": "RM-INV-202610-112",
+      "partner_code": "RM-PF-K",
+      "invoice_date": "2026-10-26",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0125",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1184270,
+      "tax_amount": 118427,
+      "amount_inc_tax": 1302697,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0125-1",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "配信 2026-09分（架空作品08（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 727266,
+          "tax_amount": 72727,
+          "amount_inc_tax": 799993
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0125-2",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "配信 2026-09分（架空作品15（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 457004,
+          "tax_amount": 45700,
+          "amount_inc_tax": 502704
+        }
+      ]
+    },
+    {
+      "invoice_id": 126,
+      "invoice_number": "RM-INV-202610-113",
+      "partner_code": "RM-TV-N",
+      "invoice_date": "2026-10-26",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0126",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1268763,
+      "tax_amount": 126876,
+      "amount_inc_tax": 1395639,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0126-1",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "放送 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 477844,
+          "tax_amount": 47784,
+          "amount_inc_tax": 525628
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0126-2",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "放送 2026-09分（架空作品08（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 790919,
+          "tax_amount": 79092,
+          "amount_inc_tax": 870011
+        }
+      ]
+    },
+    {
+      "invoice_id": 127,
+      "invoice_number": "RM-INV-202610-114",
+      "partner_code": "RM-SEL-T",
+      "invoice_date": "2026-10-26",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0127",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 66618,
+      "tax_amount": 6661,
+      "amount_inc_tax": 73279,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0127-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "パッケージ 2026-09分（架空作品07（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 66618,
+          "tax_amount": 6661,
+          "amount_inc_tax": 73279
+        }
+      ]
+    },
+    {
+      "invoice_id": 128,
+      "invoice_number": "RM-INV-202610-115",
+      "partner_code": "RM-PF-W",
+      "invoice_date": "2026-10-26",
+      "due_date": "2026-11-10",
+      "period": "2026-09",
+      "report_ref": "RM-R-0128",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 436248,
+      "tax_amount": 43624,
+      "amount_inc_tax": 479872,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0128-1",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "配信 2026-09分（架空作品10（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 98168,
+          "tax_amount": 9816,
+          "amount_inc_tax": 107984
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0128-2",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "配信 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 338080,
+          "tax_amount": 33808,
+          "amount_inc_tax": 371888
+        }
+      ]
+    },
+    {
+      "invoice_id": 129,
+      "invoice_number": "RM-INV-202610-116",
+      "partner_code": "RM-AIR-X",
+      "invoice_date": "2026-10-26",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0129",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 363437,
+      "tax_amount": 36343,
+      "amount_inc_tax": 399780,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0129-1",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "機内上映 2026-09分（架空作品14（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 123895,
+          "tax_amount": 12389,
+          "amount_inc_tax": 136284
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0129-2",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "機内上映 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 102305,
+          "tax_amount": 10230,
+          "amount_inc_tax": 112535
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0129-3",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "機内上映 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 137237,
+          "tax_amount": 13724,
+          "amount_inc_tax": 150961
+        }
+      ]
+    },
+    {
+      "invoice_id": 130,
+      "invoice_number": "RM-INV-202610-117",
+      "partner_code": "RM-TH-B",
+      "invoice_date": "2026-10-27",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0130",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 295827,
+      "tax_amount": 29582,
+      "amount_inc_tax": 325409,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0130-1",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "劇場 2026-09分（架空作品02（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 295827,
+          "tax_amount": 29582,
+          "amount_inc_tax": 325409
+        }
+      ]
+    },
+    {
+      "invoice_id": 131,
+      "invoice_number": "RM-INV-202610-118",
+      "partner_code": "RM-PF-M",
+      "invoice_date": "2026-10-27",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0131",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1283329,
+      "tax_amount": 128332,
+      "amount_inc_tax": 1411661,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0131-1",
+          "work_id": 9,
+          "work_code": "YJ-W09",
+          "description": "配信 2026-09分（架空作品09（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 598781,
+          "tax_amount": 59878,
+          "amount_inc_tax": 658659
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0131-2",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "配信 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 684548,
+          "tax_amount": 68454,
+          "amount_inc_tax": 753002
+        }
+      ]
+    },
+    {
+      "invoice_id": 132,
+      "invoice_number": "RM-INV-202610-119",
+      "partner_code": "RM-RNT-R",
+      "invoice_date": "2026-10-27",
+      "due_date": "2026-11-20",
+      "period": "2026-09",
+      "report_ref": "RM-R-0132",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 196164,
+      "tax_amount": 19616,
+      "amount_inc_tax": 215780,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0132-1",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "レンタル 2026-09分（架空作品12（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 196164,
+          "tax_amount": 19616,
+          "amount_inc_tax": 215780
+        }
+      ]
+    },
+    {
+      "invoice_id": 133,
+      "invoice_number": "RM-INV-202610-120",
+      "partner_code": "RM-TH-V",
+      "invoice_date": "2026-10-27",
+      "due_date": "2026-11-30",
+      "period": "2026-09",
+      "report_ref": "RM-R-0133",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 2387288,
+      "tax_amount": 238728,
+      "amount_inc_tax": 2626016,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0133-1",
+          "work_id": 6,
+          "work_code": "YJ-W06",
+          "description": "劇場 2026-09分（架空作品06（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1174092,
+          "tax_amount": 117409,
+          "amount_inc_tax": 1291501
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0133-2",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "劇場 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 1213196,
+          "tax_amount": 121319,
+          "amount_inc_tax": 1334515
+        }
+      ]
+    },
+    {
+      "invoice_id": 134,
+      "invoice_number": "RM-INV-202610-121",
+      "partner_code": "RM-AIR-X",
+      "invoice_date": "2026-10-27",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0134",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 103217,
+      "tax_amount": 10321,
+      "amount_inc_tax": 113538,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0134-1",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "機内上映 2026-09分（架空作品16（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 103217,
+          "tax_amount": 10321,
+          "amount_inc_tax": 113538
+        }
+      ]
+    },
+    {
+      "invoice_id": 135,
+      "invoice_number": "RM-INV-202610-122",
+      "partner_code": "RM-PF-E",
+      "invoice_date": "2026-10-28",
+      "due_date": "2026-11-10",
+      "period": "2026-09",
+      "report_ref": "RM-R-0135",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 761585,
+      "tax_amount": 76158,
+      "amount_inc_tax": 837743,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0135-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "配信 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 353368,
+          "tax_amount": 35337,
+          "amount_inc_tax": 388705
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0135-2",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "配信 2026-09分（架空作品05（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 408217,
+          "tax_amount": 40821,
+          "amount_inc_tax": 449038
+        }
+      ]
+    },
+    {
+      "invoice_id": 136,
+      "invoice_number": "RM-INV-202610-123",
+      "partner_code": "RM-RNT-Q",
+      "invoice_date": "2026-10-28",
+      "due_date": "2026-11-10",
+      "period": "2026-09",
+      "report_ref": "RM-R-0136",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 165836,
+      "tax_amount": 16583,
+      "amount_inc_tax": 182419,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0136-1",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "レンタル 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 165836,
+          "tax_amount": 16583,
+          "amount_inc_tax": 182419
+        }
+      ]
+    },
+    {
+      "invoice_id": 137,
+      "invoice_number": "RM-INV-202610-124",
+      "partner_code": "RM-SEL-T",
+      "invoice_date": "2026-10-28",
+      "due_date": "2026-11-25",
+      "period": "2026-09",
+      "report_ref": "RM-R-0137",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 330727,
+      "tax_amount": 33072,
+      "amount_inc_tax": 363799,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0137-1",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "パッケージ 2026-09分（架空作品13（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 330727,
+          "tax_amount": 33072,
+          "amount_inc_tax": 363799
+        }
+      ]
+    },
+    {
+      "invoice_id": 138,
+      "invoice_number": "RM-INV-202610-125",
+      "partner_code": "RM-TH-U",
+      "invoice_date": "2026-10-28",
+      "due_date": "2026-11-15",
+      "period": "2026-09",
+      "report_ref": "RM-R-0138",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 526706,
+      "tax_amount": 52670,
+      "amount_inc_tax": 579376,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0138-1",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "劇場 2026-09分（架空作品11（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 526706,
+          "tax_amount": 52670,
+          "amount_inc_tax": 579376
+        }
+      ]
+    },
+    {
+      "invoice_id": 139,
+      "invoice_number": "RM-INV-202610-126",
+      "partner_code": "RM-PF-W",
+      "invoice_date": "2026-10-28",
+      "due_date": "2026-11-10",
+      "period": "2026-09",
+      "report_ref": "RM-R-0139",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1955135,
+      "tax_amount": 195513,
+      "amount_inc_tax": 2150648,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0139-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "配信 2026-09分（架空作品04（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 591336,
+          "tax_amount": 59133,
+          "amount_inc_tax": 650469
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0139-2",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "配信 2026-09分（架空作品10（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 569940,
+          "tax_amount": 56994,
+          "amount_inc_tax": 626934
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0139-3",
+          "work_id": 3,
+          "work_code": "YJ-W03",
+          "description": "配信 2026-09分（架空作品03（架空））",
+          "accounting_month": "2026-09",
+          "amount_ex_tax": 793859,
+          "tax_amount": 79386,
+          "amount_inc_tax": 873245
+        }
+      ]
+    },
+    {
+      "invoice_id": 140,
+      "invoice_number": "RM-INV-202611-001",
+      "partner_code": "RM-TH-U",
+      "invoice_date": "2026-11-02",
+      "due_date": "2026-12-15",
+      "period": "2026-10",
+      "report_ref": "RM-R-0140",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1320931,
+      "tax_amount": 132093,
+      "amount_inc_tax": 1453024,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0140-1",
+          "work_id": 9,
+          "work_code": "YJ-W09",
+          "description": "劇場 2026-10分（架空作品09（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 1320931,
+          "tax_amount": 132093,
+          "amount_inc_tax": 1453024
+        }
+      ]
+    },
+    {
+      "invoice_id": 141,
+      "invoice_number": "RM-INV-202611-002",
+      "partner_code": "RM-RNT-R",
+      "invoice_date": "2026-11-04",
+      "due_date": "2026-12-20",
+      "period": "2026-10",
+      "report_ref": "RM-R-0141",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 330336,
+      "tax_amount": 33033,
+      "amount_inc_tax": 363369,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0141-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "レンタル 2026-10分（架空作品07（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 330336,
+          "tax_amount": 33033,
+          "amount_inc_tax": 363369
+        }
+      ]
+    },
+    {
+      "invoice_id": 142,
+      "invoice_number": "RM-INV-202611-003",
+      "partner_code": "RM-TH-B",
+      "invoice_date": "2026-11-05",
+      "due_date": "2026-12-31",
+      "period": "2026-10",
+      "report_ref": "RM-R-0142",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 243923,
+      "tax_amount": 24392,
+      "amount_inc_tax": 268315,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0142-1",
+          "work_id": 6,
+          "work_code": "YJ-W06",
+          "description": "劇場 2026-10分（架空作品06（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 243923,
+          "tax_amount": 24392,
+          "amount_inc_tax": 268315
+        }
+      ]
+    },
+    {
+      "invoice_id": 143,
+      "invoice_number": "RM-INV-202611-004",
+      "partner_code": "RM-SEL-D",
+      "invoice_date": "2026-11-05",
+      "due_date": "2026-12-20",
+      "period": "2026-10",
+      "report_ref": "RM-R-0143",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1308888,
+      "tax_amount": 130888,
+      "amount_inc_tax": 1439776,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0143-1",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "パッケージ 2026-10分（架空作品14（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 216843,
+          "tax_amount": 21684,
+          "amount_inc_tax": 238527
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0143-2",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "パッケージ 2026-10分（架空作品12（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 494443,
+          "tax_amount": 49444,
+          "amount_inc_tax": 543887
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0143-3",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "パッケージ 2026-10分（架空作品16（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 597602,
+          "tax_amount": 59760,
+          "amount_inc_tax": 657362
+        }
+      ]
+    },
+    {
+      "invoice_id": 144,
+      "invoice_number": "RM-INV-202611-005",
+      "partner_code": "RM-TV-N",
+      "invoice_date": "2026-11-05",
+      "due_date": "2026-12-31",
+      "period": "2026-10",
+      "report_ref": "RM-R-0144",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 418000,
+      "tax_amount": 41800,
+      "amount_inc_tax": 459800,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0144-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "放送 定額の放送権料 2026-10分（架空作品07（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 418000,
+          "tax_amount": 41800,
+          "amount_inc_tax": 459800
+        }
+      ]
+    },
+    {
+      "invoice_id": 145,
+      "invoice_number": "RM-INV-202611-006",
+      "partner_code": "RM-TH-V",
+      "invoice_date": "2026-11-05",
+      "due_date": "2026-12-31",
+      "period": "2026-10",
+      "report_ref": "RM-R-0145",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 2249458,
+      "tax_amount": 224945,
+      "amount_inc_tax": 2474403,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0145-1",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "劇場 2026-10分（架空作品13（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 1235630,
+          "tax_amount": 123563,
+          "amount_inc_tax": 1359193
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0145-2",
+          "work_id": 6,
+          "work_code": "YJ-W06",
+          "description": "劇場 2026-10分（架空作品06（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 1013828,
+          "tax_amount": 101382,
+          "amount_inc_tax": 1115210
+        }
+      ]
+    },
+    {
+      "invoice_id": 146,
+      "invoice_number": "RM-INV-202611-007",
+      "partner_code": "RM-PF-W",
+      "invoice_date": "2026-11-09",
+      "due_date": "2026-12-10",
+      "period": "2026-10",
+      "report_ref": "RM-R-0146",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1442536,
+      "tax_amount": 144253,
+      "amount_inc_tax": 1586789,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0146-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "配信 2026-10分（架空作品04（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 494785,
+          "tax_amount": 49478,
+          "amount_inc_tax": 544263
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0146-2",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "配信 2026-10分（架空作品13（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 738240,
+          "tax_amount": 73824,
+          "amount_inc_tax": 812064
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0146-3",
+          "work_id": 6,
+          "work_code": "YJ-W06",
+          "description": "配信 2026-10分（架空作品06（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 209511,
+          "tax_amount": 20951,
+          "amount_inc_tax": 230462
+        }
+      ]
+    },
+    {
+      "invoice_id": 147,
+      "invoice_number": "RM-INV-202611-008",
+      "partner_code": "RM-HTL-Z",
+      "invoice_date": "2026-11-09",
+      "due_date": "2026-12-31",
+      "period": "2026-10",
+      "report_ref": "RM-R-0147",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 73078,
+      "tax_amount": 7307,
+      "amount_inc_tax": 80385,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0147-1",
+          "work_id": 1,
+          "work_code": "YJ-W01",
+          "description": "ホテル配信 2026-10分（架空作品01（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 73078,
+          "tax_amount": 7307,
+          "amount_inc_tax": 80385
+        }
+      ]
+    },
+    {
+      "invoice_id": 148,
+      "invoice_number": "RM-INV-202611-009",
+      "partner_code": "RM-DS-H",
+      "invoice_date": "2026-11-10",
+      "due_date": "2026-12-15",
+      "period": "2026-10",
+      "report_ref": "RM-R-0148",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 638677,
+      "tax_amount": 63867,
+      "amount_inc_tax": 702544,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0148-1",
+          "work_id": 7,
+          "work_code": "YJ-W07",
+          "description": "配給 2026-10分（架空作品07（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 638677,
+          "tax_amount": 63867,
+          "amount_inc_tax": 702544
+        }
+      ]
+    },
+    {
+      "invoice_id": 149,
+      "invoice_number": "RM-INV-202611-010",
+      "partner_code": "RM-RNT-Q",
+      "invoice_date": "2026-11-10",
+      "due_date": "2026-12-10",
+      "period": "2026-10",
+      "report_ref": "RM-R-0149",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 641773,
+      "tax_amount": 64177,
+      "amount_inc_tax": 705950,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0149-1",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "レンタル 2026-10分（架空作品13（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 324141,
+          "tax_amount": 32414,
+          "amount_inc_tax": 356555
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0149-2",
+          "work_id": 8,
+          "work_code": "YJ-W08",
+          "description": "レンタル 2026-10分（架空作品08（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 317632,
+          "tax_amount": 31763,
+          "amount_inc_tax": 349395
+        }
+      ]
+    },
+    {
+      "invoice_id": 150,
+      "invoice_number": "RM-INV-202611-011",
+      "partner_code": "RM-SEL-S",
+      "invoice_date": "2026-11-10",
+      "due_date": "2026-12-31",
+      "period": "2026-10",
+      "report_ref": "RM-R-0150",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 544192,
+      "tax_amount": 54419,
+      "amount_inc_tax": 598611,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0150-1",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "パッケージ 2026-10分（架空作品14（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 544192,
+          "tax_amount": 54419,
+          "amount_inc_tax": 598611
+        }
+      ]
+    },
+    {
+      "invoice_id": 151,
+      "invoice_number": "RM-INV-202611-012",
+      "partner_code": "RM-DS-J",
+      "invoice_date": "2026-11-11",
+      "due_date": "2026-12-31",
+      "period": "2026-10",
+      "report_ref": "RM-R-0151",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 956998,
+      "tax_amount": 95699,
+      "amount_inc_tax": 1052697,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0151-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "配給 2026-10分（架空作品04（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 511164,
+          "tax_amount": 51116,
+          "amount_inc_tax": 562280
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0151-2",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "配給 2026-10分（架空作品16（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 445834,
+          "tax_amount": 44583,
+          "amount_inc_tax": 490417
+        }
+      ]
+    },
+    {
+      "invoice_id": 152,
+      "invoice_number": "RM-INV-202611-013",
+      "partner_code": "RM-PF-L",
+      "invoice_date": "2026-11-11",
+      "due_date": "2026-12-20",
+      "period": "2026-10",
+      "report_ref": "RM-R-0152",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 840132,
+      "tax_amount": 84013,
+      "amount_inc_tax": 924145,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0152-1",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "配信 2026-10分（架空作品11（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 840132,
+          "tax_amount": 84013,
+          "amount_inc_tax": 924145
+        }
+      ]
+    },
+    {
+      "invoice_id": 153,
+      "invoice_number": "RM-INV-202611-014",
+      "partner_code": "RM-PF-M",
+      "invoice_date": "2026-11-11",
+      "due_date": "2026-12-25",
+      "period": "2026-10",
+      "report_ref": "RM-R-0153",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1678100,
+      "tax_amount": 167810,
+      "amount_inc_tax": 1845910,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0153-1",
+          "work_id": 11,
+          "work_code": "YJ-W11",
+          "description": "配信 2026-10分（架空作品11（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 583222,
+          "tax_amount": 58322,
+          "amount_inc_tax": 641544
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0153-2",
+          "work_id": 12,
+          "work_code": "YJ-W12",
+          "description": "配信 2026-10分（架空作品12（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 422416,
+          "tax_amount": 42242,
+          "amount_inc_tax": 464658
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0153-3",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "配信 2026-10分（架空作品14（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 672462,
+          "tax_amount": 67246,
+          "amount_inc_tax": 739708
+        }
+      ]
+    },
+    {
+      "invoice_id": 154,
+      "invoice_number": "RM-INV-202611-015",
+      "partner_code": "RM-TV-P",
+      "invoice_date": "2026-11-11",
+      "due_date": "2026-12-15",
+      "period": "2026-10",
+      "report_ref": "RM-R-0154",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 1810081,
+      "tax_amount": 181008,
+      "amount_inc_tax": 1991089,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0154-1",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "放送 2026-10分（架空作品05（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 989801,
+          "tax_amount": 98980,
+          "amount_inc_tax": 1088781
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0154-2",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "放送 2026-10分（架空作品15（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 362282,
+          "tax_amount": 36228,
+          "amount_inc_tax": 398510
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0154-3",
+          "work_id": 13,
+          "work_code": "YJ-W13",
+          "description": "放送 2026-10分（架空作品13（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 457998,
+          "tax_amount": 45800,
+          "amount_inc_tax": 503798
+        }
+      ]
+    },
+    {
+      "invoice_id": 155,
+      "invoice_number": "RM-INV-202611-016",
+      "partner_code": "RM-SEL-T",
+      "invoice_date": "2026-11-11",
+      "due_date": "2026-12-25",
+      "period": "2026-10",
+      "report_ref": "RM-R-0155",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 735303,
+      "tax_amount": 73530,
+      "amount_inc_tax": 808833,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0155-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "パッケージ 2026-10分（架空作品04（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 109086,
+          "tax_amount": 10909,
+          "amount_inc_tax": 119995
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0155-2",
+          "work_id": 5,
+          "work_code": "YJ-W05",
+          "description": "パッケージ 2026-10分（架空作品05（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 320864,
+          "tax_amount": 32086,
+          "amount_inc_tax": 352950
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0155-3",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "パッケージ 2026-10分（架空作品02（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 305353,
+          "tax_amount": 30535,
+          "amount_inc_tax": 335888
+        }
+      ]
+    },
+    {
+      "invoice_id": 156,
+      "invoice_number": "RM-INV-202611-017",
+      "partner_code": "RM-AIR-X",
+      "invoice_date": "2026-11-11",
+      "due_date": "2026-12-25",
+      "period": "2026-10",
+      "report_ref": "RM-R-0156",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 379546,
+      "tax_amount": 37954,
+      "amount_inc_tax": 417500,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0156-1",
+          "work_id": 15,
+          "work_code": "YJ-W15",
+          "description": "機内上映 2026-10分（架空作品15（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 379546,
+          "tax_amount": 37954,
+          "amount_inc_tax": 417500
+        }
+      ]
+    },
+    {
+      "invoice_id": 157,
+      "invoice_number": "RM-INV-202611-018",
+      "partner_code": "RM-DS-F",
+      "invoice_date": "2026-11-12",
+      "due_date": "2026-12-25",
+      "period": "2026-10",
+      "report_ref": "RM-R-0157",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 257639,
+      "tax_amount": 25763,
+      "amount_inc_tax": 283402,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0157-1",
+          "work_id": 6,
+          "work_code": "YJ-W06",
+          "description": "配給 2026-10分（架空作品06（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 257639,
+          "tax_amount": 25763,
+          "amount_inc_tax": 283402
+        }
+      ]
+    },
+    {
+      "invoice_id": 158,
+      "invoice_number": "RM-INV-202611-019",
+      "partner_code": "RM-PF-K",
+      "invoice_date": "2026-11-12",
+      "due_date": "2026-12-31",
+      "period": "2026-10",
+      "report_ref": "RM-R-0158",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 965685,
+      "tax_amount": 96568,
+      "amount_inc_tax": 1062253,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0158-1",
+          "work_id": 16,
+          "work_code": "YJ-W16",
+          "description": "配信 2026-10分（架空作品16（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 353891,
+          "tax_amount": 35389,
+          "amount_inc_tax": 389280
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0158-2",
+          "work_id": 10,
+          "work_code": "YJ-W10",
+          "description": "配信 2026-10分（架空作品10（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 368974,
+          "tax_amount": 36897,
+          "amount_inc_tax": 405871
+        },
+        {
+          "line_no": 3,
+          "sale_ref": "RM-S-0158-3",
+          "work_id": 2,
+          "work_code": "YJ-W02",
+          "description": "配信 2026-10分（架空作品02（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 242820,
+          "tax_amount": 24282,
+          "amount_inc_tax": 267102
+        }
+      ]
+    },
+    {
+      "invoice_id": 159,
+      "invoice_number": "RM-INV-202611-020",
+      "partner_code": "RM-EDU-Y",
+      "invoice_date": "2026-11-12",
+      "due_date": "2026-12-20",
+      "period": "2026-10",
+      "report_ref": "RM-R-0159",
+      "currency": "JPY",
+      "foreign_amount": null,
+      "report_date": null,
+      "report_rate": null,
+      "amount_ex_tax": 334564,
+      "tax_amount": 33456,
+      "amount_inc_tax": 368020,
+      "lines": [
+        {
+          "line_no": 1,
+          "sale_ref": "RM-S-0159-1",
+          "work_id": 4,
+          "work_code": "YJ-W04",
+          "description": "教育 2026-10分（架空作品04（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 201789,
+          "tax_amount": 20179,
+          "amount_inc_tax": 221968
+        },
+        {
+          "line_no": 2,
+          "sale_ref": "RM-S-0159-2",
+          "work_id": 14,
+          "work_code": "YJ-W14",
+          "description": "教育 2026-10分（架空作品14（架空））",
+          "accounting_month": "2026-10",
+          "amount_ex_tax": 132775,
+          "tax_amount": 13277,
+          "amount_inc_tax": 146052
+        }
+      ]
+    }
+  ],
+  "rates": [
+    {
+      "currency": "USD",
+      "date": "2026-09-30",
+      "ttm": "147.0600"
+    },
+    {
+      "currency": "USD",
+      "date": "2026-11-25",
+      "ttm": "145.0400"
+    },
+    {
+      "currency": "EUR",
+      "date": "2026-09-30",
+      "ttm": "162.7500"
+    },
+    {
+      "currency": "EUR",
+      "date": "2026-11-20",
+      "ttm": "159.2200"
+    }
+  ],
+  "receipt_history": [
+    {
+      "partner_code": "RM-PF-A",
+      "received_on": "2026-05-29",
+      "bank_fee_yen": 660
+    },
+    {
+      "partner_code": "RM-PF-A",
+      "received_on": "2026-06-30",
+      "bank_fee_yen": 660
+    },
+    {
+      "partner_code": "RM-PF-A",
+      "received_on": "2026-07-31",
+      "bank_fee_yen": 660
+    },
+    {
+      "partner_code": "RM-PF-A",
+      "received_on": "2026-08-31",
+      "bank_fee_yen": 660
+    },
+    {
+      "partner_code": "RM-PF-A",
+      "received_on": "2026-09-30",
+      "bank_fee_yen": 660
+    },
+    {
+      "partner_code": "RM-PF-A",
+      "received_on": "2026-10-30",
+      "bank_fee_yen": 660
+    },
+    {
+      "partner_code": "RM-OS-C",
+      "received_on": "2026-03-25",
+      "bank_fee_yen": 4000
+    },
+    {
+      "partner_code": "RM-OS-C",
+      "received_on": "2026-06-25",
+      "bank_fee_yen": 4000
+    },
+    {
+      "partner_code": "RM-OS-C",
+      "received_on": "2026-09-25",
+      "bank_fee_yen": 4000
+    }
+  ],
+  "expected_reports": [
+    {
+      "partner_code": "RM-PF-E",
+      "period": "2026-10",
+      "status": "未着"
+    }
+  ],
+  "schedule_changes": [
+    {
+      "change_ref": "RM-SC-0058",
+      "invoice_number": "RM-INV-202610-055",
+      "approved": true,
+      "approved_on": "2026-11-10",
+      "installments": [
+        {
+          "due_date": "2026-11-25",
+          "amount_yen": 1000000
+        },
+        {
+          "due_date": "2026-12-25",
+          "amount_yen": 650000
+        }
+      ]
+    }
+  ],
+  "return_lines": [
+    {
+      "partner_code": "RM-SEL-D",
+      "report_ref": "RM-R-0091",
+      "report_row": 12,
+      "work_code": "YJ-W04",
+      "quantity": -50,
+      "unit_price_ex_tax": 1000,
+      "amount_ex_tax": -50000,
+      "tax_amount": -5000,
+      "amount_inc_tax": -55000
+    }
+  ]
+}

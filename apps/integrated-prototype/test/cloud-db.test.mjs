@@ -11,11 +11,12 @@ import {registerHooks} from 'node:module';
 import pg from 'pg';
 import {SignJWT, exportJWK, generateKeyPair, createLocalJWKSet} from 'jose';
 import {OUTPUT_PATH, SEED_PATH} from '../scripts/pg-ddl.mjs';
+import {RLS_PATH} from '../scripts/pg-rls.mjs';
 import {pgliteStream} from './pg-client.mjs';
 import {openTestDb} from './test-db.mjs';
 import {R2BackedD1Database, R2LargeValueDatabase} from '../src/cloud-r2-db.mjs';
 import {PgDatabase, createPgSharedCache} from '../src/data-platform/pg-db.mjs';
-import {CloudDatabaseConfigError, CloudDatabaseUnavailableError, openCloudDatabase, releaseCloudDatabase} from '../src/data-platform/cloud-db.mjs';
+import {CloudDatabaseConfigError, CloudDatabaseUnavailableError, openCloudDatabase, releaseCloudDatabase, setCloudDatabaseSession} from '../src/data-platform/cloud-db.mjs';
 import {HEALTH_DB_PATH, respondDatabaseHealth} from '../src/data-platform/cloud-health.mjs';
 import {cloudConfig, databaseEngine} from '../src/cloud-security.mjs';
 import {createApp} from '../src/app.mjs';
@@ -76,6 +77,11 @@ class PgliteClient extends pg.Client {
   async connect() { this.connects += 1; return super.connect(); }
   async end() { this.ends += 1; return super.end(); }
 }
+// アプリのロールで動く Client（staging の integrated_app にあたる）。接続の直後に SET ROLE する
+const RLS_APP_ROLE = 'on_cloud_rls_app';
+class RlsClient extends PgliteClient {
+  async connect() { const out = await super.connect(); await this.query(`SET ROLE ${RLS_APP_ROLE}`); return out; }
+}
 // 接続できない Client。元のエラーの文に、応答へ出してはいけない中身を入れる
 class UnreachableClient {
   constructor() { this.ends = 0; created.push(this); }
@@ -101,6 +107,11 @@ before(async () => {
   instance = await PGlite.create();
   await instance.exec(readFileSync(OUTPUT_PATH, 'utf8'));
   await instance.exec(readFileSync(SEED_PATH, 'utf8'));
+  // 行単位の権限（pg/rls.sql）も当てる。ほかの試験の Client は PGlite の持ち主（superuser）なので RLS の外で動く。
+  // RLS の下で動かす試験だけ、アプリのロール（持ち主でも BYPASSRLS でもない）へ切り替える Client（RlsClient）を使う
+  await instance.exec(readFileSync(RLS_PATH, 'utf8'));
+  await instance.exec(`CREATE ROLE ${RLS_APP_ROLE} NOLOGIN NOBYPASSRLS; GRANT USAGE ON SCHEMA public TO ${RLS_APP_ROLE};
+    GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ${RLS_APP_ROLE}; GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO ${RLS_APP_ROLE}`);
   const pair = await generateKeyPair('RS256');
   privateKey = pair.privateKey;
   const jwk = {...await exportJWK(pair.publicKey), kid: 'synthetic', alg: 'RS256', use: 'sig'};
@@ -381,4 +392,53 @@ test('FR-CORE-DATA-031 /api/health の database は入口の DB の種類（work
   assert.equal(await health(openCloudDatabase(pgEnv(), context().ctx, {Client: PgliteClient}), 'worker'), 'postgres');
   const local = await openTestDb({t});
   assert.equal(await health(local, 'local'), local.kind === 'pg' ? 'postgres' : 'sqlite', '手元の LocalDatabase は sqlite（verify の doctor が見る）');
+});
+
+// ---------- 行単位の権限（pg/rls.sql。会社ルートの plans/2026-10-21-db-rls-owner-only.md の #4） ----------
+
+test('FR-CORE-DATA-053 Worker: アプリのロール（RLS の下）でも、Access で確かめた利用者を DB に渡して所属を引き、自分の組織の作品だけを返す', async () => {
+  globalThis.__cloudDbTestClient = RlsClient;
+  try {
+    const {waits, ctx} = context();
+    const response = await worker.fetch(request('/api/bootstrap', {token: await userToken()}), pgEnv(), ctx);
+    assert.equal(response.status, 200);
+    const text = await response.text();
+    assert.match(text, /風のあとさき/);
+    assert.doesNotMatch(text, /別組織作品/);
+    await Promise.all(waits);
+    // 別組織の利用者は、自分の組織の作品だけ
+    const other = await worker.fetch(request('/api/bootstrap', {token: await userToken('outsider@other.invalid')}), pgEnv(), context().ctx);
+    assert.equal(other.status, 200);
+    const otherText = await other.text();
+    assert.match(otherText, /別組織作品/);
+    assert.doesNotMatch(otherText, /風のあとさき/);
+    // 利用者の表に無いメールは、所属を引けず 403
+    const stranger = await worker.fetch(request('/api/bootstrap', {token: await userToken('stranger@nowhere.invalid')}), pgEnv(), context().ctx);
+    assert.equal(stranger.status, 403);
+  } finally {
+    globalThis.__cloudDbTestClient = PgliteClient;
+  }
+});
+
+test('FR-CORE-DATA-053 入口: 利用者を置かないと RLS の下では0行。置くと1文ずつの読み書きも一括も、その利用者の組織だけになり、外すと0行に戻る', async () => {
+  const db = openCloudDatabase(pgEnv(), context().ctx, {Client: RlsClient});
+  try {
+    assert.deepEqual(await db.all('SELECT code FROM projects ORDER BY id'), []);
+    setCloudDatabaseSession(db, {userId: 1});
+    assert.deepEqual((await db.all('SELECT code FROM projects ORDER BY id')).map((r) => r.code), ['PRJ-DEMO']);
+    assert.equal((await db.get('SELECT count(*) AS n FROM projects')).n, 1);
+    const [[row]] = await db.readBatch([{sql: 'SELECT count(*) AS n FROM projects'}]);
+    assert.equal(row.n, 1);
+    // 他の組織の行は作れない（共通のエラーの種類 row_security）。他の組織の行は直せない（0件）
+    await assert.rejects(db.run("INSERT INTO projects(org_id, code, title) VALUES (2, 'RLS-W', '他組織へ')"), (e) => e.dbError?.kind === 'row_security');
+    assert.equal((await db.run("UPDATE projects SET title = '書き換え' WHERE code = 'PRJ-OTHER'")).changes, 0);
+    setCloudDatabaseSession(db, null);
+    assert.deepEqual(await db.all('SELECT code FROM projects ORDER BY id'), []);
+    assert.throws(() => setCloudDatabaseSession(db, {userId: '1 OR 1=1'}), /正の整数/);
+  } finally {
+    releaseCloudDatabase(db);
+  }
+  // d1 の入口では何もしない（D1 に RLS は無い）
+  const d1 = openCloudDatabase(d1Env(), context().ctx);
+  assert.doesNotThrow(() => setCloudDatabaseSession(d1, {userId: 1}));
 });

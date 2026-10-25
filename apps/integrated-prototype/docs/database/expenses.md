@@ -61,6 +61,15 @@ erDiagram
     TEXT distribution_type_code FK "流通区分（distribution_types）"
     INTEGER product_id FK "商品（products）"
   }
+  expense_file_placement_voids {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER placement_id PK, FK "外した置き場所（expense_file_placements）"
+  }
+  expense_file_placements {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER file_id FK "置いた原本（expense_source_files）"
+  }
   expense_import_batches {
     INTEGER org_id FK "組織（organizations）。データの持ち主"
     INTEGER id PK "行のID"
@@ -114,6 +123,9 @@ erDiagram
     INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
     INTEGER expense_id PK, FK "取り消す経費明細（expenses）"
     INTEGER replacement_expense_id FK "訂正後の経費明細（expenses。無いときは空）"
+  }
+  expense_month_closures {
+    INTEGER id PK "行のID"
   }
   expense_payment_accounting {
     INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
@@ -207,6 +219,14 @@ erDiagram
     INTEGER id PK "行のID"
     INTEGER partner_id FK "支払先の取引先（partners）"
   }
+  production_cost_versions {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER work_id PK, FK "作品（works）"
+    INTEGER version_no PK "作品ごとの版の連番（1から）"
+    INTEGER work_finance_revision FK "参照した作品の費用の版（work_finance_versions。自社の出資額から作った版だけ）"
+    INTEGER committee_term_version_id FK "参照した委員会の条件版（committee_term_versions。委員会の出資額から作った版だけ）"
+    INTEGER counterparty_partner_id FK "契約の相手（partners）"
+  }
   expense_accounting_versions }o--o| expense_withholding_category_versions : "withholding_category_version_id"
   expense_accounting_versions }o--|| expense_tax_category_versions : "tax_category_version_id"
   expense_accounting_versions }o--|| expense_category_versions : "category_version_id"
@@ -226,6 +246,8 @@ erDiagram
   expense_details }o--|| expense_invoices : "invoice_id"
   expense_details }o--|| expenses : "expense_id"
   expense_details }o--o| distribution_types : "distribution_type_code"
+  expense_file_placement_voids }o--|| expense_file_placements : "placement_id"
+  expense_file_placements }o--|| expense_source_files : "file_id"
   expense_import_batches }o--|| expense_source_files : "file_id"
   expense_import_events }o--|| expense_import_versions : "version_id"
   expense_import_events }o--|| expense_import_batches : "batch_id"
@@ -269,6 +291,10 @@ erDiagram
   expenses }o--|| projects : "project_id"
   gl_account_class_versions }o--|| gl_accounts : "account_id"
   partner_payment_term_versions }o--|| partners : "partner_id"
+  production_cost_versions }o--o| partners : "counterparty_partner_id"
+  production_cost_versions }o--o| committee_term_versions : "committee_term_version_id"
+  production_cost_versions }o--o| work_finance_versions : "work_id,work_finance_revision"
+  production_cost_versions }o--|| works : "work_id"
 ```
 
 主キーと参照の列だけを載せる。組織（organizations・memberships）への参照は省く。
@@ -287,6 +313,8 @@ erDiagram
 | [expense_category_versions](#expense_category_versions) | 費用区分の版 | 費用区分ごとの名前・費用の科目・費用にする時期の版。管理者が経費の会計設定や費目の初期採用で積み、書き換えない。 |
 | [expense_credit_links](#expense_credit_links) | 減額と元の明細 | 減額（負の額）の経費明細と、元の経費明細・元の請求書の対応。減額の証憑で経費を登録するときに作り、書き換えない。 |
 | [expense_details](#expense_details) | 経費明細の補足 | 経費（expenses）1件に1行の補足。どの請求書に載るか・計上日・旧22列の品番や仕様・数量などを、経費の登録や取込のときに書き、書き換えない。 |
+| [expense_file_placement_voids](#expense_file_placement_voids) | 経費の原本を外した記録 | 経費の原本ではない、または別の月へ置き直したので、置き場所を外した記録1件。原本は消さない。 |
+| [expense_file_placements](#expense_file_placements) | 経費の原本を置いた月 | 経費管理のフォルダで、受け取った原本をどの月に置いたかの記録1件。1つの原本に有効な置き場所は1つで、置き直すときは外した記録を足してから新しい行を足す。 |
 | [expense_import_batches](#expense_import_batches) | 経費取込の束 | 経費の Excel・CSV を1ファイル取り込んだ単位。最初の下見のときに作り、同じ中身のファイルは同じ束になる。 |
 | [expense_import_events](#expense_import_events) | 経費取込の登録と取消 | 取込の束を登録した記録と、登録を取り消した記録。束ごとに登録と取消が1回ずつまでで、書き換えない。 |
 | [expense_import_row_commits](#expense_import_row_commits) | 取込行と経費の対応 | 取込の原行1行と、そこから作った経費明細の対応。登録のときと、保留を解消して後から登録したときに作り、書き換えない。 |
@@ -297,6 +325,7 @@ erDiagram
 | [expense_invoice_versions](#expense_invoice_versions) | 請求書の日付・番号（版） | 請求書ごとの請求日・締め日・出金予定日・番号・種類・支払方法の版。訂正や取消のたびに積み、支払条件を後で変えても過去の版の日付は変わらない。 |
 | [expense_invoices](#expense_invoices) | 経費の請求書 | 支払先から受け取った請求書・領収書など1通。経費の登録や取込で作り、支払先は書き換えない（日付や番号は expense_invoice_versions に版で持つ）。 |
 | [expense_line_voids](#expense_line_voids) | 経費明細の取消 | 経費明細1件を消さずに無効にした記録。支払済みや精算に使った明細は取り消せず、訂正後の明細があればそれを指す。 |
+| [expense_month_closures](#expense_month_closures) | 経費の月の締め | その月の経費の受領が揃ったという締め、または開け直しの記録1件。最新の行が今の状態。会計の締めではない。 |
 | [expense_payment_accounting](#expense_payment_accounting) | 出金の源泉と現預金科目 | 出金（expense_payments）1件ごとの、控除した源泉額と出金元の現預金の科目。出金を記録するときに作る（記録済みの出金に後から付ける口もある）。書き換えず、取消のときは符号を反転した行を足す。 |
 | [expense_payment_settlements](#expense_payment_settlements) | カード・相殺の支払補足 | カード払いか相殺で出金したときの補足（カードの条件版、または相殺の相手の科目・摘要・売上請求書への入金）。出金を記録するときに作り、書き換えない。 |
 | [expense_payments](#expense_payments) | 経費の出金 | 1行は、経費1件の出金1回（出金日・金額・方法）。出金の合計は経費の税込額まで。取消は負の額の行を取消日に足す。変更・削除はできない。 |
@@ -315,6 +344,7 @@ erDiagram
 | [expenses](#expenses) | 経費 | 案件や作品にかかった経費1件（予算と実績）。経費の入力（請求書つき）や経費集計シートの取込で作る。請求書につながった行（expense_details がある行）は書き換えも削除もできず、取消と新しい経費で直す。請求書につながっていない整備前の行だけ、版を確かめて書き換える |
 | [gl_account_class_versions](#gl_account_class_versions) | 勘定科目の分類（版） | 勘定科目（gl_accounts）ごとの、残高の借貸・流動か固定か・支払や消込での役割の版。管理者が経費の会計設定（初期の採用を含む）で積み、書き換えない。 |
 | [partner_payment_term_versions](#partner_payment_term_versions) | 取引先の支払条件（版） | 支払先ごとの締め・支払日・支払方法の版。管理者が経費の会計設定で積み、請求書の日付を計算するときに適用開始日で選ぶ。 |
+| [production_cost_versions](#production_cost_versions) | 制作費の版 | 成功報酬の線（閾値）にする制作費の版（追記だけ。変更・削除・同じ番号の入れ直しは DB が断る）。作品ごとの連番で、最新の version_no の版がその時点の制作費。額は税抜の整数円で、版の無い作品は「制作費の版なし」（0円で埋めない）。根拠は3種類: 出資額から作る最初の版（作品の費用の最新の版の確定した自社の出資額か、委員会の契約の最新の条件版の出資額の合計をトリガーが照らす。委員会は税の区分が不明）、出資の記録が無い作品の最初の版を契約書から手で入れる版（契約書の参照・締結日・相手・額が必須。税込の契約は税抜に戻した額と戻し方）、追加の契約で委員会・自社の払う額が増えたときの追加の版（前の版の額＋追加額。負担の種別は出資者の追加出資か借入）。内訳（制作費・P&A）は2つの和が版の額 |
 
 ## expense_accounting_versions
 
@@ -627,6 +657,53 @@ erDiagram
 - トリガー expense_details_no_delete: 削除の前
 - トリガー expense_details_no_update: 更新の前
 
+## expense_file_placement_voids
+
+**経費の原本を外した記録** — 経費の原本ではない、または別の月へ置き直したので、置き場所を外した記録1件。原本は消さない。
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | placement_id | INTEGER | 外した置き場所（expense_file_placements） | 不可 | - | PK（複合）、FK（複合）→ expense_file_placements |
+| 3 | reason | TEXT | 外した理由 | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 1000 |
+| 4 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 5 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の主キー: (org_id, placement_id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, placement_id) → expense_file_placements(org_id, id)
+- 索引 expense_file_placement_voids_author_idx: (org_id, created_by)
+- トリガー expense_file_placement_voids_no_delete: 削除の前
+- トリガー expense_file_placement_voids_no_update: 更新の前
+
+## expense_file_placements
+
+**経費の原本を置いた月** — 経費管理のフォルダで、受け取った原本をどの月に置いたかの記録1件。1つの原本に有効な置き場所は1つで、置き直すときは外した記録を足してから新しい行を足す。
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | file_id | INTEGER | 置いた原本（expense_source_files） | 不可 | - | FK（複合）→ expense_source_files |
+| 4 | placed_month | TEXT | 置いた月（YYYY-MM。計上月のフォルダ） | 不可 | - | CHECK: length(placed_month)=7 AND substr(placed_month,5,1)='-' AND ltrim(substr(placed_month,1,4)\|\|substr(placed_month,6,2),'0123456789')='' AND substr(placed_month,6,2) BETWEEN '01' AND '12' |
+| 5 | reason | TEXT | 置いた理由 | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 1000 |
+| 6 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 7 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, file_id) → expense_source_files(org_id, id)
+- 索引 expense_file_placements_author_idx: (org_id, created_by)
+- 索引 expense_file_placements_file_idx: (org_id, file_id)
+- 索引 expense_file_placements_month_idx: (org_id, placed_month)
+- トリガー expense_file_placements_no_delete: 削除の前
+- トリガー expense_file_placements_no_update: 更新の前
+- トリガー expense_file_placements_one_active: 追加の前
+
 ## expense_import_batches
 
 **経費取込の束** — 経費の Excel・CSV を1ファイル取り込んだ単位。最初の下見のときに作り、同じ中身のファイルは同じ束になる。
@@ -906,6 +983,30 @@ erDiagram
 - トリガー expense_line_voids_no_update: 更新の前
 - トリガー expense_void_paid: 追加の前
 - トリガー expense_void_replacement_scope: 追加の前
+
+## expense_month_closures
+
+**経費の月の締め** — その月の経費の受領が揃ったという締め、または開け直しの記録1件。最新の行が今の状態。会計の締めではない。
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | month | TEXT | 締めた月（YYYY-MM） | 不可 | - | CHECK: length(month)=7 AND substr(month,5,1)='-' AND ltrim(substr(month,1,4)\|\|substr(month,6,2),'0123456789')='' AND substr(month,6,2) BETWEEN '01' AND '12' |
+| 4 | kind | TEXT（列挙） | 締め（close）か開け直し（reopen） | 不可 | - | 値: close / reopen |
+| 5 | file_count | INTEGER | 締めた時点の原本と登録済みの明細の数（確かめ用） | 不可 | - | CHECK: typeof(file_count)='integer' AND file_count>=0 |
+| 6 | reason | TEXT | 締めた理由 | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 1000 |
+| 7 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 8 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 索引 expense_month_closures_author_idx: (org_id, created_by)
+- 索引 expense_month_closures_month_idx: (org_id, month)
+- トリガー expense_month_closures_no_delete: 削除の前
+- トリガー expense_month_closures_no_update: 更新の前
 
 ## expense_payment_accounting
 
@@ -1429,3 +1530,49 @@ erDiagram
 - トリガー partner_payment_term_versions_no_delete: 削除の前
 - トリガー partner_payment_term_versions_no_update: 更新の前
 - トリガー partner_payment_term_versions_sequence: 追加の前
+
+## production_cost_versions
+
+**制作費の版** — 成功報酬の線（閾値）にする制作費の版（追記だけ。変更・削除・同じ番号の入れ直しは DB が断る）。作品ごとの連番で、最新の version_no の版がその時点の制作費。額は税抜の整数円で、版の無い作品は「制作費の版なし」（0円で埋めない）。根拠は3種類: 出資額から作る最初の版（作品の費用の最新の版の確定した自社の出資額か、委員会の契約の最新の条件版の出資額の合計をトリガーが照らす。委員会は税の区分が不明）、出資の記録が無い作品の最初の版を契約書から手で入れる版（契約書の参照・締結日・相手・額が必須。税込の契約は税抜に戻した額と戻し方）、追加の契約で委員会・自社の払う額が増えたときの追加の版（前の版の額＋追加額。負担の種別は出資者の追加出資か借入）。内訳（制作費・P&A）は2つの和が版の額
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | work_id | INTEGER | 作品（works） | 不可 | - | PK（複合）、FK（複合）→ work_finance_versions、FK（複合）→ works |
+| 3 | version_no | INTEGER | 作品ごとの版の連番（1から） | 不可 | - | PK（複合）、CHECK: typeof(version_no)='integer' AND version_no>0 |
+| 4 | source_kind | TEXT（列挙） | 根拠の種類（investment 出資額から・contract 契約書から手入力・additional_contract 追加の契約） | 不可 | - | 値: investment / contract / additional_contract |
+| 5 | amount_yen | INTEGER | 制作費（税抜の整数円。1円〜1兆円。成功報酬の線の元の額） | 不可 | - | CHECK: typeof(amount_yen)='integer' AND amount_yen BETWEEN 1 AND 1000000000000 |
+| 6 | tax_basis | TEXT（列挙） | 版の額の税の区分（ex_tax 税抜・unknown 不明。不明は委員会の条件版から作った版で、成功報酬の判定は保留） | 不可 | - | 値: ex_tax / unknown |
+| 7 | production_part_yen | INTEGER | 内訳の制作費（出資が P&A を含む作品だけ。P&A と2つで和が版の額） | 可 | - | CHECK: production_part_yen IS NULL OR (typeof(production_part_yen)='integer' AND production_part_yen BETWEEN 0 AND 1000000000000) |
+| 8 | pa_part_yen | INTEGER | 内訳の P&A（出資が P&A を含む作品だけ） | 可 | - | CHECK: pa_part_yen IS NULL OR (typeof(pa_part_yen)='integer' AND pa_part_yen BETWEEN 0 AND 1000000000000) |
+| 9 | work_finance_revision | INTEGER | 参照した作品の費用の版（work_finance_versions。自社の出資額から作った版だけ） | 可 | - | FK（複合）→ work_finance_versions |
+| 10 | committee_term_version_id | INTEGER | 参照した委員会の条件版（committee_term_versions。委員会の出資額から作った版だけ） | 可 | - | FK（複合）→ committee_term_versions |
+| 11 | contract_reference | TEXT | 契約書の参照（契約書から手入力した版と追加の版） | 可 | - | CHECK: contract_reference IS NULL OR length(trim(contract_reference)) BETWEEN 1 AND 500 |
+| 12 | contract_signed_on | TEXT | 契約の締結日（YYYY-MM-DD） | 可 | - | CHECK: contract_signed_on IS NULL OR (length(contract_signed_on)=10 AND substr(contract_signed_on,5,1)='-' AND substr(contract_signed_on,8,1)='-' AND ltrim(substr(contract_signed_on,1,4)\|\|substr(contract_signed_on,6,2)\|\|substr(contract_signed_on,9,2),'0123456789')='' AND substr(contract_signed_on,6,2) BETWEEN '01' AND '12' AND substr(contract_signed_on,9,2) BETWEEN '01' AND '31') |
+| 13 | counterparty_partner_id | INTEGER | 契約の相手（partners） | 可 | - | FK（複合）→ partners |
+| 14 | contract_amount_yen | INTEGER | 契約書に書かれた額（税込のこともある。追加の版は追加の契約の額） | 可 | - | CHECK: contract_amount_yen IS NULL OR (typeof(contract_amount_yen)='integer' AND contract_amount_yen BETWEEN 1 AND 1000000000000) |
+| 15 | contract_tax_basis | TEXT（列挙） | 契約書の額の税の区分（ex_tax 税抜・inc_tax 税込） | 可 | - | 値: ex_tax / inc_tax |
+| 16 | tax_conversion | TEXT | 税込の契約を税抜に戻した戻し方 | 可 | - | CHECK: tax_conversion IS NULL OR length(trim(tax_conversion)) BETWEEN 1 AND 500 |
+| 17 | added_yen | INTEGER | 追加の版で足した額（税抜。前の版の額＋この額が版の額） | 可 | - | CHECK: added_yen IS NULL OR (typeof(added_yen)='integer' AND added_yen BETWEEN 1 AND 1000000000000) |
+| 18 | burden_type | TEXT（列挙） | 追加の契約の負担の種別（investor_additional 出資者の追加出資・borrowing 借入。制作会社の負担では版を足さない） | 可 | - | 値: investor_additional / borrowing |
+| 19 | note | TEXT | メモ（出資額から作った版は会計の専門家の確認の前の仮置きを残す） | 可 | - | CHECK: note IS NULL OR length(trim(note)) BETWEEN 1 AND 1000 |
+| 20 | created_by | INTEGER | 記録した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 21 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の主キー: (org_id, work_id, version_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, counterparty_partner_id) → partners(org_id, id)
+- 複合の参照: (org_id, committee_term_version_id) → committee_term_versions(org_id, id)
+- 複合の参照: (org_id, work_id, work_finance_revision) → work_finance_versions(org_id, work_id, revision)
+- 複合の参照: (org_id, work_id) → works(org_id, id)
+- CHECK: (production_part_yen IS NULL AND pa_part_yen IS NULL) OR (production_part_yen IS NOT NULL AND pa_part_yen IS NOT NULL AND production_part_yen+pa_part_yen=amount_yen)
+- CHECK: (contract_tax_basis IS NULL AND tax_conversion IS NULL) OR (contract_tax_basis='ex_tax' AND tax_conversion IS NULL) OR (contract_tax_basis='inc_tax' AND tax_conversion IS NOT NULL)
+- CHECK: (source_kind='investment' AND version_no=1 AND ((work_finance_revision IS NOT NULL AND committee_term_version_id IS NULL) OR (work_finance_revision IS NULL AND committee_term_version_id IS NOT NULL)) AND contract_reference IS NULL AND contract_signed_on IS NULL AND counterparty_partner_id IS NULL AND contract_amount_yen IS NULL AND contract_tax_basis IS NULL AND added_yen IS NULL AND burden_type IS NULL) OR (source_kind='contract' AND version_no=1 AND tax_basis='ex_tax' AND work_finance_revision IS NULL AND committee_term_version_id IS NULL AND contract_reference IS NOT NULL AND contract_signed_on IS NOT NULL AND counterparty_partner_id IS NOT NULL AND contract_amount_yen IS NOT NULL AND contract_tax_basis IS NOT NULL AND added_yen IS NULL AND burden_type IS NULL AND ((contract_tax_basis='ex_tax' AND amount_yen=contract_amount_yen) OR (contract_tax_basis='inc_tax' AND amount_yen<=contract_amount_yen))) OR (source_kind='additional_contract' AND version_no>1 AND work_finance_revision IS NULL AND committee_term_version_id IS NULL AND contract_reference IS NOT NULL AND contract_signed_on IS NOT NULL AND counterparty_partner_id IS NOT NULL AND contract_amount_yen IS NOT NULL AND contract_tax_basis IS NOT NULL AND added_yen IS NOT NULL AND burden_type IS NOT NULL AND ((contract_tax_basis='ex_tax' AND added_yen=contract_amount_yen) OR (contract_tax_basis='inc_tax' AND added_yen<=contract_amount_yen)))
+- トリガー production_cost_versions_additional_amount: 追加の前
+- トリガー production_cost_versions_committee_investment: 追加の前
+- トリガー production_cost_versions_no_delete: 削除の前
+- トリガー production_cost_versions_no_update: 更新の前
+- トリガー production_cost_versions_own_investment: 追加の前
+- トリガー production_cost_versions_sequence: 追加の前

@@ -1,0 +1,1287 @@
+{
+  "fictional": true,
+  "notice": "架空データ。入金の確認の試験専用で、実在の取引先・作品・金額ではない",
+  "month": "2026-11",
+  "receipts": [
+    {
+      "receipt_id": 1,
+      "bank_line": 1,
+      "received_on": "2026-11-02",
+      "payer_name": "ﾊｲｷﾕｳｶﾞｲｼﾔｴｲﾁ",
+      "amount_yen": 1007311,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-001"
+    },
+    {
+      "receipt_id": 2,
+      "bank_line": 2,
+      "received_on": "2026-11-02",
+      "payer_name": "ﾎｳｿｳｷﾖｸｴﾇ",
+      "amount_yen": 459800,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-002"
+    },
+    {
+      "receipt_id": 3,
+      "bank_line": 3,
+      "received_on": "2026-11-06",
+      "payer_name": "ﾊｲｷﾕｳｶﾞｲｼﾔｼﾞｴｲ",
+      "amount_yen": 596808,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-003"
+    },
+    {
+      "receipt_id": 4,
+      "bank_line": 4,
+      "received_on": "2026-11-06",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾙ",
+      "amount_yen": 387526,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-004"
+    },
+    {
+      "receipt_id": 5,
+      "bank_line": 5,
+      "received_on": "2026-11-06",
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｱｰﾙ",
+      "amount_yen": 631684,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-005"
+    },
+    {
+      "receipt_id": 6,
+      "bank_line": 6,
+      "received_on": "2026-11-09",
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｱｰﾙ",
+      "amount_yen": 584426,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-006"
+    },
+    {
+      "receipt_id": 7,
+      "bank_line": 7,
+      "received_on": "2026-11-10",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｲｰ",
+      "amount_yen": 837743,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-007"
+    },
+    {
+      "receipt_id": 8,
+      "bank_line": 8,
+      "received_on": "2026-11-10",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｲｰ",
+      "amount_yen": 920365,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-008"
+    },
+    {
+      "receipt_id": 9,
+      "bank_line": 9,
+      "received_on": "2026-11-10",
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｷﾕｰ",
+      "amount_yen": 38870,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-009"
+    },
+    {
+      "receipt_id": 10,
+      "bank_line": 10,
+      "received_on": "2026-11-10",
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｷﾕｰ",
+      "amount_yen": 632170,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-010"
+    },
+    {
+      "receipt_id": 11,
+      "bank_line": 11,
+      "received_on": "2026-11-10",
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｷﾕｰ",
+      "amount_yen": 925719,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-011"
+    },
+    {
+      "receipt_id": 12,
+      "bank_line": 12,
+      "received_on": "2026-11-10",
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｷﾕｰ",
+      "amount_yen": 476595,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-012"
+    },
+    {
+      "receipt_id": 13,
+      "bank_line": 13,
+      "received_on": "2026-11-10",
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｷﾕｰ",
+      "amount_yen": 617488,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-013"
+    },
+    {
+      "receipt_id": 14,
+      "bank_line": 14,
+      "received_on": "2026-11-10",
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｷﾕｰ",
+      "amount_yen": 182419,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-014"
+    },
+    {
+      "receipt_id": 15,
+      "bank_line": 15,
+      "received_on": "2026-11-10",
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｷﾕｰ",
+      "amount_yen": 441238,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-015"
+    },
+    {
+      "receipt_id": 16,
+      "bank_line": 16,
+      "received_on": "2026-11-10",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔﾀﾞﾌﾞﾘﾕｰ",
+      "amount_yen": 1960379,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-016"
+    },
+    {
+      "receipt_id": 17,
+      "bank_line": 17,
+      "received_on": "2026-11-10",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔﾀﾞﾌﾞﾘﾕｰ",
+      "amount_yen": 2200174,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-017"
+    },
+    {
+      "receipt_id": 18,
+      "bank_line": 18,
+      "received_on": "2026-11-10",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔﾀﾞﾌﾞﾘﾕｰ",
+      "amount_yen": 479872,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-018"
+    },
+    {
+      "receipt_id": 19,
+      "bank_line": 19,
+      "received_on": "2026-11-10",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔﾀﾞﾌﾞﾘﾕｰ",
+      "amount_yen": 1846227,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-019"
+    },
+    {
+      "receipt_id": 20,
+      "bank_line": 20,
+      "received_on": "2026-11-10",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔﾀﾞﾌﾞﾘﾕｰ",
+      "amount_yen": 903494,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-020"
+    },
+    {
+      "receipt_id": 21,
+      "bank_line": 21,
+      "received_on": "2026-11-10",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔﾀﾞﾌﾞﾘﾕｰ",
+      "amount_yen": 2150648,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-021"
+    },
+    {
+      "receipt_id": 22,
+      "bank_line": 22,
+      "received_on": "2026-11-11",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔﾀﾞﾌﾞﾘﾕｰ",
+      "amount_yen": 1364150,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-022"
+    },
+    {
+      "receipt_id": 23,
+      "bank_line": 23,
+      "received_on": "2026-11-12",
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾁｴｰﾝﾋﾞｰ",
+      "amount_yen": 2460296,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-023"
+    },
+    {
+      "receipt_id": 24,
+      "bank_line": 24,
+      "received_on": "2026-11-12",
+      "payer_name": "ﾎｳｿｳｷﾖｸｴﾇ",
+      "amount_yen": 1149324,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-024"
+    },
+    {
+      "receipt_id": 25,
+      "bank_line": 25,
+      "received_on": "2026-11-13",
+      "payer_name": "ﾊｲｷﾕｳｶﾞｲｼﾔｴｲﾁ",
+      "amount_yen": 812260,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-025"
+    },
+    {
+      "receipt_id": 26,
+      "bank_line": 26,
+      "received_on": "2026-11-13",
+      "payer_name": "ﾊｲｷﾕｳｶﾞｲｼﾔｴｲﾁ",
+      "amount_yen": 71289,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-026"
+    },
+    {
+      "receipt_id": 27,
+      "bank_line": 27,
+      "received_on": "2026-11-13",
+      "payer_name": "ﾊｲｷﾕｳｶﾞｲｼﾔｴｲﾁ",
+      "amount_yen": 1798549,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-027"
+    },
+    {
+      "receipt_id": 28,
+      "bank_line": 28,
+      "received_on": "2026-11-13",
+      "payer_name": "ﾊｲｷﾕｳｶﾞｲｼﾔｼﾞｴｲ",
+      "amount_yen": 1015309,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-028"
+    },
+    {
+      "receipt_id": 29,
+      "bank_line": 29,
+      "received_on": "2026-11-13",
+      "payer_name": "ﾎｳｿｳｷﾖｸﾋﾟｰ",
+      "amount_yen": 3165327,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-029"
+    },
+    {
+      "receipt_id": 30,
+      "bank_line": 30,
+      "received_on": "2026-11-13",
+      "payer_name": "ｶ)ﾎｳｿｳｷﾖｸﾋﾟｰ",
+      "amount_yen": 384531,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-030"
+    },
+    {
+      "receipt_id": 31,
+      "bank_line": 31,
+      "received_on": "2026-11-13",
+      "payer_name": "ﾎｳｿｳｷﾖｸﾋﾟｰ",
+      "amount_yen": 774896,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-031"
+    },
+    {
+      "receipt_id": 32,
+      "bank_line": 32,
+      "received_on": "2026-11-13",
+      "payer_name": "ﾎｳｿｳｷﾖｸﾋﾟｰ",
+      "amount_yen": 1586231,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-032"
+    },
+    {
+      "receipt_id": 33,
+      "bank_line": 33,
+      "received_on": "2026-11-13",
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾕｰ",
+      "amount_yen": 579376,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-033"
+    },
+    {
+      "receipt_id": 34,
+      "bank_line": 34,
+      "received_on": "2026-11-13",
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾕｰ",
+      "amount_yen": 1693949,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-034"
+    },
+    {
+      "receipt_id": 35,
+      "bank_line": 35,
+      "received_on": "2026-11-13",
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾕｰ",
+      "amount_yen": 2430787,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-035"
+    },
+    {
+      "receipt_id": 36,
+      "bank_line": 36,
+      "received_on": "2026-11-13",
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾕｰ",
+      "amount_yen": 2331354,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-036"
+    },
+    {
+      "receipt_id": 37,
+      "bank_line": 37,
+      "received_on": "2026-11-13",
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾕｰ",
+      "amount_yen": 2119701,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-037"
+    },
+    {
+      "receipt_id": 38,
+      "bank_line": 38,
+      "received_on": "2026-11-13",
+      "payer_name": "ｶ)ｴｲｶﾞﾊｲｷﾕｳ",
+      "amount_yen": 77000,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-038"
+    },
+    {
+      "receipt_id": 39,
+      "bank_line": 39,
+      "received_on": "2026-11-17",
+      "payer_name": "ｶ)ﾎｳｿｳｷﾖｸﾋﾟｰ",
+      "amount_yen": 2666051,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-039"
+    },
+    {
+      "receipt_id": 40,
+      "bank_line": 40,
+      "received_on": "2026-11-18",
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｷﾕｰ",
+      "amount_yen": 195037,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-040"
+    },
+    {
+      "receipt_id": 41,
+      "bank_line": 41,
+      "received_on": "2026-11-19",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲﾃﾞｲｰ",
+      "amount_yen": 1201781,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-041"
+    },
+    {
+      "receipt_id": 42,
+      "bank_line": 42,
+      "received_on": "2026-11-19",
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾌﾞｲ",
+      "amount_yen": 1704219,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-042"
+    },
+    {
+      "receipt_id": 43,
+      "bank_line": 43,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲﾃﾞｲｰ",
+      "amount_yen": 363369,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-043"
+    },
+    {
+      "receipt_id": 44,
+      "bank_line": 44,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲﾃﾞｲｰ",
+      "amount_yen": 178707,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-044"
+    },
+    {
+      "receipt_id": 45,
+      "bank_line": 45,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲﾃﾞｲｰ",
+      "amount_yen": 781981,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-045"
+    },
+    {
+      "receipt_id": 46,
+      "bank_line": 46,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲﾃﾞｲｰ",
+      "amount_yen": 874815,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-046"
+    },
+    {
+      "receipt_id": 47,
+      "bank_line": 47,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲﾃﾞｲｰ",
+      "amount_yen": 1904022,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-047"
+    },
+    {
+      "receipt_id": 48,
+      "bank_line": 48,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲﾃﾞｲｰ",
+      "amount_yen": 495000,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-048"
+    },
+    {
+      "receipt_id": 49,
+      "bank_line": 49,
+      "received_on": "2026-11-20",
+      "payer_name": "GLOBAL FILMS G",
+      "amount_yen": 812025,
+      "currency": "EUR",
+      "foreign_amount": "5100.00",
+      "reference": "RM-202611-049"
+    },
+    {
+      "receipt_id": 50,
+      "bank_line": 50,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾙ",
+      "amount_yen": 770313,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-050"
+    },
+    {
+      "receipt_id": 51,
+      "bank_line": 51,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾙ",
+      "amount_yen": 1133481,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-051"
+    },
+    {
+      "receipt_id": 52,
+      "bank_line": 52,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾙ",
+      "amount_yen": 938725,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-052"
+    },
+    {
+      "receipt_id": 53,
+      "bank_line": 53,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾙ",
+      "amount_yen": 561102,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-053"
+    },
+    {
+      "receipt_id": 54,
+      "bank_line": 54,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾙ",
+      "amount_yen": 267540,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-054"
+    },
+    {
+      "receipt_id": 55,
+      "bank_line": 55,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾙ",
+      "amount_yen": 1088445,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-055"
+    },
+    {
+      "receipt_id": 56,
+      "bank_line": 56,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾙ",
+      "amount_yen": 617106,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-056"
+    },
+    {
+      "receipt_id": 57,
+      "bank_line": 57,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｱｰﾙ",
+      "amount_yen": 245760,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-057"
+    },
+    {
+      "receipt_id": 58,
+      "bank_line": 58,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｱｰﾙ",
+      "amount_yen": 335894,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-058"
+    },
+    {
+      "receipt_id": 59,
+      "bank_line": 59,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｱｰﾙ",
+      "amount_yen": 1081385,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-059"
+    },
+    {
+      "receipt_id": 60,
+      "bank_line": 60,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｱｰﾙ",
+      "amount_yen": 840159,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-060"
+    },
+    {
+      "receipt_id": 61,
+      "bank_line": 61,
+      "received_on": "2026-11-20",
+      "payer_name": "ﾚﾝﾀﾙﾁｴｰﾝｱｰﾙ",
+      "amount_yen": 495292,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-061"
+    },
+    {
+      "receipt_id": 62,
+      "bank_line": 62,
+      "received_on": "2026-11-20",
+      "payer_name": "ｷﾖｳｲｸﾊｲｷﾕｳﾜｲ",
+      "amount_yen": 227708,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-062"
+    },
+    {
+      "receipt_id": 63,
+      "bank_line": 63,
+      "received_on": "2026-11-20",
+      "payer_name": "ｷﾖｳｲｸﾊｲｷﾕｳﾜｲ",
+      "amount_yen": 409079,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-063"
+    },
+    {
+      "receipt_id": 64,
+      "bank_line": 64,
+      "received_on": "2026-11-20",
+      "payer_name": "ｷﾖｳｲｸﾊｲｷﾕｳﾜｲ",
+      "amount_yen": 208563,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-064"
+    },
+    {
+      "receipt_id": 65,
+      "bank_line": 65,
+      "received_on": "2026-11-25",
+      "payer_name": "OVERSEAS SALES C",
+      "amount_yen": 1823504,
+      "currency": "USD",
+      "foreign_amount": "12600.00",
+      "reference": "RM-202611-065"
+    },
+    {
+      "receipt_id": 66,
+      "bank_line": 66,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊｲｷﾕｳｶﾞｲｼﾔｴﾌ",
+      "amount_yen": 680594,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-066"
+    },
+    {
+      "receipt_id": 67,
+      "bank_line": 67,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊｲｷﾕｳｶﾞｲｼﾔｴﾌ",
+      "amount_yen": 1393949,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-067"
+    },
+    {
+      "receipt_id": 68,
+      "bank_line": 68,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊｲｷﾕｳｶﾞｲｼﾔｴﾌ",
+      "amount_yen": 196970,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-068"
+    },
+    {
+      "receipt_id": 69,
+      "bank_line": 69,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊｲｷﾕｳｶﾞｲｼﾔｴﾌ",
+      "amount_yen": 1000000,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-069"
+    },
+    {
+      "receipt_id": 70,
+      "bank_line": 70,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾑ",
+      "amount_yen": 659080,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-070"
+    },
+    {
+      "receipt_id": 71,
+      "bank_line": 71,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾑ",
+      "amount_yen": 138383,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-071"
+    },
+    {
+      "receipt_id": 72,
+      "bank_line": 72,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾑ",
+      "amount_yen": 1614023,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-072"
+    },
+    {
+      "receipt_id": 73,
+      "bank_line": 73,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾑ",
+      "amount_yen": 570839,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-073"
+    },
+    {
+      "receipt_id": 74,
+      "bank_line": 74,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾑ",
+      "amount_yen": 1227836,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-074"
+    },
+    {
+      "receipt_id": 75,
+      "bank_line": 75,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾑ",
+      "amount_yen": 1217656,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-075"
+    },
+    {
+      "receipt_id": 76,
+      "bank_line": 76,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴﾑ",
+      "amount_yen": 3458970,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-076"
+    },
+    {
+      "receipt_id": 77,
+      "bank_line": 77,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲﾃｲｰ",
+      "amount_yen": 363799,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-077"
+    },
+    {
+      "receipt_id": 78,
+      "bank_line": 78,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲﾃｲｰ",
+      "amount_yen": 247299,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-078"
+    },
+    {
+      "receipt_id": 79,
+      "bank_line": 79,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲﾃｲｰ",
+      "amount_yen": 772702,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-079"
+    },
+    {
+      "receipt_id": 80,
+      "bank_line": 80,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲﾃｲｰ",
+      "amount_yen": 575006,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-080"
+    },
+    {
+      "receipt_id": 81,
+      "bank_line": 81,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲﾃｲｰ",
+      "amount_yen": 73279,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-081"
+    },
+    {
+      "receipt_id": 82,
+      "bank_line": 82,
+      "received_on": "2026-11-25",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲﾃｲｰ",
+      "amount_yen": 1196182,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-082"
+    },
+    {
+      "receipt_id": 83,
+      "bank_line": 83,
+      "received_on": "2026-11-25",
+      "payer_name": "ｷﾅｲｼﾞﾖｳｴｲｴﾂｸｽ",
+      "amount_yen": 376349,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-083"
+    },
+    {
+      "receipt_id": 84,
+      "bank_line": 84,
+      "received_on": "2026-11-25",
+      "payer_name": "ｷﾅｲｼﾞﾖｳｴｲｴﾂｸｽ",
+      "amount_yen": 1130707,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-084"
+    },
+    {
+      "receipt_id": 85,
+      "bank_line": 85,
+      "received_on": "2026-11-25",
+      "payer_name": "ｷﾅｲｼﾞﾖｳｴｲｴﾂｸｽ",
+      "amount_yen": 399780,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-085"
+    },
+    {
+      "receipt_id": 86,
+      "bank_line": 86,
+      "received_on": "2026-11-25",
+      "payer_name": "ｷﾅｲｼﾞﾖｳｴｲｴﾂｸｽ",
+      "amount_yen": 844516,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-086"
+    },
+    {
+      "receipt_id": 87,
+      "bank_line": 87,
+      "received_on": "2026-11-25",
+      "payer_name": "ｷﾅｲｼﾞﾖｳｴｲｴﾂｸｽ",
+      "amount_yen": 564085,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-087"
+    },
+    {
+      "receipt_id": 88,
+      "bank_line": 88,
+      "received_on": "2026-11-27",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｲｰ",
+      "amount_yen": 330000,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-088"
+    },
+    {
+      "receipt_id": 89,
+      "bank_line": 89,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴｰ",
+      "amount_yen": 1099340,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-089"
+    },
+    {
+      "receipt_id": 90,
+      "bank_line": 90,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｴｰ",
+      "amount_yen": 1099340,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-090"
+    },
+    {
+      "receipt_id": 91,
+      "bank_line": 91,
+      "received_on": "2026-11-30",
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾁｴｰﾝﾋﾞｰ",
+      "amount_yen": 919218,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-091"
+    },
+    {
+      "receipt_id": 92,
+      "bank_line": 92,
+      "received_on": "2026-11-30",
+      "payer_name": "ｶ)ｹﾞｷｼﾞﾖｳﾁｴｰﾝﾋﾞｰ",
+      "amount_yen": 325409,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-092"
+    },
+    {
+      "receipt_id": 93,
+      "bank_line": 93,
+      "received_on": "2026-11-30",
+      "payer_name": "ｶ)ｹﾞｷｼﾞﾖｳﾁｴｰﾝﾋﾞｰ",
+      "amount_yen": 1105238,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-093"
+    },
+    {
+      "receipt_id": 94,
+      "bank_line": 94,
+      "received_on": "2026-11-30",
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾁｴｰﾝﾋﾞｰ",
+      "amount_yen": 361414,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-094"
+    },
+    {
+      "receipt_id": 95,
+      "bank_line": 95,
+      "received_on": "2026-11-30",
+      "payer_name": "ｶ)ｹﾞｷｼﾞﾖｳﾁｴｰﾝﾋﾞｰ",
+      "amount_yen": 2334481,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-095"
+    },
+    {
+      "receipt_id": 96,
+      "bank_line": 96,
+      "received_on": "2026-11-30",
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾁｴｰﾝﾋﾞｰ",
+      "amount_yen": 664560,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-096"
+    },
+    {
+      "receipt_id": 97,
+      "bank_line": 97,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊｲｷﾕｳｶﾞｲｼﾔｼﾞｴｲ",
+      "amount_yen": 1367617,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-097"
+    },
+    {
+      "receipt_id": 98,
+      "bank_line": 98,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊｲｷﾕｳｶﾞｲｼﾔｼﾞｴｲ",
+      "amount_yen": 190906,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-098"
+    },
+    {
+      "receipt_id": 99,
+      "bank_line": 99,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｹｲ",
+      "amount_yen": 674812,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-099"
+    },
+    {
+      "receipt_id": 100,
+      "bank_line": 100,
+      "received_on": "2026-11-30",
+      "payer_name": "ｶ)ﾊｲｼﾝｶｲｼﾔｹｲ",
+      "amount_yen": 924145,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-100"
+    },
+    {
+      "receipt_id": 101,
+      "bank_line": 101,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｹｲ",
+      "amount_yen": 713302,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-101"
+    },
+    {
+      "receipt_id": 102,
+      "bank_line": 102,
+      "received_on": "2026-11-30",
+      "payer_name": "ｶ)ﾊｲｼﾝｶｲｼﾔｹｲ",
+      "amount_yen": 1532584,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-102"
+    },
+    {
+      "receipt_id": 103,
+      "bank_line": 103,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｹｲ",
+      "amount_yen": 496833,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-103"
+    },
+    {
+      "receipt_id": 104,
+      "bank_line": 104,
+      "received_on": "2026-11-30",
+      "payer_name": "ｶ)ﾊｲｼﾝｶｲｼﾔｹｲ",
+      "amount_yen": 1479283,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-104"
+    },
+    {
+      "receipt_id": 105,
+      "bank_line": 105,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｹｲ",
+      "amount_yen": 864345,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-105"
+    },
+    {
+      "receipt_id": 106,
+      "bank_line": 106,
+      "received_on": "2026-11-30",
+      "payer_name": "ｶ)ﾊｲｼﾝｶｲｼﾔｹｲ",
+      "amount_yen": 439554,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-106"
+    },
+    {
+      "receipt_id": 107,
+      "bank_line": 107,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊｲｼﾝｶｲｼﾔｹｲ",
+      "amount_yen": 1343816,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-107"
+    },
+    {
+      "receipt_id": 108,
+      "bank_line": 108,
+      "received_on": "2026-11-30",
+      "payer_name": "ｶ)ﾊｲｼﾝｶｲｼﾔｹｲ",
+      "amount_yen": 1806699,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-108"
+    },
+    {
+      "receipt_id": 109,
+      "bank_line": 109,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾎｳｿｳｷﾖｸｴﾇ",
+      "amount_yen": 2607040,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-109"
+    },
+    {
+      "receipt_id": 110,
+      "bank_line": 110,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾎｳｿｳｷﾖｸｴﾇ",
+      "amount_yen": 856480,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-110"
+    },
+    {
+      "receipt_id": 111,
+      "bank_line": 111,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾎｳｿｳｷﾖｸｴﾇ",
+      "amount_yen": 1395639,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-111"
+    },
+    {
+      "receipt_id": 112,
+      "bank_line": 112,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾎｳｿｳｷﾖｸｴﾇ",
+      "amount_yen": 2653092,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-112"
+    },
+    {
+      "receipt_id": 113,
+      "bank_line": 113,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲｴｽ",
+      "amount_yen": 238970,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-113"
+    },
+    {
+      "receipt_id": 114,
+      "bank_line": 114,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲｴｽ",
+      "amount_yen": 727809,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-114"
+    },
+    {
+      "receipt_id": 115,
+      "bank_line": 115,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲｴｽ",
+      "amount_yen": 344184,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-115"
+    },
+    {
+      "receipt_id": 116,
+      "bank_line": 116,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲｴｽ",
+      "amount_yen": 585125,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-116"
+    },
+    {
+      "receipt_id": 117,
+      "bank_line": 117,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲｴｽ",
+      "amount_yen": 896438,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-117"
+    },
+    {
+      "receipt_id": 118,
+      "bank_line": 118,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲｴｽ",
+      "amount_yen": 826142,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-118"
+    },
+    {
+      "receipt_id": 119,
+      "bank_line": 119,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾊﾟﾂｹｰｼﾞﾊﾝﾊﾞｲｴｽ",
+      "amount_yen": 427286,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-119"
+    },
+    {
+      "receipt_id": 120,
+      "bank_line": 120,
+      "received_on": "2026-11-30",
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾌﾞｲ",
+      "amount_yen": 2355159,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-120"
+    },
+    {
+      "receipt_id": 121,
+      "bank_line": 121,
+      "received_on": "2026-11-30",
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾌﾞｲ",
+      "amount_yen": 1148847,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-121"
+    },
+    {
+      "receipt_id": 122,
+      "bank_line": 122,
+      "received_on": "2026-11-30",
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾌﾞｲ",
+      "amount_yen": 2626016,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-122"
+    },
+    {
+      "receipt_id": 123,
+      "bank_line": 123,
+      "received_on": "2026-11-30",
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾌﾞｲ",
+      "amount_yen": 2041806,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-123"
+    },
+    {
+      "receipt_id": 124,
+      "bank_line": 124,
+      "received_on": "2026-11-30",
+      "payer_name": "ｹﾞｷｼﾞﾖｳﾌﾞｲ",
+      "amount_yen": 3764812,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-124"
+    },
+    {
+      "receipt_id": 125,
+      "bank_line": 125,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾎﾃﾙﾊｲｼﾝｾﾞﾂﾄ",
+      "amount_yen": 151456,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-125"
+    },
+    {
+      "receipt_id": 126,
+      "bank_line": 126,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾎﾃﾙﾊｲｼﾝｾﾞﾂﾄ",
+      "amount_yen": 263616,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-126"
+    },
+    {
+      "receipt_id": 127,
+      "bank_line": 127,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾎﾃﾙﾊｲｼﾝｾﾞﾂﾄ",
+      "amount_yen": 76728,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-127"
+    },
+    {
+      "receipt_id": 128,
+      "bank_line": 128,
+      "received_on": "2026-11-30",
+      "payer_name": "ﾎﾃﾙﾊｲｼﾝｾﾞﾂﾄ",
+      "amount_yen": 306138,
+      "currency": "JPY",
+      "foreign_amount": null,
+      "reference": "RM-202611-128"
+    }
+  ]
+}

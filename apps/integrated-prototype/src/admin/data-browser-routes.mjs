@@ -6,7 +6,13 @@ import {tableLabel, columnDisplayName, columnDescription} from './er-model.mjs';
 import {objects} from '../design-model.mjs';
 // 管理者向けの「データ一覧」と「取込履歴」。登録済みのデータを表のまま読み取り専用で確かめ、Excel/CSVで出す。
 // 自組織の行だけ（org_id のある表）。セッション・利用者・組織・内部の排他用の表は出さず、秘密に見える列は伏せる。
-const HIDDEN_TABLES = new Set(['sessions', 'users', 'organizations', 'transaction_guards']);
+// 案件収支の予実の目標の版・計画の版とその子表・採用の記録（移行 0014）は、額から代表の報酬が割り戻せるので、管理者にも表名ごと出さない
+// （額は src/revenue/revenue-store.mjs の読み取りが owner 本人にだけ返す。FR-REV-YOJITSU-006、行動指標の計画 K2-12）
+export const OWNER_ONLY_TABLES = Object.freeze(['yojitsu_target_versions', 'yojitsu_plan_versions', 'yojitsu_plan_amounts', 'plan_adoptions']);
+// 案件収支の予実の活動記録とその取消（移行 0015）は、行動履歴を会社の人に見せるかの裁定（D-039 の未決。R4）まで記録した人の本人の行だけに
+// 返すので、管理者にも表名ごと出さない（行は src/revenue/revenue-store.mjs の readActivityRecords が本人にだけ返す。FR-REV-YOJITSU-037）
+export const CREATOR_ONLY_TABLES = Object.freeze(['yojitsu_activity_records', 'yojitsu_activity_cancellations']);
+export const HIDDEN_TABLES = new Set(['sessions', 'users', 'organizations', 'transaction_guards', ...OWNER_ONLY_TABLES, ...CREATOR_ONLY_TABLES]);
 const ROW_LIMIT = 2000;
 const OMITTED = '（大きな列のため表示を省略）';
 

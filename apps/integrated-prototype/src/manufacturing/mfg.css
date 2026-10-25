@@ -1,0 +1,54 @@
+/* 製造の画面。docs/design/integrated-system-visual.md: 黒・白・灰に赤1色、角丸0、影なし。期限超と差額だけ赤 */
+.mf { --mf-ink: #111111; --mf-paper: #ffffff; --mf-soft: #f3f1ec; --mf-sub: #5e5850; --mf-faint: #6b655c; --mf-rule: #cfc8ba; --mf-red: #b3261e;
+  color: var(--mf-ink); max-width: 1200px; font-variant-numeric: tabular-nums; }
+.mf * { border-radius: 0; box-shadow: none; }
+.mf h2 { font-size: 16px; font-weight: 800; margin: 18px 0 8px; padding-bottom: 6px; border-bottom: 2px solid var(--mf-ink); }
+.mf h3 { font-size: 14px; font-weight: 800; margin: 16px 0 6px; }
+.mf-sub { color: var(--mf-faint); font-size: 12px; margin-left: 8px; font-weight: normal; }
+.mf-nums { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--mf-ink); margin: 4px 0 12px; }
+.mf-nums.small { grid-template-columns: repeat(4, 1fr); }
+.mf-nums div { padding: 10px 14px; border-right: 1px solid var(--mf-rule); display: flex; flex-direction: column; }
+.mf-nums div:last-child { border-right: 0; }
+.mf-nums b { font-size: 28px; line-height: 1.1; }
+.mf-nums.small b { font-size: 20px; }
+.mf-nums span { font-size: 12px; color: var(--mf-sub); }
+.mf-nums .hot { background: var(--mf-red); color: #fff; }
+.mf-nums .hot span { color: #fff; }
+.mf-table { border-collapse: collapse; width: 100%; font-size: 13px; margin-bottom: 8px; }
+.mf-table th, .mf-table td { padding: 5px 8px; border-bottom: 1px solid var(--mf-rule); text-align: left; vertical-align: top; }
+.mf-table th { background: var(--mf-soft); font-weight: 700; border-bottom: 1px solid var(--mf-ink); white-space: nowrap; }
+.mf-table .c { text-align: center; }
+.mf-table .n, .mf input.n { text-align: right; }
+.mf-table input { width: 100%; box-sizing: border-box; }
+.mf-row { cursor: pointer; }
+.mf-row:hover td { background: var(--mf-soft); }
+.mf-table tr.mute td { color: var(--mf-faint); }
+.mf-table tr.late td:first-child { color: var(--mf-red); font-weight: 700; }
+.mf-total td { font-weight: 700; border-top: 2px solid var(--mf-ink); }
+.mf .bad { color: var(--mf-red); font-weight: 700; }
+.mf-tag { display: inline-block; border: 1px solid var(--mf-ink); padding: 0 5px; font-size: 12px; line-height: 18px; min-width: 22px; text-align: center; }
+.mf-tag.late { border-color: var(--mf-red); color: var(--mf-red); font-weight: 700; }
+.mf-tag.plan { border-color: var(--mf-rule); color: var(--mf-faint); }
+.mf button { font: inherit; border: 1px solid var(--mf-ink); background: var(--mf-paper); color: var(--mf-ink); padding: 3px 10px; cursor: pointer; }
+.mf button.pri { background: var(--mf-ink); color: var(--mf-paper); }
+.mf button.link { border: 0; padding: 0 4px; text-decoration: underline; background: none; }
+.mf-actions, .mf-head { display: flex; gap: 8px; margin: 8px 0; }
+.mf-btns { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.mf-btns button { padding: 1px 8px; font-size: 12px; }
+.mf-events span { display: inline-block; margin-right: 8px; font-size: 12px; }
+.mf-form { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: flex-end; border: 1px solid var(--mf-ink); padding: 10px 12px; margin: 8px 0 12px; }
+.mf-form label { display: flex; flex-direction: column; font-size: 12px; color: var(--mf-sub); gap: 2px; }
+.mf-form.wide .mf-table { flex-basis: 100%; }
+.mf-pair { display: flex; gap: 4px; align-items: center; }
+.mf-pair input { width: 56px; }
+.mf-card { border: 1px solid var(--mf-ink); padding: 8px 12px; margin: 8px 0; }
+.mf-card.mute { border-color: var(--mf-rule); color: var(--mf-faint); }
+.mf-card-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; margin-bottom: 6px; }
+.mf-steps { display: grid; grid-template-columns: repeat(6, 1fr); border: 1px solid var(--mf-ink); margin: 4px 0 8px; }
+.mf-steps div { padding: 4px 8px; font-size: 12px; border-right: 1px solid var(--mf-rule); color: var(--mf-faint); }
+.mf-steps div:last-child { border-right: 0; }
+.mf-steps div.on { background: var(--mf-ink); color: var(--mf-paper); }
+.mf-empty { color: var(--mf-faint); }
+.mf-message { font-weight: 700; }
+.mf-inline { font-size: 12px; color: var(--mf-sub); }
+@media print { .no-print { display: none !important; } .mf { max-width: none; } }

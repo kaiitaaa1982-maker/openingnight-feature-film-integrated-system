@@ -1,0 +1,45 @@
+/* 解禁月のページと提案の振り返り（営業管理）。見た目の決まりは docs/design/integrated-system-visual.md（黒・白・灰＋赤1色、角丸0、影なし）。
+   赤は「いま確認すること」（急・記録できなかった知らせ）にだけ使い、ほかは沈める */
+.sp-page { display: grid; gap: 12px; }
+.sp-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.sp-head h2 { margin: 0; font-size: 1.1rem; }
+.sp-head label { display: inline-flex; gap: 4px; align-items: center; font-size: .85rem; }
+.sp-month { display: inline-flex; gap: 4px; align-items: center; }
+.sp-summary { margin: 0; font-size: .9rem; }
+.sp-bad { color: #b3261e; }
+.sp-scroll { overflow-x: auto; }
+.sp-grid, .sp-list, .sp-tally { border-collapse: collapse; font-size: .82rem; }
+.sp-grid th, .sp-grid td, .sp-list th, .sp-list td, .sp-tally th, .sp-tally td { border: 1px solid #cfc8ba; padding: 4px 6px; vertical-align: top; }
+.sp-grid thead th, .sp-list thead th, .sp-tally thead th { background: #f3f1ec; font-weight: 600; }
+.sp-work { text-align: left; white-space: nowrap; font-weight: 400; }
+.sp-cell { padding: 0; min-width: 96px; }
+.sp-cell button { all: unset; display: grid; width: 100%; padding: 4px 6px; cursor: pointer; text-align: center; box-sizing: border-box; }
+.sp-cell button:focus-visible { outline: 2px solid #111111; }
+.sp-date { font-size: .72rem; color: #5e5850; }
+.sp-state { font-weight: 700; }
+.sp-done { background: #111111; color: #ffffff; }
+.sp-done .sp-date { color: #ffffff; }
+.sp-proposed { background: #f3f1ec; color: #111111; }
+.sp-urgent { background: #b3261e; color: #ffffff; }
+.sp-urgent .sp-date { color: #ffffff; }
+.sp-none { color: #6b655c; }
+.sp-ok { font-weight: 700; color: #111111; }
+.sp-mid { color: #6b655c; }
+td.sp-bad { color: #5e5850; }
+.sp-plus { color: #111111; font-weight: 700; }
+.sp-minus { color: #5e5850; font-weight: 700; }
+.sp-message { margin: 0; padding: 6px 10px; border: 1px solid #cfc8ba; }
+.sp-message.sp-ok { background: #f3f1ec; color: #111111; }
+.sp-message.sp-bad { background: #ffffff; color: #b3261e; border-color: #b3261e; }
+.sp-forms { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.sp-form { display: grid; gap: 6px; align-content: start; border: 1px solid #cfc8ba; padding: 10px; }
+.sp-form h3 { margin: 0 0 4px; font-size: .95rem; }
+.sp-form label { display: grid; gap: 2px; font-size: .82rem; }
+.sp-form fieldset { border: 1px solid #cfc8ba; padding: 4px 6px; font-size: .82rem; display: flex; flex-wrap: wrap; gap: 6px; }
+.sp-check { display: inline-flex !important; gap: 4px; align-items: center; }
+.sp-factor { display: inline-flex; gap: 2px; align-items: center; margin-right: 6px; }
+.sp-factor button { min-width: 24px; }
+.sp-factor button[aria-pressed="true"] { background: #111111; color: #ffffff; }
+.sp-download { margin-left: auto; font-size: .85rem; }
+.sp-form fieldset .sp-check { display: inline-flex; grid-template-columns: none; gap: 4px; align-items: center; white-space: nowrap; }
+.sp-form .sp-check input[type="checkbox"] { width: auto; height: auto; min-height: 0; margin: 0; padding: 0; flex: none; }

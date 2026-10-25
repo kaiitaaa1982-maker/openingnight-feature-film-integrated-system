@@ -140,21 +140,18 @@ export function suggestionList(headers, sampleRows = []) {
     .map(([target, item]) => ({target, mode: 'source', source: item.source, reason: item.reason}));
 }
 
-// 売上集計シートの拡張属性の列の候補（見出しの語から）。既存の共通列の候補（suggestMappings）とは別に出す
+// 売上集計シートの拡張属性の列の候補（見出しの語から）。既存の共通列の候補（suggestMappings）とは別に出す。列は辞書の採用の列（辞書から外した列には候補を出さない）
 const ATTRIBUTE_RULES = Object.freeze({
   theatre_name: ['劇場名', '劇場', '館名', '上映館', 'theater', 'theatre'],
   ticket_category: ['券種区分', '券種の区分', '料金区分'],
-  ticket_audience: ['対象層', 'ターゲット'],
   ticket_raw_label: ['券種表記', '券種原文'],
   ticket_unit_inc_tax: ['券種単価', '券種の税込単価', '税込単価'],
-  theatre_unit_inc_tax: ['劇場別単価', '劇場単価'],
   overdue_count: ['延滞数', '延滞件数', '延滞本数'],
   overdue_amount: ['延滞額', '延滞金', '延滞料'],
   overdue_share: ['延滞分配', '延滞分配額'],
   rss_declared: ['申告額', '申告金額'],
   unique_viewers: ['視聴uu', 'uu', 'uu数', 'ユニーク', 'ユニーク視聴者', 'uniqueviewers'],
   rental_turnover: ['回転率'],
-  update_reason: ['更新理由', '修正理由'],
 });
 // 返り値 {attr_<列キー>: {source, exact, reason}}。exact は見出しが語と一致（自動で選んでよい）、部分一致は exact:false（候補の表示だけ）
 export function suggestAttributeMappings(headers, targets = ATTRIBUTE_SALES_TARGETS) {

@@ -1,8 +1,23 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { buildUxMigration, UX_MIGRATION_PATH, buildR3Migration, R3_MIGRATION_PATH, buildR4Migration, R4_MIGRATION_PATH, buildR5Migration, R5_MIGRATION_PATH, buildR6Migration, R6_MIGRATION_PATH } from '../scripts/build-ux-migration.mjs';
 import { R4_SQL_FILES, R5_SQL_FILES, R6_SQL_FILES } from '../src/db.mjs';
+import { countCaseTriggers } from '../../../scripts/ops/d1-rehearsal.mjs';
+
+// 本番の `wrangler d1 migrations apply --remote` は、トリガーの本体に CASE … END を持つ移行を「incomplete input: SQLITE_ERROR 7500」で落とす
+// （2026-09-25 の本番配備。core の docs/platform/operations/runbooks/07-cd.md 3-5）。ci:migrations は --local なので、この落ち方を再現できない。
+// 0005 からあとの移行（その配備より後に足したもの）は、条件をトリガーの WHEN 句に書く。0001〜0004 は配備済みで、当て直さない
+const MIGRATIONS_DIR = new URL('../migrations/', import.meta.url);
+const CASE_FREE_FROM = 5;
+test('0005 からあとの D1 移行は、どれもトリガーの本体に CASE を持たない（本番の migrations apply --remote が落ちる形を足さない）', () => {
+  const files = readdirSync(MIGRATIONS_DIR).filter((f) => /^\d{4}_.*\.sql$/.test(f) && Number(f.slice(0, 4)) >= CASE_FREE_FROM).sort();
+  assert.ok(files.includes('0010_req6_expenses.sql') && files.includes('0011_cloud_analytics.sql'), files.join(','));
+  const found = files.map((f) => [f, countCaseTriggers(readFileSync(new URL(f, MIGRATIONS_DIR), 'utf8'))]).filter(([, n]) => n > 0);
+  assert.deepEqual(found, [], '条件ごとに WHEN 句のトリガーを1本ずつ作る（0010 の形）');
+  // 数え方が CASE のトリガーを見落とさないこと（0004 は配備済みの CASE のトリガーを持つ）
+  assert.ok(countCaseTriggers(readFileSync(new URL('0004_eigyo_sales_sheet.sql', MIGRATIONS_DIR), 'utf8')) > 0);
+});
 
 test('D1 migration 0002 matches the UX tables loaded by LocalDatabase', () => {
   assert.equal(readFileSync(UX_MIGRATION_PATH, 'utf8'), buildUxMigration(), 'node scripts/build-ux-migration.mjs で作り直す');
@@ -185,8 +200,19 @@ test('D1 migration 0008 matches the broadcast proposal draft tables loaded by Lo
   assert.match(sql, /broadcast_proposal_draft_deletions_draft_only[\s\S]*?OR EXISTS\(SELECT 1 FROM broadcast_sale_links l WHERE l\.org_id=NEW\.org_id AND l\.slot_id=NEW\.slot_id\) BEGIN/, '売上を紐付けた枠は削除の記録を付けられない');
   const manifest = JSON.parse(readFileSync(new URL('../migration-manifest.json', import.meta.url), 'utf8'));
   // 最新の移行までの合計。0009 まで（221表・427トリガー・47索引）に、0010（依頼6の経費と会計）の36表・113トリガー・77索引と、
-  // 0011（分析の写しのジョブ。PG 計画 段2の準備 論点7）の2表・1索引を足した数
-  assert.deepEqual(manifest, {tables: 259, triggers: 540, indexes: 125, views: 0});
+  // 0011（分析の写しのジョブ。PG 計画 段2の準備 論点7）の2表・1索引と、0012（案件の型・稼ぎ方・段階。フェーズ1 #10）の7表・22トリガーと、
+  // 0013（受託制作の契約の版。フェーズ1 #10b）の2表・10トリガーと、0014（予実の目標・計画の版と期間、行動の設定。フェーズ1 #11）の7表・24トリガー・1索引と、
+  // 0015（予実の予測の版と活動記録。フェーズ1 #13）の4表・13トリガー・1索引と、0016（制作費の版。フェーズ1 #5）の1表・6トリガーと、
+  // 0017（指標マスタ。行動指標の計画 段B #9）の2表・7トリガーと、0018（予実の語を選ぶ設定と月の設定。フェーズ1 #14）の1表・3トリガーと、0019（稟議の版。行動指標の計画 段B #4）の1表・8トリガーと、
+  // 0021（1通の原本の条件の版・報告の取消の記録。フォルダ型の画面 U1。#131 の仮の 0019 を振り直した）の2表・7トリガーと、
+  // 0023（検査の決まりの版・正解表・検査の結果・抜き取りの記録。フォルダ型の画面 U2a 後半。0022 は #145 が別枝で使う）の4表・12トリガーを足した数。
+  // 表の数は LocalDatabase の 355 に、D1 の履歴表 d1_migrations を1つ足した 356
+  // 0046（製造）の8表・18トリガー・15索引を足した
+  // 0052（調達）の13表・36トリガー・5索引を足した
+  // 0053（プリプロの手配・美術・撮影の方針）の3表・9トリガー・8索引を足した
+  // 0054（プリプロの保管庫の置き場）の1表・2トリガー・5索引を足した
+  // 0055（現場の連絡帳）の3表・6トリガー・7索引を足した
+  assert.deepEqual(manifest, {tables: 390, triggers: 912, indexes: 256, views: 0});
 });
 
 test('D1 migration 0009 is additive, immutable, scoped and identical to local master SQL',async()=>{

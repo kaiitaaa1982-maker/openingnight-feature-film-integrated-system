@@ -2,8 +2,10 @@
 // 画面の表と Excel のシートは同じ列定義から作るので、数字は同じになる。未確定の額は空欄（「未確認」）のまま出し、0円にしない。
 import {gridSheetSpec} from '../ui/grid-model.mjs';
 import {monthLabel, ORIGIN_LABELS, SECTION_LABELS, PL_BS_HEADING, MANUAL_STATUS_LABELS} from '../reports/pl-bs-model.mjs';
+import {BASIS_DESCRIPTIONS, DEFAULT_BASIS} from '../reports/pl-bs-cash-model.mjs';
 
 export const VIEWS = Object.freeze([
+  {id: 'monthly', label: '月次の報告'},
   {id: 'work-pl', label: '作品別PL'},
   {id: 'work-balances', label: '作品別の残高'},
   {id: 'company-pl', label: '会社PL'},
@@ -37,6 +39,73 @@ export const WORK_PL_COLUMNS = Object.freeze([
   originColumn,
   {key: 'reasons', label: '未確定の理由', type: 'text', wrap: true, value: (row) => (row.reasons || []).join('／')},
 ]);
+
+// 入金ベース（basis=cash。フェーズ1 #16）の作品別PLの列。科目の名前を入金の言い方にし、税抜にできない入出金（未確定・税込・利益に入れない）の列を足す
+const CASH_LABELS = Object.freeze({sales: '売上（自社作品・入金）', royalty: 'ロイヤリティ（支払）', production: '制作費（払った月）'});
+const UNSETTLED_COLUMNS = Object.freeze([
+  {key: 'unsettledIn', label: '未確定の入金（税込・利益に入れない）', type: 'yen', group: '期間', value: (row) => row.unsettled?.inflow.period ?? null},
+  {key: 'unsettledOut', label: '未確定の出金（税込・利益に入れない）', type: 'yen', group: '期間', value: (row) => row.unsettled?.outflow.period ?? null},
+]);
+export function workPlColumns(basis = DEFAULT_BASIS) {
+  if (basis !== 'cash') return WORK_PL_COLUMNS;
+  const columns = WORK_PL_COLUMNS.map((column) => (CASH_LABELS[column.key] ? {...column, label: CASH_LABELS[column.key]} : column));
+  const at = columns.findIndex((column) => column.key === 'profit') + 1;
+  return Object.freeze([...columns.slice(0, at), ...UNSETTLED_COLUMNS, ...columns.slice(at)]);
+}
+
+// 見出しに出す基準（全画面の見出しに基準を出す）。BS は基準によらない
+export const basisHeading = (basis) => `基準: ${BASIS_DESCRIPTIONS[basis] || BASIS_DESCRIPTIONS[DEFAULT_BASIS]}`;
+export const BS_BASIS_HEADING = '基準: BS は月末の残高（計上と入金で同じ。入金ベースの BS は作りません）';
+// 共通の見出しに PL の基準の帯を出すタブ（PL 系）。BS 系のタブ（作品別の残高・会社BS）は表の見出しに BS_BASIS_HEADING を出し、
+// 手入力・会社の設定は帳票でないので出さない（会社の帳票は既定が入金なので、BS のタブに PL の基準を重ねると文言が食い違う）
+export const PL_VIEW_IDS = Object.freeze(['work-pl', 'company-pl']);
+export const headingBasisText = (view, basis) => (PL_VIEW_IDS.includes(view) ? basisHeading(basis) : null);
+// 開いているタブ: 帳票センターの1枚（fixedView）か、URL の plbsTab（読めない値は最初のタブ。Tabs と同じ決め方）
+export function activeViewOf(fixedView, tabParam) {
+  if (fixedView) return fixedView;
+  return VIEWS.some((view) => view.id === tabParam) ? tabParam : VIEWS[0].id;
+}
+
+// 会社PLから作品へ1クリックで開く（計画 #16）。会社PLの作品の分を作品ごとに並べ、各行から作品別PL・作品別収支を同じ期間・同じ基準で開く。
+// 作品別PL: 帳票センターの作品別PL（report=work-pl）で、その作品の月別を開いた状態（plbsWork）。PL・BS の画面ではタブを切り替える
+// 作品別収支: 帳票センターの作品別収支（report=work-pnl）
+export function workPlLinkParams({workId, from, to, basis = DEFAULT_BASIS}) {
+  return {report: 'work-pl', period: 'custom', from, to, basis, plbsWork: String(workId)};
+}
+export function workPnlFromPlParams({workId, from, to, basis = DEFAULT_BASIS}) {
+  return {report: 'work-pnl', workId: String(workId), period: 'custom', from, to, basis};
+}
+// 会社PLの作品の行から開く手続き（PlBsReport が使う）。shell: 外枠の文脈（setParam）、navigate: 画面の移動。
+// PL・BS の画面（fixedView なし）ではタブを作品別PLへ切り替えてその作品の月別を開き、帳票センター（fixedView あり）では作品別PLの帳票を開く。
+// 作品別収支はどちらからも帳票センターで開く。期間と基準は表示中の応答（body）のもの
+export function workOpeners({shell, navigate, fixedView, body}) {
+  const linkOf = (row) => ({workId: row.workId, from: body.conditions.from, to: body.conditions.to, basis: body.basis});
+  return {
+    openWorkPl: (row) => {
+      if (fixedView) { navigate?.('帳票センター', workPlLinkParams(linkOf(row))); return; }
+      shell.setParam('plbsWork', String(row.workId), {replace: true});
+      shell.setParam('plbsTab', 'work-pl', {replace: true});
+    },
+    openWorkPnl: (row) => navigate?.('帳票センター', workPnlFromPlParams(linkOf(row))),
+  };
+}
+export const COMPANY_WORK_COLUMNS = Object.freeze([
+  {key: 'code', label: '作品コード', type: 'code', sticky: true},
+  {key: 'title', label: '作品', type: 'text', sticky: true},
+  {key: 'kindLabel', label: '区分', type: 'text'},
+  {key: 'revenue', label: '売上高', type: 'yen', value: (row) => row.period.revenue},
+  {key: 'cogs', label: '売上原価', type: 'yen', value: (row) => row.period.cogs},
+  {key: 'sga', label: '販管費', type: 'yen', value: (row) => row.period.sga},
+  {key: 'profit', label: '作品の利益', type: 'yen', value: (row) => row.period.profit},
+  originColumn,
+]);
+// 会社PLの作品の分（作品別PLの期間計）。行は作品別PLと同じ並び
+export function companyPlWorkRows(body) {
+  if (!body?.companyPl) return [];
+  const {from, to} = body.conditions;
+  const basis = body.basis || DEFAULT_BASIS;
+  return (body.workPl || []).map((row) => ({...row, links: {workPl: workPlLinkParams({workId: row.workId, from, to, basis}), workPnl: workPnlFromPlParams({workId: row.workId, from, to, basis})}}));
+}
 
 // 作品の月別（行＝項目、列＝月・期間計・累計）
 export function detailColumns(detail) {
@@ -163,7 +232,7 @@ export const MANUAL_HISTORY_COLUMNS = Object.freeze([
 // ---------- Excel ----------
 const conditionsOf = (body) => {
   const c = body?.conditions || {};
-  const list = [['基準', PL_BS_HEADING], ['期間', `${monthLabel(c.from)}〜${monthLabel(c.to)}`], ['BSの基準月', `${monthLabel(c.asOf)}末`]];
+  const list = [['基準', PL_BS_HEADING], ['PLの基準', BASIS_DESCRIPTIONS[body?.basis || c.basis || DEFAULT_BASIS]], ['期間', `${monthLabel(c.from)}〜${monthLabel(c.to)}`], ['BSの基準月', `${monthLabel(c.asOf)}末`]];
   list.push(['年度', `期首${c.fiscalStartMonth}月${c.fiscalConfirmed ? '' : '（決算月の解釈は未確定）'}`]);
   list.push(['期首残高の基準月', c.openingMonth ? `${monthLabel(c.openingMonth)}末` : '未設定']);
   if (body?.profile?.legalName) list.push(['会社', body.profile.legalName]);
@@ -178,7 +247,7 @@ export function plBsSheets(body, view, {title, workId = null} = {}) {
   const spec = (name, sheetTitle, extra = []) => ({name, sheetName: name, title: sheetTitle, conditions, dataAsOf, notes: [...notes, ...extra]});
   const name = title || PL_BS_HEADING;
   if (view === 'work-pl') {
-    const sheets = [gridSheetSpec({columns: WORK_PL_COLUMNS, rows: body.workPl, exportSpec: spec(SHEET_NAMES['work-pl'][0], `${name} 作品別PL`,
+    const sheets = [gridSheetSpec({columns: workPlColumns(body.basis), rows: body.workPl, exportSpec: spec(SHEET_NAMES['work-pl'][0], `${name} 作品別PL`,
       ['委員会作品は自社の取り分（委員会の月次収支の自社の取得額）だけ。委員会の経費・権利処理費は自社の費用にしていません。'])})];
     const target = workId ? body.workPl.find((row) => String(row.workId) === String(workId)) : null;
     const detail = target ? body.workDetail?.[target.workId] : null;
@@ -214,10 +283,11 @@ export function plBsSheets(body, view, {title, workId = null} = {}) {
   throw new Error(`出力できない表です: ${view}`);
 }
 
-// 表示してよい応答か（条件を変えて読み込み中の間は前の条件の数字を出さない）
+// 表示してよい応答か（条件を変えて読み込み中の間は前の条件の数字を出さない。基準を切り替えたときも同じ）
 export function currentBody(state, conditions) {
   const body = state?.body;
   if (!body?.conditions || !conditions) return null;
   const c = body.conditions;
-  return c.from === conditions.from && c.to === conditions.to && c.asOf === conditions.asOf ? body : null;
+  const basisOf = (value) => value || DEFAULT_BASIS;
+  return c.from === conditions.from && c.to === conditions.to && c.asOf === conditions.asOf && basisOf(c.basis) === basisOf(conditions.basis) ? body : null;
 }

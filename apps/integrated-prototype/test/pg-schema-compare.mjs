@@ -22,7 +22,19 @@ export async function openPostgres() {
       kind: 'postgres',
       exec: (sql) => client.query(sql),
       query: async (sql, params = []) => (await client.query(sql, params)).rows,
-      close: async () => { await client.query(`DROP SCHEMA ${schema} CASCADE`); await client.end(); },
+      // DROP SCHEMA … CASCADE を1回で流すと、全部の表・索引・IDENTITY を1つのトランザクションで固めるので、表が増えると
+      // max_locks_per_transaction を超えて落ちる（out of shared memory）。表を40ずつ別の文で消してから schema を消す。落ちても接続は閉じる（閉じないと node が終わらない）
+      close: async () => {
+        try {
+          const { rows } = await client.query('SELECT tablename FROM pg_tables WHERE schemaname=$1 ORDER BY tablename', [schema]);
+          for (let i = 0; i < rows.length; i += 40) {
+            await client.query(`DROP TABLE IF EXISTS ${rows.slice(i, i + 40).map((r) => `${schema}."${r.tablename}"`).join(', ')} CASCADE`);
+          }
+          await client.query(`DROP SCHEMA ${schema} CASCADE`);
+        } finally {
+          await client.end();
+        }
+      },
     };
   }
   const { PGlite } = await import('@electric-sql/pglite');

@@ -68,6 +68,50 @@ erDiagram
     INTEGER partner_id PK, FK "放送局の取引先（partners）"
     INTEGER version_no PK "取引先ごとの版の番号"
   }
+  mfg_po_events {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER po_id FK "発注書（mfg_purchase_orders）"
+  }
+  mfg_po_expenses {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER po_line_id FK "発注書の明細（mfg_purchase_order_lines）"
+    INTEGER expense_id FK "経費の明細の行（expenses）"
+  }
+  mfg_product_versions {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER product_id FK "商品（mfg_products）"
+  }
+  mfg_products {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER project_id FK "案件（projects）"
+    INTEGER work_id FK "作品（works）"
+  }
+  mfg_purchase_order_lines {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER po_id FK "発注書（mfg_purchase_orders）"
+  }
+  mfg_purchase_orders {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER product_id FK "商品（mfg_products）"
+    INTEGER partner_id FK "取引先（partners。任意）"
+  }
+  mfg_receipts {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER po_line_id FK "発注書の明細（mfg_purchase_order_lines）"
+  }
+  mfg_step_events {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER product_id FK "商品（mfg_products）"
+    INTEGER voids_event_id FK "取消す記録（mfg_step_events）"
+  }
   partner_list_entries {
     INTEGER id PK "行のID"
     INTEGER org_id FK "組織（organizations）。データの持ち主"
@@ -154,6 +198,11 @@ erDiagram
     INTEGER opportunity_id FK "営業案件（sales_opportunities）"
     INTEGER partner_id FK "相手の取引先（partners。営業案件から写す）"
   }
+  sales_activity_notes {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER activity_id FK "営業活動（sales_activities）"
+  }
   sales_agreement_term_versions {
     INTEGER id PK "行のID"
     INTEGER org_id FK "組織（organizations）。データの持ち主"
@@ -202,6 +251,28 @@ erDiagram
     INTEGER work_id FK "作品（works）"
     INTEGER partner_id FK "商談の相手の取引先（partners）"
   }
+  sales_proposal_review_factors {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER review_id PK, FK "自己評価（sales_proposal_reviews）"
+    TEXT factor PK "要因（material 資料／price 金額／term 期間／timing 解禁までのタイミング／exclusivity 独占／relationship 関係／title_strength 作品の力／competition 他社の状況／other）"
+  }
+  sales_proposal_reviews {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER proposal_id FK "提案（sales_proposals）"
+    INTEGER agreement_id FK "採用で結んだ販売契約（sales_agreements）"
+  }
+  sales_proposal_windows {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER proposal_id PK, FK "提案（sales_proposals）"
+    INTEGER window_id PK, FK "全作品のウィンドウ（work_release_windows）"
+  }
+  sales_proposals {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER opportunity_id FK "営業案件（sales_opportunities）"
+    INTEGER material_snapshot_id FK "提案に使った営業資料の版（sales_material_snapshots）"
+  }
   sales_report_links {
     INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
     INTEGER work_id PK, FK "作品（works）"
@@ -249,6 +320,17 @@ erDiagram
   broadcast_slot_versions }o--|| broadcast_slots : "work_id,slot_id"
   broadcast_slots }o--|| works : "work_id"
   broadcast_station_type_versions }o--|| partners : "partner_id"
+  mfg_po_events }o--|| mfg_purchase_orders : "po_id"
+  mfg_po_expenses }o--|| expenses : "expense_id"
+  mfg_po_expenses }o--|| mfg_purchase_order_lines : "po_line_id"
+  mfg_product_versions }o--|| mfg_products : "product_id"
+  mfg_products }o--|| works : "project_id,work_id"
+  mfg_purchase_order_lines }o--|| mfg_purchase_orders : "po_id"
+  mfg_purchase_orders }o--o| partners : "partner_id"
+  mfg_purchase_orders }o--|| mfg_products : "product_id"
+  mfg_receipts }o--|| mfg_purchase_order_lines : "po_line_id"
+  mfg_step_events }o--o| mfg_step_events : "voids_event_id"
+  mfg_step_events }o--|| mfg_products : "product_id"
   partner_list_entries }o--o| partner_list_import_batches : "created_batch_id"
   partner_list_entries }o--o| partner_list_entries : "renews_entry_id"
   partner_list_entries }o--|| works : "work_id"
@@ -274,6 +356,7 @@ erDiagram
   release_window_type_fields }o--|| release_window_type_versions : "type_id,version_no"
   release_window_type_versions }o--|| release_window_types : "type_id"
   sales_activities }o--|| sales_opportunities : "project_id,work_id,partner_id,opportunity_id"
+  sales_activity_notes }o--|| sales_activities : "activity_id"
   sales_agreement_term_versions }o--o| sales_agreement_term_versions : "agreement_id,source_version_id"
   sales_agreement_term_versions }o--|| sales_agreements : "agreement_id"
   sales_agreements }o--o| rights_intake_cases : "intake_case_id,work_id"
@@ -290,6 +373,13 @@ erDiagram
   sales_material_snapshots }o--|| sales_opportunities : "project_id,work_id,partner_id,opportunity_id"
   sales_opportunities }o--|| partners : "partner_id"
   sales_opportunities }o--|| works : "project_id,work_id"
+  sales_proposal_review_factors }o--|| sales_proposal_reviews : "review_id"
+  sales_proposal_reviews }o--o| sales_agreements : "agreement_id"
+  sales_proposal_reviews }o--|| sales_proposals : "proposal_id"
+  sales_proposal_windows }o--|| work_release_windows : "window_id"
+  sales_proposal_windows }o--|| sales_proposals : "proposal_id"
+  sales_proposals }o--o| sales_material_snapshots : "material_snapshot_id"
+  sales_proposals }o--|| sales_opportunities : "opportunity_id"
   sales_report_links }o--|| sales_agreement_term_versions : "agreement_id,term_version_id"
   sales_report_links }o--|| sales_agreements : "agreement_id,work_id"
   sales_report_links }o--|| report_imports : "report_id"
@@ -318,6 +408,14 @@ erDiagram
 | [broadcast_slot_versions](#broadcast_slot_versions) | 放送枠の版 | 放送枠の中身（放送月・局・期間・状態）を版ごとに1行で持つ。修正・申請・承認・中止のたびに次の版を足し、変更も削除もできない。 |
 | [broadcast_slots](#broadcast_slots) | 放送枠 | 作品の放送枠1つを1行で持つ（放送月・局などの中身は版の表に積む）。番販・放送の画面、Excel 取込、放送ウィンドウ提案から作る。 |
 | [broadcast_station_type_versions](#broadcast_station_type_versions) | 放送局の種別（版） | 放送局である取引先ごとに、局の種別（地上波・BS など）を版で1行に持つ。直すたびに次の版を足し、変更も削除もできない。 |
+| [mfg_po_events](#mfg_po_events) | 製造の発注書の段 | 発注書の段（見積の依頼・見積・発注・請求・支払・取消）の記録（追記だけ）。取消した発注書には段を足さない |
+| [mfg_po_expenses](#mfg_po_expenses) | 製造の明細と経費の結び | 発注書の明細と経費の明細の行（expenses）の結び。外すときは理由つきの行を足す。金額は持たず経費から読む |
+| [mfg_product_versions](#mfg_product_versions) | 製造の商品（版） | 商品の版。発売日・名前・枚数が変わったら版を足す（上書きしない）。逆算の型は発売日が25日なら day25、ほかは offset |
+| [mfg_products](#mfg_products) | 製造の商品 | 製造する商品（SKU）の入れ物。作品と出どころだけを持ち、名前・形・発売日は版に持つ（追記だけ） |
+| [mfg_purchase_order_lines](#mfg_purchase_order_lines) | 製造の発注書の明細 | 発注書の明細。税抜の額は数量×単価（銭）を丸めずに1円で割り切れるものだけ（金額は予測。請求の実額は経費の明細の行） |
+| [mfg_purchase_orders](#mfg_purchase_orders) | 製造の発注書 | 製造の発注書（オーサリング・デザイン・製造・印刷物・見本盤の発送）。直すときは取消して新しく作る |
+| [mfg_receipts](#mfg_receipts) | 製造の納品と検品 | 明細ごとの納品と検品の記録（追記だけ）。不合格は理由が必須 |
+| [mfg_step_events](#mfg_step_events) | 製造の工程の記録 | 工程ごとの依頼・承認・済・〆切の直し・取消の記録（追記だけ）。予定日は記録せず、型と発売日から導く |
 | [partner_list_entries](#partner_list_entries) | 取引先リストの明細 | 取引先別リストの中の、作品1本の1つの契約を1行で持つ（中身は版の表に積む）。再契約は新しい明細を作って前の明細を指し、変更も削除もできない。 |
 | [partner_list_entry_versions](#partner_list_entry_versions) | リスト明細の版 | 明細の中身（流通・期間・条件）を版ごとに1行で持つ。修正は次の版、取り下げは status＝withdrawn の版で積み、変更も削除もできない。 |
 | [partner_list_field_definitions](#partner_list_field_definitions) | リストの追加の列 | 取引先別リストに足した列の定義（キー・型・使う範囲）を1行で持つ。表示名や選択肢は状態の版で持ち、この行は変更も削除もできない。 |
@@ -333,12 +431,17 @@ erDiagram
 | [release_window_type_versions](#release_window_type_versions) | ウィンドウ種別の版 | 種別の表示名・分類・日付の形・使う／使わないを版ごとに1行で持つ。直すたびに次の版を足し、変更も削除もできない。 |
 | [release_window_types](#release_window_types) | ウィンドウの種別 | 劇場公開・配信・放送などのウィンドウの種別を組織ごとに1行で持つ。中身は版の表に積み、種別を1つ足すと画面の列と Excel の見出しが増える。 |
 | [sales_activities](#sales_activities) | 営業の活動記録 | 営業案件で行った連絡・提案・交渉などの活動1回を表す。営業の画面で足し、あとから変更・削除できない。 |
+| [sales_activity_notes](#sales_activity_notes) | 接点の言葉 | 営業活動ごとの言葉の記録（事実・相手の言葉・自分の読みを分ける）と、本人が付ける関係の温度（−2〜+2）。追記だけ。sales_activities の列は増やさない |
 | [sales_agreement_term_versions](#sales_agreement_term_versions) | 販売契約の条件版 | 販売契約の条件（販路・地域・期間・見込額）の版1つを表す。契約の登録と改訂のたびに足して変更・削除できず、最大の版番号が今の条件。 |
 | [sales_agreements](#sales_agreements) | 販売契約 | 営業案件から結んだ販売契約1件の見出し（相手・商品・契約コード）を表す。条件は条件版（sales_agreement_term_versions）に持ち、見出しは変えられない。 |
 | [sales_availability_versions](#sales_availability_versions) | 流通別の販売条件（版） | 作品×流通ID×地域ごとに、解禁日・販売終了日・条件・独占の版1つを表す。営業作品一覧や番販の画面で足して変更・削除できず、最大の版番号が今の条件。 |
 | [sales_deliverables](#sales_deliverables) | 納品物 | 販売契約で相手に納める物1件と、その提出・受領の状況を表す。営業の画面で登録し、version をそろえて更新する。 |
 | [sales_material_snapshots](#sales_material_snapshots) | 営業資料の版 | 営業案件ごとに作った営業資料（あらすじ・提案・条件）の版1つを表す。作ったときの作品・営業案件・取引先・商品の情報を写して固定し、変更・削除できない。 |
 | [sales_opportunities](#sales_opportunities) | 営業案件 | 作品を取引先へ売り込む営業案件1件（見込から受注・失注まで）。営業の画面で作り、版を確かめて段階や見込額を書き換える。活動の記録や販売契約がついたら、案件・作品・取引先は変えられない |
+| [sales_proposal_review_factors](#sales_proposal_review_factors) | 提案の効いた要因 | 自己評価ごとの効いた要因（要因1つにつき1行。プラスかマイナス）。採用と不採用で要因を数えるために使う。追記だけ |
+| [sales_proposal_reviews](#sales_proposal_reviews) | 提案の結果と自己評価 | 提案の結果と、代表が付ける自己評価（点数・効いたこと・足りなかったこと）。追記だけで、提案ごとの最新の行が今の評価。採用なら契約を指せる |
+| [sales_proposal_windows](#sales_proposal_windows) | 提案で結んだウィンドウ | 1回の提案が対象にした全作品のウィンドウ（作品×種別×地域の1窓口）。追記だけ |
+| [sales_proposals](#sales_proposals) | 営業の1回の提案 | 取引先×作品の営業案件への1回の提案（追記だけ）。条件を変えて出し直したら別の行。解禁日までの日数は結んだウィンドウの開始日から読むたびに出す。MG の提案も1行持ち、MG の中身は MG_販売分の表がこの ID を指す |
 | [sales_report_links](#sales_report_links) | 販売契約と売上報告の対応 | 売上報告1件がどの販売契約の条件版にもとづくかを表す。報告が有効で取引先と販路が契約と合うときだけ作れ、変更・削除できない。 |
 | [work_proposal_profiles](#work_proposal_profiles) | 提案用の作品情報 | 提案資料に出す作品情報（フリガナ・英題・イントロダクションなど）を、作品ごとの版で1行に持つ。直すたびに次の版を足し、変更も削除もできない。 |
 | [work_release_window_field_values](#work_release_window_field_values) | ウィンドウの追加項目の値 | 作品のウィンドウの版ごとに、追加項目の値を1行ずつ持つ。型は種別の版の項目とトリガーで照らし合わせ、変更も削除もできない。 |
@@ -614,6 +717,240 @@ erDiagram
 - トリガー broadcast_station_type_versions_no_delete: 削除の前
 - トリガー broadcast_station_type_versions_no_update: 更新の前
 - トリガー broadcast_station_type_versions_sequence: 追加の前
+
+## mfg_po_events
+
+**製造の発注書の段** — 発注書の段（見積の依頼・見積・発注・請求・支払・取消）の記録（追記だけ）。取消した発注書には段を足さない
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | po_id | INTEGER | 発注書（mfg_purchase_orders） | 不可 | - | FK（複合）→ mfg_purchase_orders |
+| 4 | kind | TEXT（列挙） | quote_requested／quoted／ordered／invoiced／paid／void | 不可 | - | 値: quote_requested / quoted / ordered / invoiced / paid / void |
+| 5 | on_date | TEXT | 日付 | 不可 | - | CHECK: length(on_date)=10 AND substr(on_date,5,1)='-' AND substr(on_date,8,1)='-' AND ltrim(substr(on_date,1,4)\|\|substr(on_date,6,2)\|\|substr(on_date,9,2),'0123456789')='' |
+| 6 | amount_ex_tax_yen | INTEGER | 見積の額（税抜の円。見積のとき） | 可 | - | CHECK: amount_ex_tax_yen IS NULL OR (typeof(amount_ex_tax_yen)='integer' AND amount_ex_tax_yen BETWEEN 0 AND 1000000000000) |
+| 7 | note | TEXT | メモ・取消の理由 | 可 | - | CHECK: note IS NULL OR length(trim(note)) BETWEEN 1 AND 500 |
+| 8 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 9 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, po_id) → mfg_purchase_orders(org_id, id)
+- CHECK: kind<>'void' OR note IS NOT NULL
+- 索引 mfg_po_events_author_idx: (org_id, created_by)
+- 索引 mfg_po_events_po_idx: (org_id, po_id)
+- トリガー mfg_po_events_after_void: 追加の前
+- トリガー mfg_po_events_no_delete: 削除の前
+- トリガー mfg_po_events_no_update: 更新の前
+
+## mfg_po_expenses
+
+**製造の明細と経費の結び** — 発注書の明細と経費の明細の行（expenses）の結び。外すときは理由つきの行を足す。金額は持たず経費から読む
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | po_line_id | INTEGER | 発注書の明細（mfg_purchase_order_lines） | 不可 | - | FK（複合）→ mfg_purchase_order_lines |
+| 4 | expense_id | INTEGER | 経費の明細の行（expenses） | 不可 | - | FK（複合）→ expenses |
+| 5 | action | TEXT（列挙） | link 結ぶ／unlink 外す | 不可 | - | 値: link / unlink |
+| 6 | reason | TEXT | 外した理由 | 可 | - | CHECK: reason IS NULL OR length(trim(reason)) BETWEEN 1 AND 500 |
+| 7 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 8 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, expense_id) → expenses(org_id, id)
+- 複合の参照: (org_id, po_line_id) → mfg_purchase_order_lines(org_id, id)
+- CHECK: action<>'unlink' OR reason IS NOT NULL
+- 索引 mfg_po_expenses_author_idx: (org_id, created_by)
+- 索引 mfg_po_expenses_expense_idx: (org_id, expense_id)
+- 索引 mfg_po_expenses_line_idx: (org_id, po_line_id)
+- トリガー mfg_po_expenses_no_delete: 削除の前
+- トリガー mfg_po_expenses_no_update: 更新の前
+
+## mfg_product_versions
+
+**製造の商品（版）** — 商品の版。発売日・名前・枚数が変わったら版を足す（上書きしない）。逆算の型は発売日が25日なら day25、ほかは offset
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | product_id | INTEGER | 商品（mfg_products） | 不可 | - | FK（複合）→ mfg_products |
+| 4 | version_no | INTEGER | 商品ごとの版の連番 | 不可 | - | CHECK: typeof(version_no)='integer' AND version_no>0 |
+| 5 | name | TEXT | 商品名 | 不可 | - | CHECK: length(trim(name)) BETWEEN 1 AND 200 |
+| 6 | channel | TEXT（列挙） | 形（sell セル／rental レンタル／print 印刷物／other） | 不可 | - | 値: sell / rental / print / other |
+| 7 | media | TEXT（列挙） | 媒体（dvd／bd／print／other） | 不可 | - | 値: dvd / bd / print / other |
+| 8 | edition_label | TEXT | 版の名前（豪華版など） | 可 | - | CHECK: edition_label IS NULL OR length(trim(edition_label)) BETWEEN 1 AND 60 |
+| 9 | episode_from | INTEGER | 話の範囲の始め | 可 | - | CHECK: episode_from IS NULL OR (typeof(episode_from)='integer' AND episode_from BETWEEN 1 AND 9999) |
+| 10 | episode_to | INTEGER | 話の範囲の終わり | 可 | - | CHECK: episode_to IS NULL OR (typeof(episode_to)='integer' AND episode_to BETWEEN 1 AND 9999) |
+| 11 | release_on | TEXT | 発売日 | 不可 | - | CHECK: length(release_on)=10 AND substr(release_on,5,1)='-' AND substr(release_on,8,1)='-' AND ltrim(substr(release_on,1,4)\|\|substr(release_on,6,2)\|\|substr(release_on,9,2),'0123456789')='' |
+| 12 | schedule_rule | TEXT（列挙） | 逆算の型（day25 発売月の n か月前の d 日／offset 発売日の n 日前） | 不可 | - | 値: day25 / offset |
+| 13 | planned_qty | INTEGER | 予定の枚数 | 可 | - | CHECK: planned_qty IS NULL OR (typeof(planned_qty)='integer' AND planned_qty BETWEEN 0 AND 100000000) |
+| 14 | note | TEXT | メモ | 可 | - | CHECK: note IS NULL OR length(trim(note)) BETWEEN 1 AND 1000 |
+| 15 | reason | TEXT | 版を足した理由 | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 500 |
+| 16 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 17 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, product_id, version_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, product_id) → mfg_products(org_id, id)
+- CHECK: episode_from IS NULL OR episode_to IS NULL OR episode_from<=episode_to
+- CHECK: schedule_rule<>'day25' OR substr(release_on,9,2)='25'
+- 索引 mfg_product_versions_author_idx: (org_id, created_by)
+- トリガー mfg_product_versions_no_delete: 削除の前
+- トリガー mfg_product_versions_no_update: 更新の前
+- トリガー mfg_product_versions_sequence: 追加の前
+
+## mfg_products
+
+**製造の商品** — 製造する商品（SKU）の入れ物。作品と出どころだけを持ち、名前・形・発売日は版に持つ（追記だけ）
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | project_id | INTEGER | 案件（projects） | 不可 | - | FK（複合）→ works |
+| 4 | work_id | INTEGER | 作品（works） | 不可 | - | FK（複合）→ works |
+| 5 | source_kind | TEXT（列挙） | 出どころ（procure 調達／mg_buy MG_買付分／own 自社の企画） | 不可 | - | 値: procure / mg_buy / own |
+| 6 | source_ref | TEXT | 出どころの記録の番号（調達の引き渡しなど。任意） | 可 | - | CHECK: source_ref IS NULL OR length(trim(source_ref)) BETWEEN 1 AND 80 |
+| 7 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 8 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, project_id, work_id) → works(org_id, project_id, id)
+- 索引 mfg_products_author_idx: (org_id, created_by)
+- 索引 mfg_products_work_idx: (org_id, project_id, work_id)
+- トリガー mfg_products_no_delete: 削除の前
+- トリガー mfg_products_no_update: 更新の前
+
+## mfg_purchase_order_lines
+
+**製造の発注書の明細** — 発注書の明細。税抜の額は数量×単価（銭）を丸めずに1円で割り切れるものだけ（金額は予測。請求の実額は経費の明細の行）
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | po_id | INTEGER | 発注書（mfg_purchase_orders） | 不可 | - | FK（複合）→ mfg_purchase_orders |
+| 4 | line_no | INTEGER | 明細の行番号 | 不可 | - | CHECK: typeof(line_no)='integer' AND line_no BETWEEN 1 AND 200 |
+| 5 | item | TEXT | 品目 | 不可 | - | CHECK: length(trim(item)) BETWEEN 1 AND 120 |
+| 6 | spec | TEXT | 仕様 | 可 | - | CHECK: spec IS NULL OR length(trim(spec)) BETWEEN 1 AND 500 |
+| 7 | qty | INTEGER | 数量 | 不可 | - | CHECK: typeof(qty)='integer' AND qty BETWEEN 1 AND 100000000 |
+| 8 | unit_price_x100 | INTEGER | 単価（銭。円の100倍） | 不可 | - | CHECK: typeof(unit_price_x100)='integer' AND unit_price_x100 BETWEEN 0 AND 100000000000 |
+| 9 | amount_ex_tax_yen | INTEGER | 税抜の額（円） | 不可 | - | CHECK: typeof(amount_ex_tax_yen)='integer' AND amount_ex_tax_yen BETWEEN 0 AND 1000000000000 |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, po_id, line_no)
+- 複合の参照: (org_id, po_id) → mfg_purchase_orders(org_id, id)
+- CHECK: amount_ex_tax_yen*100=qty*unit_price_x100
+- トリガー mfg_purchase_order_lines_no_delete: 削除の前
+- トリガー mfg_purchase_order_lines_no_update: 更新の前
+
+## mfg_purchase_orders
+
+**製造の発注書** — 製造の発注書（オーサリング・デザイン・製造・印刷物・見本盤の発送）。直すときは取消して新しく作る
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | product_id | INTEGER | 商品（mfg_products） | 不可 | - | FK（複合）→ mfg_products |
+| 4 | po_no | TEXT | 発注の番号（組織の通し番号） | 不可 | - | CHECK: length(trim(po_no)) BETWEEN 1 AND 40 |
+| 5 | po_kind | TEXT（列挙） | 種類（authoring／design／manufacture／print／sample） | 不可 | - | 値: authoring / design / manufacture / print / sample |
+| 6 | partner_id | INTEGER | 取引先（partners。任意） | 可 | - | FK（複合）→ partners |
+| 7 | partner_label | TEXT | 取引先に登録していない会社の名前 | 可 | - | CHECK: partner_label IS NULL OR length(trim(partner_label)) BETWEEN 1 AND 120 |
+| 8 | deliver_to | TEXT | 納品先 | 可 | - | CHECK: deliver_to IS NULL OR length(trim(deliver_to)) BETWEEN 1 AND 120 |
+| 9 | due_on | TEXT | 納期 | 可 | - | CHECK: due_on IS NULL OR (length(due_on)=10 AND substr(due_on,5,1)='-' AND substr(due_on,8,1)='-' AND ltrim(substr(due_on,1,4)\|\|substr(due_on,6,2)\|\|substr(due_on,9,2),'0123456789')='') |
+| 10 | note | TEXT | メモ | 可 | - | CHECK: note IS NULL OR length(trim(note)) BETWEEN 1 AND 1000 |
+| 11 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 12 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, po_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, partner_id) → partners(org_id, id)
+- 複合の参照: (org_id, product_id) → mfg_products(org_id, id)
+- CHECK: partner_id IS NOT NULL OR partner_label IS NOT NULL
+- 索引 mfg_purchase_orders_author_idx: (org_id, created_by)
+- 索引 mfg_purchase_orders_partner_idx: (org_id, partner_id)
+- 索引 mfg_purchase_orders_product_idx: (org_id, product_id)
+- トリガー mfg_purchase_orders_no_delete: 削除の前
+- トリガー mfg_purchase_orders_no_update: 更新の前
+
+## mfg_receipts
+
+**製造の納品と検品** — 明細ごとの納品と検品の記録（追記だけ）。不合格は理由が必須
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | po_line_id | INTEGER | 発注書の明細（mfg_purchase_order_lines） | 不可 | - | FK（複合）→ mfg_purchase_order_lines |
+| 4 | received_on | TEXT | 納品の日 | 不可 | - | CHECK: length(received_on)=10 AND substr(received_on,5,1)='-' AND substr(received_on,8,1)='-' AND ltrim(substr(received_on,1,4)\|\|substr(received_on,6,2)\|\|substr(received_on,9,2),'0123456789')='' |
+| 5 | qty | INTEGER | 納品の数量 | 不可 | - | CHECK: typeof(qty)='integer' AND qty BETWEEN 0 AND 100000000 |
+| 6 | defect_qty | INTEGER | 不良の数 | 不可 | 0 | CHECK: typeof(defect_qty)='integer' AND defect_qty BETWEEN 0 AND 100000000 |
+| 7 | result | TEXT（列挙） | pass 合／fail 否 | 不可 | - | 値: pass / fail |
+| 8 | note | TEXT | メモ・不合格の理由 | 可 | - | CHECK: note IS NULL OR length(trim(note)) BETWEEN 1 AND 500 |
+| 9 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 10 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, po_line_id) → mfg_purchase_order_lines(org_id, id)
+- CHECK: defect_qty<=qty
+- CHECK: result<>'fail' OR note IS NOT NULL
+- 索引 mfg_receipts_author_idx: (org_id, created_by)
+- 索引 mfg_receipts_line_idx: (org_id, po_line_id)
+- トリガー mfg_receipts_no_delete: 削除の前
+- トリガー mfg_receipts_no_update: 更新の前
+
+## mfg_step_events
+
+**製造の工程の記録** — 工程ごとの依頼・承認・済・〆切の直し・取消の記録（追記だけ）。予定日は記録せず、型と発売日から導く
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | product_id | INTEGER | 商品（mfg_products） | 不可 | - | FK（複合）→ mfg_products |
+| 4 | step_key | TEXT | 工程の鍵（src/manufacturing/mfg-model.mjs の MFG_STEPS） | 不可 | - | CHECK: length(trim(step_key)) BETWEEN 1 AND 40 |
+| 5 | kind | TEXT（列挙） | requested 依頼／approved 承認／done 済／planned 〆切を直す／void 取消 | 不可 | - | 値: requested / approved / done / planned / void |
+| 6 | on_date | TEXT | 日付（取消のときは空） | 可 | - | CHECK: on_date IS NULL OR (length(on_date)=10 AND substr(on_date,5,1)='-' AND substr(on_date,8,1)='-' AND ltrim(substr(on_date,1,4)\|\|substr(on_date,6,2)\|\|substr(on_date,9,2),'0123456789')='') |
+| 7 | voids_event_id | INTEGER | 取消す記録（mfg_step_events） | 可 | - | FK（複合）→ mfg_step_events |
+| 8 | note | TEXT | メモ・取消の理由 | 可 | - | CHECK: note IS NULL OR length(trim(note)) BETWEEN 1 AND 500 |
+| 9 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 10 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, voids_event_id) → mfg_step_events(org_id, id)
+- 複合の参照: (org_id, product_id) → mfg_products(org_id, id)
+- CHECK: (kind='void' AND voids_event_id IS NOT NULL AND on_date IS NULL) OR (kind<>'void' AND voids_event_id IS NULL AND on_date IS NOT NULL)
+- 索引 mfg_step_events_author_idx: (org_id, created_by)
+- 索引 mfg_step_events_product_idx: (org_id, product_id)
+- トリガー mfg_step_events_no_delete: 削除の前
+- トリガー mfg_step_events_no_update: 更新の前
 
 ## partner_list_entries
 
@@ -1008,6 +1345,7 @@ erDiagram
 | 11 | next_due_on | TEXT | 次にすることの期限 | 可 | - | - |
 | 12 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
 | 13 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+| 14 | result | TEXT（列挙） | 記録した結果（進んだ・保留・失注）。未記録はNULLのまま保ち、商談の状態から推定しない。通過率の分母は3値の件数、分子は進んだの件数 | 可 | - | 値: advanced / on_hold / lost |
 
 表の制約:
 
@@ -1016,6 +1354,30 @@ erDiagram
 - 複合の参照: (org_id, project_id, work_id, partner_id, opportunity_id) → sales_opportunities(org_id, project_id, work_id, partner_id, id)
 - トリガー sales_activity_immutable: 更新の前
 - トリガー sales_activity_no_delete: 削除の前
+
+## sales_activity_notes
+
+**接点の言葉** — 営業活動ごとの言葉の記録（事実・相手の言葉・自分の読みを分ける）と、本人が付ける関係の温度（−2〜+2）。追記だけ。sales_activities の列は増やさない
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | activity_id | INTEGER | 営業活動（sales_activities） | 不可 | - | FK（複合）→ sales_activities |
+| 4 | note_kind | TEXT（列挙） | 種類（fact 事実／their_words 相手の言葉／my_read 自分の読み） | 不可 | - | 値: fact / their_words / my_read |
+| 5 | body | TEXT | 言葉 | 不可 | - | CHECK: length(trim(body)) BETWEEN 1 AND 2000 |
+| 6 | tone | INTEGER | 関係の温度（−2〜+2。付けないときは NULL） | 可 | - | CHECK: tone IS NULL OR (typeof(tone)='integer' AND tone BETWEEN -2 AND 2) |
+| 7 | created_by | INTEGER | 記録した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 8 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, activity_id) → sales_activities(org_id, id)
+- 索引 sales_activity_notes_activity: (org_id, activity_id, id)
+- トリガー sales_activity_notes_no_delete: 削除の前
+- トリガー sales_activity_notes_no_update: 更新の前
 
 ## sales_agreement_term_versions
 
@@ -1212,6 +1574,106 @@ erDiagram
 - 複合の参照: (org_id, project_id, work_id) → works(org_id, project_id, id)
 - 索引 opportunities_org_scope_id_uidx: (org_id, project_id, work_id, partner_id, id) 一意
 - トリガー opportunity_scope_locked: 更新（org_id,project_id,work_id,partner_id）の前
+
+## sales_proposal_review_factors
+
+**提案の効いた要因** — 自己評価ごとの効いた要因（要因1つにつき1行。プラスかマイナス）。採用と不採用で要因を数えるために使う。追記だけ
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | review_id | INTEGER | 自己評価（sales_proposal_reviews） | 不可 | - | PK（複合）、FK（複合）→ sales_proposal_reviews |
+| 3 | factor | TEXT（列挙） | 要因（material 資料／price 金額／term 期間／timing 解禁までのタイミング／exclusivity 独占／relationship 関係／title_strength 作品の力／competition 他社の状況／other） | 不可 | - | PK（複合）、値: material / price / term / timing / exclusivity / relationship / title_strength / competition / other |
+| 4 | effect | TEXT（列挙） | plus 効いた／minus 足を引っ張った | 不可 | - | 値: plus / minus |
+
+表の制約:
+
+- 複合の主キー: (org_id, review_id, factor)
+- 複合の参照: (org_id, review_id) → sales_proposal_reviews(org_id, id)
+- トリガー sales_proposal_review_factors_no_delete: 削除の前
+- トリガー sales_proposal_review_factors_no_update: 更新の前
+
+## sales_proposal_reviews
+
+**提案の結果と自己評価** — 提案の結果と、代表が付ける自己評価（点数・効いたこと・足りなかったこと）。追記だけで、提案ごとの最新の行が今の評価。採用なら契約を指せる
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | proposal_id | INTEGER | 提案（sales_proposals） | 不可 | - | FK（複合）→ sales_proposals |
+| 4 | reviewed_on | TEXT | 評価した日 | 不可 | - | CHECK: length(reviewed_on)=10 AND substr(reviewed_on,5,1)='-' AND substr(reviewed_on,8,1)='-' AND ltrim(substr(reviewed_on,1,4)\|\|substr(reviewed_on,6,2)\|\|substr(reviewed_on,9,2),'0123456789')='' |
+| 5 | outcome | TEXT（列挙） | 結果（adopted 採用／adopted_changed 条件を変えて採用／rejected 不採用／no_answer 返事なし／withdrawn 取り下げ） | 不可 | - | 値: adopted / adopted_changed / rejected / no_answer / withdrawn |
+| 6 | score | INTEGER | 自己評価の点数（1〜5） | 不可 | - | CHECK: typeof(score)='integer' AND score BETWEEN 1 AND 5 |
+| 7 | worked | TEXT | 効いたこと（自由文） | 可 | - | CHECK: worked IS NULL OR length(trim(worked)) BETWEEN 1 AND 2000 |
+| 8 | missed | TEXT | 足りなかったこと（自由文） | 可 | - | CHECK: missed IS NULL OR length(trim(missed)) BETWEEN 1 AND 2000 |
+| 9 | agreement_id | INTEGER | 採用で結んだ販売契約（sales_agreements） | 可 | - | FK（複合）→ sales_agreements |
+| 10 | created_by | INTEGER | 評価した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 11 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, agreement_id) → sales_agreements(org_id, id)
+- 複合の参照: (org_id, proposal_id) → sales_proposals(org_id, id)
+- CHECK: agreement_id IS NULL OR outcome IN ('adopted','adopted_changed')
+- 索引 sales_proposal_reviews_proposal: (org_id, proposal_id, id)
+- トリガー sales_proposal_reviews_no_delete: 削除の前
+- トリガー sales_proposal_reviews_no_update: 更新の前
+
+## sales_proposal_windows
+
+**提案で結んだウィンドウ** — 1回の提案が対象にした全作品のウィンドウ（作品×種別×地域の1窓口）。追記だけ
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | proposal_id | INTEGER | 提案（sales_proposals） | 不可 | - | PK（複合）、FK（複合）→ sales_proposals |
+| 3 | window_id | INTEGER | 全作品のウィンドウ（work_release_windows） | 不可 | - | PK（複合）、FK（複合）→ work_release_windows |
+| 4 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の主キー: (org_id, proposal_id, window_id)
+- 複合の参照: (org_id, window_id) → work_release_windows(org_id, id)
+- 複合の参照: (org_id, proposal_id) → sales_proposals(org_id, id)
+- トリガー sales_proposal_windows_no_delete: 削除の前
+- トリガー sales_proposal_windows_no_update: 更新の前
+
+## sales_proposals
+
+**営業の1回の提案** — 取引先×作品の営業案件への1回の提案（追記だけ）。条件を変えて出し直したら別の行。解禁日までの日数は結んだウィンドウの開始日から読むたびに出す。MG の提案も1行持ち、MG の中身は MG_販売分の表がこの ID を指す
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | opportunity_id | INTEGER | 営業案件（sales_opportunities） | 不可 | - | FK（複合）→ sales_opportunities |
+| 4 | proposed_on | TEXT | 提案日 | 不可 | - | CHECK: length(proposed_on)=10 AND substr(proposed_on,5,1)='-' AND substr(proposed_on,8,1)='-' AND ltrim(substr(proposed_on,1,4)\|\|substr(proposed_on,6,2)\|\|substr(proposed_on,9,2),'0123456789')='' |
+| 5 | settlement_method | TEXT（列挙） | 精算の方法（unverified 未確認／FLAT 固定額／MG／RS 料率／other） | 不可 | - | 値: unverified / FLAT / MG / RS / other |
+| 6 | amount_ex_tax | INTEGER | 提案した金額（税抜・円）。RS と、案を並べる MG では NULL | 可 | - | CHECK: amount_ex_tax IS NULL OR (typeof(amount_ex_tax)='integer' AND amount_ex_tax BETWEEN 0 AND 1000000000000) |
+| 7 | rate_bps | INTEGER | 提案した料率（bps。5000＝50%）。FLAT では NULL | 可 | - | CHECK: rate_bps IS NULL OR (typeof(rate_bps)='integer' AND rate_bps BETWEEN 0 AND 10000) |
+| 8 | term_start | TEXT | 提案した許諾期間の開始 | 可 | - | CHECK: term_start IS NULL OR (length(term_start)=10 AND substr(term_start,5,1)='-' AND substr(term_start,8,1)='-' AND ltrim(substr(term_start,1,4)\|\|substr(term_start,6,2)\|\|substr(term_start,9,2),'0123456789')='') |
+| 9 | term_end | TEXT | 提案した許諾期間の終了 | 可 | - | CHECK: term_end IS NULL OR (length(term_end)=10 AND substr(term_end,5,1)='-' AND substr(term_end,8,1)='-' AND ltrim(substr(term_end,1,4)\|\|substr(term_end,6,2)\|\|substr(term_end,9,2),'0123456789')='') |
+| 10 | exclusivity | TEXT（列挙） | 独占（unknown 未確認／exclusive 独占／nonexclusive 非独占） | 不可 | - | 値: unknown / exclusive / nonexclusive |
+| 11 | material_snapshot_id | INTEGER | 提案に使った営業資料の版（sales_material_snapshots） | 可 | - | FK（複合）→ sales_material_snapshots |
+| 12 | pitch_note | TEXT | 提案の内容（自由文） | 可 | - | CHECK: pitch_note IS NULL OR length(trim(pitch_note)) BETWEEN 1 AND 2000 |
+| 13 | created_by | INTEGER | 記録した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 14 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, material_snapshot_id) → sales_material_snapshots(org_id, id)
+- 複合の参照: (org_id, opportunity_id) → sales_opportunities(org_id, id)
+- CHECK: term_end IS NULL OR term_start IS NULL OR term_end>=term_start
+- CHECK: settlement_method<>'RS' OR amount_ex_tax IS NULL
+- CHECK: settlement_method<>'FLAT' OR rate_bps IS NULL
+- 索引 sales_proposals_opportunity: (org_id, opportunity_id, proposed_on)
+- トリガー sales_proposals_no_delete: 削除の前
+- トリガー sales_proposals_no_update: 更新の前
 
 ## sales_report_links
 

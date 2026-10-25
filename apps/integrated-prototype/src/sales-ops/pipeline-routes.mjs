@@ -6,6 +6,7 @@ import {allIn} from '../sql-in.mjs';
 import {integer, isoDate} from '../csv.mjs';
 import {labelOf} from '../ui/labels.mjs';
 import {dateJst} from '../ui/format.mjs';
+import {registerSalesProposalRoutes} from './proposals/proposal-routes.mjs';
 
 export const STAGE_ORDER = Object.freeze(['lead', 'proposal', 'negotiation', 'won', 'lost']);
 export const OPEN_STAGES = Object.freeze(['lead', 'proposal', 'negotiation']);
@@ -176,7 +177,9 @@ export function buildPipeline({works = [], opportunities = [], activities = [], 
   return {opportunities: opportunityRows, deliverables: deliverableRows, summary: summarizePipeline({opportunities: opportunityRows, deliverables: deliverableRows})};
 }
 
-export function registerSalesPipelineRoutes(app, {db, bad, permittedProjects}) {
+export function registerSalesPipelineRoutes(app, {db, bad, body, permittedProjects}) {
+  // 営業管理の提案・評価・接点の言葉と解禁月のページ（src/sales-ops/proposals/）。app.mjs を触らずにここで足す
+  registerSalesProposalRoutes(app, {db, bad, body, permittedProjects});
   app.get('/api/sales-pipeline', async (c) => {
     const i = c.get('identity');
     if (i.role === 'production') return bad(c, '制作担当は営業の一覧を参照できません', 403);

@@ -15,6 +15,13 @@ erDiagram
     INTEGER intake_case_id FK "製作委員会の調達ケース（rights_intake_cases）"
     INTEGER document_id FK "元の契約書の参照（rights_intake_documents）"
   }
+  committee_ledger_entries {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER contract_id FK "製作委員会の契約（committee_contracts）"
+    INTEGER counterparty_partner_id FK "相手の取引先（業務担当者・著作権者・当事者・受取人。partners）"
+    INTEGER reverses_id FK "取り消す行（committee_ledger_entries）"
+  }
   committee_report_previews {
     TEXT token PK "確認の鍵（行のID。保存のときに照合する）"
     INTEGER org_id FK "組織（organizations）。データの持ち主"
@@ -29,10 +36,25 @@ erDiagram
     INTEGER contract_id FK "製作委員会の契約（committee_contracts）"
     INTEGER term_version_id FK "使った条件版（committee_term_versions）"
   }
+  committee_round_overrides {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER contract_id FK "製作委員会の契約（committee_contracts）"
+  }
   committee_schedule_phases {
     INTEGER id PK "行のID"
     INTEGER org_id FK "組織（organizations）。データの持ち主"
     INTEGER term_version_id FK "委員会の条件版（committee_term_versions）"
+  }
+  committee_schedule_version_phases {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER schedule_version_id PK, FK "委員会の日程の版（committee_schedule_versions）"
+    INTEGER phase_no PK "フェーズの番号"
+  }
+  committee_schedule_versions {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER contract_id FK "製作委員会の契約（committee_contracts）"
   }
   committee_snapshot_deductions {
     INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
@@ -71,6 +93,29 @@ erDiagram
     INTEGER report_id PK, FK "売上報告（report_imports）"
     INTEGER window_id FK "当てはめた窓口（committee_term_windows）"
   }
+  committee_term_budget_lines {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER term_version_id PK, FK "委員会の条件版"
+    INTEGER line_no PK "行の番号"
+  }
+  committee_term_business_steps {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER term_version_id PK, FK "委員会の条件版"
+    TEXT business_code PK, FK "事業化権利（committee_term_businesses）"
+    INTEGER step_no PK "段の番号（計算の順）"
+  }
+  committee_term_businesses {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER term_version_id PK, FK "委員会の条件版（committee_term_versions）"
+    TEXT business_code PK "事業化権利（劇場・ビデオグラム・自動公衆送信・テレビ放送 など）"
+    INTEGER operator_partner_id FK "業務担当者の取引先（partners）"
+  }
+  committee_term_committee_steps {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER term_version_id PK, FK "委員会の条件版"
+    INTEGER step_no PK "段の番号（計算の順）"
+    INTEGER recipient_partner_id FK "手数料・報酬の受取人の取引先（partners）"
+  }
   committee_term_funding {
     INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
     INTEGER term_version_id PK, FK "製作委員会の条件版（committee_term_versions）"
@@ -86,9 +131,19 @@ erDiagram
     INTEGER term_version_id FK "委員会の条件版（committee_term_versions）"
     INTEGER partner_id FK "参加者の取引先（partners）"
   }
+  committee_term_templates {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER previous_id FK "前の版（committee_term_templates）"
+  }
   committee_term_version_effective {
     INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
     INTEGER term_version_id PK, FK "製作委員会の条件版（committee_term_versions）"
+  }
+  committee_term_version_templates {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER term_version_id PK, FK "委員会の条件版（committee_term_versions）"
+    INTEGER template_id FK "写した型の版（committee_term_templates）"
   }
   committee_term_versions {
     INTEGER id PK "行のID"
@@ -313,11 +368,17 @@ erDiagram
   committee_contracts }o--|| rights_intake_documents : "intake_case_id,document_id"
   committee_contracts }o--|| rights_intake_cases : "intake_case_id,work_id"
   committee_contracts }o--|| works : "project_id,work_id"
+  committee_ledger_entries }o--o| committee_ledger_entries : "reverses_id"
+  committee_ledger_entries }o--o| partners : "counterparty_partner_id"
+  committee_ledger_entries }o--|| committee_contracts : "contract_id"
   committee_report_previews }o--|| works : "project_id,work_id"
   committee_report_snapshots }o--|| committee_term_versions : "contract_id,term_version_id"
   committee_report_snapshots }o--|| committee_contracts : "contract_id,work_id"
   committee_report_snapshots }o--|| works : "project_id,work_id"
+  committee_round_overrides }o--|| committee_contracts : "contract_id"
   committee_schedule_phases }o--|| committee_term_versions : "term_version_id"
+  committee_schedule_version_phases }o--|| committee_schedule_versions : "schedule_version_id"
+  committee_schedule_versions }o--|| committee_contracts : "contract_id"
   committee_snapshot_deductions }o--|| partners : "recipient_partner_id"
   committee_snapshot_deductions }o--|| committee_term_windows : "window_id"
   committee_snapshot_deductions }o--|| committee_snapshot_reports : "snapshot_id,report_id"
@@ -335,11 +396,20 @@ erDiagram
   committee_snapshot_reports }o--|| committee_term_windows : "window_id"
   committee_snapshot_reports }o--|| report_imports : "report_id"
   committee_snapshot_reports }o--|| committee_report_snapshots : "snapshot_id,work_id"
+  committee_term_budget_lines }o--|| committee_term_versions : "term_version_id"
+  committee_term_business_steps }o--|| committee_term_businesses : "term_version_id,business_code"
+  committee_term_businesses }o--|| partners : "operator_partner_id"
+  committee_term_businesses }o--|| committee_term_versions : "term_version_id"
+  committee_term_committee_steps }o--o| partners : "recipient_partner_id"
+  committee_term_committee_steps }o--|| committee_term_versions : "term_version_id"
   committee_term_funding }o--|| committee_term_versions : "term_version_id"
   committee_term_investments }o--|| committee_term_members : "term_version_id,partner_id"
   committee_term_members }o--|| partners : "partner_id"
   committee_term_members }o--|| committee_term_versions : "term_version_id"
+  committee_term_templates }o--o| committee_term_templates : "previous_id"
   committee_term_version_effective }o--|| committee_term_versions : "term_version_id"
+  committee_term_version_templates }o--|| committee_term_templates : "template_id"
+  committee_term_version_templates }o--|| committee_term_versions : "term_version_id"
   committee_term_versions }o--o| partners : "manager_partner_id"
   committee_term_versions }o--o| committee_term_versions : "contract_id,source_version_id"
   committee_term_versions }o--|| committee_contracts : "contract_id"
@@ -419,18 +489,28 @@ erDiagram
 | 表 | 論理名 | 説明 |
 |---|---|---|
 | [committee_contracts](#committee_contracts) | 製作委員会契約 | 製作委員会の契約1件。製作委員会の調達ケースと契約書の参照から作り、書き換えない。条件は条件版に持つ。 |
+| [committee_ledger_entries](#committee_ledger_entries) | 委員会の収支の台帳 | 委員会の収支を、回×事業化権利×区分×項目×相手の行として追加だけで積む。累計の列は持たず、収支報告書と相手ごとの累計は行の和で導く。直しは符号違いの取消の行 |
 | [committee_report_previews](#committee_report_previews) | 委員会報告の保存前確認 | 委員会報告を保存する前の確認1回分を表す。確認画面で計算したときに作り、15分で期限が切れ、保存に使うと consumed を1にする。期限切れの行は、次に確認を作るときに消す。 |
 | [committee_report_snapshots](#committee_report_snapshots) | 委員会報告の下書き | 製作委員会の1つの締め期間の報告の下書き1件を表す。確認画面の計算を保存したときに作り、入力と計算結果を入力の照合値とともに固定して変えられない。 |
+| [committee_round_overrides](#committee_round_overrides) | 委員会の回だけの変更 | その回だけの変更（報告日・支払日・回を飛ばす）。追加だけで、同じ回×項目は後の行が効く。理由は必須 |
 | [committee_schedule_phases](#committee_schedule_phases) | 委員会の報告・支払日程 | 委員会の条件版ごとに、締め・報告・支払の日程の区切り（フェーズ）1つを表す。フェーズは隙間なく続き、ここから締め期間を数える。 |
+| [committee_schedule_version_phases](#committee_schedule_version_phases) | 委員会の日程のフェーズ | 日程の版×段×フェーズ。段は to_manager（業務担当者→幹事）と to_members（幹事→当事者）。回は表に持たず式から導く |
+| [committee_schedule_versions](#committee_schedule_versions) | 委員会の日程の版 | 契約ごとの報告と分配の日程の版。条件版とは別に持ち、日程だけを変えるときに版を足す。基準日から年を数える |
 | [committee_snapshot_deductions](#committee_snapshot_deductions) | 委員会報告の追加控除 | 1行は、委員会報告を保存するとき、手数料と経費を引いた後で差し引く追加の控除1件（権利処理費か製作費回収）。変更・削除はできない。 |
 | [committee_snapshot_expenses](#committee_snapshot_expenses) | 委員会報告の経費 | 委員会報告の下書きで控除した経費1件を表す。1つの経費は1度しか使えず、保存時に作って変えられない。 |
 | [committee_snapshot_lines](#committee_snapshot_lines) | 委員会報告の明細 | 委員会報告の下書きに入れた売上明細1行を、作品への配賦後の額で表す。保存時に作り、変えられない。 |
 | [committee_snapshot_member_amounts](#committee_snapshot_member_amounts) | 委員会報告の分配額 | 委員会報告の下書きで、窓口ごと・参加者ごとに計算した分配額を表す。保存時に作り、変えられない。 |
 | [committee_snapshot_reports](#committee_snapshot_reports) | 委員会報告に含めた売上報告 | 委員会報告の下書きに含めた売上報告1件と、当てはめた窓口を表す。1つの報告は作品ごとに1度しか使えず、個別精算（settlement_report_links）にも使えない。 |
+| [committee_term_budget_lines](#committee_term_budget_lines) | 委員会の総事業費の内訳 | 総事業費の内訳（製作費・P&A・製作予備費・その他）。出資金の総額の内訳で、収支（D−E）では E を1回だけ引く |
+| [committee_term_business_steps](#committee_term_business_steps) | 委員会の事業の式の段 | 事業ごとの式の段。並べた順（step_no）が計算の順。経費・二次使用料・窓口手数料のどれか |
+| [committee_term_businesses](#committee_term_businesses) | 委員会の事業化権利（条件版） | 条件版×事業化権利ごとの業務担当者（窓口）。事業化権利の語は契約書の別紙の型 |
+| [committee_term_committee_steps](#committee_term_committee_steps) | 委員会全体の式の段 | 委員会全体の式の段。並べた順が計算の順。委員会経費・幹事手数料・成功報酬のどれか |
 | [committee_term_funding](#committee_term_funding) | 委員会の製作費総額 | 1行は、製作委員会の条件版に付ける製作費の総額。契約で確定したときだけ条件版と一緒に入れ、製作費回収の上限に使う。変更・削除はできない。 |
 | [committee_term_investments](#committee_term_investments) | 委員会の出資額 | 1行は、製作委員会の条件版の参加者1社の出資額。製作費の総額と一緒に入れ、合計は製作費の総額と一致させる。変更・削除はできない。 |
 | [committee_term_members](#committee_term_members) | 委員会の参加者（条件版） | 製作委員会の条件版ごとの参加者1者と持分を表す。条件版の登録時に調達案件の参加者から写して作り、あとから変えられない。 |
+| [committee_term_templates](#committee_term_templates) | 委員会の契約の型（版） | 製作委員会の契約の型（条件版の下書き）。型ごとの連番で追加だけ。中身は条件版の入力と同じ形の JSON。型を直すときは版を足し、前の版は消さない |
 | [committee_term_version_effective](#committee_term_version_effective) | 委員会条件版の適用開始月 | 1行は、製作委員会の条件版の適用開始月。条件版の表に列を足せないため別の表に持つ。行の無い条件版は最初の月から効く。変更・削除はできない。 |
+| [committee_term_version_templates](#committee_term_version_templates) | 委員会の条件版と型の結び付き | 条件版をどの型の版から写したか。1条件版に1行。変更・削除はしない |
 | [committee_term_versions](#committee_term_versions) | 委員会契約の条件版 | 製作委員会契約の条件の版1件。改訂は新しい版を足し、書き換えない。メンバー・窓口・日程は版ごとに別の表に持つ。 |
 | [committee_term_window_fee_shares](#committee_term_window_fee_shares) | 窓口手数料の取り分 | 1行は、製作委員会の販路の窓口の窓口手数料を複数社で分けるときの1社の取り分。行が無い窓口は、窓口の受取先1社が全部を受け取る。変更・削除はできない。 |
 | [committee_term_windows](#committee_term_windows) | 委員会の販路窓口 | 委員会の条件版ごと・販路の種類ごとに、窓口の取引先と手数料の条件を1行で表す。条件版の登録時に作り、変えられない。 |
@@ -497,6 +577,48 @@ erDiagram
 - 複合の参照: (org_id, project_id, work_id) → works(org_id, project_id, id)
 - トリガー committee_contract_immutable: 更新の前
 
+## committee_ledger_entries
+
+**委員会の収支の台帳** — 委員会の収支を、回×事業化権利×区分×項目×相手の行として追加だけで積む。累計の列は持たず、収支報告書と相手ごとの累計は行の和で導く。直しは符号違いの取消の行
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | contract_id | INTEGER | 製作委員会の契約（committee_contracts） | 不可 | - | FK（複合）→ committee_contracts |
+| 4 | tier | TEXT（列挙） | 段（to_manager／to_members） | 不可 | - | 値: to_manager / to_members |
+| 5 | close_on | TEXT | 回の締め日 | 不可 | - | CHECK: length(close_on)=10 AND substr(close_on,5,1)='-' AND substr(close_on,8,1)='-' AND ltrim(substr(close_on,1,4)\|\|substr(close_on,6,2)\|\|substr(close_on,9,2),'0123456789')='' AND substr(close_on,6,2) BETWEEN '01' AND '12' AND substr(close_on,9,2) BETWEEN '01' AND '31' |
+| 6 | business_code | TEXT（列挙） | 事業化権利（委員会全体の行は空） | 可 | - | 値: theatrical / program / non_theatrical / home_video / commercial_video / internet / tv / ancillary / publishing / merchandising / overseas / music_master / music_publishing / other |
+| 7 | section | TEXT（列挙） | 区分（income 収入・expense 支出・secondary_royalty 権利処理費・agent_fee 業務手数料・other_income その他収入・overhead 委員会経費・manager_fee 幹事手数料・success_fee 成功報酬・member_distribution 当事者への配分） | 不可 | - | 値: income / expense / secondary_royalty / agent_fee / other_income / overhead / manager_fee / success_fee / member_distribution |
+| 8 | item | TEXT | 項目の名前 | 可 | - | CHECK: item IS NULL OR length(trim(item)) BETWEEN 1 AND 200 |
+| 9 | counterparty_partner_id | INTEGER | 相手の取引先（業務担当者・著作権者・当事者・受取人。partners） | 可 | - | FK（複合）→ partners |
+| 10 | holder_role | TEXT（列挙） | 著作権者の役（権利処理費の行だけ） | 可 | - | 値: original / director / screenplay / music / other |
+| 11 | amount_yen | INTEGER | 額（税抜の円。取消の行は符号違い） | 不可 | - | CHECK: typeof(amount_yen)='integer' AND amount_yen BETWEEN -9007199254740991 AND 9007199254740991 |
+| 12 | source_kind | TEXT（列挙） | 出どころ（computed 計算した／received 届いた報告書／manual 人が入れた） | 不可 | - | 値: computed / received / manual |
+| 13 | source_reference | TEXT | 出どころの参照 | 可 | - | CHECK: source_reference IS NULL OR length(trim(source_reference)) BETWEEN 1 AND 200 |
+| 14 | reverses_id | INTEGER | 取り消す行（committee_ledger_entries） | 可 | - | FK（複合）→ committee_ledger_entries |
+| 15 | reason | TEXT | 取消の理由 | 可 | - | CHECK: reason IS NULL OR length(trim(reason)) BETWEEN 1 AND 1000 |
+| 16 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 17 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, reverses_id) → committee_ledger_entries(org_id, id)
+- 複合の参照: (org_id, counterparty_partner_id) → partners(org_id, id)
+- 複合の参照: (org_id, contract_id) → committee_contracts(org_id, id)
+- CHECK: (section IN ('income','expense','secondary_royalty','agent_fee') AND business_code IS NOT NULL) OR (section NOT IN ('income','expense','secondary_royalty','agent_fee') AND business_code IS NULL)
+- CHECK: holder_role IS NULL OR section='secondary_royalty'
+- CHECK: section<>'member_distribution' OR counterparty_partner_id IS NOT NULL
+- CHECK: (reverses_id IS NULL AND reason IS NULL) OR (reverses_id IS NOT NULL AND reason IS NOT NULL AND reverses_id<>id)
+- 索引 committee_ledger_entries_party_idx: (org_id, counterparty_partner_id, section)
+- 索引 committee_ledger_entries_round_idx: (org_id, contract_id, tier, close_on)
+- トリガー committee_ledger_entries_no_delete: 削除の前
+- トリガー committee_ledger_entries_no_update: 更新の前
+- トリガー committee_ledger_entries_reversal: 追加の前
+- トリガー committee_ledger_entries_reverse_once: 追加の前
+
 ## committee_report_previews
 
 **委員会報告の保存前確認** — 委員会報告を保存する前の確認1回分を表す。確認画面で計算したときに作り、15分で期限が切れ、保存に使うと consumed を1にする。期限切れの行は、次に確認を作るときに消す。
@@ -557,6 +679,34 @@ erDiagram
 - 複合の参照: (org_id, project_id, work_id) → works(org_id, project_id, id)
 - トリガー committee_snapshot_immutable: 更新の前
 
+## committee_round_overrides
+
+**委員会の回だけの変更** — その回だけの変更（報告日・支払日・回を飛ばす）。追加だけで、同じ回×項目は後の行が効く。理由は必須
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | contract_id | INTEGER | 製作委員会の契約（committee_contracts） | 不可 | - | FK（複合）→ committee_contracts |
+| 4 | tier | TEXT（列挙） | 段（to_manager／to_members） | 不可 | - | 値: to_manager / to_members |
+| 5 | close_on | TEXT | 回の締め日 | 不可 | - | CHECK: length(close_on)=10 AND substr(close_on,5,1)='-' AND substr(close_on,8,1)='-' AND ltrim(substr(close_on,1,4)\|\|substr(close_on,6,2)\|\|substr(close_on,9,2),'0123456789')='' |
+| 6 | field | TEXT（列挙） | 変える項目（report_on 報告日／pay_on 支払日／skip 回を飛ばす） | 不可 | - | 値: report_on / pay_on / skip |
+| 7 | value_on | TEXT | 変更後の日（飛ばすときは空） | 可 | - | CHECK: value_on IS NULL OR (length(value_on)=10 AND substr(value_on,5,1)='-' AND substr(value_on,8,1)='-' AND ltrim(substr(value_on,1,4)\|\|substr(value_on,6,2)\|\|substr(value_on,9,2),'0123456789')='') |
+| 8 | reason | TEXT | 理由 | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 1000 |
+| 9 | source_reference | TEXT | 根拠 | 可 | - | CHECK: source_reference IS NULL OR length(trim(source_reference)) BETWEEN 1 AND 500 |
+| 10 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 11 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, contract_id) → committee_contracts(org_id, id)
+- CHECK: (field='skip' AND value_on IS NULL) OR (field<>'skip' AND value_on IS NOT NULL)
+- 索引 committee_round_overrides_round_idx: (org_id, contract_id, tier, close_on)
+- トリガー committee_round_overrides_no_delete: 削除の前
+- トリガー committee_round_overrides_no_update: 更新の前
+
 ## committee_schedule_phases
 
 **委員会の報告・支払日程** — 委員会の条件版ごとに、締め・報告・支払の日程の区切り（フェーズ）1つを表す。フェーズは隙間なく続き、ここから締め期間を数える。
@@ -587,6 +737,64 @@ erDiagram
 - 複合の参照: (org_id, term_version_id) → committee_term_versions(org_id, id)
 - CHECK: ends_on>=starts_on AND first_close_on>=starts_on AND first_close_on<=ends_on
 - トリガー committee_phase_immutable: 更新の前
+
+## committee_schedule_version_phases
+
+**委員会の日程のフェーズ** — 日程の版×段×フェーズ。段は to_manager（業務担当者→幹事）と to_members（幹事→当事者）。回は表に持たず式から導く
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | schedule_version_id | INTEGER | 委員会の日程の版（committee_schedule_versions） | 不可 | - | PK（複合）、FK（複合）→ committee_schedule_versions |
+| 3 | phase_no | INTEGER | フェーズの番号 | 不可 | - | PK（複合）、CHECK: typeof(phase_no)='integer' AND phase_no BETWEEN 1 AND 20 |
+| 4 | tier | TEXT（列挙） | 段（to_manager 業務担当者→幹事／to_members 幹事→当事者） | 不可 | - | 値: to_manager / to_members |
+| 5 | from_year | INTEGER | 基準日から数えた始まりの年（1年目から） | 不可 | - | CHECK: typeof(from_year)='integer' AND from_year BETWEEN 1 AND 100 |
+| 6 | to_year | INTEGER | 終わりの年（空は続く） | 可 | - | CHECK: to_year IS NULL OR (typeof(to_year)='integer' AND to_year BETWEEN 1 AND 100) |
+| 7 | close_months | TEXT | 締めの月（12文字の 0/1。1月が先頭） | 不可 | - | CHECK: length(close_months)=12 AND ltrim(close_months,'01')='' AND close_months<>'000000000000' |
+| 8 | report_offset_months | INTEGER | 報告: 締め月から何か月後の末日 | 不可 | - | CHECK: typeof(report_offset_months)='integer' AND report_offset_months BETWEEN 0 AND 24 |
+| 9 | pay_from | TEXT（列挙） | 支払の数え始め（close 締め／report 報告） | 不可 | - | 値: close / report |
+| 10 | pay_offset_months | INTEGER | 支払: 数え始めから何か月後の末日 | 不可 | - | CHECK: typeof(pay_offset_months)='integer' AND pay_offset_months BETWEEN 0 AND 24 |
+| 11 | carry_under_yen | INTEGER | 配分の繰越の下限額（円。空は繰り越さない） | 可 | - | CHECK: carry_under_yen IS NULL OR (typeof(carry_under_yen)='integer' AND carry_under_yen BETWEEN 0 AND 100000000) |
+| 12 | holiday_rule | TEXT（列挙） | 支払日が休業日のとき（previous_business_day 前の営業日／none そのまま） | 不可 | - | 値: previous_business_day / none |
+| 13 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 14 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の主キー: (org_id, schedule_version_id, phase_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, schedule_version_id) → committee_schedule_versions(org_id, id)
+- CHECK: to_year IS NULL OR to_year>=from_year
+- トリガー committee_schedule_version_phases_no_delete: 削除の前
+- トリガー committee_schedule_version_phases_no_update: 更新の前
+
+## committee_schedule_versions
+
+**委員会の日程の版** — 契約ごとの報告と分配の日程の版。条件版とは別に持ち、日程だけを変えるときに版を足す。基準日から年を数える
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | contract_id | INTEGER | 製作委員会の契約（committee_contracts） | 不可 | - | FK（複合）→ committee_contracts |
+| 4 | version_no | INTEGER | 契約ごとの版の番号（1から） | 不可 | - | CHECK: typeof(version_no)='integer' AND version_no>0 |
+| 5 | effective_from | TEXT | 適用開始日 | 不可 | - | CHECK: length(effective_from)=10 AND substr(effective_from,5,1)='-' AND substr(effective_from,8,1)='-' AND ltrim(substr(effective_from,1,4)\|\|substr(effective_from,6,2)\|\|substr(effective_from,9,2),'0123456789')='' AND substr(effective_from,6,2) BETWEEN '01' AND '12' AND substr(effective_from,9,2) BETWEEN '01' AND '31' |
+| 6 | base_kind | TEXT（列挙） | 基準の種類（release 公開日・first_sales 初回の売上・contract 契約日・other） | 不可 | - | 値: release / first_sales / contract / other |
+| 7 | base_date | TEXT | 基準日 | 不可 | - | CHECK: length(base_date)=10 AND substr(base_date,5,1)='-' AND substr(base_date,8,1)='-' AND ltrim(substr(base_date,1,4)\|\|substr(base_date,6,2)\|\|substr(base_date,9,2),'0123456789')='' AND substr(base_date,6,2) BETWEEN '01' AND '12' AND substr(base_date,9,2) BETWEEN '01' AND '31' |
+| 8 | reason | TEXT | 版を足した理由 | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 1000 |
+| 9 | source_reference | TEXT | 根拠（連絡のメール・覚書など） | 可 | - | CHECK: source_reference IS NULL OR length(trim(source_reference)) BETWEEN 1 AND 500 |
+| 10 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 11 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, contract_id, version_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, contract_id) → committee_contracts(org_id, id)
+- トリガー committee_schedule_versions_no_delete: 削除の前
+- トリガー committee_schedule_versions_no_update: 更新の前
+- トリガー committee_schedule_versions_sequence: 追加の前
 
 ## committee_snapshot_deductions
 
@@ -717,6 +925,114 @@ erDiagram
 - トリガー committee_snapshot_report_immutable: 更新の前
 - トリガー committee_snapshot_report_scope: 追加の前
 
+## committee_term_budget_lines
+
+**委員会の総事業費の内訳** — 総事業費の内訳（製作費・P&A・製作予備費・その他）。出資金の総額の内訳で、収支（D−E）では E を1回だけ引く
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | term_version_id | INTEGER | 委員会の条件版 | 不可 | - | PK（複合）、FK（複合）→ committee_term_versions |
+| 3 | line_no | INTEGER | 行の番号 | 不可 | - | PK（複合）、CHECK: typeof(line_no)='integer' AND line_no BETWEEN 1 AND 50 |
+| 4 | item | TEXT（列挙） | production 製作費／pa P&A／contingency 製作予備費／other その他 | 不可 | - | 値: production / pa / contingency / other |
+| 5 | label | TEXT | 行の名前（その他は必須） | 可 | - | CHECK: label IS NULL OR length(trim(label)) BETWEEN 1 AND 100 |
+| 6 | amount_yen | INTEGER | 額（円） | 不可 | - | CHECK: typeof(amount_yen)='integer' AND amount_yen BETWEEN 0 AND 1000000000000 |
+| 7 | tax_basis | TEXT（列挙） | 税の区分（ex_tax 税抜／inc_tax 税込） | 不可 | - | 値: ex_tax / inc_tax |
+| 8 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 9 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の主キー: (org_id, term_version_id, line_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, term_version_id) → committee_term_versions(org_id, id)
+- CHECK: item<>'other' OR label IS NOT NULL
+- トリガー committee_term_budget_lines_no_delete: 削除の前
+- トリガー committee_term_budget_lines_no_update: 更新の前
+
+## committee_term_business_steps
+
+**委員会の事業の式の段** — 事業ごとの式の段。並べた順（step_no）が計算の順。経費・二次使用料・窓口手数料のどれか
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | term_version_id | INTEGER | 委員会の条件版 | 不可 | - | PK（複合）、FK（複合）→ committee_term_businesses |
+| 3 | business_code | TEXT | 事業化権利（committee_term_businesses） | 不可 | - | PK（複合）、FK（複合）→ committee_term_businesses |
+| 4 | step_no | INTEGER | 段の番号（計算の順） | 不可 | - | PK（複合）、CHECK: typeof(step_no)='integer' AND step_no BETWEEN 1 AND 50 |
+| 5 | kind | TEXT（列挙） | expense 経費／secondary_royalty 二次使用料／agent_fee 窓口手数料 | 不可 | - | 値: expense / secondary_royalty / agent_fee |
+| 6 | expense_label | TEXT | 経費の区分の名前（経費の段だけ） | 可 | - | CHECK: expense_label IS NULL OR length(trim(expense_label)) BETWEEN 1 AND 100 |
+| 7 | holder_role | TEXT（列挙） | 著作権者の役（二次使用料の段だけ。original・director・screenplay・music・other） | 可 | - | 値: original / director / screenplay / music / other |
+| 8 | deduct_expenses | INTEGER（真偽 0/1） | 二次使用料の基礎から、それより前の段の経費を引くか（1 引く・0 引かない） | 可 | - | - |
+| 9 | fee_rate_bps | INTEGER | 窓口手数料の率（bp） | 可 | - | CHECK: fee_rate_bps IS NULL OR (typeof(fee_rate_bps)='integer' AND fee_rate_bps BETWEEN 0 AND 10000) |
+| 10 | fee_base | TEXT（列挙） | 窓口手数料の基礎（income 収入／remaining その段の時点の残り） | 可 | - | 値: income / remaining |
+| 11 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 12 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の主キー: (org_id, term_version_id, business_code, step_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, term_version_id, business_code) → committee_term_businesses(org_id, term_version_id, business_code)
+- CHECK: (kind='expense' AND expense_label IS NOT NULL AND holder_role IS NULL AND deduct_expenses IS NULL AND fee_rate_bps IS NULL AND fee_base IS NULL) OR (kind='secondary_royalty' AND holder_role IS NOT NULL AND deduct_expenses IS NOT NULL AND expense_label IS NULL AND fee_rate_bps IS NULL AND fee_base IS NULL) OR (kind='agent_fee' AND fee_rate_bps IS NOT NULL AND fee_base IS NOT NULL AND expense_label IS NULL AND holder_role IS NULL AND deduct_expenses IS NULL)
+- トリガー committee_term_business_steps_no_delete: 削除の前
+- トリガー committee_term_business_steps_no_update: 更新の前
+
+## committee_term_businesses
+
+**委員会の事業化権利（条件版）** — 条件版×事業化権利ごとの業務担当者（窓口）。事業化権利の語は契約書の別紙の型
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | term_version_id | INTEGER | 委員会の条件版（committee_term_versions） | 不可 | - | PK（複合）、FK（複合）→ committee_term_versions |
+| 3 | business_code | TEXT（列挙） | 事業化権利（劇場・ビデオグラム・自動公衆送信・テレビ放送 など） | 不可 | - | PK（複合）、値: theatrical / program / non_theatrical / home_video / commercial_video / internet / tv / ancillary / publishing / merchandising / overseas / music_master / music_publishing / other |
+| 4 | display_order | INTEGER | 並び順 | 不可 | - | CHECK: typeof(display_order)='integer' AND display_order BETWEEN 1 AND 100 |
+| 5 | operator_partner_id | INTEGER | 業務担当者の取引先（partners） | 不可 | - | FK（複合）→ partners |
+| 6 | clause_reference | TEXT | 契約書の条項（例 第11条） | 可 | - | CHECK: clause_reference IS NULL OR length(trim(clause_reference)) BETWEEN 1 AND 200 |
+| 7 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 8 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の主キー: (org_id, term_version_id, business_code)
+- 複合の一意: (org_id, term_version_id, display_order)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, operator_partner_id) → partners(org_id, id)
+- 複合の参照: (org_id, term_version_id) → committee_term_versions(org_id, id)
+- トリガー committee_term_businesses_no_delete: 削除の前
+- トリガー committee_term_businesses_no_update: 更新の前
+
+## committee_term_committee_steps
+
+**委員会全体の式の段** — 委員会全体の式の段。並べた順が計算の順。委員会経費・幹事手数料・成功報酬のどれか
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | term_version_id | INTEGER | 委員会の条件版 | 不可 | - | PK（複合）、FK（複合）→ committee_term_versions |
+| 3 | step_no | INTEGER | 段の番号（計算の順） | 不可 | - | PK（複合）、CHECK: typeof(step_no)='integer' AND step_no BETWEEN 1 AND 50 |
+| 4 | kind | TEXT（列挙） | overhead 委員会経費／manager_fee 幹事手数料／success_fee 成功報酬 | 不可 | - | 値: overhead / manager_fee / success_fee |
+| 5 | overhead_label | TEXT | 委員会経費の区分の名前 | 可 | - | CHECK: overhead_label IS NULL OR length(trim(overhead_label)) BETWEEN 1 AND 100 |
+| 6 | recipient_partner_id | INTEGER | 手数料・報酬の受取人の取引先（partners） | 可 | - | FK（複合）→ partners |
+| 7 | rate_bps | INTEGER | 率（bp） | 可 | - | CHECK: rate_bps IS NULL OR (typeof(rate_bps)='integer' AND rate_bps BETWEEN 0 AND 10000) |
+| 8 | fee_base | TEXT（列挙） | 幹事手数料の基礎（a 配分金合計／remaining その段の時点の残り） | 可 | - | 値: a / remaining |
+| 9 | threshold_kind | TEXT（列挙） | 成功報酬の閾値（total_budget 総事業費／investment_total 出資金の総額） | 可 | - | 値: total_budget / investment_total |
+| 10 | success_mode | TEXT（列挙） | 成功報酬の掛け方（excess 累計で超えた分×率／after_recoup 回収後は A×率） | 可 | - | 値: excess / after_recoup |
+| 11 | crossing_rule | TEXT（列挙） | 回収後のとき、閾値に届く回の扱い（whole_period A の全体／excess_part 超えた分だけ） | 可 | - | 値: whole_period / excess_part |
+| 12 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 13 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の主キー: (org_id, term_version_id, step_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, recipient_partner_id) → partners(org_id, id)
+- 複合の参照: (org_id, term_version_id) → committee_term_versions(org_id, id)
+- CHECK: (kind='overhead' AND overhead_label IS NOT NULL AND recipient_partner_id IS NULL AND rate_bps IS NULL AND fee_base IS NULL AND threshold_kind IS NULL AND success_mode IS NULL AND crossing_rule IS NULL) OR (kind='manager_fee' AND recipient_partner_id IS NOT NULL AND rate_bps IS NOT NULL AND fee_base IS NOT NULL AND overhead_label IS NULL AND threshold_kind IS NULL AND success_mode IS NULL AND crossing_rule IS NULL) OR (kind='success_fee' AND recipient_partner_id IS NOT NULL AND rate_bps IS NOT NULL AND threshold_kind IS NOT NULL AND success_mode IS NOT NULL AND overhead_label IS NULL AND fee_base IS NULL AND ((success_mode='excess' AND crossing_rule IS NULL) OR (success_mode='after_recoup' AND crossing_rule IS NOT NULL)))
+- トリガー committee_term_committee_steps_no_delete: 削除の前
+- トリガー committee_term_committee_steps_no_update: 更新の前
+
 ## committee_term_funding
 
 **委員会の製作費総額** — 1行は、製作委員会の条件版に付ける製作費の総額。契約で確定したときだけ条件版と一緒に入れ、製作費回収の上限に使う。変更・削除はできない。
@@ -775,6 +1091,35 @@ erDiagram
 - 複合の参照: (org_id, term_version_id) → committee_term_versions(org_id, id)
 - トリガー committee_member_immutable: 更新の前
 
+## committee_term_templates
+
+**委員会の契約の型（版）** — 製作委員会の契約の型（条件版の下書き）。型ごとの連番で追加だけ。中身は条件版の入力と同じ形の JSON。型を直すときは版を足し、前の版は消さない
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | code | TEXT | 型のコード（組織の中で一意） | 不可 | - | CHECK: length(trim(code)) BETWEEN 1 AND 60 |
+| 4 | version_no | INTEGER | 型ごとの版の番号（1から） | 不可 | - | CHECK: typeof(version_no)='integer' AND version_no>0 |
+| 5 | previous_id | INTEGER | 前の版（committee_term_templates） | 可 | - | FK（複合）→ committee_term_templates |
+| 6 | name | TEXT | 型の名前 | 不可 | - | CHECK: length(trim(name)) BETWEEN 1 AND 200 |
+| 7 | body_json | TEXT | 型の中身（条件版の入力と同じ形の JSON） | 不可 | - | CHECK: length(body_json) BETWEEN 2 AND 200000 |
+| 8 | reason | TEXT | 版を足した理由 | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 1000 |
+| 9 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 10 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, code, version_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, previous_id) → committee_term_templates(org_id, id)
+- CHECK: (version_no=1 AND previous_id IS NULL) OR (version_no>1 AND previous_id IS NOT NULL)
+- トリガー committee_term_templates_no_delete: 削除の前
+- トリガー committee_term_templates_no_update: 更新の前
+- トリガー committee_term_templates_previous: 追加の前
+- トリガー committee_term_templates_sequence: 追加の前
+
 ## committee_term_version_effective
 
 **委員会条件版の適用開始月** — 1行は、製作委員会の条件版の適用開始月。条件版の表に列を足せないため別の表に持つ。行の無い条件版は最初の月から効く。変更・削除はできない。
@@ -794,6 +1139,27 @@ erDiagram
 - 複合の参照: (org_id, term_version_id) → committee_term_versions(org_id, id)
 - トリガー committee_term_version_effective_no_delete: 削除の前
 - トリガー committee_term_version_effective_no_update: 更新の前
+
+## committee_term_version_templates
+
+**委員会の条件版と型の結び付き** — 条件版をどの型の版から写したか。1条件版に1行。変更・削除はしない
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | term_version_id | INTEGER | 委員会の条件版（committee_term_versions） | 不可 | - | PK（複合）、FK（複合）→ committee_term_versions |
+| 3 | template_id | INTEGER | 写した型の版（committee_term_templates） | 不可 | - | FK（複合）→ committee_term_templates |
+| 4 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 5 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の主キー: (org_id, term_version_id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, template_id) → committee_term_templates(org_id, id)
+- 複合の参照: (org_id, term_version_id) → committee_term_versions(org_id, id)
+- トリガー committee_term_version_templates_no_delete: 削除の前
+- トリガー committee_term_version_templates_no_update: 更新の前
 
 ## committee_term_versions
 

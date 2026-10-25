@@ -34,7 +34,7 @@ Linuxでは `python3 -m venv .venv`、`.venv/bin/python -m pip install -r requir
 `ci:migrations`は専用一時フォルダに空のローカルD1を作り、全migration・構造manifest・外部キー・現行スキーマを照合します。
 `migration-manifest.json`の表数は管理表`d1_migrations`を含みます。適用済み番号のSQLは変更せず、以後の変更は次の番号へ追加します。
 初期SQLを既存本番へそのまま適用しないでください。既存D1と移行履歴の照合・登録は代表が別途実施します。
-`pg/schema.sql`は`migrations/`から`node scripts/pg-ddl.mjs`で生成するPostgreSQLのDDLです（手で直さない）。`npm test`がPGliteで、CIがpostgres:18.6-alpineで、SQLiteと表・列・FK・索引・トリガーの組を照合します。最後の版の印の表（`schema_source_fingerprint`。PostgreSQLだけ）と`pg/verify-catalog.sql`で当てたDBの数と指紋を確かめ、`pg/reconcile.sql`（生成物）で表ごとの件数と金額の列の合計を出し、`scripts/pg-role-check.mjs`でアプリのロールの権限を確かめます。
+`pg/schema.sql`は`migrations/`から`node scripts/pg-ddl.mjs`で生成するPostgreSQLのDDLです（手で直さない）。`npm test`がPGliteで、CIがpostgres:18.6-alpineで、SQLiteと表・列・FK・索引・トリガーの組を照合します。最後の版の印の表（`schema_source_fingerprint`。PostgreSQLだけ）と`pg/verify-catalog.sql`で当てたDBの数と指紋を確かめ、`pg/reconcile.sql`（生成物）で表ごとの件数と金額の列の合計を出し、`scripts/pg-role-check.mjs`でアプリのロールの権限を確かめます。動いているPostgreSQLに新しい移行だけを当てるときは`scripts/pg-migrate.mjs`（差分の移行。版の印から起点を決め、1つのトランザクションで当てて照合する）を使います（staging は core の手順書13の`pg-staging.ps1 -Action migrate-dryrun`・`migrate`）。
 
 Cloudflare・本番への操作、GitHub設定、Actions手動起動、PRマージは代表が行います。
 運用手順の正本は [運用依頼書](../../docs/platform/operations/handoff-astra.md) です。

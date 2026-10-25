@@ -125,6 +125,7 @@ SQLite のエラーの文（`UNIQUE constraint failed: 表.列`）は、PostgreS
 | `invalid_input`（型に読めない値） | （SQLite は型を強制しないので起きない） | 読み取りの文での 22P02・22003（`WHERE id = 'abc'` など）。制約の違反にしない |
 | `read_only`（読み取りの一括の中の書き込み） | 入口が文で断る。結果コード 8（query_only） | 入口が文で断る。25006 |
 | `unsupported_type`（SQLite に無い型） | — | 配列の型（`int8[]` など）を入口が止める |
+| `row_security`（行単位の権限の拒否） | （SQLite・D1 に RLS は無いので起きない） | 42501。所属しない組織の行を作る・移そうとした（`pg/rls.sql`。FR-CORE-DATA-052）。制約の違反にしない |
 
 | 見分けたいこと | 書き方 |
 |---|---|

@@ -23,7 +23,7 @@ import {LocalDatabase} from '../src/db.mjs';
 import {createApp} from '../src/app.mjs';
 import {decodeXlsx} from '../src/xlsx.mjs';
 import {SALES_DEMO, addMonths} from './seed-sales-demo.mjs';
-import {ADDITIONAL_CATALOG_VERSION} from '../src/sales-sheet/column-registry.mjs';
+import {ADDITIONAL_CATALOG_VERSION, SHEET_CATALOG_VERSION} from '../src/sales-sheet/column-registry.mjs';
 import {currentWindowInput} from '../src/sales-ops/release-window-model.mjs';
 
 export const EIGYO_DEMO = Object.freeze({
@@ -375,9 +375,10 @@ export const SALES_SHEET_VIEWS = Object.freeze([
 
 async function seedSalesSheet(db, orgId, api, log) {
   const initial = await seedInitialSalesSheet(db, orgId, api, log);
-  // 83列を採用済みの架空組織にも追加できる独立した節。API が残す採用の監査を目印にする。
+  // 統合前に初期の列だけを採用した架空組織に、追加の列（互換）を補う独立した節。API が残す採用の監査を目印にする。
+  // 辞書（sales-sheet-v2）で採用した組織には追加の列が入っているので補わない
   const marker = await db.get(`SELECT 1 FROM audit_log WHERE org_id=? AND entity_type='sales_sheet_column' AND action='adopt'
-    AND json_extract(detail_json,'$.template')=? LIMIT 1`, [orgId, ADDITIONAL_CATALOG_VERSION]);
+    AND json_extract(detail_json,'$.template') IN (?,?) LIMIT 1`, [orgId, ADDITIONAL_CATALOG_VERSION, SHEET_CATALOG_VERSION]);
   let additional = {skipped: true};
   if (!marker) {
     const out = await api.post('/sales-sheet/columns/adopt-additional', {reason: '架空データ（デモ）の組織で売上集計シートの追加の列を採用（seed-eigyo-demo）'});
@@ -387,9 +388,12 @@ async function seedSalesSheet(db, orgId, api, log) {
   return {...initial, skipped: initial.skipped && additional.skipped, additional};
 }
 
+// 列の採用（まだなら辞書の列を採用）と、値・保存した形の記録（まだなら）を別々に確かめる。統合前に列を採用した組織にも値を入れる
+// （試験の粒度の fixture は、統合前に採用した組織として DEMO-SALES を作る。scripts/sales-sheet-grain-fixtures.mjs）。目印は保存した形の1つ目の名前
 async function seedInitialSalesSheet(db, orgId, api, log) {
-  if (await db.get('SELECT 1 FROM sales_sheet_column_versions WHERE org_id=? LIMIT 1', [orgId])) return {skipped: true};
-  await api.post('/sales-sheet/columns/adopt', {reason: '架空データ（デモ）の組織で売上集計シートの初期の83列を採用（seed-eigyo-demo）'});
+  const adopted = await db.get('SELECT 1 FROM sales_sheet_column_versions WHERE org_id=? LIMIT 1', [orgId]);
+  if (adopted && await db.get('SELECT 1 FROM sales_sheet_views WHERE org_id=? AND name=?', [orgId, SALES_SHEET_VIEWS[0].name])) return {skipped: true};
+  if (!adopted) await api.post('/sales-sheet/columns/adopt', {reason: '架空データ（デモ）の組織で売上集計シートの列（辞書）を採用（seed-eigyo-demo）'});
   const lines = await db.all(`SELECT s.id,s.amount_ex_tax,s.accounting_month,w.code AS work_code,p.code AS partner_code,r.kind,
       (SELECT d.territory FROM sale_distribution_versions d WHERE d.org_id=s.org_id AND d.sale_id=s.id ORDER BY d.version_no DESC LIMIT 1) AS territory
     FROM sale_lines s JOIN report_imports r ON r.org_id=s.org_id AND r.id=s.report_id JOIN works w ON w.org_id=s.org_id AND w.id=s.work_id JOIN partners p ON p.org_id=s.org_id AND p.id=s.partner_id

@@ -75,6 +75,17 @@ erDiagram
     INTEGER project_id FK "案件（projects）"
     INTEGER work_id FK "取り込む先の作品（works）"
   }
+  kpi_metric_steps {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER metric_version_id PK, FK "指標マスタの版（kpi_metric_versions）"
+    TEXT role PK "役（producer プロデューサー・sales_sourcing 営業（仕入れ）・sales_selling 営業（売り））"
+    TEXT earning_type PK, FK "稼ぎ方（earning_types）"
+    INTEGER seq PK "役×稼ぎ方の中の段の順（1から）"
+    TEXT step FK "段（action_steps。細目の段は親のステップへ畳む）"
+  }
+  kpi_metric_versions {
+    INTEGER id PK "行のID"
+  }
   mapping_import_provenance {
     INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
     INTEGER report_id PK, FK "登録した売上報告（report_imports）。1報告に1行"
@@ -99,6 +110,12 @@ erDiagram
     INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
     INTEGER sale_id PK, FK "売上明細（sale_lines）"
   }
+  plan_adoptions {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER period_id FK "期間（yojitsu_periods。指す版と同じ期間）"
+    INTEGER plan_version_id FK "採用した計画の版（yojitsu_plan_versions）"
+  }
   receipt_plan_decisions {
     INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
     INTEGER request_id PK, FK "変更申請（receipt_plan_requests）"
@@ -115,6 +132,17 @@ erDiagram
   report_channel_fact_seals {
     INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
     INTEGER report_id PK, FK "売上報告（report_imports）"
+  }
+  report_check_cases {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER check_version_id FK "検査の決まりの版（report_check_versions）"
+  }
+  report_check_versions {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER partner_id FK "型の取引先（partners）"
+    INTEGER mapping_version_id FK "指す列対応の版（report_mapping_versions。同じ取引先と報告の種類）"
   }
   report_imports {
     INTEGER id PK "行のID"
@@ -145,6 +173,10 @@ erDiagram
     TEXT scope_kind PK "範囲。report＝報告全体、channel＝流通ごと"
     TEXT channel PK "流通（範囲が channel のときだけ。ほかは空文字）"
     TEXT metric PK "何の合計か（行数・税抜額・税額・税込額）"
+  }
+  report_voids {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER report_id PK, FK "取り消した報告（report_imports）"
   }
   sale_attribute_values {
     INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
@@ -200,6 +232,12 @@ erDiagram
     INTEGER mapping_version_id FK "使った列対応の版（report_mapping_versions）"
     INTEGER report_id FK "登録した売上報告（report_imports）"
   }
+  sales_source_file_terms {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER file_id FK "原本（sales_source_files）"
+    INTEGER partner_id FK "1通を送ってきた取引先（partners）"
+  }
   sales_source_files {
     INTEGER id PK "行のID"
     INTEGER org_id FK "組織（organizations）。データの持ち主"
@@ -219,6 +257,17 @@ erDiagram
     INTEGER org_id FK "組織（organizations）。データの持ち主"
     INTEGER file_id FK "原本（sales_source_files）"
     INTEGER legacy_selection_id FK "写した旧方式の選択（workflow_report_selections）"
+  }
+  source_check_runs {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER file_id FK "原本（sales_source_files）"
+    INTEGER check_version_id FK "使った検査の決まりの版（report_check_versions）"
+  }
+  source_sampling_reviews {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER check_run_id FK "見た検査の回（source_check_runs）"
   }
   tax_calculation_lines {
     INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
@@ -261,6 +310,63 @@ erDiagram
     INTEGER org_id FK "組織（organizations）。データの持ち主"
     INTEGER artifact_id FK "売上報告の原本（workflow_raw_artifacts）"
   }
+  yojitsu_activity_cancellations {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER activity_id PK, FK "取り消した活動記録（yojitsu_activity_records）"
+  }
+  yojitsu_activity_records {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER project_id FK "案件（projects。必須）"
+    TEXT earning_type FK "稼ぎ方（earning_types。空なら案件の稼ぎ方で数える）"
+    TEXT step FK "ステップ（action_steps の段。空は数えない）"
+    INTEGER work_id FK "作品（works。案件の作品。作品の無い段は空）"
+    INTEGER source_sales_activity_id FK "取り込んだ営業の活動（sales_activities。組織の中で1回だけ）"
+  }
+  yojitsu_choice_versions {
+    INTEGER id PK "行のID"
+  }
+  yojitsu_forecast_lines {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER project_id PK, FK "案件（yojitsu_forecast_versions の案件）"
+    INTEGER version_no PK, FK "版（yojitsu_forecast_versions）"
+    INTEGER line_no PK "版の中の行の番号（1〜版の line_count の連番。最後の番号の次だけ足せる）"
+    INTEGER category_id FK "区分（cashflow_categories）"
+  }
+  yojitsu_forecast_versions {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER project_id FK "案件（projects）"
+  }
+  yojitsu_periods {
+    INTEGER id PK "行のID"
+  }
+  yojitsu_plan_amounts {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER plan_version_id PK, FK "計画の版（yojitsu_plan_versions）"
+    TEXT earning_type PK, FK "稼ぎ方（earning_types）"
+  }
+  yojitsu_plan_versions {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER period_id FK "期間（yojitsu_periods）"
+  }
+  yojitsu_setting_versions {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    TEXT variable_key FK "変数（yojitsu_variables）"
+    TEXT earning_type FK "稼ぎ方（earning_types。範囲が稼ぎ方・稼ぎ方×ステップのとき）"
+    TEXT step FK "ステップ（action_steps。範囲が稼ぎ方×ステップのとき。率はその段から次の段へ）"
+    INTEGER project_id FK "案件（projects。範囲が案件のとき）"
+  }
+  yojitsu_target_versions {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER period_id FK "期間（yojitsu_periods）"
+  }
+  yojitsu_variables {
+    TEXT code PK "変数のコード"
+  }
   billing_invoice_line_works }o--|| works : "work_id"
   billing_invoice_line_works }o--|| billing_invoice_lines : "invoice_id,sale_id"
   billing_invoice_lines }o--|| partners : "partner_id"
@@ -281,6 +387,9 @@ erDiagram
   expected_reports }o--o| works : "work_id"
   expected_reports }o--|| partners : "partner_id"
   import_previews }o--|| works : "project_id,work_id"
+  kpi_metric_steps }o--|| kpi_metric_versions : "metric_version_id"
+  kpi_metric_steps }o--|| action_steps : "step"
+  kpi_metric_steps }o--|| earning_types : "earning_type"
   mapping_import_provenance }o--|| report_mapping_versions : "mapping_version_id"
   mapping_import_provenance }o--|| partners : "partner_id"
   mapping_import_provenance }o--|| report_imports : "work_id,report_id"
@@ -288,9 +397,13 @@ erDiagram
   package_observation_products }o--|| package_report_observations : "report_id,source_row,metric"
   package_report_observations }o--|| report_imports : "report_id"
   package_sale_details }o--|| sale_lines : "sale_id"
+  plan_adoptions }o--|| yojitsu_plan_versions : "period_id,plan_version_id"
   receipt_plan_decisions }o--|| receipt_plan_requests : "invoice_id,request_id"
   receipt_plan_requests }o--|| billing_invoices : "invoice_id"
   report_channel_fact_seals }o--|| report_imports : "report_id"
+  report_check_cases }o--|| report_check_versions : "check_version_id"
+  report_check_versions }o--|| report_mapping_versions : "mapping_version_id"
+  report_check_versions }o--|| partners : "partner_id"
   report_imports }o--o| report_imports : "supersedes_id"
   report_imports }o--o| partners : "partner_id"
   report_imports }o--|| works : "work_id"
@@ -301,6 +414,7 @@ erDiagram
   report_recognition }o--|| report_imports : "report_id"
   report_recognition }o--|| recognition_bases : "recognition_basis_id"
   report_source_controls }o--|| report_imports : "report_id"
+  report_voids }o--|| report_imports : "report_id"
   sale_attribute_values }o--|| sale_lines : "sale_id"
   sale_currency_versions }o--|| sale_lines : "sale_id"
   sale_lines }o--|| partners : "partner_id"
@@ -315,12 +429,17 @@ erDiagram
   sales_source_commits }o--|| report_imports : "work_id,report_id"
   sales_source_commits }o--|| sales_source_partitions : "work_id,partition_id"
   sales_source_commits }o--|| sales_source_files : "file_id"
+  sales_source_file_terms }o--|| partners : "partner_id"
+  sales_source_file_terms }o--|| sales_source_files : "file_id"
   sales_source_files }o--o| workflow_raw_artifacts : "legacy_artifact_id"
   sales_source_partitions }o--|| works : "project_id,work_id"
   sales_source_partitions }o--|| sales_source_bindings : "file_id,binding_id"
   sales_source_partitions }o--|| sales_source_selections : "file_id,selection_id"
   sales_source_selections }o--o| workflow_report_selections : "legacy_selection_id"
   sales_source_selections }o--|| sales_source_files : "file_id"
+  source_check_runs }o--|| report_check_versions : "check_version_id"
+  source_check_runs }o--|| sales_source_files : "file_id"
+  source_sampling_reviews }o--|| source_check_runs : "check_run_id"
   tax_calculation_lines }o--|| report_imports : "report_id"
   tax_calculation_lines }o--|| sale_lines : "sale_id"
   tax_calculation_lines }o--|| tax_calculation_snapshots : "snapshot_id"
@@ -335,6 +454,23 @@ erDiagram
   workflow_report_commits }o--|| workflow_report_selections : "work_id,selection_id"
   workflow_report_commits }o--|| workflow_raw_artifacts : "work_id,artifact_id"
   workflow_report_selections }o--|| workflow_raw_artifacts : "artifact_id"
+  yojitsu_activity_cancellations }o--|| yojitsu_activity_records : "activity_id"
+  yojitsu_activity_records }o--o| sales_activities : "source_sales_activity_id"
+  yojitsu_activity_records }o--o| works : "project_id,work_id"
+  yojitsu_activity_records }o--|| projects : "project_id"
+  yojitsu_activity_records }o--o| action_steps : "step"
+  yojitsu_activity_records }o--o| earning_types : "earning_type"
+  yojitsu_forecast_lines }o--|| cashflow_categories : "category_id"
+  yojitsu_forecast_lines }o--|| yojitsu_forecast_versions : "project_id,version_no"
+  yojitsu_forecast_versions }o--|| projects : "project_id"
+  yojitsu_plan_amounts }o--|| yojitsu_plan_versions : "plan_version_id"
+  yojitsu_plan_amounts }o--|| earning_types : "earning_type"
+  yojitsu_plan_versions }o--|| yojitsu_periods : "period_id"
+  yojitsu_setting_versions }o--o| projects : "project_id"
+  yojitsu_setting_versions }o--o| action_steps : "step"
+  yojitsu_setting_versions }o--o| earning_types : "earning_type"
+  yojitsu_setting_versions }o--|| yojitsu_variables : "variable_key"
+  yojitsu_target_versions }o--|| yojitsu_periods : "period_id"
 ```
 
 主キーと参照の列だけを載せる。組織（organizations・memberships）への参照は省く。
@@ -356,19 +492,25 @@ erDiagram
 | [expected_report_closures](#expected_report_closures) | 届くはずの報告の終了 | 届くはずの報告1件の終わり（最後の対象月と理由）を表す。1件に1行だけ足し、変更・削除できない。 |
 | [expected_reports](#expected_reports) | 届くはずの報告 | 取引先×報告の種類（×作品）ごとに、報告が届く頻度・期限・開始月を表し、受領進捗の母集合になる。変更・削除できず、やめるときは終了の記録を足す。 |
 | [import_previews](#import_previews) | 報告取込のプレビュー | 売上報告や宣伝の指標の CSV を登録する前のプレビュー1件。登録の時に中身を照合し、一度使ったら consumed を1にする。期限は15分。 |
+| [kpi_metric_steps](#kpi_metric_steps) | 指標マスタの段 | 指標マスタの版の子の行（追記だけ。変更・削除は DB が断る）。役×稼ぎ方ごとに段を seq の順に並べ、段は行動のステップの参照表のコード（細目は親のステップへ畳んで数える）。稼ぎ方×段は版の中で1回だけ。対応の出どころの状態を必ず持つ。行の数がヘッダの step_count を超えたら断る |
+| [kpi_metric_versions](#kpi_metric_versions) | 指標マスタ（版） | 指標マスタの版のヘッダ（追記だけ。変更・削除は DB が断る）。組織ごとの連番で、最新の version_no の版が有効。段の行は kpi_metric_steps に持ち、step_count はその行の数（行が足りない版は有効にしない）。段の率・1件の時間・1件の額などの値は持たず、設定の行（yojitsu_setting_versions）だけに持つ |
 | [mapping_import_provenance](#mapping_import_provenance) | 読み替え取込の出どころ | 読み替えを通して取り込んだ売上報告1件の出どころ。受け取った原文と読み替え後の CSV を両方残し、書き換えない。 |
 | [package_observation_products](#package_observation_products) | ビデオグラム観測の対象商品 | ビデオグラム報告の観測値1つ（report_id・source_row・metric で指す）が、どの商品の数かを表す。商品が決まる行だけに作り、無ければ作品全体の数として扱う。 |
 | [package_report_observations](#package_report_observations) | ビデオグラム報告の観測値 | ビデオグラムの報告の1行にある、出荷・稼働・在庫・返品の数1つを表す。売上ではないので売上額と合算せず、変更・削除できない。 |
 | [package_sale_details](#package_sale_details) | ビデオグラム売上の詳細 | ビデオグラムの売上報告の売上明細1行について、方式・回転数・単価など報告にある値を表す。金額の正本は売上明細で、ここの額（小数も入る文字）は合算しない。 |
+| [plan_adoptions](#plan_adoptions) | 計画の採用の記録 | 計画の版を採用した記録（追記だけ。変更・削除は DB が断る）。期間ごとの連番の最新の行が指す版が有効な計画。第1版も1行書き、「戻す」は古い版を指す行を足すだけ。指せるのは子表のそろった同じ期間の版で、採用した日は前の行より前にしない。シナリオとの結びは持たない。表はデータ一覧・一括出力・帳票の対象外 |
 | [receipt_plan_decisions](#receipt_plan_decisions) | 入金予定の変更判断 | 入金予定の変更申請1件への管理者の承認か却下を表す。承認すると入金予定の版が1進み、適用日以後はその予定日を使う。 |
 | [receipt_plan_requests](#receipt_plan_requests) | 入金予定の変更申請 | 請求書1通の入金予定日を変えたいという申請1件を表す。入金表の画面で出して管理者が承認・却下し、変更・削除できない。 |
 | [recognition_bases](#recognition_bases) | 計上基準 | 売上の計上月を決める基準のマスタ。5件で固定で、DB を作るときに入り、書き換えない。 |
 | [report_channel_fact_seals](#report_channel_fact_seals) | 報告の流通別の封印 | 売上報告1件の流通別の詳細（劇場・ビデオグラム・配信の詳細と観測値）を入れ終えた印を表す。報告の登録で最後に足し、以後その報告の詳細は足せない。 |
+| [report_check_cases](#report_check_cases) | 検査の正解表 | 検査の決まりの版ごとの正解表の1行（追記だけ。変更・削除は DB が断る）。架空の原本と、7つの検査の期待する合否。出どころは種（ふつうの通・端数のある通・取り込まない行のある通）か人の直し。実在の原本は入れない（fictional は 1 だけ）。人の直しを足せるのは、代表（role が admin で在籍が有効）か財務担当（permission が edit で、在籍と権限の期限が切れていない）だけ。種の行はこの止めの対象外 |
+| [report_check_versions](#report_check_versions) | 検査の決まり（版） | 取引先×報告の種類ごとの検査の決まりの版（追記だけ。変更・削除は DB が断る）。指す列対応の版・検算の決まり・見出しの列名・取り込まない行の規則・税抜・税額・税込の列名・商品で分けるか・版の理由を持つ。連番は取引先×報告の種類ごと。指す列対応の版は、同じ組織・同じ取引先・同じ報告の種類のものだけ。正答率の列は持たない |
 | [report_imports](#report_imports) | 売上報告の取込 | 取り込んだ売上報告（宣伝の指標の報告も含む）1件の原文と情報。訂正は新しい行を足し、前の行を superseded（訂正版あり）にする。 |
 | [report_mapping_profiles](#report_mapping_profiles) | 報告書の読み替え定義 | 取引先ごと・報告の種類ごとに、報告書の列を共通の形へ読み替える定義の見出し1件。中身は版に持ち、書き換えない。 |
 | [report_mapping_versions](#report_mapping_versions) | 読み替え定義の版 | 読み替え定義の中身の版1件。直すときは新しい版を足し、書き換えない。取込の登録の時にハッシュで同じ版か確かめる。 |
 | [report_recognition](#report_recognition) | 報告の計上基準 | 売上報告1件ごとの計上基準と、その基準から決めた計上月。基準の列を含む報告を取り込むときに作り、あとから変えられない。 |
 | [report_source_controls](#report_source_controls) | 報告原本の合計値 | 売上報告の原本に書かれた合計（行数・税抜・税額・税込）を書き写した値1件。報告を登録して封をしたあと、取り込んだ明細の合計と一致するときだけ入る。入ったあとは、その報告の明細（パッケージの観測値を含む）を足すことも変えることも消すこともできず、この値も変更・削除できない |
+| [report_voids](#report_voids) | 報告の取消の記録 | 登録済みの報告1件を取り違えのために取り消した記録（理由・誰が・いつ）を表す。同じ書き込みで報告（report_imports）を取消（void）にしたあとにだけ足せ、報告ごとに1つ。請求済みの報告は取り消せない（既存のトリガー）。変更・削除は DB が断る |
 | [sale_attribute_values](#sale_attribute_values) | 売上の拡張属性の値（版） | 売上明細1件×拡張属性の列1つの値の版。ほかの表に置き場の無い値（劇場名・券種など）を、財務の権限で手入力か売上報告の取込で積み、書き換えない。 |
 | [sale_currency_versions](#sale_currency_versions) | 売上の外貨（版） | 売上明細1件ごとの通貨・外貨の額・為替レートの版。円の計上額と外貨×レートが1円まで合うときだけ積め、書き換えない。 |
 | [sale_lines](#sale_lines) | 売上明細 | 売上報告から取り込んだ売上の明細1行。取込の登録で作る。請求に使った行と、原本の合計で照合済みの報告の行は変えられない。 |
@@ -378,9 +520,12 @@ erDiagram
 | [sales_sheet_views](#sales_sheet_views) | 売上集計シートの保存した形 | 売上集計シートの見せ方に名前をつけて保存したもの1件。名前は変えず（変えるときは新しく作る）、中身は sales_sheet_view_versions に版で持つ。 |
 | [sales_source_bindings](#sales_source_bindings) | 売上原本の割り当て（版） | 原本の行をどの作品へ割り当てるかの決め方の版1つを表す。付け替えるたびに理由を付けて足し、登録を始めた後は足せず、最大の版番号が今の割り当て。 |
 | [sales_source_commits](#sales_source_commits) | 売上原本の分割の登録 | 分割1つを売上報告1件として登録した記録を表す。1つの原本の登録はすべて同じ割り当て・取込範囲・分け方・取引先・報告の種類にそろえ、変更・削除できない。 |
+| [sales_source_file_terms](#sales_source_file_terms) | 売上原本の1通の条件（版） | 受け取った原本1通の条件（取引先・報告の種類・対象期間・受領日・報告月・申告合計）の版1つを表す。原本ごとの連番で、最新の版がその時点の条件（状態の列は持たない）。置き場所を誤ったときは理由を書いて次の版を足し、分割の登録を始めた原本には足せない。変更・削除は DB が断る。分からない値は空（未検証）のまま持つ |
 | [sales_source_files](#sales_source_files) | 受領した売上原本 | 受け取った売上報告のファイル1つを、作品から切り離して表す。原本取り込みで保存し、同じ中身は組織で1回だけで、変更・削除できない。 |
 | [sales_source_partitions](#sales_source_partitions) | 売上原本の作品別の分割 | 1回の分け方で、原本から1つの作品へ分けた行の組を表す（分け方1回×作品ごとに1行）。分けた表そのものは保存せず、取込範囲の版と行番号から作り直す。 |
 | [sales_source_selections](#sales_source_selections) | 売上原本の取込範囲（版） | 原本のどのシートの、どの行を見出しにし、どの行を取り込まないかの版1つを表す。登録を始める前だけ足せて変更・削除できず、最大の版番号が今の選択。 |
+| [source_check_runs](#source_check_runs) | 検査の結果（回） | 原本1通の検査の結果を回ごとに残す（追記だけ。変更・削除は DB が断る）。原本ごとの連番。再検査は新しい回を足すだけで、登録（sales_source_commits）は書き換えない。判定の語は5つ。合否の数と正解表の件数を、その回の値として持つ。判定の語と合否の数が食い違う行は DB では止めない（純関数の戻りを書くのは受け口） |
+| [source_sampling_reviews](#source_sampling_reviews) | 抜き取りの記録 | 人が見た1通の抜き取りの記録（追記だけ。変更・削除は DB が断る）。結果は直し無し・型の誤り・原本の誤りの3つ。型の誤りを足しても、検査の決まりの新しい版は自動では作らない。実績の通数は数える列を持たず、検査の回とこの記録から読むたびに導く |
 | [tax_calculation_lines](#tax_calculation_lines) | 税計算の明細 | 1行は、税計算に使った元の売上明細1件と、その税区分・税率・参考の税額。変更・削除はできない。 |
 | [tax_calculation_snapshots](#tax_calculation_snapshots) | 請求の税計算 | 1行は、請求1件を確定したときの税計算の結果。元の売上明細の税額と、税率ごとに1回丸めた請求の税額を並べて残す。変更・削除はできない。 |
 | [tax_invoice_links](#tax_invoice_links) | 請求の再発行のつながり | 1行は、再発行した請求と、取り消した元の請求のつながり。変更・削除はできない。 |
@@ -388,6 +533,17 @@ erDiagram
 | [theatrical_sale_details](#theatrical_sale_details) | 劇場売上の詳細 | 劇場の売上報告の売上明細1行について、方式・券種・動員など報告にある値を表す。金額の正本は売上明細で、ここの額（小数も入る文字）は合算しない。 |
 | [workflow_report_commits](#workflow_report_commits) | 報告の登録確定 | 売上報告の原本を売上明細へ登録した記録を1行で持つ。原本1つ・報告1つにつき1回だけ書き、変更も削除もできない。 |
 | [workflow_report_selections](#workflow_report_selections) | 報告の取込範囲 | 売上報告の原本から、取り込むシートと見出し行を選んだ版を1行で持つ。選び直すたびに版を積み、変更も削除もできない。 |
+| [yojitsu_activity_cancellations](#yojitsu_activity_cancellations) | 予実の活動記録の取消 | 活動記録の取消（追記だけ。1行に1回）。取り消せるのは記録した人だけで、取り消した行は数えない。表はデータ一覧・一括出力の対象外 |
+| [yojitsu_activity_records](#yojitsu_activity_records) | 予実の活動記録 | 案件の行動の記録（追記だけ。変更・削除は DB が断り、直しは取消の行 yojitsu_activity_cancellations を足す）。行の中身は記録した人の本人にだけ返し、ほかの人には件数だけを返す。ステップは行動のステップの参照表の段で、親の step（面談・提案・契約）へ畳んで数える。取り込んだ営業の活動は source_sales_activity_id で1回だけ。表はデータ一覧・一括出力の対象外 |
+| [yojitsu_choice_versions](#yojitsu_choice_versions) | 予実の語と月の設定（版） | 値の列（bps・x100・months・yen）に入らない予実の設定の版（追記だけ。変更・削除は DB が断る）。組織×設定ごとの連番で、最新の version_no が有効。採用するシナリオ（予実の4段の着地予測・確度加重予測が読む）・月別の表に入れる案件の範囲・締めた月の3つ。数の設定は yojitsu_setting_versions |
+| [yojitsu_forecast_lines](#yojitsu_forecast_lines) | 予実の予測の行 | 予測の版の行（追記だけ。変更・削除は DB が断る）。シナリオ（even・good・MAX・単一）×月（月初の日）×区分（区分マスタ）の金額。金額は税別の正の整数で、符号は区分の入出金で決める。予測に使う印は版の中の印で、有効な版の印が 1 の行だけを予測に使う |
+| [yojitsu_forecast_versions](#yojitsu_forecast_versions) | 予実の予測（版） | 案件×月の予測の版のヘッダ（追記だけ。変更・削除は DB が断る）。案件ごとの連番で、最新の version_no の版が有効（前の版の行は「予測に使う＝いいえ」と読む。行が line_count に満たない版は有効にしない）。版は案件の予測の全部の行を持ち、行は yojitsu_forecast_lines。試算の写しは元のファイルの SHA-256 を持ち、同じ写しを二度取り込まない |
+| [yojitsu_periods](#yojitsu_periods) | 予実の期間 | 組織ごとの1〜5年目の期間（追記だけ。変更・削除は DB が断る）。各年目は月初の日に始まる12か月で、年目の順に足し、n年目は n−1年目のちょうど12か月後に始まる（DB のトリガーが断る）。通算（5年）は持たない。目標・計画の版がこの期間を指す |
+| [yojitsu_plan_amounts](#yojitsu_plan_amounts) | 予実の計画の稼ぎ方別の額 | 計画の版の子の行（追記だけ。変更・削除は DB が断る）。稼ぎ方ごとに1行で、行の数がヘッダの earning_type_count を超えたら断る。表はデータ一覧・一括出力・帳票の対象外 |
+| [yojitsu_plan_versions](#yojitsu_plan_versions) | 予実の計画（版） | 計画の版のヘッダ（追記だけ。変更・削除は DB が断る）。期間ごとの連番。稼ぎ方別の額は yojitsu_plan_amounts に持ち、earning_type_count はその行の数。有効な計画は列に持たず、期間ごとの最新の採用の記録（plan_adoptions）が指す版。第1版の額は目標（会社）の仮置きで owner 本人にだけ返す。表はデータ一覧・一括出力・帳票の対象外 |
+| [yojitsu_setting_versions](#yojitsu_setting_versions) | 予実の設定（版） | 行動の率と1件あたりの額などの設定の行（追記だけ。変更・削除は DB が断る）。変数×範囲ごとの連番の最新の version_no が有効。範囲で使う列だけが埋まり、値の列は bps・x100・months・yen のうちちょうど1つで、変数の値の種類と同じ。前提の数字なので状態を必ず持つ。移行では値の行を入れず、種か設定で足す |
+| [yojitsu_target_versions](#yojitsu_target_versions) | 予実の目標（版） | 年の目標の版（追記だけ。変更・削除は DB が断る）。期間×種類（本人・会社）×範囲（全体・制作の取り分）ごとの連番の最新の version_no が有効。根拠が額なら額を持ち、人件費×倍率なら額を持たず倍率を持つ（報酬の行の12か月の合計×倍率を読むたびに計算する。報酬の表が無い間は未接続）。額は owner 本人にだけ返し、表はデータ一覧・一括出力・帳票の対象外（代表の報酬が割り戻せる） |
+| [yojitsu_variables](#yojitsu_variables) | 予実の設定の変数 | 設定の行の変数の参照表（組織に依らない）。値の列の種類とステップごとに持つかを決める。移行 0014 で行動の率（次の段へ進む率）・1件あたりの額・着地に数える確度・窓口の支払いの間の4行を、移行 0017 で行動指標の変数（窓口の売上の倍率・1件の時間・通る確率・通過率を測る期間など18行。行動指標の計画 段B #9）を入れる。稼ぎ方の既定の売上率は持たない（earning_type_rate_versions だけが持つ）。値の種類とステップの要否は変えられない |
 
 ## billing_invoice_line_works
 
@@ -717,6 +873,55 @@ erDiagram
 - 複合の参照: (org_id, project_id, work_id) → works(org_id, project_id, id)
 - 複合の参照: (org_id, user_id) → memberships(org_id, user_id)
 
+## kpi_metric_steps
+
+**指標マスタの段** — 指標マスタの版の子の行（追記だけ。変更・削除は DB が断る）。役×稼ぎ方ごとに段を seq の順に並べ、段は行動のステップの参照表のコード（細目は親のステップへ畳んで数える）。稼ぎ方×段は版の中で1回だけ。対応の出どころの状態を必ず持つ。行の数がヘッダの step_count を超えたら断る
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | metric_version_id | INTEGER | 指標マスタの版（kpi_metric_versions） | 不可 | - | PK（複合）、FK（複合）→ kpi_metric_versions |
+| 3 | role | TEXT（列挙） | 役（producer プロデューサー・sales_sourcing 営業（仕入れ）・sales_selling 営業（売り）） | 不可 | - | PK（複合）、値: producer / sales_sourcing / sales_selling |
+| 4 | earning_type | TEXT | 稼ぎ方（earning_types） | 不可 | - | PK（複合）、FK → earning_types.code |
+| 5 | seq | INTEGER | 役×稼ぎ方の中の段の順（1から） | 不可 | - | PK（複合）、CHECK: typeof(seq)='integer' AND seq BETWEEN 1 AND 20 |
+| 6 | step | TEXT | 段（action_steps。細目の段は親のステップへ畳む） | 不可 | - | FK → action_steps.code |
+| 7 | status | TEXT（列挙） | 対応の出どころの状態（confirmed 確認済み・director_reported 監督申告・press_reported 報道値・provisional 仮置き） | 不可 | - | 値: confirmed / director_reported / press_reported / provisional |
+| 8 | basis | TEXT | 出どころの文 | 可 | - | CHECK: basis IS NULL OR length(trim(basis)) BETWEEN 1 AND 1000 |
+
+表の制約:
+
+- 複合の主キー: (org_id, metric_version_id, role, earning_type, seq)
+- 複合の一意: (org_id, metric_version_id, earning_type, step)
+- 複合の参照: (org_id, metric_version_id) → kpi_metric_versions(org_id, id)
+- トリガー kpi_metric_steps_count: 追加の前
+- トリガー kpi_metric_steps_in_order: 追加の前
+- トリガー kpi_metric_steps_no_delete: 削除の前
+- トリガー kpi_metric_steps_no_update: 更新の前
+
+## kpi_metric_versions
+
+**指標マスタ（版）** — 指標マスタの版のヘッダ（追記だけ。変更・削除は DB が断る）。組織ごとの連番で、最新の version_no の版が有効。段の行は kpi_metric_steps に持ち、step_count はその行の数（行が足りない版は有効にしない）。段の率・1件の時間・1件の額などの値は持たず、設定の行（yojitsu_setting_versions）だけに持つ
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | FK → organizations.id |
+| 3 | version_no | INTEGER | 組織ごとの版の連番（1から） | 不可 | - | CHECK: typeof(version_no)='integer' AND version_no>0 |
+| 4 | step_count | INTEGER | 段の行の数（1〜200） | 不可 | - | CHECK: typeof(step_count)='integer' AND step_count BETWEEN 1 AND 200 |
+| 5 | basis | TEXT | 版を足した理由の文 | 可 | - | CHECK: basis IS NULL OR length(trim(basis)) BETWEEN 1 AND 1000 |
+| 6 | created_on | TEXT | 作った日（YYYY-MM-DD） | 不可 | - | CHECK: length(created_on)=10 AND substr(created_on,5,1)='-' AND substr(created_on,8,1)='-' AND ltrim(substr(created_on,1,4)\|\|substr(created_on,6,2)\|\|substr(created_on,9,2),'0123456789')='' AND substr(created_on,6,2) BETWEEN '01' AND '12' AND substr(created_on,9,2) BETWEEN '01' AND '31' |
+| 7 | created_by | INTEGER | 記録した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 8 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, version_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- トリガー kpi_metric_versions_no_delete: 削除の前
+- トリガー kpi_metric_versions_no_update: 更新の前
+- トリガー kpi_metric_versions_sequence: 追加の前
+
 ## mapping_import_provenance
 
 **読み替え取込の出どころ** — 読み替えを通して取り込んだ売上報告1件の出どころ。受け取った原文と読み替え後の CSV を両方残し、書き換えない。
@@ -820,6 +1025,33 @@ erDiagram
 - トリガー package_detail_scope: 追加の前
 - トリガー package_detail_sealed: 追加の前
 
+## plan_adoptions
+
+**計画の採用の記録** — 計画の版を採用した記録（追記だけ。変更・削除は DB が断る）。期間ごとの連番の最新の行が指す版が有効な計画。第1版も1行書き、「戻す」は古い版を指す行を足すだけ。指せるのは子表のそろった同じ期間の版で、採用した日は前の行より前にしない。シナリオとの結びは持たない。表はデータ一覧・一括出力・帳票の対象外
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | period_id | INTEGER | 期間（yojitsu_periods。指す版と同じ期間） | 不可 | - | FK（複合）→ yojitsu_plan_versions |
+| 4 | seq | INTEGER | 期間ごとの連番（1から） | 不可 | - | CHECK: typeof(seq)='integer' AND seq>0 |
+| 5 | plan_version_id | INTEGER | 採用した計画の版（yojitsu_plan_versions） | 不可 | - | FK（複合）→ yojitsu_plan_versions |
+| 6 | adopted_on | TEXT | 採用した日（YYYY-MM-DD） | 不可 | - | CHECK: length(adopted_on)=10 AND substr(adopted_on,5,1)='-' AND substr(adopted_on,8,1)='-' AND ltrim(substr(adopted_on,1,4)\|\|substr(adopted_on,6,2)\|\|substr(adopted_on,9,2),'0123456789')='' AND substr(adopted_on,6,2) BETWEEN '01' AND '12' AND substr(adopted_on,9,2) BETWEEN '01' AND '31' |
+| 7 | created_by | INTEGER | 記録した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 8 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, period_id, seq)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, period_id, plan_version_id) → yojitsu_plan_versions(org_id, period_id, id)
+- トリガー plan_adoptions_complete_version: 追加の前
+- トリガー plan_adoptions_date_order: 追加の前
+- トリガー plan_adoptions_no_delete: 削除の前
+- トリガー plan_adoptions_no_update: 更新の前
+- トリガー plan_adoptions_sequence: 追加の前
+
 ## receipt_plan_decisions
 
 **入金予定の変更判断** — 入金予定の変更申請1件への管理者の承認か却下を表す。承認すると入金予定の版が1進み、適用日以後はその予定日を使う。
@@ -903,6 +1135,65 @@ erDiagram
 - 複合の参照: (org_id, report_id) → report_imports(org_id, id)
 - トリガー report_channel_fact_seal_immutable_delete: 削除の前
 - トリガー report_channel_fact_seal_immutable_update: 更新の前
+
+## report_check_cases
+
+**検査の正解表** — 検査の決まりの版ごとの正解表の1行（追記だけ。変更・削除は DB が断る）。架空の原本と、7つの検査の期待する合否。出どころは種（ふつうの通・端数のある通・取り込まない行のある通）か人の直し。実在の原本は入れない（fictional は 1 だけ）。人の直しを足せるのは、代表（role が admin で在籍が有効）か財務担当（permission が edit で、在籍と権限の期限が切れていない）だけ。種の行はこの止めの対象外
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | check_version_id | INTEGER | 検査の決まりの版（report_check_versions） | 不可 | - | FK（複合）→ report_check_versions |
+| 4 | origin | TEXT（列挙） | 出どころ（normal ふつうの通・fractional 端数のある通・excluded 取り込まない行のある通・human_fix 人の直し） | 不可 | - | 値: normal / fractional / excluded / human_fix |
+| 5 | fictional | INTEGER | 架空である印（1 だけ。実在の原本は入れない） | 不可 | - | CHECK: typeof(fictional)='integer' AND fictional=1 |
+| 6 | input_json | TEXT | 架空の原本と登録予定（JSON のオブジェクト。検査の純関数の入力） | 不可 | - | CHECK: json_valid(input_json) AND json_type(input_json)='object' AND length(input_json) BETWEEN 2 AND 65536 |
+| 7 | expected_json | TEXT | 7つの検査の期待する合否（JSON のオブジェクト。キーは検査の名前、値は真偽） | 不可 | - | CHECK: json_valid(expected_json) AND json_type(expected_json)='object' AND length(expected_json) BETWEEN 2 AND 2000 |
+| 8 | reason | TEXT | この行を足した理由 | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 500 |
+| 9 | created_by | INTEGER | 行を足した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 10 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, check_version_id) → report_check_versions(org_id, id)
+- トリガー report_check_cases_human_fix_approval: 追加の前
+- トリガー report_check_cases_no_delete: 削除の前
+- トリガー report_check_cases_no_update: 更新の前
+
+## report_check_versions
+
+**検査の決まり（版）** — 取引先×報告の種類ごとの検査の決まりの版（追記だけ。変更・削除は DB が断る）。指す列対応の版・検算の決まり・見出しの列名・取り込まない行の規則・税抜・税額・税込の列名・商品で分けるか・版の理由を持つ。連番は取引先×報告の種類ごと。指す列対応の版は、同じ組織・同じ取引先・同じ報告の種類のものだけ。正答率の列は持たない
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | partner_id | INTEGER | 型の取引先（partners） | 不可 | - | FK（複合）→ partners |
+| 4 | kind | TEXT（列挙） | 報告の種類（劇場・配信・パッケージ・放送・その他・宣伝。列対応の profile と同じ語に、宣伝を足したもの） | 不可 | - | 値: theatrical / digital / package / broadcast / other / publicity |
+| 5 | version_no | INTEGER | 取引先×報告の種類ごとの版の連番（1から） | 不可 | - | CHECK: typeof(version_no)='integer' AND version_no>0 |
+| 6 | mapping_version_id | INTEGER | 指す列対応の版（report_mapping_versions。同じ取引先と報告の種類） | 不可 | - | FK（複合）→ report_mapping_versions |
+| 7 | checks_json | TEXT | 検算の決まり（JSON の配列。空でもよい。中身は既存の CHECK_TYPES） | 不可 | - | CHECK: json_valid(checks_json) AND json_type(checks_json)='array' AND json_array_length(checks_json) BETWEEN 0 AND 50 AND length(checks_json) BETWEEN 2 AND 4000 |
+| 8 | header_columns_json | TEXT | 見出しの一致に使う列名（JSON の配列。順も一致させる。1つ以上） | 不可 | - | CHECK: json_valid(header_columns_json) AND json_type(header_columns_json)='array' AND json_array_length(header_columns_json) BETWEEN 1 AND 200 AND length(header_columns_json) BETWEEN 2 AND 4000 |
+| 9 | skip_rules_json | TEXT | 取り込まない行の規則（JSON の配列。1件の形は未決なので、この列は中身を解釈しない） | 不可 | - | CHECK: json_valid(skip_rules_json) AND json_type(skip_rules_json)='array' AND json_array_length(skip_rules_json) BETWEEN 0 AND 50 AND length(skip_rules_json) BETWEEN 2 AND 4000 |
+| 10 | money_columns_json | TEXT | 税抜・税額・税込の列名（JSON のオブジェクト。amountExTax・taxAmount・amountIncTax） | 不可 | - | CHECK: json_valid(money_columns_json) AND json_type(money_columns_json)='object' AND length(money_columns_json) BETWEEN 2 AND 2000 AND json_extract(money_columns_json,'$.amountExTax') IS NOT NULL AND length(json_extract(money_columns_json,'$.amountExTax')) BETWEEN 1 AND 80 AND json_extract(money_columns_json,'$.taxAmount') IS NOT NULL AND length(json_extract(money_columns_json,'$.taxAmount')) BETWEEN 1 AND 80 AND json_extract(money_columns_json,'$.amountIncTax') IS NOT NULL AND length(json_extract(money_columns_json,'$.amountIncTax')) BETWEEN 1 AND 80 |
+| 11 | split_by_product | INTEGER | 商品で分ける型なら 1、分けない型なら 0 | 不可 | - | CHECK: typeof(split_by_product)='integer' AND split_by_product IN (0,1) |
+| 12 | reason | TEXT | この版を足した理由 | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 500 |
+| 13 | created_by | INTEGER | 版を足した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 14 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, partner_id, kind, version_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, mapping_version_id) → report_mapping_versions(org_id, id)
+- 複合の参照: (org_id, partner_id) → partners(org_id, id)
+- トリガー report_check_versions_mapping_match: 追加の前
+- トリガー report_check_versions_no_delete: 削除の前
+- トリガー report_check_versions_no_update: 更新の前
+- トリガー report_check_versions_sequence: 追加の前
 
 ## report_imports
 
@@ -1042,6 +1333,27 @@ erDiagram
 - トリガー report_source_control_immutable_delete: 削除の前
 - トリガー report_source_control_immutable_update: 更新の前
 - トリガー report_source_control_matches_sealed_report: 追加の前
+
+## report_voids
+
+**報告の取消の記録** — 登録済みの報告1件を取り違えのために取り消した記録（理由・誰が・いつ）を表す。同じ書き込みで報告（report_imports）を取消（void）にしたあとにだけ足せ、報告ごとに1つ。請求済みの報告は取り消せない（既存のトリガー）。変更・削除は DB が断る
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | report_id | INTEGER | 取り消した報告（report_imports） | 不可 | - | PK（複合）、FK（複合）→ report_imports |
+| 3 | reason | TEXT | 取消の理由（取り違えの内容） | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 1000 |
+| 4 | created_by | INTEGER | 取り消した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 5 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の主キー: (org_id, report_id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, report_id) → report_imports(org_id, id)
+- トリガー report_voids_no_delete: 削除の前
+- トリガー report_voids_no_update: 更新の前
+- トリガー report_voids_requires_void: 追加の前
 
 ## sale_attribute_values
 
@@ -1335,6 +1647,44 @@ erDiagram
 - トリガー sales_source_commits_no_update: 更新の前
 - トリガー sales_source_commits_same_terms: 追加の前
 
+## sales_source_file_terms
+
+**売上原本の1通の条件（版）** — 受け取った原本1通の条件（取引先・報告の種類・対象期間・受領日・報告月・申告合計）の版1つを表す。原本ごとの連番で、最新の版がその時点の条件（状態の列は持たない）。置き場所を誤ったときは理由を書いて次の版を足し、分割の登録を始めた原本には足せない。変更・削除は DB が断る。分からない値は空（未検証）のまま持つ
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | file_id | INTEGER | 原本（sales_source_files） | 不可 | - | FK（複合）→ sales_source_files |
+| 4 | version_no | INTEGER | 版番号（原本ごとに1から連番） | 不可 | - | CHECK: typeof(version_no)='integer' AND version_no>0 |
+| 5 | partner_id | INTEGER | 1通を送ってきた取引先（partners） | 不可 | - | FK（複合）→ partners |
+| 6 | kind | TEXT（列挙） | 報告の種類（劇場・配信・パッケージ・放送・その他・宣伝。report_imports と同じ語） | 不可 | - | 値: theatrical / digital / package / broadcast / other / publicity |
+| 7 | period_from | TEXT | 対象期間の始まり（YYYY-MM-DD）。分からなければ空（終わりと2つとも空） | 可 | - | CHECK: period_from IS NULL OR (length(period_from)=10 AND substr(period_from,5,1)='-' AND substr(period_from,8,1)='-' AND ltrim(substr(period_from,1,4)\|\|substr(period_from,6,2)\|\|substr(period_from,9,2),'0123456789')='' AND substr(period_from,6,2) BETWEEN '01' AND '12' AND substr(period_from,9,2) BETWEEN '01' AND '31') |
+| 8 | period_to | TEXT | 対象期間の終わり（YYYY-MM-DD。始まり以後）。分からなければ空 | 可 | - | CHECK: period_to IS NULL OR (length(period_to)=10 AND substr(period_to,5,1)='-' AND substr(period_to,8,1)='-' AND ltrim(substr(period_to,1,4)\|\|substr(period_to,6,2)\|\|substr(period_to,9,2),'0123456789')='' AND substr(period_to,6,2) BETWEEN '01' AND '12' AND substr(period_to,9,2) BETWEEN '01' AND '31') |
+| 9 | received_on | TEXT | 受領日（1通を受け取った日）。人が入れるまで空で、読み手は原本を取り込んだ日時で代え、代えたことを示す | 可 | - | CHECK: received_on IS NULL OR (length(received_on)=10 AND substr(received_on,5,1)='-' AND substr(received_on,8,1)='-' AND ltrim(substr(received_on,1,4)\|\|substr(received_on,6,2)\|\|substr(received_on,9,2),'0123456789')='' AND substr(received_on,6,2) BETWEEN '01' AND '12' AND substr(received_on,9,2) BETWEEN '01' AND '31') |
+| 10 | report_month | TEXT | 報告書の上の報告月（YYYY-MM）。受領日から埋めない。原本の欄か人が入れた月だけ。無ければ空（未検証） | 可 | - | CHECK: report_month IS NULL OR (length(report_month)=7 AND substr(report_month,5,1)='-' AND ltrim(substr(report_month,1,4)\|\|substr(report_month,6,2),'0123456789')='' AND substr(report_month,6,2) BETWEEN '01' AND '12') |
+| 11 | declared_row_count | INTEGER | 原本に書かれた件数（申告合計）。書かれていなければ空 | 可 | - | CHECK: declared_row_count IS NULL OR (typeof(declared_row_count)='integer' AND declared_row_count BETWEEN 0 AND 9007199254740991) |
+| 12 | declared_amount_ex_tax | INTEGER | 原本に書かれた税抜の合計（円）。書かれていなければ空 | 可 | - | CHECK: declared_amount_ex_tax IS NULL OR (typeof(declared_amount_ex_tax)='integer' AND declared_amount_ex_tax BETWEEN -9007199254740991 AND 9007199254740991) |
+| 13 | declared_tax_amount | INTEGER | 原本に書かれた税額の合計（円）。書かれていなければ空 | 可 | - | CHECK: declared_tax_amount IS NULL OR (typeof(declared_tax_amount)='integer' AND declared_tax_amount BETWEEN -9007199254740991 AND 9007199254740991) |
+| 14 | declared_amount_inc_tax | INTEGER | 原本に書かれた税込の合計（円）。3つの額がそろえば 税込＝税抜＋税額 | 可 | - | CHECK: declared_amount_inc_tax IS NULL OR (typeof(declared_amount_inc_tax)='integer' AND declared_amount_inc_tax BETWEEN -9007199254740991 AND 9007199254740991) |
+| 15 | reason | TEXT | この版を足した理由（置いたフォルダ・置き場所の直しなど） | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 500 |
+| 16 | created_by | INTEGER | 版を足した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 17 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, file_id, version_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, partner_id) → partners(org_id, id)
+- 複合の参照: (org_id, file_id) → sales_source_files(org_id, id)
+- CHECK: (period_from IS NULL AND period_to IS NULL) OR (period_from IS NOT NULL AND period_to IS NOT NULL AND period_to>=period_from)
+- CHECK: declared_amount_ex_tax IS NULL OR declared_tax_amount IS NULL OR declared_amount_inc_tax IS NULL OR declared_amount_inc_tax=declared_amount_ex_tax+declared_tax_amount
+- トリガー sales_source_file_terms_before_commit: 追加の前
+- トリガー sales_source_file_terms_no_delete: 削除の前
+- トリガー sales_source_file_terms_no_update: 更新の前
+- トリガー sales_source_file_terms_sequence: 追加の前
+
 ## sales_source_files
 
 **受領した売上原本** — 受け取った売上報告のファイル1つを、作品から切り離して表す。原本取り込みで保存し、同じ中身は組織で1回だけで、変更・削除できない。
@@ -1439,6 +1789,57 @@ erDiagram
 - トリガー sales_source_selections_legacy_match: 追加の前
 - トリガー sales_source_selections_no_delete: 削除の前
 - トリガー sales_source_selections_no_update: 更新の前
+
+## source_check_runs
+
+**検査の結果（回）** — 原本1通の検査の結果を回ごとに残す（追記だけ。変更・削除は DB が断る）。原本ごとの連番。再検査は新しい回を足すだけで、登録（sales_source_commits）は書き換えない。判定の語は5つ。合否の数と正解表の件数を、その回の値として持つ。判定の語と合否の数が食い違う行は DB では止めない（純関数の戻りを書くのは受け口）
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | file_id | INTEGER | 原本（sales_source_files） | 不可 | - | FK（複合）→ sales_source_files |
+| 4 | check_version_id | INTEGER | 使った検査の決まりの版（report_check_versions） | 不可 | - | FK（複合）→ report_check_versions |
+| 5 | run_no | INTEGER | 原本ごとの回の連番（1から） | 不可 | - | CHECK: typeof(run_no)='integer' AND run_no>0 |
+| 6 | checks_passed | INTEGER | 合った検査の数（0以上。checks_total 以下） | 不可 | - | CHECK: typeof(checks_passed)='integer' AND checks_passed BETWEEN 0 AND 9007199254740991 |
+| 7 | checks_total | INTEGER | 検査の項目数（0以上） | 不可 | - | - |
+| 8 | judgment | TEXT（列挙） | 判定の語（auto 自動で確定・human 人の確認・human_record 人の確認（実績が足りない）・shape 形が違う・unread 人が読む） | 不可 | - | 値: auto / human / human_record / shape / unread |
+| 9 | golden_matched | INTEGER | 正解表のうち一致した件数 | 不可 | - | CHECK: typeof(golden_matched)='integer' AND golden_matched BETWEEN 0 AND 9007199254740991 |
+| 10 | golden_total | INTEGER | 正解表の件数（0件は正答率100%にしない） | 不可 | - | CHECK: typeof(golden_total)='integer' AND golden_total BETWEEN 0 AND 9007199254740991 |
+| 11 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, file_id, run_no)
+- 複合の参照: (org_id, check_version_id) → report_check_versions(org_id, id)
+- 複合の参照: (org_id, file_id) → sales_source_files(org_id, id)
+- CHECK: typeof(checks_total)='integer' AND checks_total BETWEEN 0 AND 9007199254740991 AND checks_passed<=checks_total
+- トリガー source_check_runs_no_delete: 削除の前
+- トリガー source_check_runs_no_update: 更新の前
+- トリガー source_check_runs_sequence: 追加の前
+
+## source_sampling_reviews
+
+**抜き取りの記録** — 人が見た1通の抜き取りの記録（追記だけ。変更・削除は DB が断る）。結果は直し無し・型の誤り・原本の誤りの3つ。型の誤りを足しても、検査の決まりの新しい版は自動では作らない。実績の通数は数える列を持たず、検査の回とこの記録から読むたびに導く
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | check_run_id | INTEGER | 見た検査の回（source_check_runs） | 不可 | - | FK（複合）→ source_check_runs |
+| 4 | result | TEXT（列挙） | 結果（clean 直し無し・type_error 型の誤り・source_error 原本の誤り） | 不可 | - | 値: clean / type_error / source_error |
+| 5 | reason | TEXT | 記録の理由 | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 500 |
+| 6 | created_by | INTEGER | 記録した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 7 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, check_run_id) → source_check_runs(org_id, id)
+- トリガー source_sampling_reviews_no_delete: 削除の前
+- トリガー source_sampling_reviews_no_update: 更新の前
 
 ## tax_calculation_lines
 
@@ -1638,3 +2039,315 @@ erDiagram
 - 複合の参照: (org_id, artifact_id) → workflow_raw_artifacts(org_id, id)
 - トリガー workflow_report_selections_immutable: 更新の前
 - トリガー workflow_report_selections_no_delete: 削除の前
+
+## yojitsu_activity_cancellations
+
+**予実の活動記録の取消** — 活動記録の取消（追記だけ。1行に1回）。取り消せるのは記録した人だけで、取り消した行は数えない。表はデータ一覧・一括出力の対象外
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | activity_id | INTEGER | 取り消した活動記録（yojitsu_activity_records） | 不可 | - | PK（複合）、FK（複合）→ yojitsu_activity_records |
+| 3 | cancelled_on | TEXT | 取り消した日（YYYY-MM-DD） | 不可 | - | CHECK: length(cancelled_on)=10 AND substr(cancelled_on,5,1)='-' AND substr(cancelled_on,8,1)='-' AND ltrim(substr(cancelled_on,1,4)\|\|substr(cancelled_on,6,2)\|\|substr(cancelled_on,9,2),'0123456789')='' AND substr(cancelled_on,6,2) BETWEEN '01' AND '12' AND substr(cancelled_on,9,2) BETWEEN '01' AND '31' |
+| 4 | reason | TEXT | 理由 | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 1000 |
+| 5 | created_by | INTEGER | 取り消した利用者（memberships。活動記録を記録した人） | 不可 | - | FK（複合）→ memberships |
+| 6 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の主キー: (org_id, activity_id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, activity_id) → yojitsu_activity_records(org_id, id)
+- トリガー yojitsu_activity_cancellations_no_delete: 削除の前
+- トリガー yojitsu_activity_cancellations_no_update: 更新の前
+- トリガー yojitsu_activity_cancellations_recorder_only: 追加の前
+
+## yojitsu_activity_records
+
+**予実の活動記録** — 案件の行動の記録（追記だけ。変更・削除は DB が断り、直しは取消の行 yojitsu_activity_cancellations を足す）。行の中身は記録した人の本人にだけ返し、ほかの人には件数だけを返す。ステップは行動のステップの参照表の段で、親の step（面談・提案・契約）へ畳んで数える。取り込んだ営業の活動は source_sales_activity_id で1回だけ。表はデータ一覧・一括出力の対象外
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | project_id | INTEGER | 案件（projects。必須） | 不可 | - | FK（複合）→ works、FK（複合）→ projects |
+| 4 | occurred_on | TEXT | 日付（YYYY-MM-DD） | 不可 | - | CHECK: length(occurred_on)=10 AND substr(occurred_on,5,1)='-' AND substr(occurred_on,8,1)='-' AND ltrim(substr(occurred_on,1,4)\|\|substr(occurred_on,6,2)\|\|substr(occurred_on,9,2),'0123456789')='' AND substr(occurred_on,6,2) BETWEEN '01' AND '12' AND substr(occurred_on,9,2) BETWEEN '01' AND '31' |
+| 5 | earning_type | TEXT | 稼ぎ方（earning_types。空なら案件の稼ぎ方で数える） | 可 | - | FK → earning_types.code |
+| 6 | step | TEXT | ステップ（action_steps の段。空は数えない） | 可 | - | FK → action_steps.code |
+| 7 | counterparty | TEXT | 相手 | 可 | - | CHECK: counterparty IS NULL OR length(trim(counterparty)) BETWEEN 1 AND 200 |
+| 8 | summary | TEXT | したこと | 不可 | - | CHECK: length(trim(summary)) BETWEEN 1 AND 1000 |
+| 9 | deliverable | TEXT | 成果物（携わった案件数の元） | 可 | - | CHECK: deliverable IS NULL OR length(trim(deliverable)) BETWEEN 1 AND 1000 |
+| 10 | next_action | TEXT | 次の一手 | 可 | - | CHECK: next_action IS NULL OR length(trim(next_action)) BETWEEN 1 AND 1000 |
+| 11 | next_due_on | TEXT | 次の一手の期日（YYYY-MM-DD） | 可 | - | CHECK: next_due_on IS NULL OR (length(next_due_on)=10 AND substr(next_due_on,5,1)='-' AND substr(next_due_on,8,1)='-' AND ltrim(substr(next_due_on,1,4)\|\|substr(next_due_on,6,2)\|\|substr(next_due_on,9,2),'0123456789')='' AND substr(next_due_on,6,2) BETWEEN '01' AND '12' AND substr(next_due_on,9,2) BETWEEN '01' AND '31') |
+| 12 | result | TEXT（列挙） | 結果（advanced 進んだ・on_hold 保留・lost 失注） | 不可 | - | 値: advanced / on_hold / lost |
+| 13 | work_id | INTEGER | 作品（works。案件の作品。作品の無い段は空） | 可 | - | FK（複合）→ works |
+| 14 | source_sales_activity_id | INTEGER | 取り込んだ営業の活動（sales_activities。組織の中で1回だけ） | 可 | - | FK（複合）→ sales_activities |
+| 15 | created_by | INTEGER | 記録した利用者（memberships。この人にだけ行の中身を返す） | 不可 | - | FK（複合）→ memberships |
+| 16 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, source_sales_activity_id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, source_sales_activity_id) → sales_activities(org_id, id)
+- 複合の参照: (org_id, project_id, work_id) → works(org_id, project_id, id)
+- 複合の参照: (org_id, project_id) → projects(org_id, id)
+- CHECK: next_due_on IS NULL OR next_action IS NOT NULL
+- 索引 yojitsu_activity_records_project: (org_id, project_id, occurred_on)
+- トリガー yojitsu_activity_records_no_delete: 削除の前
+- トリガー yojitsu_activity_records_no_update: 更新の前
+- トリガー yojitsu_activity_records_source_match: 追加の前
+
+## yojitsu_choice_versions
+
+**予実の語と月の設定（版）** — 値の列（bps・x100・months・yen）に入らない予実の設定の版（追記だけ。変更・削除は DB が断る）。組織×設定ごとの連番で、最新の version_no が有効。採用するシナリオ（予実の4段の着地予測・確度加重予測が読む）・月別の表に入れる案件の範囲・締めた月の3つ。数の設定は yojitsu_setting_versions
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | FK → organizations.id |
+| 3 | choice_key | TEXT（列挙） | 設定（adopted_scenario 採用するシナリオ・monthly_scope 月別の表に入れる案件の範囲・closed_month 締めた月） | 不可 | - | 値: adopted_scenario / monthly_scope / closed_month |
+| 4 | version_no | INTEGER | 組織×設定ごとの版の連番（1から） | 不可 | - | CHECK: typeof(version_no)='integer' AND version_no>0 |
+| 5 | value_code | TEXT | 語の設定の値（採用するシナリオは even・good・max・single、月別の表の範囲は all 企画中も含む・landing 着地・contracted 契約済み）。締めた月は空 | 可 | - | - |
+| 6 | value_month | TEXT | 締めた月（月初の日 YYYY-MM-01）。語の設定は空 | 可 | - | CHECK: value_month IS NULL OR (length(value_month)=10 AND substr(value_month,5,1)='-' AND substr(value_month,8,1)='-' AND ltrim(substr(value_month,1,4)\|\|substr(value_month,6,2),'0123456789')='' AND substr(value_month,6,2) BETWEEN '01' AND '12' AND substr(value_month,9,2)='01') |
+| 7 | basis | TEXT | 根拠の文 | 可 | - | CHECK: basis IS NULL OR length(trim(basis)) BETWEEN 1 AND 1000 |
+| 8 | created_by | INTEGER | 記録した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 9 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, choice_key, version_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- CHECK: (choice_key='adopted_scenario' AND value_code IS NOT NULL AND value_code IN ('even','good','max','single') AND value_month IS NULL) OR (choice_key='monthly_scope' AND value_code IS NOT NULL AND value_code IN ('all','landing','contracted') AND value_month IS NULL) OR (choice_key='closed_month' AND value_code IS NULL AND value_month IS NOT NULL)
+- トリガー yojitsu_choice_versions_no_delete: 削除の前
+- トリガー yojitsu_choice_versions_no_update: 更新の前
+- トリガー yojitsu_choice_versions_sequence: 追加の前
+
+## yojitsu_forecast_lines
+
+**予実の予測の行** — 予測の版の行（追記だけ。変更・削除は DB が断る）。シナリオ（even・good・MAX・単一）×月（月初の日）×区分（区分マスタ）の金額。金額は税別の正の整数で、符号は区分の入出金で決める。予測に使う印は版の中の印で、有効な版の印が 1 の行だけを予測に使う
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | project_id | INTEGER | 案件（yojitsu_forecast_versions の案件） | 不可 | - | PK（複合）、FK（複合）→ yojitsu_forecast_versions |
+| 3 | version_no | INTEGER | 版（yojitsu_forecast_versions） | 不可 | - | PK（複合）、FK（複合）→ yojitsu_forecast_versions |
+| 4 | line_no | INTEGER | 版の中の行の番号（1〜版の line_count の連番。最後の番号の次だけ足せる） | 不可 | - | PK（複合）、CHECK: typeof(line_no)='integer' AND line_no>0 |
+| 5 | scenario | TEXT（列挙） | シナリオ（even・good・max〈MAX〉・single〈単一〉。試算のケース） | 不可 | - | 値: even / good / max / single |
+| 6 | forecast_month | TEXT | 月（月初の日。YYYY-MM-01） | 不可 | - | CHECK: length(forecast_month)=10 AND substr(forecast_month,5,1)='-' AND substr(forecast_month,8,1)='-' AND ltrim(substr(forecast_month,1,4)\|\|substr(forecast_month,6,2),'0123456789')='' AND substr(forecast_month,6,2) BETWEEN '01' AND '12' AND substr(forecast_month,9,2)='01' |
+| 7 | category_id | INTEGER | 区分（cashflow_categories） | 不可 | - | FK（複合）→ cashflow_categories |
+| 8 | item | TEXT | 項目 | 不可 | - | CHECK: length(trim(item)) BETWEEN 1 AND 200 |
+| 9 | counterparty | TEXT | 相手 | 可 | - | CHECK: counterparty IS NULL OR length(trim(counterparty)) BETWEEN 1 AND 200 |
+| 10 | amount_yen | INTEGER | 金額（円・税別。正の整数） | 不可 | - | CHECK: typeof(amount_yen)='integer' AND amount_yen BETWEEN 1 AND 9007199254740991 |
+| 11 | status | TEXT（列挙） | 状態（confirmed 確認済み・director_reported 監督申告・press_reported 報道値・provisional 仮置き） | 不可 | - | 値: confirmed / director_reported / press_reported / provisional |
+| 12 | use_for_forecast | INTEGER（真偽 0/1） | 予測に使う印（1 使う・0 使わない。前の版の行は印に関わらず使わない） | 不可 | - | - |
+
+表の制約:
+
+- 複合の主キー: (org_id, project_id, version_no, line_no)
+- 複合の参照: (org_id, category_id) → cashflow_categories(org_id, id)
+- 複合の参照: (org_id, project_id, version_no) → yojitsu_forecast_versions(org_id, project_id, version_no)
+- トリガー yojitsu_forecast_lines_in_order: 追加の前
+- トリガー yojitsu_forecast_lines_no_delete: 削除の前
+- トリガー yojitsu_forecast_lines_no_update: 更新の前
+- トリガー yojitsu_forecast_lines_within_count: 追加の前
+
+## yojitsu_forecast_versions
+
+**予実の予測（版）** — 案件×月の予測の版のヘッダ（追記だけ。変更・削除は DB が断る）。案件ごとの連番で、最新の version_no の版が有効（前の版の行は「予測に使う＝いいえ」と読む。行が line_count に満たない版は有効にしない）。版は案件の予測の全部の行を持ち、行は yojitsu_forecast_lines。試算の写しは元のファイルの SHA-256 を持ち、同じ写しを二度取り込まない
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | project_id | INTEGER | 案件（projects） | 不可 | - | FK（複合）→ projects |
+| 4 | version_no | INTEGER | 案件ごとの版の連番（1から） | 不可 | - | CHECK: typeof(version_no)='integer' AND version_no>0 |
+| 5 | label | TEXT | 版の名前（例: 試算の写し 2026-10-20） | 不可 | - | CHECK: length(trim(label)) BETWEEN 1 AND 100 |
+| 6 | source_kind | TEXT（列挙） | 出所の種類（trial_import 試算の写し・manual 手入力・initiative 施策の既定の予測行） | 不可 | - | 値: trial_import / manual / initiative |
+| 7 | source | TEXT | 出所の文 | 不可 | - | CHECK: length(trim(source)) BETWEEN 1 AND 1000 |
+| 8 | source_sha256 | TEXT | 試算の写しの元のファイルの SHA-256（小文字の16進64桁。試算の写しだけ） | 可 | - | CHECK: source_sha256 IS NULL OR (length(source_sha256)=64 AND ltrim(source_sha256,'0123456789abcdef')='') |
+| 9 | line_count | INTEGER | 行の数（1〜3824。1つの版が D1 の1回の batch に収まる数。行は版と同じ batch で行の番号の順に足す） | 不可 | - | CHECK: typeof(line_count)='integer' AND line_count BETWEEN 1 AND 3824 |
+| 10 | created_on | TEXT | 作った日（YYYY-MM-DD） | 不可 | - | CHECK: length(created_on)=10 AND substr(created_on,5,1)='-' AND substr(created_on,8,1)='-' AND ltrim(substr(created_on,1,4)\|\|substr(created_on,6,2)\|\|substr(created_on,9,2),'0123456789')='' AND substr(created_on,6,2) BETWEEN '01' AND '12' AND substr(created_on,9,2) BETWEEN '01' AND '31' |
+| 11 | created_by | INTEGER | 記録した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 12 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, project_id, version_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, project_id) → projects(org_id, id)
+- CHECK: (source_kind='trial_import' AND source_sha256 IS NOT NULL) OR (source_kind<>'trial_import' AND source_sha256 IS NULL)
+- トリガー yojitsu_forecast_versions_no_delete: 削除の前
+- トリガー yojitsu_forecast_versions_no_update: 更新の前
+- トリガー yojitsu_forecast_versions_sequence: 追加の前
+
+## yojitsu_periods
+
+**予実の期間** — 組織ごとの1〜5年目の期間（追記だけ。変更・削除は DB が断る）。各年目は月初の日に始まる12か月で、年目の順に足し、n年目は n−1年目のちょうど12か月後に始まる（DB のトリガーが断る）。通算（5年）は持たない。目標・計画の版がこの期間を指す
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | FK → organizations.id |
+| 3 | year_no | INTEGER | 年目（1〜5） | 不可 | - | CHECK: typeof(year_no)='integer' AND year_no BETWEEN 1 AND 5 |
+| 4 | starts_on | TEXT | 始まりの月初の日（YYYY-MM-01） | 不可 | - | CHECK: length(starts_on)=10 AND substr(starts_on,5,1)='-' AND substr(starts_on,8,1)='-' AND ltrim(substr(starts_on,1,4)\|\|substr(starts_on,6,2),'0123456789')='' AND substr(starts_on,6,2) BETWEEN '01' AND '12' AND substr(starts_on,9,2)='01' |
+| 5 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 6 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, year_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- トリガー yojitsu_periods_contiguous: 追加の前
+- トリガー yojitsu_periods_no_delete: 削除の前
+- トリガー yojitsu_periods_no_update: 更新の前
+- トリガー yojitsu_periods_order: 追加の前
+
+## yojitsu_plan_amounts
+
+**予実の計画の稼ぎ方別の額** — 計画の版の子の行（追記だけ。変更・削除は DB が断る）。稼ぎ方ごとに1行で、行の数がヘッダの earning_type_count を超えたら断る。表はデータ一覧・一括出力・帳票の対象外
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | plan_version_id | INTEGER | 計画の版（yojitsu_plan_versions） | 不可 | - | PK（複合）、FK（複合）→ yojitsu_plan_versions |
+| 3 | earning_type | TEXT | 稼ぎ方（earning_types） | 不可 | - | PK（複合）、FK → earning_types.code |
+| 4 | amount_yen | INTEGER | 計画の額（税別・年の額） | 不可 | - | CHECK: typeof(amount_yen)='integer' AND amount_yen BETWEEN 0 AND 9007199254740991 |
+
+表の制約:
+
+- 複合の主キー: (org_id, plan_version_id, earning_type)
+- 複合の参照: (org_id, plan_version_id) → yojitsu_plan_versions(org_id, id)
+- トリガー yojitsu_plan_amounts_count: 追加の前
+- トリガー yojitsu_plan_amounts_no_delete: 削除の前
+- トリガー yojitsu_plan_amounts_no_update: 更新の前
+
+## yojitsu_plan_versions
+
+**予実の計画（版）** — 計画の版のヘッダ（追記だけ。変更・削除は DB が断る）。期間ごとの連番。稼ぎ方別の額は yojitsu_plan_amounts に持ち、earning_type_count はその行の数。有効な計画は列に持たず、期間ごとの最新の採用の記録（plan_adoptions）が指す版。第1版の額は目標（会社）の仮置きで owner 本人にだけ返す。表はデータ一覧・一括出力・帳票の対象外
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | period_id | INTEGER | 期間（yojitsu_periods） | 不可 | - | FK（複合）→ yojitsu_periods |
+| 4 | version_no | INTEGER | 期間ごとの版の連番（1から） | 不可 | - | CHECK: typeof(version_no)='integer' AND version_no>0 |
+| 5 | owner_user_id | INTEGER | 額を読める本人（memberships） | 不可 | - | FK（複合）→ memberships |
+| 6 | earning_type_count | INTEGER | 稼ぎ方別の額の行の数（1〜20） | 不可 | - | CHECK: typeof(earning_type_count)='integer' AND earning_type_count BETWEEN 1 AND 20 |
+| 7 | status | TEXT（列挙） | 状態（confirmed 確認済み・provisional 仮置き） | 不可 | - | 値: confirmed / provisional |
+| 8 | basis | TEXT | 根拠の文 | 可 | - | CHECK: basis IS NULL OR length(trim(basis)) BETWEEN 1 AND 1000 |
+| 9 | created_on | TEXT | 作った日（YYYY-MM-DD） | 不可 | - | CHECK: length(created_on)=10 AND substr(created_on,5,1)='-' AND substr(created_on,8,1)='-' AND ltrim(substr(created_on,1,4)\|\|substr(created_on,6,2)\|\|substr(created_on,9,2),'0123456789')='' AND substr(created_on,6,2) BETWEEN '01' AND '12' AND substr(created_on,9,2) BETWEEN '01' AND '31' |
+| 10 | created_by | INTEGER | 記録した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 11 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, period_id, id)
+- 複合の一意: (org_id, period_id, version_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, owner_user_id) → memberships(org_id, user_id)
+- 複合の参照: (org_id, period_id) → yojitsu_periods(org_id, id)
+- トリガー yojitsu_plan_versions_no_delete: 削除の前
+- トリガー yojitsu_plan_versions_no_update: 更新の前
+- トリガー yojitsu_plan_versions_sequence: 追加の前
+
+## yojitsu_setting_versions
+
+**予実の設定（版）** — 行動の率と1件あたりの額などの設定の行（追記だけ。変更・削除は DB が断る）。変数×範囲ごとの連番の最新の version_no が有効。範囲で使う列だけが埋まり、値の列は bps・x100・months・yen のうちちょうど1つで、変数の値の種類と同じ。前提の数字なので状態を必ず持つ。移行では値の行を入れず、種か設定で足す
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | FK → organizations.id |
+| 3 | variable_key | TEXT | 変数（yojitsu_variables） | 不可 | - | FK → yojitsu_variables.code |
+| 4 | scope | TEXT（列挙） | 範囲（all・earning_type・earning_type_step・project・channel） | 不可 | - | 値: all / earning_type / earning_type_step / project / channel |
+| 5 | earning_type | TEXT | 稼ぎ方（earning_types。範囲が稼ぎ方・稼ぎ方×ステップのとき） | 可 | - | FK → earning_types.code |
+| 6 | step | TEXT | ステップ（action_steps。範囲が稼ぎ方×ステップのとき。率はその段から次の段へ） | 可 | - | FK → action_steps.code |
+| 7 | project_id | INTEGER | 案件（projects。範囲が案件のとき） | 可 | - | FK（複合）→ projects |
+| 8 | channel_code | TEXT | 窓口のコード（範囲が窓口のとき。参照先は未決） | 可 | - | CHECK: channel_code IS NULL OR (length(channel_code) BETWEEN 1 AND 60 AND length(trim(channel_code))=length(channel_code)) |
+| 9 | version_no | INTEGER | 変数×範囲ごとの版の連番（1から） | 不可 | - | CHECK: typeof(version_no)='integer' AND version_no>0 |
+| 10 | value_bps | INTEGER | 値（bp） | 可 | - | CHECK: value_bps IS NULL OR (typeof(value_bps)='integer' AND value_bps BETWEEN 0 AND 10000) |
+| 11 | value_x100 | INTEGER | 値（100倍の整数） | 可 | - | CHECK: value_x100 IS NULL OR (typeof(value_x100)='integer' AND value_x100 BETWEEN 0 AND 9007199254740991) |
+| 12 | value_months | INTEGER | 値（月数。0〜120） | 可 | - | CHECK: value_months IS NULL OR (typeof(value_months)='integer' AND value_months BETWEEN 0 AND 120) |
+| 13 | value_yen | INTEGER | 値（円・税別） | 可 | - | CHECK: value_yen IS NULL OR (typeof(value_yen)='integer' AND value_yen BETWEEN 0 AND 9007199254740991) |
+| 14 | status | TEXT（列挙） | 状態（confirmed 確認済み・director_reported 監督申告・press_reported 報道値・provisional 仮置き） | 不可 | - | 値: confirmed / director_reported / press_reported / provisional |
+| 15 | basis | TEXT | 根拠・1件あたりの中身の文 | 可 | - | CHECK: basis IS NULL OR length(trim(basis)) BETWEEN 1 AND 1000 |
+| 16 | created_by | INTEGER | 記録した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 17 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, project_id) → projects(org_id, id)
+- CHECK: (scope='all' AND earning_type IS NULL AND step IS NULL AND project_id IS NULL AND channel_code IS NULL) OR (scope='earning_type' AND earning_type IS NOT NULL AND step IS NULL AND project_id IS NULL AND channel_code IS NULL) OR (scope='earning_type_step' AND earning_type IS NOT NULL AND step IS NOT NULL AND project_id IS NULL AND channel_code IS NULL) OR (scope='project' AND earning_type IS NULL AND step IS NULL AND project_id IS NOT NULL AND channel_code IS NULL) OR (scope='channel' AND earning_type IS NULL AND step IS NULL AND project_id IS NULL AND channel_code IS NOT NULL)
+- CHECK: (value_bps IS NOT NULL AND value_x100 IS NULL AND value_months IS NULL AND value_yen IS NULL) OR (value_bps IS NULL AND value_x100 IS NOT NULL AND value_months IS NULL AND value_yen IS NULL) OR (value_bps IS NULL AND value_x100 IS NULL AND value_months IS NOT NULL AND value_yen IS NULL) OR (value_bps IS NULL AND value_x100 IS NULL AND value_months IS NULL AND value_yen IS NOT NULL)
+- 索引 yojitsu_setting_versions_slot: (org_id, variable_key, scope, （式）, （式）, （式）, （式）, version_no) 一意
+- トリガー yojitsu_setting_versions_no_delete: 削除の前
+- トリガー yojitsu_setting_versions_no_update: 更新の前
+- トリガー yojitsu_setting_versions_sequence: 追加の前
+- トリガー yojitsu_setting_versions_step_scope: 追加の前
+- トリガー yojitsu_setting_versions_value_kind: 追加の前
+
+## yojitsu_target_versions
+
+**予実の目標（版）** — 年の目標の版（追記だけ。変更・削除は DB が断る）。期間×種類（本人・会社）×範囲（全体・制作の取り分）ごとの連番の最新の version_no が有効。根拠が額なら額を持ち、人件費×倍率なら額を持たず倍率を持つ（報酬の行の12か月の合計×倍率を読むたびに計算する。報酬の表が無い間は未接続）。額は owner 本人にだけ返し、表はデータ一覧・一括出力・帳票の対象外（代表の報酬が割り戻せる）
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | period_id | INTEGER | 期間（yojitsu_periods） | 不可 | - | FK（複合）→ yojitsu_periods |
+| 4 | target_kind | TEXT（列挙） | 種類（self 本人・company 会社） | 不可 | - | 値: self / company |
+| 5 | target_scope | TEXT（列挙） | 範囲（all 全体・production_share 制作の取り分） | 不可 | - | 値: all / production_share |
+| 6 | version_no | INTEGER | 期間×種類×範囲ごとの版の連番（1から） | 不可 | - | CHECK: typeof(version_no)='integer' AND version_no>0 |
+| 7 | basis_kind | TEXT（列挙） | 根拠の種類（amount 額・labor_cost_multiple 人件費×倍率） | 不可 | - | 値: amount / labor_cost_multiple |
+| 8 | amount_yen | INTEGER | 目標の額（税別。根拠が人件費×倍率なら NULL） | 可 | - | CHECK: amount_yen IS NULL OR (typeof(amount_yen)='integer' AND amount_yen BETWEEN 0 AND 9007199254740991) |
+| 9 | multiplier_x100 | INTEGER | 倍率（100倍の整数。根拠が人件費×倍率のときだけ。既定は本人 300・会社 200） | 可 | - | CHECK: multiplier_x100 IS NULL OR (typeof(multiplier_x100)='integer' AND multiplier_x100 BETWEEN 1 AND 10000) |
+| 10 | source1_yen | INTEGER | 源泉1（制作受託）の目標（税別。NULL 可） | 可 | - | CHECK: source1_yen IS NULL OR (typeof(source1_yen)='integer' AND source1_yen BETWEEN 0 AND 9007199254740991) |
+| 11 | source2_yen | INTEGER | 源泉2（自社出資）の目標（税別。NULL 可） | 可 | - | CHECK: source2_yen IS NULL OR (typeof(source2_yen)='integer' AND source2_yen BETWEEN 0 AND 9007199254740991) |
+| 12 | source3_yen | INTEGER | 源泉3（製作委員会）の目標（税別。NULL 可） | 可 | - | CHECK: source3_yen IS NULL OR (typeof(source3_yen)='integer' AND source3_yen BETWEEN 0 AND 9007199254740991) |
+| 13 | source4_yen | INTEGER | 源泉4（買付）の目標（税別。NULL 可） | 可 | - | CHECK: source4_yen IS NULL OR (typeof(source4_yen)='integer' AND source4_yen BETWEEN 0 AND 9007199254740991) |
+| 14 | source5_yen | INTEGER | 源泉5（販売委託）の目標（税別。NULL 可） | 可 | - | CHECK: source5_yen IS NULL OR (typeof(source5_yen)='integer' AND source5_yen BETWEEN 0 AND 9007199254740991) |
+| 15 | unit | TEXT（列挙） | 単位（period_total 期間の合計・monthly 毎月） | 不可 | - | 値: period_total / monthly |
+| 16 | basis | TEXT | 根拠の文 | 可 | - | CHECK: basis IS NULL OR length(trim(basis)) BETWEEN 1 AND 1000 |
+| 17 | status | TEXT（列挙） | 状態（confirmed 確認済み・provisional 仮置き） | 不可 | - | 値: confirmed / provisional |
+| 18 | decided_on | TEXT | 決めた日（YYYY-MM-DD） | 不可 | - | CHECK: length(decided_on)=10 AND substr(decided_on,5,1)='-' AND substr(decided_on,8,1)='-' AND ltrim(substr(decided_on,1,4)\|\|substr(decided_on,6,2)\|\|substr(decided_on,9,2),'0123456789')='' AND substr(decided_on,6,2) BETWEEN '01' AND '12' AND substr(decided_on,9,2) BETWEEN '01' AND '31' |
+| 19 | decided_by | TEXT | 決めた人の名前（owner とは別） | 可 | - | CHECK: decided_by IS NULL OR length(trim(decided_by)) BETWEEN 1 AND 200 |
+| 20 | owner_user_id | INTEGER | 額を読める本人（memberships） | 不可 | - | FK（複合）→ memberships |
+| 21 | created_by | INTEGER | 記録した利用者（memberships） | 不可 | - | FK（複合）→ memberships |
+| 22 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, period_id, target_kind, target_scope, version_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, owner_user_id) → memberships(org_id, user_id)
+- 複合の参照: (org_id, period_id) → yojitsu_periods(org_id, id)
+- CHECK: (basis_kind='amount' AND amount_yen IS NOT NULL AND multiplier_x100 IS NULL) OR (basis_kind='labor_cost_multiple' AND amount_yen IS NULL AND multiplier_x100 IS NOT NULL AND target_scope='all' AND unit='period_total')
+- CHECK: target_scope='all' OR (source1_yen IS NULL AND source2_yen IS NULL AND source3_yen IS NULL AND source4_yen IS NULL AND source5_yen IS NULL)
+- トリガー yojitsu_target_versions_no_delete: 削除の前
+- トリガー yojitsu_target_versions_no_update: 更新の前
+- トリガー yojitsu_target_versions_sequence: 追加の前
+
+## yojitsu_variables
+
+**予実の設定の変数** — 設定の行の変数の参照表（組織に依らない）。値の列の種類とステップごとに持つかを決める。移行 0014 で行動の率（次の段へ進む率）・1件あたりの額・着地に数える確度・窓口の支払いの間の4行を、移行 0017 で行動指標の変数（窓口の売上の倍率・1件の時間・通る確率・通過率を測る期間など18行。行動指標の計画 段B #9）を入れる。稼ぎ方の既定の売上率は持たない（earning_type_rate_versions だけが持つ）。値の種類とステップの要否は変えられない
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | code | TEXT | 変数のコード | 可 | - | PK、CHECK: length(code) BETWEEN 1 AND 60 AND ltrim(code,'abcdefghijklmnopqrstuvwxyz0123456789_')='' |
+| 2 | label | TEXT | 表示の名前 | 不可 | - | Unique、CHECK: length(trim(label)) BETWEEN 1 AND 60 |
+| 3 | value_kind | TEXT（列挙） | 値の列の種類（bps・x100・months・yen） | 不可 | - | 値: bps / x100 / months / yen |
+| 4 | per_step | INTEGER（真偽 0/1） | ステップごとに持つか（1＝範囲は稼ぎ方×ステップだけ） | 不可 | - | - |
+| 5 | sort_order | INTEGER | 並び順 | 不可 | - | Unique、CHECK: sort_order>=0 |
+
+表の制約:
+
+- トリガー yojitsu_variables_fixed: 更新（value_kind,per_step）の前

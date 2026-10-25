@@ -17,7 +17,7 @@ def extract(request):
     name=os.path.basename(str(request.get('name','')));ext=os.path.splitext(name)[1].lower()
     raw=base64.b64decode(request.get('base64',''),validate=True)
     if not raw or len(raw)>MAX_BYTES:raise ValueError('ファイルは5MB以内にしてください')
-    result={'name':name,'rawSha256':hashlib.sha256(raw).hexdigest(),'sourceHash':hashlib.sha256(raw).hexdigest(),'byteLength':len(raw),'extractorName':'openingnight-cloud-container','extractorVersion':'cloud-extract-3','status':'extracted'}
+    result={'name':name,'rawSha256':hashlib.sha256(raw).hexdigest(),'sourceHash':hashlib.sha256(raw).hexdigest(),'byteLength':len(raw),'extractorName':'openingnight-cloud-container','extractorVersion':'cloud-extract-4','status':'extracted'}
     if ext=='.csv':
         try:text=raw.decode('utf-8-sig');encoding='utf-8-sig'
         except UnicodeDecodeError:text=raw.decode('cp932');encoding='cp932'

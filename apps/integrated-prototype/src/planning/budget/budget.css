@@ -1,0 +1,46 @@
+/* 予算書の画面。見た目の決まりは docs/design/integrated-system-visual.md（黒・白・灰と赤の1色、角丸0・影なし、状態は文字の札）。
+   赤は「いま確認すること」（例外の枠）と「止まっている印」（合わない額・超過）だけ。ほかは細線と灰色の文字に沈める */
+.bd { max-width: 960px; color: var(--ink, #111111); }
+.bd h2 { margin: 8px 0 12px; font-weight: 800; border-bottom: 2px solid var(--ink, #111111); padding-bottom: 4px; }
+.bd-sub { color: var(--sub, #5e5850); font-size: 12px; margin-left: 8px; }
+.bd-table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.bd-table th, .bd-table td { padding: 4px 8px; border-bottom: 1px solid var(--rule, #cfc8ba); text-align: left; white-space: nowrap; }
+.bd-table th { color: var(--sub, #5e5850); font-weight: normal; background: var(--soft, #f3f1ec); }
+.bd-table .n, .bd input.n { text-align: right; font-variant-numeric: tabular-nums; }
+.bd-row { cursor: pointer; }
+.bd-row.mute td { color: var(--faint, #6b655c); }
+.bd-row.large td:first-child { font-weight: bold; }
+.bd-line td { font-size: 12px; padding-left: 24px; }
+.bd-item td { font-size: 12px; padding-left: 40px; color: var(--sub, #5e5850); }
+.bd-total td { font-weight: bold; border-top: 2px solid var(--ink, #111111); }
+/* 状態の札: 四角い枠の中に1〜4字。色ではなく文字で示す。「例外」だけ赤の細い枠と赤の字 */
+.bd-tag { display: inline-block; font-size: 11px; padding: 0 6px; border: 1px solid var(--ink, #111111); border-radius: 0; background: var(--paper, #ffffff); }
+.bd-tag.ok { font-weight: bold; }
+.bd-tag.warn { border-color: var(--rule, #cfc8ba); color: var(--sub, #5e5850); }
+.bd-tag.bad { border-color: #b3261e; color: #b3261e; }
+.bd .bad { color: #b3261e; }
+.bd-chip { display: inline-block; font-size: 11px; padding: 0 6px; margin-left: 6px; border: 1px solid var(--rule, #cfc8ba); border-radius: 0; color: var(--faint, #6b655c); }
+.bd-verdict { display: flex; gap: 12px; align-items: center; font-weight: bold; margin: 12px 0 6px; flex-wrap: wrap; }
+.bd-verdict span { white-space: nowrap; }
+.bd-verdict select { margin-left: auto; font-weight: normal; width: auto; }
+.bd-actions { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+/* いま人が確認すること1点: 例外の枠だけを赤の面にし、上の字は白 */
+.bd-exceptions { background: #b3261e; color: var(--paper, #ffffff); padding: 6px 12px; margin: 8px 0; border-radius: 0; }
+.bd-exceptions p { margin: 4px 0; }
+.bd-exceptions .bad, .bd-exceptions b, .bd-exceptions .bd-sub, .bd-exceptions .bd-cell { color: var(--paper, #ffffff); }
+.bd-cell { font-variant-numeric: tabular-nums; font-size: 11px; color: var(--faint, #6b655c); margin-right: 8px; }
+.bd-axis { display: flex; gap: 4px; margin: 8px 0; }
+.bd-axis button[aria-pressed="true"] { background: var(--ink, #111111); color: var(--paper, #ffffff); }
+.bd-drop { display: block; border: 1px dashed var(--ink, #111111); border-radius: 0; padding: 12px; text-align: center; color: var(--sub, #5e5850); cursor: pointer; margin: 8px 0; }
+.bd-drop.over { border-style: solid; color: var(--ink, #111111); background: var(--soft, #f3f1ec); }
+.bd-editor { border-top: 2px solid var(--ink, #111111); margin-top: 16px; padding-top: 8px; }
+.bd-editor input { width: 100%; box-sizing: border-box; border-radius: 0; }
+.bd-editor p input { width: 120px; }
+.bd-empty { color: var(--faint, #6b655c); }
+.bd-message { font-weight: bold; }
+.bd-tabs { display: flex; gap: 0; margin: 4px 0 8px; border-bottom: 2px solid var(--ink, #111111); }
+.bd-tabs button { border-radius: 0; }
+.bd-tabs button[aria-selected="true"] { background: var(--ink, #111111); color: var(--paper, #ffffff); font-weight: bold; }
+.bd-start { display: flex; gap: 8px; align-items: center; margin: 4px 0 8px; }
+.bd-start select { width: auto; border-radius: 0; }
+.bd button { border-radius: 0; box-shadow: none; }

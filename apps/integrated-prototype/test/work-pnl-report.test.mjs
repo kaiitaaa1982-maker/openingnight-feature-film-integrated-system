@@ -5,6 +5,8 @@ import {openTestDb} from './test-db.mjs';
 import {createApp} from '../src/app.mjs';
 import {registerWorkPnlRoutes} from '../src/work-pnl-report-routes.mjs';
 import {buildWorkPnl, checksOk, salesDetailParams, workPnlLinkParams, incomeRows, incomeTotals, monthAxisLabels, EXPENSE_ONLY_CARD, productionCostOf} from '../src/reports/work-pnl-model.mjs';
+import {documentExportBlock, documentXlsx} from '../src/report-output.mjs';
+import {decodeXlsx} from '../src/xlsx.mjs';
 
 async function fixture({t} = {}) {
   const db = await openTestDb({t});
@@ -38,7 +40,7 @@ async function fixture({t} = {}) {
   ok(await expense({work_id: 1, accounting_month: '2027-07', actual_ex_tax: 5000})); // 期間外
   ok(await expense({work_id: null, accounting_month: '2026-08', actual_ex_tax: 22000, category: '共通費', description: '架空の共通経費'})); // 未配賦
   ok(await expense({work_id: work2.id, accounting_month: '2026-07', actual_ex_tax: 3000}));
-  return {db, app, req, ok, login, work2};
+  return {db, app, req, ok, login, work2, expense};
 }
 
 const q = (params) => `/reports/work-pnl?${new URLSearchParams({from: '2026-05', to: '2027-04', ...params})}`;
@@ -91,6 +93,39 @@ test('unallocated project expenses are listed separately and not deducted; produ
   assert.ok(pnl.lines.every((line) => line.month >= '2026-05' && line.month <= '2027-04'));
   assert.ok(pnl.dataAsOf.latestImportAt);
   assert.match(pnl.outOfScope, /範囲外/);
+});
+
+test('作品別収支の API は文書データ（K-5）を返す: 作品計は従来の応答と同じ・同じ条件で2回読むと同じ sourceHash・期間や経費が変わると変わる・その文書から Excel が出る', async (t) => {
+  const f = await fixture({t});
+  const first = f.ok(await f.req(q({workId: 1})));
+  const doc = first.document;
+  assert.equal(doc.title, `作品別収支（${first.work.title}）`);
+  assert.equal(doc.basis, 'accrual');
+  assert.match(doc.definitionVersion, /^work-pnl\./);
+  assert.match(doc.sourceHash, /^[0-9a-f]{64}$/);
+  assert.deepEqual(doc.dataAsOf, {label: '最終取込', at: first.dataAsOf.latestImportAt, generatedAt: first.dataAsOf.generatedAt});
+  assert.deepEqual(doc.conditions.find((item) => item.key === 'period'), {key: 'period', label: '期間', value: '2026-05〜2027-04'});
+  // 期待値は上の試験と同じ（共有商品 30,001円 の 60% = 18,001円、期間内の作品の経費 55,000円、未配賦 22,000円）
+  const summary = Object.fromEntries(doc.tables.find((table) => table.name === 'summary').rows.map((row) => [row.code, row.amount]));
+  assert.deepEqual([summary.sales, summary.expense, summary.balance, summary.unallocated], [188001, 55000, 133001, 22000]);
+  assert.deepEqual([summary.sales, summary.expense, summary.balance], [first.totals.sales, first.totals.expense, first.totals.balance], '従来の応答と同じ');
+  assert.deepEqual(doc.tables.find((table) => table.name === 'lines').rows.map((row) => [row.id, row.amount]), first.lines.map((line) => [line.id, line.amount]));
+  assert.deepEqual(doc.tables.find((table) => table.name === 'monthly').rows.map((row) => row.month), first.monthly.map((row) => row.month));
+  assert.deepEqual(doc.checks.filter((check) => !check.ok), []);
+
+  const again = f.ok(await f.req(q({workId: 1})));
+  assert.equal(again.document.sourceHash, doc.sourceHash, '同じ条件・同じ記録なら同じ hash（作った時刻は入らない）');
+  const shorter = f.ok(await f.req(q({workId: 1, to: '2027-03'})));
+  assert.notEqual(shorter.document.sourceHash, doc.sourceHash, '期間が変わると変わる');
+  f.ok(await f.expense({work_id: 1, accounting_month: '2026-09', actual_ex_tax: 1000}));
+  const added = f.ok(await f.req(q({workId: 1})));
+  assert.notEqual(added.document.sourceHash, doc.sourceHash, '経費が1件増えると変わる');
+  assert.equal(added.document.tables.find((table) => table.name === 'summary').rows.find((row) => row.code === 'expense').amount, 56000);
+
+  assert.equal(documentExportBlock(doc), null);
+  const sheets = decodeXlsx(documentXlsx(doc));
+  assert.deepEqual(sheets.map((sheet) => sheet.name), ['作品計', '流通別', '月別', '売上明細', '作品の経費', '未配賦の経費', '照合']);
+  assert.ok(sheets[0].rows.flat().includes(188001), 'Excel の作品計に売上の額');
 });
 
 test('work P&L permissions and validation', async (t) => {

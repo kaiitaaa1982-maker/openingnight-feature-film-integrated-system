@@ -23,6 +23,7 @@ export const DOMAINS = freezeAll({
   // 取引先・営業
   partnerKind: {cinema: '劇場', platform: '配信事業者', retailer: '販売店', agency: '代理店', vendor: '委託先', other: 'その他'},
   opportunityStage: {lead: '見込', proposal: '提案', negotiation: '交渉', won: '受注', lost: '失注'},
+  activityResult: {advanced: '進んだ', on_hold: '保留', lost: '失注'},
   activityType: {contact: '連絡', proposal: '提案', negotiation: '交渉', note: 'メモ'},
   deliverableStatus: {pending: '未提出', submitted: '提出済み', accepted: '受領済み', blocked: '保留'},
   dealType: {unverified: '未確認', royalty: 'ロイヤリティ', MG: 'MG', FLAT: 'FLAT（定額）', other: 'その他'},

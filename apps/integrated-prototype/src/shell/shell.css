@@ -1,7 +1,7 @@
-/* 外枠。UI指針: ../../../../docs/design/ui-guidelines.md（§8 のトークンだけを使う）。
+/* 外枠。UI指針: ../../../../docs/design/ui-guidelines.md（§8 のトークンは docs/design/integrated-system-visual.md に置き換え。色は styles.css の :root のトークンだけを使う）。
    旧 styles.css の .shell 規則と同じ詳細度で負けないよう .shell.app-shell で書く。 */
 .shell.app-shell{display:grid;grid-template-columns:268px minmax(0,1fr);min-height:100vh}
-.app-skip{position:absolute;left:12px;top:-60px;z-index:50;padding:10px 14px;border-radius:var(--radius);background:var(--accent);color:var(--accent-ink);font-weight:700;text-decoration:none}
+.app-skip{position:absolute;left:12px;top:-60px;z-index:50;padding:10px 14px;border-radius:0;background:var(--accent);color:var(--accent-ink);font-weight:700;text-decoration:none}
 .app-skip:focus{top:12px}
 .app-shell :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
@@ -11,35 +11,43 @@
 .app-shell>.app-side>*{flex-shrink:0}
 .app-shell .app-nav{grid-template-columns:minmax(0,1fr)}
 .app-brand{display:flex;align-items:center;gap:10px;padding:2px 8px 6px;color:var(--ink);text-decoration:none}
-.app-brand>span:first-child{display:grid;place-items:center;width:38px;height:38px;border-radius:var(--radius);background:var(--ink);color:var(--panel);font-weight:900}
+.app-brand>span:first-child{display:grid;place-items:center;width:38px;height:38px;border-radius:0;background:var(--ink);color:var(--panel);font-weight:900}
 .app-brand-text{display:flex;flex-direction:column}
-.app-brand-text small{color:var(--ink-3);font-size:12px}
-.app-area-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line-3);border-radius:var(--radius);overflow:hidden}
-.app-area-tabs button{min-height:40px;border:0;border-radius:0;background:var(--panel-2);color:var(--ink-2);font-weight:700;padding:0 4px;font-size:13px;letter-spacing:-.02em;white-space:nowrap}
-.app-area-tabs button+button{border-left:1px solid var(--line-3)}
-.app-area-tabs button[aria-selected="true"]{background:var(--accent-soft);color:var(--accent)}
-.app-area-tabs button:disabled{opacity:1;color:var(--ink-3);background:var(--panel-3)}
-.app-area-note{margin:-4px 4px 0;color:var(--ink-3);font-size:12px}
-/* 売上基幹の2段目（業務）。上段の切替より控えめにし、選んでいる業務だけ縁取る */
-.app-sub-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin-top:-4px;padding:4px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
-.app-sub-tabs button{min-height:36px;padding:0 6px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--ink-2);font-size:13px;font-weight:700;line-height:1.3}
-.app-sub-tabs button:hover{background:var(--panel);color:var(--ink)}
-.app-sub-tabs button[aria-selected="true"]{background:var(--panel);border-color:var(--accent);color:var(--accent)}
+/* 表示モード（全表示｜代表モード）。メニューに出す画面の数を切り替える。押した側を黒く塗る */
+.app-view-mode{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border:1px solid var(--line-3);border-radius:0;overflow:hidden}
+.app-view-mode button{min-height:36px;border:0;border-radius:0;background:var(--panel-2);color:var(--ink-2);font-weight:700;padding:0 4px;font-size:13px;letter-spacing:-.02em;white-space:nowrap}
+.app-view-mode button+button{border-left:1px solid var(--line-3)}
+.app-view-mode button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 .app-nav{display:grid;gap:4px}
-.app-nav-shared{margin-top:auto;padding-top:12px;border-top:1px solid var(--line)}
+.app-nav-shared{padding-top:12px;border-top:1px solid var(--line)}
 .app-nav-group ul{list-style:none;margin:0 0 6px;padding:0;display:grid;gap:2px}
-/* 畳んだグループ（hidden）は display:grid に負けないよう明示して隠す */
-.app-nav-group ul[hidden]{display:none}
 .app-nav .app-nav-group-head{display:flex;align-items:center;gap:8px;width:100%;min-height:32px;padding:0 8px;border:0;background:transparent;color:var(--ink-3);font-size:12px;font-weight:800;letter-spacing:.04em;text-align:left}
 .app-nav .app-nav-group-head:hover{background:var(--panel-2);color:var(--ink-2)}
 .app-nav-caret{margin-left:auto;font-size:11px}
-.app-nav-here{padding:0 6px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:0}
-.app-nav-item{display:grid;gap:1px;padding:7px 10px;border-radius:8px;color:var(--ink-2);text-decoration:none;border-left:3px solid transparent}
+.app-nav-item{display:grid;gap:1px;padding:7px 10px;border-radius:0;color:var(--ink-2);text-decoration:none;border-left:3px solid transparent}
 .app-nav-item:hover{background:var(--panel-2);color:var(--ink)}
-.app-nav-item.is-current{background:var(--accent-soft);color:var(--ink);border-left-color:var(--accent)}
+.app-nav-item.is-current{background:transparent;color:var(--ink);border-left-color:var(--ink)}
 .app-nav-label{font-size:14px;font-weight:650}
-.app-nav-desc{color:var(--ink-3);font-size:11.5px;line-height:1.45}
-.app-nav-item.is-current .app-nav-label{color:var(--accent)}
+.app-nav-item.is-current .app-nav-label{color:var(--ink);font-weight:800}
+
+/* フォルダ。現在地は左端の線、番号と空のフォルダは灰色。 */
+.app-folder-number{flex-shrink:0;color:var(--faint);font-size:11px;font-weight:500;font-variant-numeric:tabular-nums}
+.app-folder-nav{gap:0}
+.app-folder-nav > ul{list-style:none;margin:0 0 6px;padding:0}
+.app-nav .app-folder-head{display:flex;align-items:center;gap:8px;width:100%;min-height:36px;padding:6px 5px;border:0;border-left:3px solid transparent;border-radius:0;background:transparent;color:var(--ink);text-align:left;font-size:13px;font-weight:600;line-height:1.5}
+.app-nav .app-folder-head:hover:enabled{background:var(--soft)}
+.app-nav .app-folder-head[aria-expanded="true"]{border-left-color:var(--ink);font-weight:800}
+.app-nav .app-folder-head:disabled{opacity:1;color:var(--faint);cursor:default}
+.app-folder-nav .app-nav-group ul{margin-left:24px}
+.app-folder-title{display:flex;align-items:baseline;gap:10px;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--ink);font-size:20px;font-weight:800}
+.app-folder-home{display:grid;gap:24px}
+.app-folder-home>.app-work-selector{width:100%;max-width:520px}
+.app-folder-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:24px;align-items:start}
+.app-folder-card{min-width:0}
+.app-folder-card h2{display:flex;align-items:baseline;gap:10px;margin:0 0 8px;padding-bottom:8px;border-bottom:2px solid var(--ink);font-size:16px;font-weight:800}
+.app-folder-card.is-disabled{color:var(--faint)}
+.app-folder-card.is-disabled h2{border-color:var(--rule)}
+.app-folder-card ul{list-style:none;padding:0;margin:0;display:grid;gap:2px}
 
 /* 上部 */
 .app-main{min-width:0}
@@ -48,8 +56,6 @@
 .app-topbar .on-picker{grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:10px}
 .app-topbar .on-picker .on-field-label{white-space:nowrap}
 .app-topbar .on-picker-status{grid-column:2}
-.app-scope{display:flex;flex-direction:column}
-.app-scope small{color:var(--ink-3)}
 .app-user{margin-left:auto}
 /* 組織の切替（所属が2つ以上のときだけ出る） */
 .app-org{display:flex;flex-direction:column;gap:2px;min-width:0;margin:0}
@@ -64,9 +70,8 @@
 .app-admin-entry{flex-shrink:0;white-space:nowrap;min-height:36px}
 .app-nav-shared h2.app-nav-group-head{margin:0 0 6px;color:var(--ink-2)}
 .app-page-title h1:focus{outline:none}
-.app-page-title h1:focus-visible{outline:3px solid var(--accent);outline-offset:4px;border-radius:4px}
-.app-page-desc{margin:-12px 0 18px;color:var(--ink-3);font-size:13px}
-.app-unsaved{margin-bottom:18px;padding:14px 16px;border:1px solid var(--warn);border-left-width:4px;border-radius:var(--radius);background:var(--warn-soft);color:var(--ink)}
+.app-page-title h1:focus-visible{outline:3px solid var(--accent);outline-offset:4px;border-radius:0}
+.app-unsaved{margin-bottom:18px;padding:14px 16px;border:1px solid var(--bad);border-left-width:4px;border-radius:0;background:var(--bad);color:var(--paper)}
 .app-unsaved p{margin:0}
 .app-locked{border-left:4px solid var(--line-3)}
 .app-scrim{display:none}
@@ -74,7 +79,7 @@
 
 @media (max-width:980px){
   .shell.app-shell{grid-template-columns:minmax(0,1fr)}
-  .app-shell>.app-side{position:fixed;left:0;top:0;bottom:0;z-index:40;width:min(320px,88vw);height:auto;transform:translateX(-105%);transition:transform .2s ease;box-shadow:var(--shadow)}
+  .app-shell>.app-side{position:fixed;left:0;top:0;bottom:0;z-index:40;width:min(320px,88vw);height:auto;transform:translateX(-105%);transition:transform .2s ease;box-shadow:none}
   .app-shell.is-drawer-open>.app-side{transform:none}
   .app-scrim{display:block;position:fixed;inset:0;z-index:30;min-height:0;border:0;border-radius:0;background:var(--ink);opacity:.35;padding:0}
   .app-menu-button{display:inline-flex;align-items:center}

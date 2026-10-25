@@ -62,7 +62,7 @@ function ProfileDetail({partner, onSaved}) {
       {warnings.map((w) => <Notice key={w} tone="warn" message={w} compact />)}
       {current?.roles?.includes('broadcaster') && <StationTypeEditor request={shell.request} partnerId={partner.id} readOnly={shell.readOnly} />}
       <div className="rw-editor-buttons">
-        <button type="button" className="secondary" onClick={() => shell.navigate('取引先別リスト', {plpartner: String(partner.id)})}>この取引先の配信・販売リストを開く（営業基幹）</button>
+        <button type="button" className="secondary" onClick={() => shell.navigate('取引先別リスト', {plpartner: String(partner.id)})}>この取引先の配信・販売リストを開く</button>
       </div>
       {!shell.readOnly && (
         <RecordForm mode="create" openLabel={current ? '新しい版を作る' : '請求・連絡先を登録する'} submitLabel="この内容で新しい版を保存" allowContinue={false}

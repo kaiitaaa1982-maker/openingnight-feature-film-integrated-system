@@ -7,6 +7,8 @@
 //   node scripts/test-pg.mjs                       一覧の外の全試験
 //   node scripts/test-pg.mjs test/a.test.mjs …     指定したファイルだけ（一覧の中のファイルも流せる。pending を直すとき）
 //   node scripts/test-pg.mjs --list                流すファイルの一覧と数だけを出す
+//   node scripts/test-pg.mjs --test-shard=2/5      名前順に並べて 5 本おきに取った 2 組目だけ（Node の --test-shard と同じ割り方。
+//                                                  CI は組を別のジョブで流す。名前の近い重い本 seed-*-demo が同じ組に固まらない）
 import { spawn } from 'node:child_process';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -14,17 +16,32 @@ import { pgTestFiles, readMatrix, TEST_DIR, testFiles } from '../test/pg-matrix.
 
 const app = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
+const fail = (message) => {
+  console.error(message);
+  process.exit(2);
+};
+// 知らない旗は止める（--shard=1/5 のような書き違いで、全部の試験を組の数だけ繰り返さない）
+for (const a of args) if (a.startsWith('--') && a !== '--list' && !a.startsWith('--test-shard=')) fail(`知らない旗: ${a}`);
 const listOnly = args.includes('--list');
+const shardArg = args.find((a) => a.startsWith('--test-shard='));
+let shard = null;
+if (shardArg) {
+  const m = shardArg.slice('--test-shard='.length).match(/^([1-9]\d*)\/([1-9]\d*)$/);
+  if (!m || Number(m[1]) > Number(m[2])) fail(`--test-shard は i/n（1 ≤ i ≤ n）で書く: ${shardArg}`);
+  shard = { index: Number(m[1]), total: Number(m[2]) };
+}
 const named = args.filter((a) => !a.startsWith('--'));
 const matrix = readMatrix();
-const files = named.length ? named.map((f) => relative(app, resolve(app, f)).replaceAll('\\', '/')) : pgTestFiles(matrix, testFiles()).map((f) => relative(app, join(TEST_DIR, f)).replaceAll('\\', '/'));
+const all = named.length ? named.map((f) => relative(app, resolve(app, f)).replaceAll('\\', '/')) : pgTestFiles(matrix, testFiles()).map((f) => relative(app, join(TEST_DIR, f)).replaceAll('\\', '/'));
+const files = shard ? [...all].sort().filter((_, i) => i % shard.total === shard.index - 1) : all;
+const part = shard ? `・${shard.total} 分割の ${shard.index}` : '';
 
 if (listOnly) {
   for (const f of files) console.log(f);
-  console.log(`流すファイル ${files.length}（全 ${testFiles().length}・pending ${matrix.pending.length}・sqliteOnly ${matrix.sqliteOnly.length}）`);
+  console.log(`流すファイル ${files.length}（全 ${testFiles().length}・pending ${matrix.pending.length}・sqliteOnly ${matrix.sqliteOnly.length}${part}）`);
   process.exit(0);
 }
 const where = process.env.ON_TEST_PG_URL ? '手元の PostgreSQL（ON_TEST_PG_URL）' : 'PGlite';
-console.log(`ON_TEST_DB=pg・${where} で ${files.length} ファイルを流す（pending ${matrix.pending.length}・sqliteOnly ${matrix.sqliteOnly.length} を除く）`);
+console.log(`ON_TEST_DB=pg・${where} で ${files.length} ファイルを流す（pending ${matrix.pending.length}・sqliteOnly ${matrix.sqliteOnly.length} を除く${part}）`);
 const child = spawn(process.execPath, ['--test', '--test-concurrency=1', ...files], { cwd: app, stdio: 'inherit', env: { ...process.env, ON_TEST_DB: 'pg' } });
 child.on('exit', (code, signal) => process.exit(signal ? 1 : code ?? 1));

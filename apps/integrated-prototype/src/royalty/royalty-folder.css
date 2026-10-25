@@ -1,0 +1,55 @@
+/* ロイヤリティ報告管理のフォルダ。見た目の決まり: ../../../../docs/design/integrated-system-visual.md（黒・白・灰と赤1色、角丸0・影なし、状態は文字の札） */
+.rf{--ink:#111111;--paper:#ffffff;--soft:#f3f1ec;--sub:#5e5850;--faint:#6b655c;--rule:#cfc8ba;--red:#b3261e;
+  --jp:"Noto Sans JP","Yu Gothic","Hiragino Sans","Meiryo",sans-serif;
+  display:grid;gap:28px;padding:20px;background:var(--paper);color:var(--ink);font-family:var(--jp);font-size:14px;line-height:1.5}
+.rf *{border-radius:0;box-shadow:none}
+.rf h2{margin:0;padding-bottom:6px;border-bottom:2px solid var(--ink);font-size:24px;font-weight:800}
+.rf h3{margin:0;font-size:16px;font-weight:800}
+.rf-sec{display:grid;gap:10px}
+.rf-sec-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding-bottom:4px;border-bottom:2px solid var(--ink)}
+.rf-tag{display:inline-block;min-width:1.6em;padding:0 5px;border:1px solid var(--ink);font-weight:800;text-align:center;white-space:nowrap}
+.rf-tag.is-stop{border-color:var(--red);color:var(--red)}
+.rf-tag.is-faint{border-color:var(--rule);color:var(--faint)}
+.rf-now{display:inline-block;padding:4px 10px;background:var(--red);color:#fff;font-weight:800}
+.rf-done{display:inline-block;padding:4px 10px;border:1px solid var(--ink);font-weight:800}
+.rf table{border-collapse:collapse;width:100%}
+.rf th,.rf td{padding:6px 8px;border-bottom:1px solid var(--rule);text-align:left;white-space:nowrap}
+.rf thead th{background:var(--soft);font-weight:700;color:var(--sub);border-bottom:1px solid var(--ink)}
+.rf .num{text-align:right;font-variant-numeric:tabular-nums}
+.rf .is-stop-text{color:var(--red);font-weight:700}
+.rf .is-faint{color:var(--faint)}
+.rf-click{cursor:pointer}
+.rf-click:hover td{background:var(--soft)}
+.rf-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.rf button{font:inherit;cursor:pointer}
+.rf-btn{padding:6px 14px;border:1px solid var(--ink);background:var(--ink);color:#fff;font-weight:700}
+.rf-btn.is-ghost{background:var(--paper);color:var(--ink)}
+.rf-btn:disabled{border-color:var(--rule);background:var(--soft);color:var(--faint);cursor:not-allowed}
+.rf input,.rf select{padding:5px 8px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);font:inherit}
+.rf label{display:inline-flex;align-items:center;gap:6px;color:var(--sub);white-space:nowrap}
+.rf-msg{margin:0;font-weight:700}
+.rf-msg.is-stop{color:var(--red)}
+.rf-scroll{overflow-x:auto}
+.rf-grid th,.rf-grid td{padding:3px 4px;border:1px solid var(--rule);text-align:center}
+.rf-grid thead th{color:var(--ink);font-weight:700}
+.rf-grid thead th small{display:block;color:var(--faint);font-weight:400}
+.rf-grid tbody th{text-align:left;background:var(--paper)}
+.rf-holder{padding:2px 6px;border:1px solid transparent;background:var(--paper);color:var(--ink);font-weight:700;text-align:left}
+.rf-holder[aria-pressed="true"]{background:var(--ink);color:#fff}
+.rf-cell{display:grid;min-width:60px;padding:2px 4px;border:1px solid var(--ink);background:var(--paper);color:var(--ink)}
+.rf-cell.is-stop{border-color:var(--red);color:var(--red)}
+.rf-cell.is-faint{border-color:var(--rule);color:var(--faint)}
+.rf-cell:disabled{border-color:var(--rule);background:var(--soft);color:var(--faint);cursor:not-allowed}
+.rf-char{font-weight:800}
+.rf-yen{font-size:11px;font-variant-numeric:tabular-nums}
+.rf-yen.is-draft{color:var(--faint)}
+.rf-none{color:var(--rule)}
+.rf-legend{display:flex;flex-wrap:wrap;gap:10px;margin:0;padding:0;list-style:none;color:var(--sub);font-size:12px}
+.rf-legend li{display:inline-flex;align-items:center;gap:4px}
+.rf-chart{width:100%;max-width:640px;height:auto}
+.rf-bar{fill:var(--ink);stroke:var(--ink)}
+.rf-bar.is-open{fill:var(--paper)}
+.rf-bar.is-draft{fill:var(--paper);stroke:var(--faint);stroke-dasharray:3 2}
+.rf-line{fill:none;stroke:var(--sub);stroke-width:1.5}
+.rf-axis{font-size:9px;fill:var(--faint)}
+.rf :focus-visible{outline:2px solid var(--ink);outline-offset:2px}

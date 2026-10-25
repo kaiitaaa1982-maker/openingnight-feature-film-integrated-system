@@ -1,0 +1,112 @@
+{
+  "fictional": true,
+  "description": "シナリオの比較（段A）の架空の入力。request は POST /api/revenue/scenarios/compare の本文の形（仮置きの値）、facts は store が DB から読んで model へ渡す実績の形。名前・額はすべて架空で、目標額・報酬・家賃補助は持たない（目標額は試験が実行時に作る）。expected.json は build-expected.mjs が全列挙で作る。商談・活動・売上と作品101〜104の額は scripts/seed-scenario-demo.mjs が入れる行と同じ値（ID は白紙の DB に seed-all-demo.mjs を流したときに振られる値ではなく、seed の対応表で名前とコードに対応づける）。modelOnly の行（委員会105〜107・111、買付108〜109、seed.workCodes に無い作品108・110 の商談10・11 とその売上、重なりの件数）は種に無い、model の場合分けと境界（負の月の売上・期間の前の won・端数の出る額・差額ちょうど0）のための架空の行。won の2件（商談1・2）は ID の順と close_date の順を逆にしてある（売上を close_date 順に充てることを見分けるため。種も close_date の遅い見放題を先に登録する）。行動の販売委託の1件の額は、仮置きの700万円でなく702.5万円にしてある（1件の粗利 702.5万円×20%＝140.5万円が1万円の格子のちょうど半分になり、half_up と「k 件の合計を寄せる（1件を寄せてから k 倍しない）」を試験で見分けられるため）。委員会の selfInvested は自社の出資（持分・約定の出資額・払込のどれか）のある作品か（出資の回収の行にするか）で、どの行も true（106 は持分があり払込がまだの架空の行）。false の行は試験が実行時に足す。自社出資の出資額（103）と買い切りの買付額（102・109）は、払った月を持たないので期間より前に払った扱いで、期間の粗利から引かない（出資の回収の累計の差額にだけ出る）。委員会の自社の払込は期間内の分（paymentsPeriodYen）を引く。買い切り（outright）の行は、どれも買付額がある（買付額も MG も無い作品は買付に入れない）。DB 全体から作った facts で golden を作り直すときは build-expected.mjs に --in で渡す。",
+  "seed": {
+    "script": "scripts/seed-scenario-demo.mjs",
+    "workCodes": {"101": "DEMO-SCN-W1", "102": "DEMO-SCN-W2", "103": "DEMO-SCN-W3", "104": "DEMO-SCN-W4"},
+    "partnerCodes": {"11": "DEMO-SCN-PF-D", "12": "DEMO-SCN-PF-E", "13": "DEMO-SCN-SEL", "14": "DEMO-SCN-OS", "15": "DEMO-SCN-TV"},
+    "modelOnly": ["facts.committee: 105・106・107・111", "facts.acquisition: 108・109", "facts.overlapCount", "seed.workCodes に無い作品（108・110）の商談10・11と売上"],
+    "opportunityNames": {
+      "1": "DEMO-SCN-O1 架空配信Dへの配信許諾 見放題（架空）",
+      "2": "DEMO-SCN-O2 架空配信Dへの配信許諾 先行レンタル（架空）",
+      "3": "DEMO-SCN-O3 架空配信Eへの買付作品の提案（架空）",
+      "4": "DEMO-SCN-O4 架空パッケージ販売への委託作品の提案（架空）",
+      "5": "DEMO-SCN-O5 架空海外セールスへの自社出資作品の提案（架空）",
+      "6": "DEMO-SCN-O6 架空BS放送への買付作品の提案（架空・失注）",
+      "7": "DEMO-SCN-O7 架空パッケージ販売への買付作品の打診（架空・額未定）",
+      "8": "DEMO-SCN-O8 架空配信Dへの自社出資作品の打診（架空・源泉未指定）",
+      "9": "DEMO-SCN-O9 架空BS放送への買付作品の提案（架空・来期）"
+    }
+  },
+  "request": {
+    "period": {"from": "2026-04", "to": "2027-03"},
+    "closedMonth": "2026-08",
+    "stageProbabilityBps": {"lead": 3000, "proposal": 5000, "negotiation": 8000},
+    "opportunities": [
+      {"id": 1, "source": "consignment", "conversionBps": 2000},
+      {"id": 2, "source": "consignment", "conversionBps": 2000},
+      {"id": 3, "source": "acquisition", "conversionBps": 10000},
+      {"id": 4, "source": "consignment", "conversionBps": 2000, "revenueMonth": "2027-03"},
+      {"id": 5, "source": "own_investment", "conversionBps": 10000},
+      {"id": 6, "source": "acquisition", "conversionBps": 10000},
+      {"id": 7, "source": "acquisition", "conversionBps": 10000},
+      {"id": 9, "source": "acquisition", "conversionBps": 10000},
+      {"id": 10, "source": "acquisition", "conversionBps": 2000},
+      {"id": 11, "source": "consignment", "conversionBps": 2000}
+    ],
+    "paymentGapMonths": {"agency": 3, "other": 1, "platform": 2, "retailer": 1},
+    "assumptions": {
+      "salesMultiplierBps": 10000,
+      "recoveryAmountBps": 10000,
+      "meetingToProposalBps": 5000,
+      "proposalToContractBps": 3000,
+      "paymentDelayMonths": 0
+    },
+    "actions": [
+      {"source": "consignment", "step": "meeting", "countX100": 400, "dealYen": 7025000, "conversionBps": 2000, "hoursX100": 300},
+      {"source": "acquisition", "step": "meeting", "countX100": 150, "dealYen": 6000000, "conversionBps": 3000, "hoursX100": 300},
+      {"source": "contract_work", "step": "proposal", "countX100": 100, "dealYen": 25000000, "conversionBps": 1000, "hoursX100": 4000}
+    ],
+    "custom": {
+      "assumptions": {"proposalToContractBps": 3500},
+      "actions": [{"source": "consignment", "step": "meeting", "countX100": 600}]
+    }
+  },
+  "facts": {
+    "opportunities": [
+      {"id": 1, "workId": 101, "partnerId": 11, "partnerKind": "platform", "name": "DEMO-SCN-O1 架空配信Dへの配信許諾 見放題（架空）", "stage": "won", "expectedYen": 3000000, "closeDate": "2026-07-20"},
+      {"id": 2, "workId": 101, "partnerId": 11, "partnerKind": "platform", "name": "DEMO-SCN-O2 架空配信Dへの配信許諾 先行レンタル（架空）", "stage": "won", "expectedYen": 4000000, "closeDate": "2026-07-03"},
+      {"id": 3, "workId": 102, "partnerId": 12, "partnerKind": "platform", "name": "DEMO-SCN-O3 架空配信Eへの買付作品の提案（架空）", "stage": "lead", "expectedYen": 2500000, "closeDate": "2027-01-31"},
+      {"id": 4, "workId": 101, "partnerId": 13, "partnerKind": "retailer", "name": "DEMO-SCN-O4 架空パッケージ販売への委託作品の提案（架空）", "stage": "proposal", "expectedYen": 1925000, "closeDate": "2026-12-10"},
+      {"id": 5, "workId": 103, "partnerId": 14, "partnerKind": "agency", "name": "DEMO-SCN-O5 架空海外セールスへの自社出資作品の提案（架空）", "stage": "negotiation", "expectedYen": 1125000, "closeDate": "2026-11-30"},
+      {"id": 6, "workId": 102, "partnerId": 15, "partnerKind": "other", "name": "DEMO-SCN-O6 架空BS放送への買付作品の提案（架空・失注）", "stage": "lost", "expectedYen": 900000, "closeDate": "2026-10-01"},
+      {"id": 7, "workId": 102, "partnerId": 13, "partnerKind": "retailer", "name": "DEMO-SCN-O7 架空パッケージ販売への買付作品の打診（架空・額未定）", "stage": "proposal", "expectedYen": null, "closeDate": "2026-12-20"},
+      {"id": 8, "workId": 103, "partnerId": 11, "partnerKind": "platform", "name": "DEMO-SCN-O8 架空配信Dへの自社出資作品の打診（架空・源泉未指定）", "stage": "lead", "expectedYen": 600000, "closeDate": "2027-02-10"},
+      {"id": 9, "workId": 102, "partnerId": 15, "partnerKind": "other", "name": "DEMO-SCN-O9 架空BS放送への買付作品の提案（架空・来期）", "stage": "proposal", "expectedYen": 800000, "closeDate": "2027-05-20"},
+      {"id": 10, "workId": 108, "partnerId": 16, "partnerKind": "platform", "name": "架空配信JへのMG作品の許諾（架空・期間の前に成約）", "stage": "won", "expectedYen": 2500000, "closeDate": "2026-03-15"},
+      {"id": 11, "workId": 110, "partnerId": 16, "partnerKind": "platform", "name": "架空配信Jへの委託作品の提案（架空・端数の出る額）", "stage": "lead", "expectedYen": 1234567, "closeDate": "2027-02-15"}
+    ],
+    "salesByWorkPartner": [
+      {"workId": 101, "partnerId": 11, "month": "2026-07", "amountYen": 1500000},
+      {"workId": 101, "partnerId": 11, "month": "2026-08", "amountYen": 3000000},
+      {"workId": 101, "partnerId": 13, "month": "2026-07", "amountYen": 500000},
+      {"workId": 102, "partnerId": 12, "month": "2026-07", "amountYen": 1850000},
+      {"workId": 103, "partnerId": 14, "month": "2026-07", "amountYen": 2000000},
+      {"workId": 104, "partnerId": 11, "month": "2026-07", "amountYen": 3000000},
+      {"workId": 104, "partnerId": 11, "month": "2026-08", "amountYen": 3000000},
+      {"workId": 108, "partnerId": 16, "month": "2026-05", "amountYen": 2400000},
+      {"workId": 108, "partnerId": 16, "month": "2026-06", "amountYen": -300000}
+    ],
+    "activities": [
+      {"id": 1, "opportunityId": 2, "occurredOn": "2026-06-10", "activityType": "contact"},
+      {"id": 2, "opportunityId": 2, "occurredOn": "2026-06-25", "activityType": "proposal"},
+      {"id": 3, "opportunityId": 1, "occurredOn": "2026-07-08", "activityType": "contact"},
+      {"id": 4, "opportunityId": 4, "occurredOn": "2026-09-10", "activityType": "contact"},
+      {"id": 5, "opportunityId": 4, "occurredOn": "2026-09-24", "activityType": "proposal"},
+      {"id": 6, "opportunityId": 3, "occurredOn": "2026-09-18", "activityType": "contact"},
+      {"id": 7, "opportunityId": 5, "occurredOn": "2026-08-05", "activityType": "negotiation"},
+      {"id": 8, "opportunityId": 6, "occurredOn": "2026-03-20", "activityType": "contact"},
+      {"id": 9, "opportunityId": 8, "occurredOn": "2026-09-01", "activityType": "contact"}
+    ],
+    "ownInvestment": [
+      {"workId": 103, "title": "坂の上の写真館（架空）", "investmentYen": 4000000, "receiptsTotalYen": 2200000, "receiptsPeriodYen": 2200000}
+    ],
+    "committee": [
+      {"workId": 104, "title": "風の停車場（架空）", "selfInvested": true, "paymentsTotalYen": 1800000, "paymentsPeriodYen": 1800000, "acquisitionsTotalYen": 4062000, "acquisitionsPeriodYen": 4062000, "error": null, "holdNote": null},
+      {"workId": 105, "title": "雪の灯台（架空）", "selfInvested": true, "paymentsTotalYen": 8000000, "paymentsPeriodYen": 1000000, "acquisitionsTotalYen": 1500000, "acquisitionsPeriodYen": 1500000, "error": null, "holdNote": "委員会の月次収支に保留があります: 窓口の条件が無い区分（海外）の売上を委員会の収入にしていません"},
+      {"workId": 106, "title": "夜の温室（架空）", "selfInvested": true, "paymentsTotalYen": 0, "paymentsPeriodYen": 0, "acquisitionsTotalYen": 700000, "acquisitionsPeriodYen": 700000, "error": null, "holdNote": null},
+      {"workId": 107, "title": "遠い汽笛（架空）", "selfInvested": true, "paymentsTotalYen": 5000000, "paymentsPeriodYen": 0, "acquisitionsTotalYen": null, "acquisitionsPeriodYen": null, "error": "委員会契約に条件版がありません", "holdNote": null},
+      {"workId": 111, "title": "汐見の時計塔（架空）", "selfInvested": true, "paymentsTotalYen": 2000000, "paymentsPeriodYen": 0, "acquisitionsTotalYen": 2000000, "acquisitionsPeriodYen": 0, "error": null, "holdNote": null}
+    ],
+    "acquisition": [
+      {"workId": 102, "title": "冬の観覧車（架空）", "kind": "outright", "salesPeriodYen": 1850000, "purchaseYen": 1200000, "agencyFeePeriodYen": null, "mgContractYen": null, "mgBalanceYen": null},
+      {"workId": 108, "title": "星の地図（架空）", "kind": "mg", "salesPeriodYen": 2100000, "purchaseYen": null, "agencyFeePeriodYen": 420000, "mgContractYen": 1000000, "mgBalanceYen": 380000},
+      {"workId": 109, "title": "砂の図書館（架空）", "kind": "outright", "salesPeriodYen": 640000, "purchaseYen": 480000, "agencyFeePeriodYen": null, "mgContractYen": null, "mgBalanceYen": null}
+    ],
+    "consignment": [
+      {"workId": 101, "title": "灯の港（架空）", "agencyFeePeriodYen": 900000, "holderAmountPeriodYen": 3600000}
+    ],
+    "overlapCount": 1,
+    "unlinkedReports": {"count": 1, "amountYen": 500000}
+  }
+}

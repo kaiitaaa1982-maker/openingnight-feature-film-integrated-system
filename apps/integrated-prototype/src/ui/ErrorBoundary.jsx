@@ -40,14 +40,12 @@ export class ErrorBoundary extends React.Component {
   render() {
     const {error, info, attempt} = this.state;
     if (!error) return <React.Fragment key={attempt}>{this.props.children}</React.Fragment>;
-    const name = this.props.name;
     const detail = [error?.name && error?.message ? `${error.name}: ${error.message}` : String(error?.message || error), info?.componentStack?.trim()]
       .filter(Boolean).join('\n');
     return (
       <section className="card on-error-boundary" role="alert" aria-live="assertive">
         <p className="on-error-boundary-tone">エラー</p>
         <h2>この画面で問題が起きました</h2>
-        <p>{name ? `「${name}」の表示中に問題が起きました。` : ''}ほかの画面はそのまま使えます。入力中の内容は保存されていない可能性があります。</p>
         <div className="on-form-actions">
           <button type="button" onClick={this.reset}>この画面を再読込</button>
           <button type="button" className="secondary" onClick={() => window.location.reload()}>ページ全体を再読込</button>

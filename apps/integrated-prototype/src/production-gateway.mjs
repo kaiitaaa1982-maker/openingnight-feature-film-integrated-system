@@ -10,7 +10,7 @@ export function productionConfig(env){
 
 export function productionGateway({db,env,handle,authenticate=authenticateAccess}){
  const cfg=productionConfig(env);
- const security={'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'"};
+ const security={'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src https://player.vimeo.com; frame-ancestors 'none'; base-uri 'none'; object-src 'none'"};
  const deny=(message,status)=>new Response(message,{status,headers:security});
  return async request=>{
   const url=new URL(request.url);

@@ -7,7 +7,7 @@ import { createCloudRuntime } from './cloud-runtime.mjs';
 import { registerCloudAnalyticsRoutes } from './cloud-analytics.mjs';
 import { respondToMediaRange } from './cloud-media.mjs';
 import { cloudConfig as config, isSafeCloudRequest as isSafeRequest, verifyAccessToken } from './cloud-security.mjs';
-import { CloudDatabaseConfigError, CloudDatabaseUnavailableError, DATABASE_UNAVAILABLE_MESSAGE, releaseCloudDatabase } from './data-platform/cloud-db.mjs';
+import { CloudDatabaseConfigError, CloudDatabaseUnavailableError, DATABASE_UNAVAILABLE_MESSAGE, releaseCloudDatabase, setCloudDatabaseSession } from './data-platform/cloud-db.mjs';
 import { HEALTH_DB_PATH, respondDatabaseHealth } from './data-platform/cloud-health.mjs';
 import { runScheduledPgExport } from './data-platform/cloud-pg-export.mjs';
 export { WorkbenchExtractContainer } from './cloud-container.mjs';
@@ -17,7 +17,7 @@ const loadPgClient = () => import('pg').then(module => module.Client ?? module.d
 const securityHeaders = {
   'Cache-Control':'private, no-store, max-age=0','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer',
   'X-Frame-Options':'DENY','Permissions-Policy':'camera=(), microphone=(), geolocation=()',
-  'Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'"
+  'Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src https://player.vimeo.com; frame-ancestors 'none'; base-uri 'none'; object-src 'none'"
 };
 
 async function authenticateAccess(request, db, env, cfg) {
@@ -27,7 +27,10 @@ async function authenticateAccess(request, db, env, cfg) {
   // 所属は Cookie on_org で本人が選んだ組織（所属を確かめ、無効なら org_id が最小の組織。
   // 既定へ戻したとき・画面の組織（X-On-Org）と食い違うときは、/api/session 系のほかは app.mjs が 409 にする）。
   // DB の失敗は前と同じく null にせず投げる（postgres で接続できなければ fetch が 503 にする）
-  return identityForEmail(db,email,request.headers.get('cookie'),Date.now());
+  // postgres では行単位の権限（pg/rls.sql）に利用者を渡す。利用者の照会は確かめたメールだけで行い、引けたら利用者 ID に替えてから所属を読む
+  // （FR-CORE-DATA-053。d1 では何もしない）
+  setCloudDatabaseSession(db,{loginEmail:email});
+  return identityForEmail(db,email,request.headers.get('cookie'),Date.now(),{onUser:user=>setCloudDatabaseSession(db,{userId:user.user_id})});
 }
 
 export default {

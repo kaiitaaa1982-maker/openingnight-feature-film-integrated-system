@@ -1,0 +1,217 @@
+{
+  "format": "sales-sheet-mg-versions",
+  "source": "scripts/sales-sheet-grain-fixtures.mjs の MG_VERSIONS_SEED と mgExpectedByMonth。expected は FR-SETL-MGL-050・MGL-026 の決まりから出した期待値、currentSheet は統合前のシートの値（参考）",
+  "seed": {
+    "org": "demo",
+    "adminEmail": "admin@openingnight.invalid",
+    "workCode": "WRK-DEMO",
+    "productSku": "SKU-DIGI",
+    "partnerCode": "PT-DIGITAL",
+    "contract": {
+      "code": "MGV-INC-01",
+      "title": "架空の配信許諾の最低保証（版2つ・架空）",
+      "contractDate": "2024-12-10",
+      "contractSourceReference": "架空の許諾契約書（MG の版の試験）"
+    },
+    "versions": [
+      {
+        "version": 1,
+        "mgAmountYen": 3000000,
+        "startsOn": "2025-01-01",
+        "endsOn": "2025-12-31",
+        "firstCloseOn": "2025-03-31",
+        "reason": "当初の条件（架空）",
+        "sourceReference": "架空の許諾契約書 第4条"
+      },
+      {
+        "version": 2,
+        "mgAmountYen": 5000000,
+        "startsOn": "2025-07-15",
+        "endsOn": "2026-06-30",
+        "firstCloseOn": "2025-09-30",
+        "reason": "延長と保証額の増額（架空）",
+        "sourceReference": "架空の変更契約書 第2条"
+      }
+    ],
+    "ledger": [
+      {
+        "ref": "MGV-L1",
+        "version": 1,
+        "periodFrom": "2025-01-01",
+        "periodTo": "2025-03-31",
+        "accountingMonth": "2025-04",
+        "eligible": 800000,
+        "applied": 800000,
+        "overage": 0,
+        "recognized": 0
+      },
+      {
+        "ref": "MGV-L2",
+        "version": 1,
+        "periodFrom": "2025-04-01",
+        "periodTo": "2025-06-30",
+        "accountingMonth": "2025-07",
+        "eligible": 900000,
+        "applied": 900000,
+        "overage": 0,
+        "recognized": 0
+      },
+      {
+        "ref": "MGV-L3",
+        "version": 2,
+        "periodFrom": "2025-07-15",
+        "periodTo": "2025-09-30",
+        "accountingMonth": "2025-10",
+        "eligible": 1200000,
+        "applied": 1200000,
+        "overage": 0,
+        "recognized": 0
+      },
+      {
+        "ref": "MGV-L4",
+        "version": 1,
+        "reverses": "MGV-L2",
+        "periodFrom": "2025-04-01",
+        "periodTo": "2025-06-30",
+        "accountingMonth": "2025-11",
+        "eligible": 700000,
+        "applied": 700000,
+        "overage": 0,
+        "recognized": 0
+      }
+    ],
+    "sales": [
+      {
+        "reportKey": "MGV-2025-03",
+        "month": "2025-03",
+        "amountExTax": 60000
+      },
+      {
+        "reportKey": "MGV-2025-06",
+        "month": "2025-06",
+        "amountExTax": 70000
+      },
+      {
+        "reportKey": "MGV-2025-07",
+        "month": "2025-07",
+        "amountExTax": 80000
+      },
+      {
+        "reportKey": "MGV-2025-10",
+        "month": "2025-10",
+        "amountExTax": 100000,
+        "correctedAmountExTax": 120000
+      },
+      {
+        "reportKey": "MGV-2025-11",
+        "month": "2025-11",
+        "amountExTax": 90000
+      },
+      {
+        "reportKey": "MGV-2026-03",
+        "month": "2026-03",
+        "amountExTax": 50000
+      }
+    ]
+  },
+  "expected": [
+    {
+      "month": "2025-03",
+      "version": 1,
+      "mg_guarantee_ex_tax": 3000000,
+      "mg_start": "2025-01-01",
+      "mg_end": "2025-12-31",
+      "advance_guarantee_balance": 3000000
+    },
+    {
+      "month": "2025-06",
+      "version": 1,
+      "mg_guarantee_ex_tax": 3000000,
+      "mg_start": "2025-01-01",
+      "mg_end": "2025-12-31",
+      "advance_guarantee_balance": 2200000
+    },
+    {
+      "month": "2025-07",
+      "version": 2,
+      "mg_guarantee_ex_tax": 5000000,
+      "mg_start": "2025-07-15",
+      "mg_end": "2026-06-30",
+      "advance_guarantee_balance": 4200000
+    },
+    {
+      "month": "2025-10",
+      "version": 2,
+      "mg_guarantee_ex_tax": 5000000,
+      "mg_start": "2025-07-15",
+      "mg_end": "2026-06-30",
+      "advance_guarantee_balance": 3000000
+    },
+    {
+      "month": "2025-11",
+      "version": 2,
+      "mg_guarantee_ex_tax": 5000000,
+      "mg_start": "2025-07-15",
+      "mg_end": "2026-06-30",
+      "advance_guarantee_balance": 2300000
+    },
+    {
+      "month": "2026-03",
+      "version": 2,
+      "mg_guarantee_ex_tax": 5000000,
+      "mg_start": "2025-07-15",
+      "mg_end": "2026-06-30",
+      "advance_guarantee_balance": 2300000
+    }
+  ],
+  "currentSheet": [
+    {
+      "month": "2025-03",
+      "amount_ex_tax": 60000,
+      "mg_guarantee_ex_tax": 5000000,
+      "mg_start": "2025-07-15",
+      "mg_end": "2026-06-30",
+      "advance_guarantee_balance": 5000000
+    },
+    {
+      "month": "2025-06",
+      "amount_ex_tax": 70000,
+      "mg_guarantee_ex_tax": 5000000,
+      "mg_start": "2025-07-15",
+      "mg_end": "2026-06-30",
+      "advance_guarantee_balance": 4200000
+    },
+    {
+      "month": "2025-07",
+      "amount_ex_tax": 80000,
+      "mg_guarantee_ex_tax": 5000000,
+      "mg_start": "2025-07-15",
+      "mg_end": "2026-06-30",
+      "advance_guarantee_balance": 4200000
+    },
+    {
+      "month": "2025-10",
+      "amount_ex_tax": 120000,
+      "mg_guarantee_ex_tax": 5000000,
+      "mg_start": "2025-07-15",
+      "mg_end": "2026-06-30",
+      "advance_guarantee_balance": 3000000
+    },
+    {
+      "month": "2025-11",
+      "amount_ex_tax": 90000,
+      "mg_guarantee_ex_tax": 5000000,
+      "mg_start": "2025-07-15",
+      "mg_end": "2026-06-30",
+      "advance_guarantee_balance": 3000000
+    },
+    {
+      "month": "2026-03",
+      "amount_ex_tax": 50000,
+      "mg_guarantee_ex_tax": 5000000,
+      "mg_start": "2025-07-15",
+      "mg_end": "2026-06-30",
+      "advance_guarantee_balance": 3000000
+    }
+  ]
+}

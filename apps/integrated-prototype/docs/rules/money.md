@@ -81,7 +81,7 @@ tags: money, rounding, tax, currency, database
 いまの重複（寄せる借り）:
 
 - 料率の額が6か所: `royalty-model.mjs` と `app.mjs` の `signedRateAmount`、`committee.mjs` の `fee`、`committee/committee-income.mjs` の `committeeFee`、`committee-joint.mjs` の `rate`、`committee-finance.mjs` の `committeeHistory` の中の式
-- 最大剰余法が4か所: `money-allocation.mjs`（正本）、`app.mjs` の売上の配賦の中の写し、`reports/pl-bs-model.mjs` の `splitByWeights`、`committee/committee-monthly-model.mjs` の `splitLargestRemainder`（包み）。
+- 最大剰余法が3か所: `money-allocation.mjs`（正本）、`reports/pl-bs-model.mjs` の `splitByWeights`、`committee/committee-monthly-model.mjs` の `splitLargestRemainder`（包み）。
   `committee-finance.mjs` の `allocateSigned` だけは、端数をすべて先頭へ寄せる別の方式
 - % と bp の変換: 文字のまま変換するのが `percentToBps`・`work/allocation.mjs` の `parsePercent`・`committee/committee-monthly-view.mjs` の `parsePercentToBps`。
   `bulk/bulk-validate.mjs`・`sales-ops/partner-list-model.mjs`・`rights/rights-ui-model.mjs` は `Math.round(Number(文字) * 100)`（浮動小数を通る。下の返すべき借り）

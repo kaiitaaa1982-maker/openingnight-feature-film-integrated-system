@@ -1,0 +1,96 @@
+/* フォルダの見本。UI指針: ../../../../../docs/design/ui-guidelines.md（§8 のトークンだけ。状態は色と1字 §7） */
+.folders{display:grid;gap:14px;min-width:0;color:var(--ink);font-size:16px;line-height:1.4}
+.folders :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.folders button:disabled{opacity:1;background:var(--panel-3);color:var(--ink-3);border-color:var(--line);cursor:not-allowed}
+.folders-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.folders-mark{display:inline-block;padding:2px 8px;border:1px solid var(--hi-line);border-radius:var(--radius);background:var(--hi);color:var(--ink);font-size:14px;font-weight:700}
+.folders-path{display:flex;flex-wrap:wrap;gap:4px 8px;margin:0;padding:0;list-style:none}
+.folders-path li{display:flex;align-items:center;gap:8px;font-weight:700}
+.folders-path li+li::before{content:"›";color:var(--ink-3);font-weight:400}
+.folders-sort{margin:0;color:var(--ink-2);font-size:14px}
+.folders-sort strong{color:var(--ink)}
+.folders-note{margin:0;padding:8px 12px;border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:var(--radius);background:var(--warn-soft);color:var(--ink);font-weight:700}
+.folders-void-block span{display:block}
+.folders-void-block span+span{font-weight:500}
+.folders-legend{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.folders-legend li{display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 8px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);font-size:14px;font-weight:700}
+.folders-legend li.is-ok{background:var(--ok-soft);color:var(--ok)}
+.folders-legend li.is-bad{background:var(--bad-soft);color:var(--bad)}
+.folders-legend li.is-warn{background:var(--warn-soft);color:var(--warn)}
+.folders-legend li.is-accent{background:var(--accent-soft);color:var(--accent)}
+.folders-legend li.is-muted{background:var(--panel-3);color:var(--ink-2)}
+.folders-tree{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:6px;margin:0;padding:0;list-style:none}
+button.folders-chip,button.folders-cell,button.folders-drop{min-height:44px;padding:4px 8px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);color:var(--ink);font-weight:700;cursor:pointer}
+button.folders-chip.is-closed{background:var(--panel-3);color:var(--ink-3);font-weight:500}
+button.folders-chip.is-closed:hover{background:var(--panel-3);color:var(--ink-3)}
+button.folders-chip.is-current{background:var(--accent-soft);color:var(--ink);border-color:var(--accent)}
+.folders-year{display:grid;gap:12px}
+.folders-row{display:grid;gap:8px;padding:10px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel)}
+.folders-row-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.folders-who{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;min-width:0}
+.folders-who strong{font-size:18px}
+.folders-who span{color:var(--ink-2);font-size:14px}
+.folders-months{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+button.folders-cell{min-width:0;padding:2px;background:var(--panel-2);font-size:14px;font-variant-numeric:tabular-nums}
+button.folders-cell small{display:block;color:var(--ink-3);font-size:11px;font-weight:500}
+button.folders-cell.is-ok{background:var(--ok-soft);color:var(--ok)}
+button.folders-cell.is-bad{background:var(--bad-soft);color:var(--bad)}
+button.folders-cell.is-warn{background:var(--warn-soft);color:var(--warn)}
+button.folders-cell.is-accent{background:var(--accent-soft);color:var(--accent)}
+button.folders-cell.is-muted{background:var(--panel-3);color:var(--ink-2)}
+button.folders-cell.is-selected{border-color:var(--accent)}
+button.folders-drop{min-width:72px;border-style:dashed;border-color:var(--line-3);color:var(--ink-2);background:var(--panel)}
+button.folders-drop.is-open,label.folders-drop.is-open{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+label.folders-drop{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:72px;padding:4px 8px;border:1px dashed var(--line-3);border-radius:var(--radius);background:var(--panel);color:var(--ink-2);font-weight:700;cursor:pointer}
+.folders-files{display:grid;gap:4px;margin:0;padding:0;list-style:none}
+.folders-files li{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;font-size:14px}
+.folders-tag{padding:0 6px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2);color:var(--ink-2);font-size:12px}
+.folders-file-name{color:var(--ink-3);font-size:12px}
+button.folders-file{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;width:100%;min-height:44px;padding:6px 8px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);color:var(--ink);font-size:14px;font-weight:500;text-align:left}
+button.folders-file:hover{background:var(--panel-2)}
+.folders h2{margin:0;font-size:16px}
+.folders-facts{display:flex;flex-wrap:wrap;gap:4px 12px;margin:0;font-size:14px}
+.folders-facts strong{font-size:18px}
+.folders-judgment{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;margin:0;font-size:20px}
+.folders-num{display:grid;gap:6px}
+.folders-figure{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);font-variant-numeric:tabular-nums}
+.folders-figure.is-ok{background:var(--ok-soft)}
+.folders-figure.is-bad{background:var(--bad-soft)}
+.folders-figure.is-muted{background:var(--panel-3)}
+.folders-figure strong{min-width:3em}
+.folders-figure small{display:block;color:var(--ink-3);font-size:12px;font-weight:500}
+.folders-figure.is-ok .folders-fig-mark{color:var(--ok)}
+.folders-figure.is-bad .folders-fig-mark{color:var(--bad)}
+.folders-works{display:grid;gap:4px;margin:0;padding:0;list-style:none}
+.folders-works li{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);font-variant-numeric:tabular-nums}
+.folders-works li.is-ok{background:var(--ok-soft)}
+.folders-works li.is-bad{background:var(--bad-soft)}
+.folders-inline-legend{display:flex;flex-wrap:wrap;gap:8px 12px;margin:0}
+.folders-split{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:12px;align-items:start}
+.folders-pane{display:grid;gap:6px;min-width:0;padding:8px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel)}
+button.folders-spot{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 8px;width:100%;min-height:44px;padding:8px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2);color:var(--ink);font-weight:500;text-align:left}
+button.folders-spot[data-selected="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.folders-line{font-weight:700}
+.folders-page{display:grid;place-items:center;align-content:center;gap:8px;min-height:280px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2)}
+.folders-page-no{color:var(--ink-3);font-size:14px}
+.folders-fold-body{display:grid;gap:8px;padding:0 12px 12px}
+.folders details{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel)}
+.folders details summary{min-height:44px;padding:10px 12px;cursor:pointer;font-weight:700}
+.folders-history{display:grid;gap:6px;margin:0;padding:0 12px 12px;list-style:none}
+.folders-history li{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:14px}
+.folders-history time{font-variant-numeric:tabular-nums}
+.folders-actions{display:flex;flex-wrap:wrap;gap:8px}
+.folders-void{display:grid;gap:8px;padding:10px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel)}
+.folders-void label{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.folders-void input[type="text"],.folders-void input:not([type]){min-height:44px;flex:1}
+.folders-sheet-wrap{overflow-x:auto}
+.folders-sheet{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+.folders-sheet th,.folders-sheet td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.folders-sampling{display:grid;gap:8px}
+.folders-visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+@media(max-width:899px){
+  .folders-split{grid-template-columns:1fr}
+}
+@media(min-width:900px){
+  .folders-months{grid-template-columns:repeat(12,minmax(52px,1fr))}
+}

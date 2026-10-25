@@ -29,7 +29,7 @@ test('legacy report modes and legacy localStorage are migrated', () => {
   assert.equal(Object.keys(LEGACY_REPORT_MODES).length, 12);
   const storage = {getItem: (key) => ({'on-page': '流通マスタ', 'on-work': '2'}[key] ?? null)};
   assert.deepEqual(legacyInitial(storage), {page: '売上', workId: 2});
-  assert.deepEqual(initialLocation('', storage), {page: '売上', workId: 2, params: {}});
+  assert.deepEqual(initialLocation('', storage), {page: 'フォルダ一覧', workId: 2, params: {}});
   assert.deepEqual(initialLocation('?p=billing&work=5', storage), {page: '請求・入金', workId: 5, params: {}});
   const broken = {getItem: () => { throw new Error('blocked'); }};
   assert.deepEqual(legacyInitial(broken), {page: null, workId: null});
@@ -63,7 +63,7 @@ test('a guard can block the back button and report the blocked target', () => {
   assert.equal(env.history.at(-1)[0], 'push');
 });
 
-test('sales pages opened by URL or by the legacy localStorage keep their slug and sub-area', async () => {
+test('保存済みURLの画面は保ち、URLにページがなければ旧記録より一覧を優先する', async () => {
   const {subAreaOf} = await import('../src/shell/nav-model.mjs');
   const royalty = parseLocation('?p=royalty-ledger&work=2&from=2025-04');
   assert.deepEqual(royalty, {page: 'ロイヤリティ集計', workId: 2, params: {from: '2025-04'}});
@@ -72,6 +72,6 @@ test('sales pages opened by URL or by the legacy localStorage keep their slug an
   assert.equal(subAreaOf(parseLocation('?p=committee-monthly').page), 'committee');
   const storage = {getItem: (key) => ({'on-page': 'MG契約・台帳'}[key] ?? null)};
   const initial = initialLocation('', storage);
-  assert.equal(initial.page, 'MG契約・台帳');
-  assert.equal(subAreaOf(initial.page), 'mg');
+  assert.equal(initial.page, 'フォルダ一覧');
+  assert.equal(subAreaOf(initial.page), null);
 });

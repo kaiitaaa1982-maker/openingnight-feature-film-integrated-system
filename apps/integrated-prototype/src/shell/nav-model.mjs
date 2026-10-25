@@ -1,4 +1,6 @@
-// 外枠のナビゲーション定義。ページID（src/navigation.mjs の名前）は変えずに、表示名・グループ・1行説明・URL の slug を与える。
+// ページのメタデータ。表示するフォルダの所属は folder-nav.mjs にある。
+// 旧 area・sub とその関数は、権限・既存の呼び出しとの互換のために残す（外枠にタブは出さない）。
+// ページID（src/navigation.mjs の名前）は変えずに、表示名・グループ・1行説明・URL の slug を与える。
 // ページIDは試験・設計キャンバス・保存済みの状態と互換にするため固定。表示名だけを業務の言葉にする。
 import {WORK_PAGES, EIGYO_PAGES, SALES_PAGES, SHARED_PAGES, normalizePage} from '../navigation.mjs';
 
@@ -8,19 +10,38 @@ import {WORK_PAGES, EIGYO_PAGES, SALES_PAGES, SHARED_PAGES, normalizePage} from 
 export const NAV_GROUPS = Object.freeze({
   work: [
     {id: 'start', label: 'はじめに', items: [
+      {page: 'フォルダ一覧', label: 'フォルダ一覧', slug: 'folder-home', description: '全フォルダと画面の入口', scope: 'none'},
       {page: 'ホーム', label: 'ホーム', slug: 'home', description: '選んだ作品の概要と、次に確かめること'},
+    ]},
+    // 調達（フォルダ台帳 F19。最上位。会社ルートの plans/2026-10-24-folder-chotatsu.md）。MG を払わない販売権の調達を、希望から製造へ渡すまで
+    {id: 'chotatsu', label: '調達', items: [
+      {page: '調達', label: '調達', slug: 'chotatsu', description: 'MG なしの販売権', scope: 'company'},
     ]},
     {id: 'master', label: 'マスタ', items: [
       {page: '作品・商品マスタ', label: '作品・商品', slug: 'catalog', description: '作品と商品（SKU）・販売ウィンドウの正本'},
       {page: '取引先', label: '取引先', slug: 'partners', description: '配給先・配信事業者・販売店などの一覧と登録'},
       {page: '企画・作品', label: '案件・作品', slug: 'planning', description: '案件（プロジェクト）と作品の一覧と登録'},
+      // 企画（フォルダ原案 F01。移行 0050）。調整役の許可でこの PR が足す
+      {page: '企画', label: '企画', slug: 'kikaku', description: '企画ごとに、企画書・3段の試算・原本・企画書の準備（素材と事実）を揃えて、判断までの残りを見る', scope: 'company'},
+      // 予算書作成（フォルダ原案 F01-03。移行 0024）。調整役の許可でこの PR が足す。フォルダの部品の共通化の PR で調整役が取り込む
+      // プロデュース管理の進行表（フォルダ原案 F02。移行 0047）。調整役に知らせて足す。フォルダの入口（?p=folders&f=F02）は調整役の PR で足す
+      {page: 'プロデュース管理', label: '進行表', slug: 'produce', description: '初号・納品までの進行'},
+      {page: '予算書', label: '予算書', slug: 'budget', description: '案件の予算書（A〜K の区分と版）を置いて、合計の誤りと前の版との差を見て確定する', scope: 'company'},
     ]},
     {id: 'seisaku', label: '制作', items: [
+      // プリプロダクション（フォルダ原案 F03）。要対応・子フォルダの帯と、オールスタッフ／美術打ち合わせの資料（root plans/2026-10-22-folder-preprod.md）
+      {page: 'プリプロ', label: 'プリプロ', slug: 'preprod', description: '撮影の前に揃えるものと、オールスタッフ・美術打ち合わせの資料'},
       {page: '制作', label: '香盤・日々スケ', slug: 'production', description: 'シーン・役・衣装・撮影日・ロケ地と香盤'},
       {page: '台本・香盤', label: '台本の取込', slug: 'script', description: '台本の原本からシーンを読み取り、確認して登録'},
+      // ポストプロダクション（フォルダ原案 F05。移行 0025）。調整役の許可でこの PR が足す
+      {page: 'ポスプロ', label: 'ポスプロ', slug: 'post', description: '工程ごとのタスクの済・未、動画を止めて残す指示、契約の納品物のチェック'},
+      // プロダクションの撮影の記録（フォルダ原案 F04。移行 0051）。調整役の許可で足す
+      {page: '撮影の記録', label: '撮影の記録', slug: 'shoot-records', description: '撮影日ごとの日々スケ・部署の日報・スクリプター記録の揃いと、撮影の結果'},
     ]},
     {id: 'rights', label: '権利・宣伝', items: [
       {page: '調達・権利', label: '権利の調達', slug: 'rights-intake', description: '製作委員会・単独保有・権利受託の調達条件'},
+      // 製造（会社ルートの plans/2026-10-24-folder-seizou.md。移行 0046）。ビデオグラムと印刷物の逆算の日程と発注書
+      {page: '製造', label: '製造', slug: 'mfg', description: 'ビデオグラム・印刷物の発売日から逆算した工程と、発注書（見積→発注→納品→請求）', scope: 'company'},
       {page: '宣伝', label: '宣伝', slug: 'publicity', description: '施策・露出・指標の記録と分析'},
     ]},
     {id: 'bulk', label: '表の一括編集', items: [
@@ -47,12 +68,16 @@ export const NAV_GROUPS = Object.freeze({
     {id: 'uriage', sub: 'uriage', label: '売上', items: [
       {page: '売上', label: '売上明細', slug: 'sales', description: '登録済みの売上明細を会社全体で確かめ、1件入力・取込へ', scope: 'company'},
       {page: '原本取り込み', label: '売上報告の取込', slug: 'import', description: '受領した報告（Excel・CSV・PDF）を原本ごと取り込む'},
+      // フォルダの見本（U4 の先出し）。localOnly は mode local のメニューだけ。代表モードの REPRESENTATIVE_PAGES には入れない
+      {page: 'フォルダ', label: 'フォルダ', slug: 'folders', description: '販売管理の見本', scope: 'company', localOnly: true},
       {page: '売上データ編集', label: '売上の表編集・加工', slug: 'sales-data', description: '売上を表で直し、加工手順を保存して承認・反映'},
       {page: '報告書マッピング', label: '取引先別の列対応', slug: 'report-mapping', description: '取引先ごとの報告の列と共通売上の対応（詳細設定）'},
     ]},
     {id: 'billing', sub: 'uriage', label: '請求・入金', items: [
       {page: '請求・入金', label: '請求・入金', slug: 'billing', description: '請求書の発行・取消と入金の登録'},
       {page: '月別消込', label: '月別入金表', slug: 'receipts', description: '取引先×月の入金予定と消込', scope: 'company'},
+      // 会計の最初の組（会社ルートの plans/2026-10-22-folder-cashflow.md の「最優先」。移行 0045_cashbook）。共通化の PR で調整役が取り込む
+      {page: '入出金', label: '入出金の履歴', slug: 'cashbook', description: '口座ごとの入出金と残高を銀行の明細と照らす', scope: 'company'},
       {page: '税ルール・台帳', label: '税計算台帳', slug: 'tax', description: '税計算のルールと計算結果の台帳', scope: 'company'},
     ]},
     {id: 'reports', sub: 'uriage', label: '帳票・分析', items: [
@@ -62,9 +87,15 @@ export const NAV_GROUPS = Object.freeze({
       {page: '収支', label: '作品の月別収支', slug: 'income', description: '作品ごとの月別の売上・経費・差額'},
       {page: 'PL・BS', label: 'PL・BS', slug: 'pl-bs', description: '作品別と会社のPL・BS（管理会計の試算。決算書ではありません）', scope: 'company'},
       {page: '分析・Lightdash', label: '分析', slug: 'analytics', description: '登録済みデータの分析（Lightdash）', scope: 'company'},
+      // シナリオの比較（段A。計画 A-3）: この帳票・分析グループの末尾の1行（全表示だけ。代表モードの REPRESENTATIVE_PAGES は触らない。会社の入口のカードは段B #21）
+      // 予実管理（フォルダ原案 F11。会社ルートの plans/2026-10-22-folder-yojitsu.md の最初の一切れ）。フォルダの部品の共通化の PR で調整役が取り込む
+      {page: '予実管理', label: '予実管理', slug: 'yojitsu', description: '年度の12か月で目標・行動・予測・実績の揃いを見て月を締め、全体と案件の4段を見る（入金ベース固定）', scope: 'company'},
+      {page: 'シナリオの比較', label: 'シナリオの比較', slug: 'scenario-compare', description: '標準・楽観・悲観とカスタムを同じ実績で並べ、期待値・目標に届く確率・出資の回収を見る（値は保存しません）', scope: 'company'},
     ]},
     {id: 'mg', sub: 'mg', label: 'MG', items: [
       {page: 'MG契約・台帳', label: 'MG契約・台帳', slug: 'mg', description: 'MG（最低保証）契約と消化・超過の台帳', scope: 'company'},
+      // 支払う MG（買付分）。会社ルートの plans/2026-10-22-folder-mg-buy.md の問い7 A（売上基幹 › MG に買付分を並べる）
+      {page: 'MG 買付', label: 'MG 買付', slug: 'mg-buy', description: '支払う MG（権利元へ払う最低保証）の回収・超過・分配額', scope: 'company'},
       {page: '権利先・MG帳票', label: '権利先・MG帳票', slug: 'rights-reports', description: '権利先・MG・委員会向けの帳票', scope: 'company'},
     ]},
     {id: 'royalty', sub: 'royalty', label: 'ロイヤリティ', items: [
@@ -72,11 +103,13 @@ export const NAV_GROUPS = Object.freeze({
       {page: 'ロイヤリティ集計', label: 'ロイヤリティ集計シート', slug: 'royalty-ledger', description: '権利者×種別×月の発生額と累計・支払・未払・イレギュラー', scope: 'company'},
       {page: 'ロイヤリティ報告書', label: '報告書・支払', slug: 'royalty-statements', description: '権利者ごとの報告書、報告と支払の記録', scope: 'company'},
       {page: 'ロイヤリティ契約', label: '契約・サイクル', slug: 'royalty-agreements', description: '監督料・脚本料・音楽・原作料の契約、料率の版、計上・報告・支払のサイクル', scope: 'company'},
+      {page: 'ロイヤリティフォルダ', label: 'フォルダ', slug: 'royalty-folder', description: '今月送る・支払月・権利者の推移', scope: 'company'},
       {page: '権利・分配', label: '配給委託の精算', slug: 'settlement', description: '配給委託（手数料型・MG型）の権利元への精算と試算'},
     ]},
     {id: 'committee', sub: 'committee', label: '製作委員会', items: [
       {page: '委員会月次収支', label: '月次収支', slug: 'committee-monthly', description: '作品ごとの月次の売上・手数料・経費・権利処理費・出資者別の分配と回収率'},
       {page: '製作委員会', label: '委員会の条件・期間報告', slug: 'committee', description: '委員会の条件と収支・分配の報告'},
+      {page: '委員会の台帳', label: '契約の式と台帳', slug: 'committee-ledger', description: '事業ごとの式・日程の回・届いた収支報告書の全行・前回まで累計と今回と累計・当事者と著作権者と成功報酬の累計'},
     ]},
     {id: 'expenses', sub: 'uriage', label: '経費', items: [
       {page: '経費', label: '経費', slug: 'expenses', description: '作品の経費の登録と予算対比'},
@@ -105,6 +138,7 @@ export const TOP_AREAS = Object.freeze(['work', 'eigyo', 'sales']);
 // 見える画面が1つも無い領域（上段のタブを押せない）の説明
 export const AREA_LOCK_NOTES = Object.freeze({eigyo: '取引・販売の情報は担当範囲外です', sales: '財務情報は担当範囲外です'});
 export const HOME_PAGE = 'ホーム';
+export const FOLDER_HOME_PAGE = 'フォルダ一覧';
 // 売上基幹の中の業務（2段目）。home はその業務を選んだときに最初に開く画面。最初の業務（計上）が既定
 export const SUB_AREAS = Object.freeze([
   Object.freeze({id: 'uriage', label: '計上', home: '帳票センター'}),
@@ -246,11 +280,71 @@ export function rememberedPage(storage, sub) {
 // 管理者だけが使う画面
 export const ADMIN_ONLY_PAGES = Object.freeze(['チーム', '取込履歴']);
 // 制作担当に出さない業務基幹の画面（財務・取引の情報を含む）。営業基幹・売上基幹の画面は EIGYO_PAGES・SALES_PAGES から全部隠すので、ここには書かない
-export const PRODUCTION_HIDDEN_WORK_PAGES = Object.freeze(['業務データ編集', '取引先', '調達・権利']);
+export const PRODUCTION_HIDDEN_WORK_PAGES = Object.freeze(['業務データ編集', '取引先', '調達・権利', '予算書', '製造', '企画', '調達']);
 
 // 役割ごとに左メニューから隠し、URL で開いても表示しない画面。権限の判定そのものはサーバーが行う
 export function hiddenPagesForRole(role) {
   if (role === 'admin') return new Set();
   if (role === 'production') return new Set([...EIGYO_PAGES, ...SALES_PAGES, ...PRODUCTION_HIDDEN_WORK_PAGES, ...ADMIN_ONLY_PAGES]);
   return new Set(ADMIN_ONLY_PAGES);
+}
+
+// ---- 表示モード（フェーズ1 #9・K-3）----
+
+// 代表モードは、左メニューに出す画面を K-18 の11画面に絞る。画面のコードは消さず、URL（?p=<slug>）と上部の「管理・設計」ボタンからは全画面を開ける。
+// 既定は全表示。選んだモードは localStorage に覚える（保存できない環境では覚えず、全表示で始める）
+export const VIEW_MODES = Object.freeze([
+  Object.freeze({id: 'all', label: '全表示'}),
+  Object.freeze({id: 'representative', label: '代表モード'}),
+]);
+export const DEFAULT_VIEW_MODE = 'all';
+export const VIEW_MODE_KEY = 'on-view-mode';
+
+// 代表モードで左メニューに出す11画面（ページID。順は K-18）。新しい画面は、ここに足すまで代表モードに出ない
+export const REPRESENTATIVE_PAGES = Object.freeze([
+  'ホーム', '企画・作品', '作品・商品マスタ', '商品・営業', '売上', '請求・入金', '月別消込', '経費', '収支', 'PL・BS', '帳票センター',
+]);
+const REPRESENTATIVE_SET = new Set(REPRESENTATIVE_PAGES);
+const VIEW_MODE_IDS = new Set(VIEW_MODES.map((mode) => mode.id));
+
+export function isViewMode(mode) {
+  return VIEW_MODE_IDS.has(mode);
+}
+
+// 代表モードで左メニューから外す画面（11画面以外の全部）。全表示と、知らないモードは何も外さない
+export function viewModeHiddenPages(mode) {
+  if (mode !== 'representative') return new Set();
+  return new Set(ALL_PAGES.filter((page) => !REPRESENTATIVE_SET.has(page)));
+}
+
+// 左メニューに渡す、隠す画面の集合。役割で隠す画面（hiddenPagesForRole）に、表示モードで外す画面を足す。
+// 画面の本文を出すか（権限）の判定には使わない。全表示は役割の集合をそのまま返す
+export function menuHiddenPages(mode, hiddenPages = new Set()) {
+  if (mode !== 'representative') return hiddenPages;
+  return new Set([...hiddenPages, ...viewModeHiddenPages(mode)]);
+}
+
+// 見本の画面（localOnly）。ローカルの試作（mode local）以外のメニューから外す。本番の Worker は mode worker
+export function environmentHiddenPages(runtimeMode) {
+  if (runtimeMode === 'local') return new Set();
+  return new Set(ITEMS.filter((item) => item.localOnly).map((item) => item.page));
+}
+
+// 上段のタブを押したときに最初に開く画面。代表モードの営業基幹は、全作品のウィンドウがメニューから外れるので商品・営業。ほかは AREA_HOME のまま
+const VIEW_MODE_AREA_HOME = Object.freeze({representative: Object.freeze({eigyo: '商品・営業'})});
+export function areaHomeFor(area, mode = DEFAULT_VIEW_MODE) {
+  return (Object.hasOwn(VIEW_MODE_AREA_HOME, mode) ? VIEW_MODE_AREA_HOME[mode][area] : undefined) ?? AREA_HOME[area];
+}
+
+export function readViewMode(storage) {
+  if (!storage) return DEFAULT_VIEW_MODE;
+  try {
+    const mode = storage.getItem(VIEW_MODE_KEY);
+    return isViewMode(mode) ? mode : DEFAULT_VIEW_MODE;
+  } catch { return DEFAULT_VIEW_MODE; }
+}
+
+export function rememberViewMode(storage, mode) {
+  if (!storage || !isViewMode(mode)) return;
+  try { storage.setItem(VIEW_MODE_KEY, mode); } catch { /* 保存できない環境では覚えない */ }
 }

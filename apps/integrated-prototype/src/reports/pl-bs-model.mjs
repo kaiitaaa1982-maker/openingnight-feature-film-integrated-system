@@ -179,8 +179,15 @@ function validateInput({from, to, asOf}) {
   if (asOf !== undefined && asOf !== null && !isMonth(asOf)) throw new Error('BSの基準月を「2026-05」の形で指定してください');
 }
 
+// 入金ベース（basis=cash。フェーズ1 #16）の PL の科目と作品の明細の名前。入金ベースの PL は src/reports/pl-bs-cash-model.mjs が
+// 入出金を税抜にした材料をこの本体へ cash: true で渡して作る（制作費は払った月の費用にし、制作中の作品に積まない）
+export const CASH_ACCOUNT_LABELS = Object.freeze({
+  production_cost: '制作費（払った月）', royalty: 'ロイヤリティ（支払）', committee_share: '委員会作品の自社の取得額（入金ベースは未確定の行）',
+});
+
 // ---------- 本体 ----------
-export function buildPlBs(input = {}) {
+// options.cash: 入金ベースの材料で PL を作る（BS は呼び出し側が計上の材料で作ったものを使う）。options.headingNotes: 計算の決まりの差し替え
+export function buildPlBs(input = {}, {cash = false, headingNotes: headingNotesOverride = null} = {}) {
   validateInput(input);
   const from = input.from, to = input.to, asOf = input.asOf || input.to;
   const end = asOf > to ? asOf : to;
@@ -279,7 +286,7 @@ export function buildPlBs(input = {}) {
       const series = {production_cost: target.prodAccrued, promotion: target.promotion, work_other_expense: target.workOther, direct_cost: target.direct}[kind];
       if(series && (kind==='production_cost'?row.recognitionTiming==='release_month_once':row.recognitionTiming==='incurred_month') && row.section===(['production_cost','direct_cost'].includes(kind)?'cogs':'sga'))series.add(i,row.exTax,'経費');
       else {const entry=extraFor(row,target);entry.accrued.add(i,row.exTax,'経費');const release=target?.work.releaseMonth;
-        const recognized=row.recognitionTiming==='release_month_once'&&target?(release?(release>row.month?release:row.month):null):row.month;
+        const recognized=!cash&&row.recognitionTiming==='release_month_once'&&target?(release?(release>row.month?release:row.month):null):row.month;
         if(recognized)entry.series.add(idx(recognized),row.exTax,'経費');else target.unverified.push('公開月が未整備のため、公開月に一括の経費を制作中の作品に残しています');
       }
       target.expenseInc.add(i, row.incTax, '経費の税込額');
@@ -444,6 +451,8 @@ export function buildPlBs(input = {}) {
     w.prodExpensed = S();
     w.wip = Array.from({length: n}, () => 0n);
     if (w.work.committee) continue;
+    // 入金ベースは払った月の費用（公開月に一括にしない・制作中の作品に積まない）
+    if (cash) { w.prodAccrued.values.forEach((value, i) => { w.prodExpensed.values[i] += value; }); continue; }
     // 期首の基準月が計算の最初の月より前なら、期首の制作中の作品（手入力の期首残高）から始める
     let running = openingMonth && openingMonth < months[0] ? BigInt(openingOf('work_in_progress', w.work.id)) : 0n;
     const release = w.work.releaseMonth;
@@ -553,9 +562,9 @@ export function buildPlBs(input = {}) {
     } else {
       for (const [group, series] of m.salesBy) push(`sales:${group}`, `売上｜${CHANNEL_LABELS[group] || 'その他'}`, series, {level: 1});
       push('revenue', '売上高', m.revenue, {emphasis: true});
-      push('royalty', 'ロイヤリティの発生額', m.royalty, {level: 1});
+      push('royalty', cash ? 'ロイヤリティの支払' : 'ロイヤリティの発生額', m.royalty, {level: 1});
       push('direct', '作品の直接費', m.direct, {level: 1});
-      push('production', '制作費（公開月に一括）', m.production, {level: 1});
+      push('production', cash ? CASH_ACCOUNT_LABELS.production_cost : '制作費（公開月に一括）', m.production, {level: 1});
       push('cogs', '売上原価', m.cogs, {emphasis: true});
       push('promotion', '広告宣伝費', m.promotion, {level: 1});
       push('workOther', '作品のその他の経費', m.workOther, {level: 1});
@@ -580,7 +589,8 @@ export function buildPlBs(input = {}) {
   const worksUnverified = workPl.filter((row) => row.origin === 'unverified');
   const anyUnverified = (predicate) => worksUnverified.some(predicate);
   const accountRow = (systemKey) => accounts.bySystemKey.get(systemKey);
-  const pushPl = ({series, children, ...row}) => plRows.push({level: 0, emphasis: false, origin: 'system', ...row, originLabel: ORIGIN_LABELS[row.origin || 'system'], values: colValues(series)});
+  const accountLabel = (systemKey) => (cash && CASH_ACCOUNT_LABELS[systemKey]) || accountRow(systemKey).name;
+  const pushPl =({series, children, ...row}) => plRows.push({level: 0, emphasis: false, origin: 'system', ...row, originLabel: ORIGIN_LABELS[row.origin || 'system'], values: colValues(series)});
 
   const ownSalesByGroup = new Map();
   for (const m of allW) for (const [group, values] of m.salesBy) ownSalesByGroup.set(group, ownSalesByGroup.has(group) ? add(ownSalesByGroup.get(group), values) : values);
@@ -618,17 +628,17 @@ export function buildPlBs(input = {}) {
     const systemRows = [];
     if (section === 'sales') {
       for (const [group, values] of [...ownSalesByGroup.entries()].sort(([a], [b]) => byOrder(CHANNEL_GROUPS)(a, b))) systemRows.push({key: `sales:${group}`, label: `　うち${CHANNEL_LABELS[group] || 'その他'}`, series: values, level: 2, origin: ownUnverified ? 'unverified' : 'system', detailOnly: true});
-      parts.push({key: 'own_sales', label: accountRow('own_sales').name, series: ownSales, origin: ownUnverified ? 'unverified' : 'system', children: systemRows.splice(0)});
-      parts.push({key: 'committee_share', label: accountRow('committee_share').name, series: committeeShare, origin: committeeUnverified ? 'unverified' : 'system'});
+      parts.push({key: 'own_sales', label: accountLabel('own_sales'), series: ownSales, origin: ownUnverified ? 'unverified' : 'system', children: systemRows.splice(0)});
+      parts.push({key: 'committee_share', label: accountLabel('committee_share'), series: committeeShare, origin: committeeUnverified ? 'unverified' : 'system'});
     }
     if (section === 'cogs') {
-      parts.push({key: 'royalty', label: accountRow('royalty').name, series: royalty, origin: anyUnverified((row) => row.kind === 'own' && row.reasons.some((r) => r.startsWith('ロイヤリティ'))) ? 'unverified' : 'system'});
-      parts.push({key: 'direct_cost', label: accountRow('direct_cost').name, series: direct, origin: 'system'});
-      parts.push({key: 'production_cost', label: accountRow('production_cost').name, series: production, origin: anyUnverified((row) => row.kind === 'own' && row.reasons.some((r) => r.includes('公開月'))) ? 'unverified' : 'system'});
+      parts.push({key: 'royalty', label: accountLabel('royalty'), series: royalty, origin: anyUnverified((row) => row.kind === 'own' && row.reasons.some((r) => r.startsWith('ロイヤリティ'))) ? 'unverified' : 'system'});
+      parts.push({key: 'direct_cost', label: accountLabel('direct_cost'), series: direct, origin: 'system'});
+      parts.push({key: 'production_cost', label: accountLabel('production_cost'), series: production, origin: anyUnverified((row) => row.kind === 'own' && row.reasons.some((r) => r.includes('公開月'))) ? 'unverified' : 'system'});
     }
     if (section === 'sga') {
-      parts.push({key: 'promotion', label: accountRow('promotion').name, series: promotion, origin: 'system'});
-      parts.push({key: 'work_other_expense', label: accountRow('work_other_expense').name, series: workOther, origin: 'system'});
+      parts.push({key: 'promotion', label: accountLabel('promotion'), series: promotion, origin: 'system'});
+      parts.push({key: 'work_other_expense', label: accountLabel('work_other_expense'), series: workOther, origin: 'system'});
     }
     for (const {account, values, unverified} of [...manualAccountSeries.values()].filter((entry) => entry.account.section === section).sort((a, b) => a.account.sortOrder - b.account.sortOrder || a.account.code.localeCompare(b.account.code))) {
       parts.push({key: `manual:${account.id}`, label: account.name, series: values, origin: unverified ? 'unverified' : 'manual', accountCode: account.code});
@@ -893,7 +903,8 @@ export function buildPlBs(input = {}) {
   // ---------- 照合 ----------
   // scope: company は会社PL・会社BSの照合（会社全体を見られる人だけに返す）、work は作品ごとの照合
   const checks = [];
-  const check = (item, value, detail, scope = 'company') => checks.push({item, value, ok: value === 0, scope, detail: detail || (value === 0 ? '一致' : `差 ${value.toLocaleString('ja-JP')}円`)});
+  // part: pl は PL の照合、bs は BS の照合（入金ベースは PL の照合を入金の材料から、BS の照合を計上の材料から取る）
+  const check = (item, value, detail, scope = 'company', part = 'pl') => checks.push({item, value, ok: value === 0, scope, part, detail: detail || (value === 0 ? '一致' : `差 ${value.toLocaleString('ja-JP')}円`)});
   const workMonthDiffs = workPl.map((row) => sumOf(row.monthly.map((m) => m.profit)) - row.period.profit);
   check('作品別PLの月別の利益の和 ＝ 期間計（作品ごと）', workMonthDiffs.find((value) => value !== 0) ?? 0, workMonthDiffs.every((value) => value === 0) ? `全${workPl.length}作品で一致` : undefined, 'work');
   const companyNetByMonth = periodMonths.map((month) => netIncome[idx(month)]);
@@ -912,12 +923,12 @@ export function buildPlBs(input = {}) {
     // 作品に分けられない入金と、作品を付けずに入れた期首の売掛金は会社の分
     const own = works.filter((work) => !work.committee);
     const receivableCompanyOnly = openSysOf('receivable') - sumOf(own.map((work) => openingOf('receivable', work.id))) - sumBs(nums(company.unallocatedReceipts, '入金'));
-    check('作品別の売掛金の和 ＋ 会社だけの分 ＝ 会社BSの売掛金', sumOf(workBalances.map((row) => row.receivable ?? 0)) + receivableCompanyOnly - companyBs.receivable);
+    check('作品別の売掛金の和 ＋ 会社だけの分 ＝ 会社BSの売掛金', sumOf(workBalances.map((row) => row.receivable ?? 0)) + receivableCompanyOnly - companyBs.receivable, undefined, 'company', 'bs');
   }
   check('委員会作品の自社の取得額（作品別PL）＝ 会社PLの委員会作品の自社の取得額', sumOf(workPl.filter((row) => row.kind === 'committee').map((row) => row.period.acq)) - plRows.find((row) => row.key === 'committee_share').values.period);
-  if (companyBs) check('手がかりで説明できない残り（差0）', companyBs.hints.at(-1).value);
+  if (companyBs) check('手がかりで説明できない残り（差0）', companyBs.hints.at(-1).value, undefined, 'company', 'bs');
 
-  const headingNotes = [
+  const headingNotes = headingNotesOverride || [
     '計上月・税抜のPL、月末の残高のBS。複式の仕訳は持たない管理会計の試算です。税務・会計上の決算書ではありません。',
     '委員会作品は自社の取り分（委員会の月次収支の自社の取得額）だけを売上にし、委員会の経費・権利処理費は自社の費用として引きません。出資金はPLに入れずBSの資産に置きます。',
     '費用区分で公開月一括を指定した自社作品の経費は公開月に一括で費用にし、公開前は制作中の作品（資産）に置きます。',

@@ -1,0 +1,6441 @@
+{
+  "fictional": true,
+  "notice": "架空データ。行動指標の計画 段B #15 の golden（src を読まずに build-kpi-expected.mjs が作る）。目標額・報酬・家賃補助を持たない",
+  "generator": "build-kpi-expected.mjs",
+  "plan": "会社ルート plans/2026-10-09-sales-producer-kpi.md の段B #15（K2-11: 段B は フェーズ1 #23a の種を延長）",
+  "definitionVersion": "kpi-stage-b-golden.2026-10-11",
+  "sources": {
+    "yojitsu/seed.json": "ae8edfa64bdfc90289613d3c1c6f556267ad052e750862581edd263b762928da",
+    "yojitsu/kpi-seed.json": "c982b952f9f8d909afe600332da8527a4c222b0389e9ff4a5c368bac1349e3a5",
+    "kpi-metrics/seed.json": "b91504bc5ee218ab3923bf930ce2359941a7ce58a35253989f6f7e0ae8f3dedc",
+    "receipt-matching/invoices.json": "e7778d887cd8343242a35444cae2175fe4db2d656766ef348c594da9e7637b0a",
+    "yojitsu/expected.json": "6c05c8d47f41683ed6e28521a83d5042700626a158edc9958b58e761b1f92540"
+  },
+  "rules": [
+    "期間は種の設定の期間のうち締めた月を含む期間。実績は期間の始まり〜締めた月、予測は締めた月の次の月〜期間の終わり、来期は次の期間（来期の入金・粗利の見込）",
+    "源泉は稼ぎ方と1対1（制作受託＝1・自社出資＝2・製作委員会＝3・買付＝4・販売委託＝5。J-2 (a)・J-3 (a)）",
+    "源泉別の実績＝フェーズ1 K-16 の利益額の「確定」の明細（golden.py と同じ規則で別に作り、expected.json の利益額.明細と一致を確かめた）を案件の稼ぎ方で分けた和。入金（cash）と計上（accrual）。会社の売上＝売上の費目（入金×売上率）、粗利＝売上−確定の経費。4費目を引かない粗利を並べる。未確定・除外は源泉ごとに別の行。源泉1は受託制作の契約の版（延長の種）が無ければ unconnected",
+    "製作委員会は自社の払込と自社の取得額（入金×自社の出資比率）だけを数え、他の出資者の出資額・払込は counted: false の参考に出す",
+    "案件の確度は案件の段階の確度（種の段階の表）。見送りの案件と予測の行の無い案件は除外（理由つき）",
+    "案件の予測の行＝案件の最新の版（作った日の順）の行のうち、シナリオが採用シナリオか単一の行。成立時の期間内の粗利（見込）＝trunc(売上の区分の額の和×売上率×前提の倍率)−4費目の区分（出資・買付）の出金。会社の売上＝trunc(売上の区分の額の和×売上率×前提の倍率)。前提の倍率は買付・販売委託が窓口の売上の倍率、自社出資・製作委員会が回収の量、制作受託は無し。制作の実費・作り手と権利元への分配・クラファンの支援金と費用は粗利に入れない（notCountedYen に区分ごとの額）",
+    "確度加重＝trunc(見込×確度÷10000)（段A と同じ2段の truncate）。案件別の期待値＝実績＋確度加重",
+    "出資の回収: 自社出資＝出資の記録の自社の出資額（版の出資額。予定の払込を含む）、製作委員会＝自社の払込の累計（種の時点まで）。収益＝入金×売上率の累計（締めた月まで）。差額＝収益−出資額、回収率は truncate（要件の要確認10 まで仮）、期末の見込み＝差額＋残りの期待値。残りの期待値は製作委員会が案件の確度加重（予定の払込を引いたあと）、自社出資は予測の「出資」区分の出金（予定の払込）を足し戻してから確度を掛けた額（出資額が予定の払込を含むので2回引かない）",
+    "次の一手は案件の最後の活動記録の次の一手と期日。期日が種の時点より前なら期限切れ（同じ日は期限切れでない）",
+    "有効な計画の版＝期間の採用の記録のうち種の時点までに採用した最新（採用日の新しい順、同じ日は版の番号の大きい順。採用の記録の行の並びに依らない）",
+    "branchCases: 種の本体では通らない分岐（予測誤差がしきい値を超える行、期日が種の時点と同じ日の次の一手、件数が最小件数以上の通過率、回収待ちの出資を源泉の偏りから除く計画、予定の払込のある自社出資と製作委員会の出資の回収）を、延長の種の架空の小さな入力で同じ関数に通した結果",
+    "通過率は指標マスタの段の並び（役×稼ぎ方）ごとに、締めた月で終わる過去 N か月（rate_window）に段 s の活動記録があった案件の数と、そのうち段 s の最初の記録の日以後・窓の中に次の段の活動記録がある案件の数。最小件数（rate_min_count）未満は insufficient で、当てる率は設定の仮置きの率",
+    "設定はフェーズ1 #23a の行動の行（1件あたりの額・面談→提案・提案→契約の率）を先に入れて残し、段B #9 の設定の行の同じ変数×範囲は入らない（skippedKpiMetricsSettings）",
+    "シナリオは段A と同じ定義: 標準＝設定の値、楽観・悲観＝窓口の売上の倍率・回収の量・提案→契約の率・入金の遅れを段A と同じ幅で動かす（入金の遅れは悲観だけ）。期待値＝実績（入金の基準の源泉別の粗利）＋確度加重＋行動からの見込で、内訳の整数の和（配らない）",
+    "行動は延長の種の行動の計画のうち締めた月の次の月〜期間の終わりの件数を稼ぎ方×段で足したもの。1件の額＝設定の1件あたりの額、換算率＝稼ぎ方の既定の売上率、成立の確率＝面談→提案×提案→契約（提案は提案→契約だけ）、1件の時間＝指標マスタの段の1件の時間を率の逆数で連ねた和（truncate）。行動の時期（契約までの月数・窓口に出るまでの月数）は期待値に入れない（段A と同じ）",
+    "4費目を引かない場合（withoutFourItems。回収待ちの見え方。FR-REV-KPI-007・044）: 実績を4費目を引かない粗利にし、案件の4費目の区分の出金を0にして同じ計算をする",
+    "分布は実績を起点に、案件の成立と行動の二項分布を1万円の格子（half_up）で正確な分数でたたみ込む。golden は分布の要約（点の数・最小・最大・正確な分数の SHA-256）と10・50・90%点で持ち、点の一覧は持たない（試験は inputs から distributionPoints で作る）",
+    "入金の時期: 予測の行の月（入金の月）＋入金の遅れ。入金の見込＝trunc(月の売上の区分の額×前提の倍率×確度)（換算率の前）。来期は次の期間の月だけ",
+    "前提の効き・行動の候補 (1) は段A と同じ。候補の (2) 段階を進める・(3) 交渉は golden に無い",
+    "見直しの提案（K2-9）の4条件: 予測誤差（月の最初の入金の日に有効だった予測の版の売上と入金×売上率の差が、予測の売上の10%と1万円の大きいほうを超えた。FR-REV-FCST-018 の型）、次の一手の期限切れ、源泉の偏り（期待値の会社の売上が有効な計画の版を下回る稼ぎ方。回収待ちの出資は除く）、通過率の件数不足。提案の2つ目＝いちばん足りない稼ぎ方の候補の上位1つ。1つ目（1時間あたりの届く確率の増分が最大）は目標額に依るので probabilityPick で実行時に数える",
+    "目標額・目標に依る値（差・達成率・届く確率・候補の確率）は持たない。目標は粗利で測る（J-12 (c)）ので、試験は分布（粗利）から実行時の目標額で数える。計画の版の額に依る値（源泉の偏りの率）は fictional: true の印つき"
+  ],
+  "gridYen": 10000,
+  "period": {
+    "name": "1年目",
+    "from": "2026-10",
+    "to": "2027-09",
+    "nextFrom": "2027-10",
+    "nextTo": "2028-09"
+  },
+  "closedMonth": "2026-11",
+  "asOf": "2026-11-30",
+  "settings": {
+    "precedence": {
+      "first": "seed.json の 行動（unit_amount は稼ぎ方の範囲、conversion_rate は稼ぎ方×段 面談・提案の範囲）",
+      "then": "../kpi-metrics/seed.json の settings（同じ変数×範囲の行は入らない）"
+    },
+    "skippedKpiMetricsSettings": [
+      {
+        "variableKey": "unit_amount",
+        "scope": "earning_type",
+        "earningType": "acquisition",
+        "step": null,
+        "sameValue": false
+      },
+      {
+        "variableKey": "unit_amount",
+        "scope": "earning_type",
+        "earningType": "consignment",
+        "step": null,
+        "sameValue": false
+      },
+      {
+        "variableKey": "unit_amount",
+        "scope": "earning_type",
+        "earningType": "contract_work",
+        "step": null,
+        "sameValue": false
+      },
+      {
+        "variableKey": "conversion_rate",
+        "scope": "earning_type_step",
+        "earningType": "contract_work",
+        "step": "proposal",
+        "sameValue": true
+      }
+    ],
+    "stageProbabilityBps": {
+      "見送り": 0,
+      "企画メモ": 1000,
+      "面談済み": 2000,
+      "条件の探り": 3000,
+      "提案済み": 4000,
+      "担当の合意": 5000,
+      "決裁者の合意": 6000,
+      "条件の合意": 7000,
+      "内示": 8000,
+      "契約の調整": 9000,
+      "契約済み": 10000
+    },
+    "standardAssumptions": {
+      "salesMultiplierBps": 10000,
+      "recoveryAmountBps": 10000,
+      "meetingToProposalBps": 5000,
+      "proposalToContractBps": 3000,
+      "paymentDelayMonths": 0
+    }
+  },
+  "sourceProfit": {
+    "cash": {
+      "bySource": [
+        {
+          "source": "contract_work",
+          "status": "connected",
+          "salesYen": 0,
+          "costYen": 0,
+          "profitYen": 0,
+          "fourItemsYen": 0,
+          "profitWithoutFourItemsYen": 0,
+          "unconfirmed": [],
+          "excluded": [
+            {
+              "item": "制作の実費",
+              "side": "経費",
+              "amountYen": 1750000
+            }
+          ]
+        },
+        {
+          "source": "own_investment",
+          "status": "connected",
+          "salesYen": 37589047,
+          "costYen": 0,
+          "profitYen": 37589047,
+          "fourItemsYen": 0,
+          "profitWithoutFourItemsYen": 37589047,
+          "unconfirmed": [],
+          "excluded": []
+        },
+        {
+          "source": "committee",
+          "status": "connected",
+          "salesYen": 8600669,
+          "costYen": 7272000,
+          "profitYen": 1328669,
+          "fourItemsYen": 7272000,
+          "profitWithoutFourItemsYen": 8600669,
+          "unconfirmed": [
+            {
+              "item": "配給費（負担者 自社以外）",
+              "side": "経費",
+              "amountYen": 1650466
+            },
+            {
+              "item": "費用区分「制作費」の経費",
+              "side": "経費",
+              "amountYen": 9216452
+            }
+          ],
+          "excluded": [
+            {
+              "item": "出資の実績の行（出資の記録の払込と同じ）",
+              "side": "経費",
+              "amountYen": 7272000
+            }
+          ]
+        },
+        {
+          "source": "acquisition",
+          "status": "connected",
+          "salesYen": 9154364,
+          "costYen": 7277000,
+          "profitYen": 1877364,
+          "fourItemsYen": 7277000,
+          "profitWithoutFourItemsYen": 9154364,
+          "unconfirmed": [
+            {
+              "item": "宣伝費（負担者 自社以外）",
+              "side": "経費",
+              "amountYen": 931236
+            }
+          ],
+          "excluded": []
+        },
+        {
+          "source": "consignment",
+          "status": "connected",
+          "salesYen": 0,
+          "costYen": 0,
+          "profitYen": 0,
+          "fourItemsYen": 0,
+          "profitWithoutFourItemsYen": 0,
+          "unconfirmed": [],
+          "excluded": []
+        }
+      ],
+      "total": {
+        "salesYen": 55344080,
+        "costYen": 14549000,
+        "profitYen": 40795080,
+        "fourItemsYen": 14549000,
+        "profitWithoutFourItemsYen": 55344080
+      },
+      "unattributedYen": 0
+    },
+    "accrual": {
+      "bySource": [
+        {
+          "source": "contract_work",
+          "status": "connected",
+          "salesYen": 0,
+          "costYen": 0,
+          "profitYen": 0,
+          "fourItemsYen": 0,
+          "profitWithoutFourItemsYen": 0,
+          "unconfirmed": [],
+          "excluded": [
+            {
+              "item": "制作の実費",
+              "side": "経費",
+              "amountYen": 1750000
+            }
+          ]
+        },
+        {
+          "source": "own_investment",
+          "status": "connected",
+          "salesYen": 4973641,
+          "costYen": 0,
+          "profitYen": 4973641,
+          "fourItemsYen": 0,
+          "profitWithoutFourItemsYen": 4973641,
+          "unconfirmed": [],
+          "excluded": []
+        },
+        {
+          "source": "committee",
+          "status": "connected",
+          "salesYen": 1217240,
+          "costYen": 10830701,
+          "profitYen": -9613461,
+          "fourItemsYen": 7272000,
+          "profitWithoutFourItemsYen": -2341461,
+          "unconfirmed": [
+            {
+              "item": "配給費（負担者 自社以外）",
+              "side": "経費",
+              "amountYen": 1650466
+            },
+            {
+              "item": "費用区分「制作費」の経費",
+              "side": "経費",
+              "amountYen": 8918098
+            }
+          ],
+          "excluded": [
+            {
+              "item": "出資の実績の行（出資の記録の払込と同じ）",
+              "side": "経費",
+              "amountYen": 7272000
+            }
+          ]
+        },
+        {
+          "source": "acquisition",
+          "status": "connected",
+          "salesYen": 1760329,
+          "costYen": 7277000,
+          "profitYen": -5516671,
+          "fourItemsYen": 7277000,
+          "profitWithoutFourItemsYen": 1760329,
+          "unconfirmed": [
+            {
+              "item": "宣伝費（負担者 自社以外）",
+              "side": "経費",
+              "amountYen": 931236
+            }
+          ],
+          "excluded": []
+        },
+        {
+          "source": "consignment",
+          "status": "connected",
+          "salesYen": 0,
+          "costYen": 0,
+          "profitYen": 0,
+          "fourItemsYen": 0,
+          "profitWithoutFourItemsYen": 0,
+          "unconfirmed": [],
+          "excluded": []
+        }
+      ],
+      "total": {
+        "salesYen": 7951210,
+        "costYen": 18107701,
+        "profitYen": -10156491,
+        "fourItemsYen": 14549000,
+        "profitWithoutFourItemsYen": 4392509
+      },
+      "unattributedYen": 0
+    }
+  },
+  "committees": [
+    {
+      "projectCode": "YJ-P05",
+      "ownRatioBps": 3500,
+      "investments": [
+        {
+          "investmentId": "YJ-INV-W07",
+          "workCode": "YJ-W07",
+          "memberCount": 3,
+          "totalInvestmentYen": 95200000,
+          "ownInvestmentYen": 33320000,
+          "ownRatioBps": 3500,
+          "ownPaidTotalYen": 33320000,
+          "ownPaidPeriodYen": 0,
+          "ownScheduledPeriodYen": 0,
+          "otherMembers": [
+            {
+              "member": "出資者07-1（架空）",
+              "investmentYen": 25370800,
+              "paidTotalYen": 25370800,
+              "paidPeriodYen": 0,
+              "scheduledPeriodYen": 0,
+              "counted": false
+            },
+            {
+              "member": "出資者07-2（架空）",
+              "investmentYen": 36509200,
+              "paidTotalYen": 36509200,
+              "paidPeriodYen": 0,
+              "scheduledPeriodYen": 0,
+              "counted": false
+            }
+          ]
+        },
+        {
+          "investmentId": "YJ-INV-W08",
+          "workCode": "YJ-W08",
+          "memberCount": 3,
+          "totalInvestmentYen": 93200000,
+          "ownInvestmentYen": 32620000,
+          "ownRatioBps": 3500,
+          "ownPaidTotalYen": 32620000,
+          "ownPaidPeriodYen": 0,
+          "ownScheduledPeriodYen": 0,
+          "otherMembers": [
+            {
+              "member": "出資者08-1（架空）",
+              "investmentYen": 21808800,
+              "paidTotalYen": 0,
+              "paidPeriodYen": 0,
+              "scheduledPeriodYen": 0,
+              "counted": false
+            },
+            {
+              "member": "出資者08-2（架空）",
+              "investmentYen": 38771200,
+              "paidTotalYen": 0,
+              "paidPeriodYen": 0,
+              "scheduledPeriodYen": 0,
+              "counted": false
+            }
+          ]
+        }
+      ],
+      "ownPaidTotalYen": 65940000,
+      "ownPaidPeriodYen": 0,
+      "otherMembersPaidPeriodYen": 0,
+      "acquisitionsTotalYen": 5878037,
+      "acquisitionsPeriodYen": 5878037,
+      "acquisitionsMinusOwnPaidPeriodYen": 5878037
+    },
+    {
+      "projectCode": "YJ-P06",
+      "ownRatioBps": 4000,
+      "investments": [
+        {
+          "investmentId": "YJ-INV-W09",
+          "workCode": "YJ-W09",
+          "memberCount": 3,
+          "totalInvestmentYen": 48800000,
+          "ownInvestmentYen": 19520000,
+          "ownRatioBps": 4000,
+          "ownPaidTotalYen": 19520000,
+          "ownPaidPeriodYen": 0,
+          "ownScheduledPeriodYen": 0,
+          "otherMembers": [
+            {
+              "member": "出資者09-1（架空）",
+              "investmentYen": 18739200,
+              "paidTotalYen": 0,
+              "paidPeriodYen": 0,
+              "scheduledPeriodYen": 0,
+              "counted": false
+            },
+            {
+              "member": "出資者09-2（架空）",
+              "investmentYen": 10540800,
+              "paidTotalYen": 0,
+              "paidPeriodYen": 0,
+              "scheduledPeriodYen": 0,
+              "counted": false
+            }
+          ]
+        }
+      ],
+      "ownPaidTotalYen": 19520000,
+      "ownPaidPeriodYen": 0,
+      "otherMembersPaidPeriodYen": 0,
+      "acquisitionsTotalYen": 1313360,
+      "acquisitionsPeriodYen": 1313360,
+      "acquisitionsMinusOwnPaidPeriodYen": 1313360
+    },
+    {
+      "projectCode": "YJ-P07",
+      "ownRatioBps": 2500,
+      "investments": [
+        {
+          "investmentId": "YJ-INV-W10",
+          "workCode": "YJ-W10",
+          "memberCount": 3,
+          "totalInvestmentYen": 76800000,
+          "ownInvestmentYen": 19200000,
+          "ownRatioBps": 2500,
+          "ownPaidTotalYen": 19200000,
+          "ownPaidPeriodYen": 0,
+          "ownScheduledPeriodYen": 0,
+          "otherMembers": [
+            {
+              "member": "出資者10-1（架空）",
+              "investmentYen": 32256000,
+              "paidTotalYen": 0,
+              "paidPeriodYen": 0,
+              "scheduledPeriodYen": 0,
+              "counted": false
+            },
+            {
+              "member": "出資者10-2（架空）",
+              "investmentYen": 25344000,
+              "paidTotalYen": 0,
+              "paidPeriodYen": 0,
+              "scheduledPeriodYen": 0,
+              "counted": false
+            }
+          ]
+        }
+      ],
+      "ownPaidTotalYen": 19200000,
+      "ownPaidPeriodYen": 0,
+      "otherMembersPaidPeriodYen": 0,
+      "acquisitionsTotalYen": 1409272,
+      "acquisitionsPeriodYen": 1409272,
+      "acquisitionsMinusOwnPaidPeriodYen": 1409272
+    },
+    {
+      "projectCode": "YJ-P13",
+      "ownRatioBps": 3000,
+      "investments": [
+        {
+          "investmentId": "YJ-INV-W17",
+          "workCode": "YJ-W17",
+          "memberCount": 3,
+          "totalInvestmentYen": 40400000,
+          "ownInvestmentYen": 12120000,
+          "ownRatioBps": 3000,
+          "ownPaidTotalYen": 7272000,
+          "ownPaidPeriodYen": 7272000,
+          "ownScheduledPeriodYen": 4848000,
+          "otherMembers": [
+            {
+              "member": "出資者17-1（架空）",
+              "investmentYen": 15836800,
+              "paidTotalYen": 9502080,
+              "paidPeriodYen": 9502080,
+              "scheduledPeriodYen": 6334720,
+              "counted": false
+            },
+            {
+              "member": "出資者17-2（架空）",
+              "investmentYen": 12443200,
+              "paidTotalYen": 7465920,
+              "paidPeriodYen": 7465920,
+              "scheduledPeriodYen": 4977280,
+              "counted": false
+            }
+          ]
+        }
+      ],
+      "ownPaidTotalYen": 7272000,
+      "ownPaidPeriodYen": 7272000,
+      "otherMembersPaidPeriodYen": 16968000,
+      "acquisitionsTotalYen": 0,
+      "acquisitionsPeriodYen": 0,
+      "acquisitionsMinusOwnPaidPeriodYen": -7272000
+    },
+    {
+      "projectCode": "YJ-P14",
+      "investments": [],
+      "ownInvestmentYen": null,
+      "note": "no_investment_record"
+    }
+  ],
+  "projects": [
+    {
+      "projectCode": "YJ-P01",
+      "earningType": "自社出資",
+      "source": "own_investment",
+      "stage": "契約済み",
+      "probabilityBps": 10000,
+      "rateBps": 10000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第2版",
+      "forecastCreatedOn": "2026-11-16",
+      "actualProfitYen": 11095706,
+      "actualSalesYen": 11095706,
+      "excludedReason": null,
+      "revenueBaseYen": 49807899,
+      "deductionYen": 0,
+      "notCountedYen": null,
+      "valueYen": 49807899,
+      "weightedYen": 49807899,
+      "salesValueYen": 49807899,
+      "weightedSalesYen": 49807899,
+      "expectedYen": 60903605,
+      "nextPeriodWeightedYen": 3338052,
+      "recovery": {
+        "investmentYen": 59970000,
+        "revenueYen": 11095706,
+        "diffYen": -48874294,
+        "recoveryRateBps": 1850,
+        "status": "awaiting"
+      },
+      "nextAction": {
+        "recordedOn": "2026-11-30",
+        "dueOn": null,
+        "hasNextAction": false,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P02",
+      "earningType": "自社出資",
+      "source": "own_investment",
+      "stage": "契約済み",
+      "probabilityBps": 10000,
+      "rateBps": 10000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第2版",
+      "forecastCreatedOn": "2026-11-16",
+      "actualProfitYen": 4350694,
+      "actualSalesYen": 4350694,
+      "excludedReason": null,
+      "revenueBaseYen": 18776119,
+      "deductionYen": 0,
+      "notCountedYen": null,
+      "valueYen": 18776119,
+      "weightedYen": 18776119,
+      "salesValueYen": 18776119,
+      "weightedSalesYen": 18776119,
+      "expectedYen": 23126813,
+      "nextPeriodWeightedYen": 1675579,
+      "recovery": {
+        "investmentYen": 15147000,
+        "revenueYen": 4350694,
+        "diffYen": -10796306,
+        "recoveryRateBps": 2872,
+        "status": "awaiting"
+      },
+      "nextAction": null
+    },
+    {
+      "projectCode": "YJ-P03",
+      "earningType": "自社出資",
+      "source": "own_investment",
+      "stage": "契約済み",
+      "probabilityBps": 10000,
+      "rateBps": 10000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第2版",
+      "forecastCreatedOn": "2026-11-16",
+      "actualProfitYen": 17075251,
+      "actualSalesYen": 17075251,
+      "excludedReason": null,
+      "revenueBaseYen": 73476082,
+      "deductionYen": 0,
+      "notCountedYen": null,
+      "valueYen": 73476082,
+      "weightedYen": 73476082,
+      "salesValueYen": 73476082,
+      "weightedSalesYen": 73476082,
+      "expectedYen": 90551333,
+      "nextPeriodWeightedYen": 4135066,
+      "recovery": {
+        "investmentYen": 76013000,
+        "revenueYen": 17075251,
+        "diffYen": -58937749,
+        "recoveryRateBps": 2246,
+        "status": "awaiting"
+      },
+      "nextAction": null
+    },
+    {
+      "projectCode": "YJ-P04",
+      "earningType": "自社出資",
+      "source": "own_investment",
+      "stage": "契約済み",
+      "probabilityBps": 10000,
+      "rateBps": 10000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第2版",
+      "forecastCreatedOn": "2026-11-16",
+      "actualProfitYen": 5067396,
+      "actualSalesYen": 5067396,
+      "excludedReason": null,
+      "revenueBaseYen": 19878902,
+      "deductionYen": 0,
+      "notCountedYen": null,
+      "valueYen": 19878902,
+      "weightedYen": 19878902,
+      "salesValueYen": 19878902,
+      "weightedSalesYen": 19878902,
+      "expectedYen": 24946298,
+      "nextPeriodWeightedYen": 1577066,
+      "recovery": {
+        "investmentYen": 25613000,
+        "revenueYen": 5067396,
+        "diffYen": -20545604,
+        "recoveryRateBps": 1978,
+        "status": "awaiting"
+      },
+      "nextAction": null
+    },
+    {
+      "projectCode": "YJ-P05",
+      "earningType": "製作委員会",
+      "source": "committee",
+      "stage": "契約済み",
+      "probabilityBps": 10000,
+      "rateBps": 3500,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第2版",
+      "forecastCreatedOn": "2026-11-16",
+      "actualProfitYen": 5878037,
+      "actualSalesYen": 5878037,
+      "excludedReason": null,
+      "revenueBaseYen": 70787176,
+      "deductionYen": 0,
+      "notCountedYen": null,
+      "valueYen": 24775511,
+      "weightedYen": 24775511,
+      "salesValueYen": 24775511,
+      "weightedSalesYen": 24775511,
+      "expectedYen": 30653548,
+      "nextPeriodWeightedYen": 1562591,
+      "recovery": {
+        "investmentYen": 65940000,
+        "revenueYen": 5878037,
+        "diffYen": -60061963,
+        "recoveryRateBps": 891,
+        "status": "awaiting"
+      },
+      "nextAction": {
+        "recordedOn": "2026-10-30",
+        "dueOn": null,
+        "hasNextAction": false,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P06",
+      "earningType": "製作委員会",
+      "source": "committee",
+      "stage": "契約済み",
+      "probabilityBps": 10000,
+      "rateBps": 4000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第2版",
+      "forecastCreatedOn": "2026-11-16",
+      "actualProfitYen": 1313360,
+      "actualSalesYen": 1313360,
+      "excludedReason": null,
+      "revenueBaseYen": 12508315,
+      "deductionYen": 0,
+      "notCountedYen": null,
+      "valueYen": 5003326,
+      "weightedYen": 5003326,
+      "salesValueYen": 5003326,
+      "weightedSalesYen": 5003326,
+      "expectedYen": 6316686,
+      "nextPeriodWeightedYen": 281616,
+      "recovery": {
+        "investmentYen": 19520000,
+        "revenueYen": 1313360,
+        "diffYen": -18206640,
+        "recoveryRateBps": 672,
+        "status": "awaiting"
+      },
+      "nextAction": null
+    },
+    {
+      "projectCode": "YJ-P07",
+      "earningType": "製作委員会",
+      "source": "committee",
+      "stage": "契約済み",
+      "probabilityBps": 10000,
+      "rateBps": 2500,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第2版",
+      "forecastCreatedOn": "2026-11-16",
+      "actualProfitYen": 1409272,
+      "actualSalesYen": 1409272,
+      "excludedReason": null,
+      "revenueBaseYen": 24489087,
+      "deductionYen": 0,
+      "notCountedYen": null,
+      "valueYen": 6122271,
+      "weightedYen": 6122271,
+      "salesValueYen": 6122271,
+      "weightedSalesYen": 6122271,
+      "expectedYen": 7531543,
+      "nextPeriodWeightedYen": 314397,
+      "recovery": {
+        "investmentYen": 19200000,
+        "revenueYen": 1409272,
+        "diffYen": -17790728,
+        "recoveryRateBps": 733,
+        "status": "awaiting"
+      },
+      "nextAction": null
+    },
+    {
+      "projectCode": "YJ-P08",
+      "earningType": "買付",
+      "source": "acquisition",
+      "stage": "契約済み",
+      "probabilityBps": 10000,
+      "rateBps": 2000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第2版",
+      "forecastCreatedOn": "2026-11-16",
+      "actualProfitYen": 3430735,
+      "actualSalesYen": 3430735,
+      "excludedReason": null,
+      "revenueBaseYen": 80868561,
+      "deductionYen": 0,
+      "notCountedYen": {
+        "作り手・権利元への分配": 61621492
+      },
+      "valueYen": 16173712,
+      "weightedYen": 16173712,
+      "salesValueYen": 16173712,
+      "weightedSalesYen": 16173712,
+      "expectedYen": 19604447,
+      "nextPeriodWeightedYen": 1247398,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-04",
+        "dueOn": "2026-12-30",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P09",
+      "earningType": "買付",
+      "source": "acquisition",
+      "stage": "契約済み",
+      "probabilityBps": 10000,
+      "rateBps": 2000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第2版",
+      "forecastCreatedOn": "2026-11-16",
+      "actualProfitYen": 3119626,
+      "actualSalesYen": 3119626,
+      "excludedReason": null,
+      "revenueBaseYen": 58689877,
+      "deductionYen": 0,
+      "notCountedYen": {
+        "作り手・権利元への分配": 45205284
+      },
+      "valueYen": 11737975,
+      "weightedYen": 11737975,
+      "salesValueYen": 11737975,
+      "weightedSalesYen": 11737975,
+      "expectedYen": 14857601,
+      "nextPeriodWeightedYen": 735019,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-05",
+        "dueOn": "2026-12-07",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P10",
+      "earningType": "買付",
+      "source": "acquisition",
+      "stage": "契約済み",
+      "probabilityBps": 10000,
+      "rateBps": 2000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第2版",
+      "forecastCreatedOn": "2026-11-16",
+      "actualProfitYen": 2604003,
+      "actualSalesYen": 2604003,
+      "excludedReason": null,
+      "revenueBaseYen": 62876327,
+      "deductionYen": 0,
+      "notCountedYen": {
+        "作り手・権利元への分配": 47983329
+      },
+      "valueYen": 12575265,
+      "weightedYen": 12575265,
+      "salesValueYen": 12575265,
+      "weightedSalesYen": 12575265,
+      "expectedYen": 15179268,
+      "nextPeriodWeightedYen": 930859,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-06",
+        "dueOn": "2026-12-14",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P11",
+      "earningType": "自社出資",
+      "source": "own_investment",
+      "stage": "決裁者の合意",
+      "probabilityBps": 6000,
+      "rateBps": 10000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第1版",
+      "forecastCreatedOn": "2026-10-16",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 10255138,
+      "deductionYen": 8816000,
+      "notCountedYen": {
+        "クラウドファンディングの支援金": 8816000,
+        "クラウドファンディングの費用": 2049520
+      },
+      "valueYen": 1439138,
+      "weightedYen": 863482,
+      "salesValueYen": 10255138,
+      "weightedSalesYen": 6153082,
+      "expectedYen": 863482,
+      "nextPeriodWeightedYen": 7338374,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-24",
+        "dueOn": "2026-12-29",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P12",
+      "earningType": "自社出資",
+      "source": "own_investment",
+      "stage": "企画メモ",
+      "probabilityBps": 1000,
+      "rateBps": 10000,
+      "rateStatus": "仮置き",
+      "forecastVersion": null,
+      "forecastCreatedOn": null,
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": "no_forecast",
+      "revenueBaseYen": null,
+      "deductionYen": null,
+      "notCountedYen": null,
+      "valueYen": null,
+      "weightedYen": null,
+      "salesValueYen": null,
+      "weightedSalesYen": null,
+      "expectedYen": null,
+      "nextPeriodWeightedYen": null,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-26",
+        "dueOn": "2026-12-27",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P13",
+      "earningType": "製作委員会",
+      "source": "committee",
+      "stage": "契約済み",
+      "probabilityBps": 10000,
+      "rateBps": 3000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第1版",
+      "forecastCreatedOn": "2026-10-09",
+      "actualProfitYen": -7272000,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 5107969,
+      "deductionYen": 4848000,
+      "notCountedYen": null,
+      "valueYen": -3315610,
+      "weightedYen": -3315610,
+      "salesValueYen": 1532390,
+      "weightedSalesYen": 1532390,
+      "expectedYen": -10587610,
+      "nextPeriodWeightedYen": 681331,
+      "recovery": {
+        "investmentYen": 7272000,
+        "revenueYen": 0,
+        "diffYen": -7272000,
+        "recoveryRateBps": 0,
+        "status": "awaiting"
+      },
+      "nextAction": {
+        "recordedOn": "2026-09-11",
+        "dueOn": "2026-12-24",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P14",
+      "earningType": "製作委員会",
+      "source": "committee",
+      "stage": "条件の探り",
+      "probabilityBps": 3000,
+      "rateBps": 4500,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第1版",
+      "forecastCreatedOn": "2026-11-04",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 0,
+      "deductionYen": 16849000,
+      "notCountedYen": null,
+      "valueYen": -16849000,
+      "weightedYen": -5054700,
+      "salesValueYen": 0,
+      "weightedSalesYen": 0,
+      "expectedYen": -5054700,
+      "nextPeriodWeightedYen": 1192808,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-11",
+        "dueOn": "2026-12-26",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P15",
+      "earningType": "買付",
+      "source": "acquisition",
+      "stage": "契約済み",
+      "probabilityBps": 10000,
+      "rateBps": 2000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第1版",
+      "forecastCreatedOn": "2026-10-09",
+      "actualProfitYen": -7277000,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 7732755,
+      "deductionYen": 0,
+      "notCountedYen": null,
+      "valueYen": 1546551,
+      "weightedYen": 1546551,
+      "salesValueYen": 1546551,
+      "weightedSalesYen": 1546551,
+      "expectedYen": -5730449,
+      "nextPeriodWeightedYen": 183097,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-03",
+        "dueOn": "2026-12-20",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P16",
+      "earningType": "買付",
+      "source": "acquisition",
+      "stage": "内示",
+      "probabilityBps": 8000,
+      "rateBps": 2000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第1版",
+      "forecastCreatedOn": "2026-10-09",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 14732087,
+      "deductionYen": 2208000,
+      "notCountedYen": null,
+      "valueYen": 738417,
+      "weightedYen": 590733,
+      "salesValueYen": 2946417,
+      "weightedSalesYen": 2357133,
+      "expectedYen": 590733,
+      "nextPeriodWeightedYen": 598756,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-27",
+        "dueOn": "2026-12-27",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P17",
+      "earningType": "買付",
+      "source": "acquisition",
+      "stage": "提案済み",
+      "probabilityBps": 4000,
+      "rateBps": 2500,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第1版",
+      "forecastCreatedOn": "2026-10-27",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 12295988,
+      "deductionYen": 6791000,
+      "notCountedYen": null,
+      "valueYen": -3717003,
+      "weightedYen": -1486801,
+      "salesValueYen": 3073997,
+      "weightedSalesYen": 1229598,
+      "expectedYen": -1486801,
+      "nextPeriodWeightedYen": 780124,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-25",
+        "dueOn": "2026-12-10",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P18",
+      "earningType": "買付",
+      "source": "acquisition",
+      "stage": "見送り",
+      "probabilityBps": 0,
+      "rateBps": 2000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第1版",
+      "forecastCreatedOn": "2026-10-09",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": "declined",
+      "revenueBaseYen": null,
+      "deductionYen": null,
+      "notCountedYen": null,
+      "valueYen": null,
+      "weightedYen": null,
+      "salesValueYen": null,
+      "weightedSalesYen": null,
+      "expectedYen": null,
+      "nextPeriodWeightedYen": null,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-03",
+        "dueOn": null,
+        "hasNextAction": false,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P19",
+      "earningType": "販売委託",
+      "source": "consignment",
+      "stage": "契約済み",
+      "probabilityBps": 10000,
+      "rateBps": 2000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第1版",
+      "forecastCreatedOn": "2026-10-09",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 21210535,
+      "deductionYen": 0,
+      "notCountedYen": {
+        "作り手・権利元への分配": 16306655
+      },
+      "valueYen": 4242107,
+      "weightedYen": 4242107,
+      "salesValueYen": 4242107,
+      "weightedSalesYen": 4242107,
+      "expectedYen": 4242107,
+      "nextPeriodWeightedYen": 278440,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-15",
+        "dueOn": "2026-12-06",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P20",
+      "earningType": "販売委託",
+      "source": "consignment",
+      "stage": "契約の調整",
+      "probabilityBps": 9000,
+      "rateBps": 2000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第1版",
+      "forecastCreatedOn": "2026-10-13",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 13269901,
+      "deductionYen": 0,
+      "notCountedYen": null,
+      "valueYen": 2653980,
+      "weightedYen": 2388582,
+      "salesValueYen": 2653980,
+      "weightedSalesYen": 2388582,
+      "expectedYen": 2388582,
+      "nextPeriodWeightedYen": 415696,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-26",
+        "dueOn": "2026-12-14",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P21",
+      "earningType": "販売委託",
+      "source": "consignment",
+      "stage": "担当の合意",
+      "probabilityBps": 5000,
+      "rateBps": 2000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第1版",
+      "forecastCreatedOn": "2026-10-21",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 9108908,
+      "deductionYen": 0,
+      "notCountedYen": null,
+      "valueYen": 1821781,
+      "weightedYen": 910890,
+      "salesValueYen": 1821781,
+      "weightedSalesYen": 910890,
+      "expectedYen": 910890,
+      "nextPeriodWeightedYen": 277684,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-12",
+        "dueOn": "2026-11-20",
+        "hasNextAction": true,
+        "overdue": true
+      }
+    },
+    {
+      "projectCode": "YJ-P22",
+      "earningType": "販売委託",
+      "source": "consignment",
+      "stage": "面談済み",
+      "probabilityBps": 2000,
+      "rateBps": 2000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "施策の既定の予測",
+      "forecastCreatedOn": "2026-11-24",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 5234200,
+      "deductionYen": 0,
+      "notCountedYen": null,
+      "valueYen": 1046840,
+      "weightedYen": 209368,
+      "salesValueYen": 1046840,
+      "weightedSalesYen": 209368,
+      "expectedYen": 209368,
+      "nextPeriodWeightedYen": 41873,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-24",
+        "dueOn": "2026-12-10",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P23",
+      "earningType": "販売委託",
+      "source": "consignment",
+      "stage": "条件の合意",
+      "probabilityBps": 7000,
+      "rateBps": 2000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第1版",
+      "forecastCreatedOn": "2026-10-14",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 14537489,
+      "deductionYen": 0,
+      "notCountedYen": null,
+      "valueYen": 2907497,
+      "weightedYen": 2035247,
+      "salesValueYen": 2907497,
+      "weightedSalesYen": 2035247,
+      "expectedYen": 2035247,
+      "nextPeriodWeightedYen": 291832,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-21",
+        "dueOn": "2026-11-24",
+        "hasNextAction": true,
+        "overdue": true
+      }
+    },
+    {
+      "projectCode": "YJ-P24",
+      "earningType": "販売委託",
+      "source": "consignment",
+      "stage": "企画メモ",
+      "probabilityBps": 1000,
+      "rateBps": 2000,
+      "rateStatus": "仮置き",
+      "forecastVersion": "施策の既定の予測",
+      "forecastCreatedOn": "2026-11-23",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 4547889,
+      "deductionYen": 0,
+      "notCountedYen": null,
+      "valueYen": 909577,
+      "weightedYen": 90957,
+      "salesValueYen": 909577,
+      "weightedSalesYen": 90957,
+      "expectedYen": 90957,
+      "nextPeriodWeightedYen": 30319,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-23",
+        "dueOn": "2027-01-15",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P25",
+      "earningType": "制作受託",
+      "source": "contract_work",
+      "stage": "契約済み",
+      "probabilityBps": 10000,
+      "rateBps": 1000,
+      "rateStatus": "監督申告",
+      "forecastVersion": "架空の試算 第1版",
+      "forecastCreatedOn": "2026-10-09",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 27736000,
+      "deductionYen": 0,
+      "notCountedYen": {
+        "制作の実費": 24130320
+      },
+      "valueYen": 2773600,
+      "weightedYen": 2773600,
+      "salesValueYen": 2773600,
+      "weightedSalesYen": 2773600,
+      "expectedYen": 2773600,
+      "nextPeriodWeightedYen": 0,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-10-10",
+        "dueOn": "2026-12-24",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P26",
+      "earningType": "制作受託",
+      "source": "contract_work",
+      "stage": "内示",
+      "probabilityBps": 8000,
+      "rateBps": 1500,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第1版",
+      "forecastCreatedOn": "2026-10-09",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 23531000,
+      "deductionYen": 0,
+      "notCountedYen": {
+        "制作の実費": 19295420
+      },
+      "valueYen": 3529650,
+      "weightedYen": 2823720,
+      "salesValueYen": 3529650,
+      "weightedSalesYen": 2823720,
+      "expectedYen": 2823720,
+      "nextPeriodWeightedYen": 0,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-10-28",
+        "dueOn": "2026-12-02",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P27",
+      "earningType": "制作受託",
+      "source": "contract_work",
+      "stage": "条件の合意",
+      "probabilityBps": 7000,
+      "rateBps": 1200,
+      "rateStatus": "仮置き",
+      "forecastVersion": "架空の試算 第1版",
+      "forecastCreatedOn": "2026-10-15",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 56463000,
+      "deductionYen": 0,
+      "notCountedYen": {
+        "制作の実費": 45735030
+      },
+      "valueYen": 6775560,
+      "weightedYen": 4742892,
+      "salesValueYen": 6775560,
+      "weightedSalesYen": 4742892,
+      "expectedYen": 4742892,
+      "nextPeriodWeightedYen": 0,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-03",
+        "dueOn": "2026-12-13",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P28",
+      "earningType": "制作受託",
+      "source": "contract_work",
+      "stage": "提案済み",
+      "probabilityBps": 4000,
+      "rateBps": 1000,
+      "rateStatus": "監督申告",
+      "forecastVersion": "施策の既定の予測",
+      "forecastCreatedOn": "2026-11-19",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 11273320,
+      "deductionYen": 0,
+      "notCountedYen": null,
+      "valueYen": 1127332,
+      "weightedYen": 450932,
+      "salesValueYen": 1127332,
+      "weightedSalesYen": 450932,
+      "expectedYen": 450932,
+      "nextPeriodWeightedYen": 90186,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-19",
+        "dueOn": "2026-12-18",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P29",
+      "earningType": "制作受託",
+      "source": "contract_work",
+      "stage": "見送り",
+      "probabilityBps": 0,
+      "rateBps": 1000,
+      "rateStatus": "監督申告",
+      "forecastVersion": null,
+      "forecastCreatedOn": null,
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": "declined",
+      "revenueBaseYen": null,
+      "deductionYen": null,
+      "notCountedYen": null,
+      "valueYen": null,
+      "weightedYen": null,
+      "salesValueYen": null,
+      "weightedSalesYen": null,
+      "expectedYen": null,
+      "nextPeriodWeightedYen": null,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-10-19",
+        "dueOn": null,
+        "hasNextAction": false,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P30",
+      "earningType": "制作受託",
+      "source": "contract_work",
+      "stage": "条件の探り",
+      "probabilityBps": 3000,
+      "rateBps": 1000,
+      "rateStatus": "監督申告",
+      "forecastVersion": "架空の試算 第1版",
+      "forecastCreatedOn": "2026-11-22",
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": null,
+      "revenueBaseYen": 53392000,
+      "deductionYen": 0,
+      "notCountedYen": {
+        "制作の実費": 44849280
+      },
+      "valueYen": 5339200,
+      "weightedYen": 1601760,
+      "salesValueYen": 5339200,
+      "weightedSalesYen": 1601760,
+      "expectedYen": 1601760,
+      "nextPeriodWeightedYen": 0,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-25",
+        "dueOn": "2026-12-22",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P31",
+      "earningType": "買付",
+      "source": "acquisition",
+      "stage": "企画メモ",
+      "probabilityBps": 1000,
+      "rateBps": 2000,
+      "rateStatus": "仮置き",
+      "forecastVersion": null,
+      "forecastCreatedOn": null,
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": "no_forecast",
+      "revenueBaseYen": null,
+      "deductionYen": null,
+      "notCountedYen": null,
+      "valueYen": null,
+      "weightedYen": null,
+      "salesValueYen": null,
+      "weightedSalesYen": null,
+      "expectedYen": null,
+      "nextPeriodWeightedYen": null,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-10-15",
+        "dueOn": "2026-12-08",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    },
+    {
+      "projectCode": "YJ-P32",
+      "earningType": "制作受託",
+      "source": "contract_work",
+      "stage": "企画メモ",
+      "probabilityBps": 1000,
+      "rateBps": 1000,
+      "rateStatus": "監督申告",
+      "forecastVersion": null,
+      "forecastCreatedOn": null,
+      "actualProfitYen": 0,
+      "actualSalesYen": 0,
+      "excludedReason": "no_forecast",
+      "revenueBaseYen": null,
+      "deductionYen": null,
+      "notCountedYen": null,
+      "valueYen": null,
+      "weightedYen": null,
+      "salesValueYen": null,
+      "weightedSalesYen": null,
+      "expectedYen": null,
+      "nextPeriodWeightedYen": null,
+      "recovery": null,
+      "nextAction": {
+        "recordedOn": "2026-11-19",
+        "dueOn": "2026-12-04",
+        "hasNextAction": true,
+        "overdue": false
+      }
+    }
+  ],
+  "excluded": [
+    {
+      "projectCode": "YJ-P12",
+      "source": "own_investment",
+      "reason": "no_forecast"
+    },
+    {
+      "projectCode": "YJ-P18",
+      "source": "acquisition",
+      "reason": "declined"
+    },
+    {
+      "projectCode": "YJ-P29",
+      "source": "contract_work",
+      "reason": "declined"
+    },
+    {
+      "projectCode": "YJ-P31",
+      "source": "acquisition",
+      "reason": "no_forecast"
+    },
+    {
+      "projectCode": "YJ-P32",
+      "source": "contract_work",
+      "reason": "no_forecast"
+    }
+  ],
+  "stageRates": {
+    "windowMonths": 12,
+    "minCountX100": 900,
+    "from": "2025-12",
+    "to": "2026-11",
+    "rows": [
+      {
+        "role": "producer",
+        "source": "contract_work",
+        "step": "planning_memo",
+        "nextStep": "budget_estimate",
+        "count": 7,
+        "advancedCount": 5,
+        "projectCodes": [
+          "YJ-P25",
+          "YJ-P26",
+          "YJ-P27",
+          "YJ-P28",
+          "YJ-P29",
+          "YJ-P30",
+          "YJ-P32"
+        ],
+        "advancedProjectCodes": [
+          "YJ-P25",
+          "YJ-P26",
+          "YJ-P27",
+          "YJ-P28",
+          "YJ-P30"
+        ],
+        "observedRateBps": 7142,
+        "provisionalRateBps": 5000,
+        "status": "insufficient",
+        "appliedRateBps": 5000
+      },
+      {
+        "role": "producer",
+        "source": "contract_work",
+        "step": "budget_estimate",
+        "nextStep": "proposal",
+        "count": 5,
+        "advancedCount": 3,
+        "projectCodes": [
+          "YJ-P25",
+          "YJ-P26",
+          "YJ-P27",
+          "YJ-P28",
+          "YJ-P30"
+        ],
+        "advancedProjectCodes": [
+          "YJ-P25",
+          "YJ-P26",
+          "YJ-P27"
+        ],
+        "observedRateBps": 6000,
+        "provisionalRateBps": 5000,
+        "status": "insufficient",
+        "appliedRateBps": 5000
+      },
+      {
+        "role": "producer",
+        "source": "contract_work",
+        "step": "proposal",
+        "nextStep": "contract",
+        "count": 3,
+        "advancedCount": 1,
+        "projectCodes": [
+          "YJ-P25",
+          "YJ-P26",
+          "YJ-P27"
+        ],
+        "advancedProjectCodes": [
+          "YJ-P25"
+        ],
+        "observedRateBps": 3333,
+        "provisionalRateBps": 3000,
+        "status": "insufficient",
+        "appliedRateBps": 3000
+      },
+      {
+        "role": "producer",
+        "source": "own_investment",
+        "step": "pitch_document",
+        "nextStep": "approval_request",
+        "count": 2,
+        "advancedCount": 1,
+        "projectCodes": [
+          "YJ-P11",
+          "YJ-P12"
+        ],
+        "advancedProjectCodes": [
+          "YJ-P11"
+        ],
+        "observedRateBps": 5000,
+        "provisionalRateBps": 5000,
+        "status": "insufficient",
+        "appliedRateBps": 5000
+      },
+      {
+        "role": "producer",
+        "source": "own_investment",
+        "step": "approval_request",
+        "nextStep": "approval_decision",
+        "count": 1,
+        "advancedCount": 0,
+        "projectCodes": [
+          "YJ-P11"
+        ],
+        "advancedProjectCodes": [],
+        "observedRateBps": 0,
+        "provisionalRateBps": 7000,
+        "status": "insufficient",
+        "appliedRateBps": 7000
+      },
+      {
+        "role": "producer",
+        "source": "own_investment",
+        "step": "approval_decision",
+        "nextStep": "investment_payment",
+        "count": 0,
+        "advancedCount": 0,
+        "projectCodes": [],
+        "advancedProjectCodes": [],
+        "observedRateBps": null,
+        "provisionalRateBps": 10000,
+        "status": "insufficient",
+        "appliedRateBps": 10000
+      },
+      {
+        "role": "producer",
+        "source": "committee",
+        "step": "committee_sounding",
+        "nextStep": "informal_consent",
+        "count": 2,
+        "advancedCount": 2,
+        "projectCodes": [
+          "YJ-P13",
+          "YJ-P14"
+        ],
+        "advancedProjectCodes": [
+          "YJ-P13",
+          "YJ-P14"
+        ],
+        "observedRateBps": 10000,
+        "provisionalRateBps": 3000,
+        "status": "insufficient",
+        "appliedRateBps": 3000
+      },
+      {
+        "role": "producer",
+        "source": "committee",
+        "step": "informal_consent",
+        "nextStep": "investment_contract",
+        "count": 2,
+        "advancedCount": 1,
+        "projectCodes": [
+          "YJ-P13",
+          "YJ-P14"
+        ],
+        "advancedProjectCodes": [
+          "YJ-P13"
+        ],
+        "observedRateBps": 5000,
+        "provisionalRateBps": 5000,
+        "status": "insufficient",
+        "appliedRateBps": 5000
+      },
+      {
+        "role": "sales_sourcing",
+        "source": "acquisition",
+        "step": "rights_holder_meeting",
+        "nextStep": "term_sheet",
+        "count": 5,
+        "advancedCount": 3,
+        "projectCodes": [
+          "YJ-P15",
+          "YJ-P16",
+          "YJ-P17",
+          "YJ-P18",
+          "YJ-P31"
+        ],
+        "advancedProjectCodes": [
+          "YJ-P15",
+          "YJ-P16",
+          "YJ-P17"
+        ],
+        "observedRateBps": 6000,
+        "provisionalRateBps": 5000,
+        "status": "insufficient",
+        "appliedRateBps": 5000
+      },
+      {
+        "role": "sales_sourcing",
+        "source": "acquisition",
+        "step": "term_sheet",
+        "nextStep": "mg_contract",
+        "count": 3,
+        "advancedCount": 1,
+        "projectCodes": [
+          "YJ-P15",
+          "YJ-P16",
+          "YJ-P17"
+        ],
+        "advancedProjectCodes": [
+          "YJ-P15"
+        ],
+        "observedRateBps": 3333,
+        "provisionalRateBps": 3000,
+        "status": "insufficient",
+        "appliedRateBps": 3000
+      },
+      {
+        "role": "sales_sourcing",
+        "source": "consignment",
+        "step": "rights_holder_meeting",
+        "nextStep": "term_sheet",
+        "count": 6,
+        "advancedCount": 4,
+        "projectCodes": [
+          "YJ-P19",
+          "YJ-P20",
+          "YJ-P21",
+          "YJ-P22",
+          "YJ-P23",
+          "YJ-P24"
+        ],
+        "advancedProjectCodes": [
+          "YJ-P19",
+          "YJ-P20",
+          "YJ-P21",
+          "YJ-P23"
+        ],
+        "observedRateBps": 6666,
+        "provisionalRateBps": 5000,
+        "status": "insufficient",
+        "appliedRateBps": 5000
+      },
+      {
+        "role": "sales_sourcing",
+        "source": "consignment",
+        "step": "term_sheet",
+        "nextStep": "consignment_contract",
+        "count": 4,
+        "advancedCount": 1,
+        "projectCodes": [
+          "YJ-P19",
+          "YJ-P20",
+          "YJ-P21",
+          "YJ-P23"
+        ],
+        "advancedProjectCodes": [
+          "YJ-P19"
+        ],
+        "observedRateBps": 2500,
+        "provisionalRateBps": 3000,
+        "status": "insufficient",
+        "appliedRateBps": 3000
+      },
+      {
+        "role": "sales_selling",
+        "source": "acquisition",
+        "step": "productization",
+        "nextStep": "buyer_proposal",
+        "count": 4,
+        "advancedCount": 3,
+        "projectCodes": [
+          "YJ-P08",
+          "YJ-P09",
+          "YJ-P10",
+          "YJ-P15"
+        ],
+        "advancedProjectCodes": [
+          "YJ-P08",
+          "YJ-P09",
+          "YJ-P10"
+        ],
+        "observedRateBps": 7500,
+        "provisionalRateBps": 8000,
+        "status": "insufficient",
+        "appliedRateBps": 8000
+      },
+      {
+        "role": "sales_selling",
+        "source": "acquisition",
+        "step": "buyer_proposal",
+        "nextStep": "buyer_adoption",
+        "count": 3,
+        "advancedCount": 3,
+        "projectCodes": [
+          "YJ-P08",
+          "YJ-P09",
+          "YJ-P10"
+        ],
+        "advancedProjectCodes": [
+          "YJ-P08",
+          "YJ-P09",
+          "YJ-P10"
+        ],
+        "observedRateBps": 10000,
+        "provisionalRateBps": 4000,
+        "status": "insufficient",
+        "appliedRateBps": 4000
+      },
+      {
+        "role": "sales_selling",
+        "source": "consignment",
+        "step": "productization",
+        "nextStep": "buyer_proposal",
+        "count": 1,
+        "advancedCount": 1,
+        "projectCodes": [
+          "YJ-P19"
+        ],
+        "advancedProjectCodes": [
+          "YJ-P19"
+        ],
+        "observedRateBps": 10000,
+        "provisionalRateBps": 8000,
+        "status": "insufficient",
+        "appliedRateBps": 8000
+      },
+      {
+        "role": "sales_selling",
+        "source": "consignment",
+        "step": "buyer_proposal",
+        "nextStep": "buyer_adoption",
+        "count": 1,
+        "advancedCount": 0,
+        "projectCodes": [
+          "YJ-P19"
+        ],
+        "advancedProjectCodes": [],
+        "observedRateBps": 0,
+        "provisionalRateBps": 4000,
+        "status": "insufficient",
+        "appliedRateBps": 4000
+      }
+    ]
+  },
+  "inputs": {
+    "period": {
+      "name": "1年目",
+      "from": "2026-10",
+      "to": "2027-09",
+      "nextTo": "2028-09"
+    },
+    "closedMonth": "2026-11",
+    "basis": "cash",
+    "assumptions": {
+      "salesMultiplierBps": 10000,
+      "recoveryAmountBps": 10000,
+      "meetingToProposalBps": 5000,
+      "proposalToContractBps": 3000,
+      "paymentDelayMonths": 0
+    },
+    "actuals": {
+      "contract_work": {
+        "status": "connected",
+        "actualYen": 0,
+        "actualSalesYen": 0
+      },
+      "own_investment": {
+        "status": "connected",
+        "actualYen": 37589047,
+        "actualSalesYen": 37589047
+      },
+      "committee": {
+        "status": "connected",
+        "actualYen": 1328669,
+        "actualSalesYen": 8600669
+      },
+      "acquisition": {
+        "status": "connected",
+        "actualYen": 1877364,
+        "actualSalesYen": 9154364
+      },
+      "consignment": {
+        "status": "connected",
+        "actualYen": 0,
+        "actualSalesYen": 0
+      }
+    },
+    "actualsWithoutFourItems": {
+      "contract_work": {
+        "status": "connected",
+        "actualYen": 0,
+        "actualSalesYen": 0
+      },
+      "own_investment": {
+        "status": "connected",
+        "actualYen": 37589047,
+        "actualSalesYen": 37589047
+      },
+      "committee": {
+        "status": "connected",
+        "actualYen": 8600669,
+        "actualSalesYen": 8600669
+      },
+      "acquisition": {
+        "status": "connected",
+        "actualYen": 9154364,
+        "actualSalesYen": 9154364
+      },
+      "consignment": {
+        "status": "connected",
+        "actualYen": 0,
+        "actualSalesYen": 0
+      }
+    },
+    "items": [
+      {
+        "key": "YJ-P01",
+        "source": "own_investment",
+        "probabilityBps": 10000,
+        "conversionBps": 10000,
+        "salesConversionBps": 10000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 49807899,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 3338052,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2026-12",
+            "baseYen": 9431350
+          },
+          {
+            "month": "2027-01",
+            "baseYen": 7922334
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 6654760
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 5922736
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 4915870
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 3883537
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 3572854
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 2894011
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 2575669
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 2034778
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 1729561
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 1608491
+          }
+        ]
+      },
+      {
+        "key": "YJ-P02",
+        "source": "own_investment",
+        "probabilityBps": 10000,
+        "conversionBps": 10000,
+        "salesConversionBps": 10000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 18776119,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 1675579,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2026-12",
+            "baseYen": 3306527
+          },
+          {
+            "month": "2027-01",
+            "baseYen": 2579091
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 2372763
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 2040576
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 1897735
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 1613074
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 1435635
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 1320784
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 1175497
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 1034437
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 941337
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 734242
+          }
+        ]
+      },
+      {
+        "key": "YJ-P03",
+        "source": "own_investment",
+        "probabilityBps": 10000,
+        "conversionBps": 10000,
+        "salesConversionBps": 10000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 73476082,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 4135066,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2026-12",
+            "baseYen": 13318695
+          },
+          {
+            "month": "2027-01",
+            "baseYen": 11454077
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 9735965
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 8275570
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 7448013
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 6777691
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 5354375
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 4390587
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 3775904
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 2945205
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 2297259
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 1837807
+          }
+        ]
+      },
+      {
+        "key": "YJ-P04",
+        "source": "own_investment",
+        "probabilityBps": 10000,
+        "conversionBps": 10000,
+        "salesConversionBps": 10000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 19878902,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 1577066,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2026-12",
+            "baseYen": 3597851
+          },
+          {
+            "month": "2027-01",
+            "baseYen": 2950237
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 2596208
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 2102928
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 1808518
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 1645751
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 1514090
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 1408103
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 1239130
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 1016086
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 843351
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 733715
+          }
+        ]
+      },
+      {
+        "key": "YJ-P05",
+        "source": "committee",
+        "probabilityBps": 10000,
+        "conversionBps": 3500,
+        "salesConversionBps": 3500,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 70787176,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 4464547,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2026-12",
+            "baseYen": 13771402
+          },
+          {
+            "month": "2027-01",
+            "baseYen": 11154835
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 9258513
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 8425246
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 7414216
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 6153799
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 4799963
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 3743971
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 3369573
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 2695658
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 2453048
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 2011499
+          }
+        ]
+      },
+      {
+        "key": "YJ-P06",
+        "source": "committee",
+        "probabilityBps": 10000,
+        "conversionBps": 4000,
+        "salesConversionBps": 4000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 12508315,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 704040,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2026-12",
+            "baseYen": 2331214
+          },
+          {
+            "month": "2027-01",
+            "baseYen": 2168029
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 1712742
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 1387321
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 1234715
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 1000119
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 930110
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 725485
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 565878
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 452702
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 366688
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 337352
+          }
+        ]
+      },
+      {
+        "key": "YJ-P07",
+        "source": "committee",
+        "probabilityBps": 10000,
+        "conversionBps": 2500,
+        "salesConversionBps": 2500,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 24489087,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 1257590,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2026-12",
+            "baseYen": 5017009
+          },
+          {
+            "month": "2027-01",
+            "baseYen": 4264457
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 3326276
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 2827334
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 2488053
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 1940681
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 1533137
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 1257172
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 1030881
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 804087
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 683473
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 574117
+          }
+        ]
+      },
+      {
+        "key": "YJ-P08",
+        "source": "acquisition",
+        "probabilityBps": 10000,
+        "conversionBps": 2000,
+        "salesConversionBps": 2000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 80868561,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 6236990,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2026-12",
+            "baseYen": 16124457
+          },
+          {
+            "month": "2027-01",
+            "baseYen": 13060810
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 10448648
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 9612756
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 7497949
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 6373256
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 5098604
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 4588743
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 4221643
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 3841695
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 3265440
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 2971550
+          }
+        ]
+      },
+      {
+        "key": "YJ-P09",
+        "source": "acquisition",
+        "probabilityBps": 10000,
+        "conversionBps": 2000,
+        "salesConversionBps": 2000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 58689877,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 3675098,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2026-12",
+            "baseYen": 11230654
+          },
+          {
+            "month": "2027-01",
+            "baseYen": 9546055
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 8209607
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 6731877
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 6058689
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 4725777
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 4064168
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 3210692
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 2729088
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 2183270
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 2030441
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 1644657
+          }
+        ]
+      },
+      {
+        "key": "YJ-P10",
+        "source": "acquisition",
+        "probabilityBps": 10000,
+        "conversionBps": 2000,
+        "salesConversionBps": 2000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 62876327,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 4654295,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2026-12",
+            "baseYen": 10546212
+          },
+          {
+            "month": "2027-01",
+            "baseYen": 9702515
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 9023338
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 7128437
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 6344308
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 5265775
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 4475908
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 4162594
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 3330075
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 2897165
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 2462590
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 2191705
+          }
+        ]
+      },
+      {
+        "key": "YJ-P11",
+        "source": "own_investment",
+        "probabilityBps": 6000,
+        "conversionBps": 10000,
+        "salesConversionBps": 10000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 10255138,
+          "deductionYen": 8816000
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 12230624,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2027-07",
+            "baseYen": 3822266
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 3440039
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 2992833
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 2394266
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 1939355
+          },
+          {
+            "month": "2027-12",
+            "baseYen": 1803600
+          },
+          {
+            "month": "2028-01",
+            "baseYen": 1424844
+          },
+          {
+            "month": "2028-02",
+            "baseYen": 1125626
+          },
+          {
+            "month": "2028-03",
+            "baseYen": 1024319
+          },
+          {
+            "month": "2028-04",
+            "baseYen": 932130
+          },
+          {
+            "month": "2028-05",
+            "baseYen": 857559
+          },
+          {
+            "month": "2028-06",
+            "baseYen": 728925
+          }
+        ]
+      },
+      {
+        "key": "YJ-P13",
+        "source": "committee",
+        "probabilityBps": 10000,
+        "conversionBps": 3000,
+        "salesConversionBps": 3000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 5107969,
+          "deductionYen": 4848000
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 2271106,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2027-04",
+            "baseYen": 1128511
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 1049515
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 944563
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 774541
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 627378
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 583461
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 530949
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 445997
+          },
+          {
+            "month": "2027-12",
+            "baseYen": 410317
+          },
+          {
+            "month": "2028-01",
+            "baseYen": 336459
+          },
+          {
+            "month": "2028-02",
+            "baseYen": 292719
+          },
+          {
+            "month": "2028-03",
+            "baseYen": 254665
+          }
+        ]
+      },
+      {
+        "key": "YJ-P14",
+        "source": "committee",
+        "probabilityBps": 3000,
+        "conversionBps": 4500,
+        "salesConversionBps": 4500,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 0,
+          "deductionYen": 16849000
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 8835618,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2027-12",
+            "baseYen": 1661920
+          },
+          {
+            "month": "2028-01",
+            "baseYen": 1479108
+          },
+          {
+            "month": "2028-02",
+            "baseYen": 1168495
+          },
+          {
+            "month": "2028-03",
+            "baseYen": 969850
+          },
+          {
+            "month": "2028-04",
+            "baseYen": 882563
+          },
+          {
+            "month": "2028-05",
+            "baseYen": 767829
+          },
+          {
+            "month": "2028-06",
+            "baseYen": 621941
+          },
+          {
+            "month": "2028-07",
+            "baseYen": 503772
+          },
+          {
+            "month": "2028-08",
+            "baseYen": 438281
+          },
+          {
+            "month": "2028-09",
+            "baseYen": 341859
+          }
+        ]
+      },
+      {
+        "key": "YJ-P15",
+        "source": "acquisition",
+        "probabilityBps": 10000,
+        "conversionBps": 2000,
+        "salesConversionBps": 2000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 7732755,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 915485,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2027-01",
+            "baseYen": 1323532
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 1164708
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 1024943
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 912199
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 830101
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 771993
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 702513
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 547960
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 454806
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 359296
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 308994
+          },
+          {
+            "month": "2027-12",
+            "baseYen": 247195
+          }
+        ]
+      },
+      {
+        "key": "YJ-P16",
+        "source": "acquisition",
+        "probabilityBps": 8000,
+        "conversionBps": 2000,
+        "salesConversionBps": 2000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 14732087,
+          "deductionYen": 2208000
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 3742228,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2027-03",
+            "baseYen": 3096955
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 2880168
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 2304134
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 1958513
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 1762661
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 1533515
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 1196141
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 1076526
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 861220
+          },
+          {
+            "month": "2027-12",
+            "baseYen": 706200
+          },
+          {
+            "month": "2028-01",
+            "baseYen": 572022
+          },
+          {
+            "month": "2028-02",
+            "baseYen": 526260
+          }
+        ]
+      },
+      {
+        "key": "YJ-P17",
+        "source": "acquisition",
+        "probabilityBps": 4000,
+        "conversionBps": 2500,
+        "salesConversionBps": 2500,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 12295988,
+          "deductionYen": 6791000
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 7801246,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2027-05",
+            "baseYen": 3233311
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 2812980
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 2475422
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 1955583
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 1818692
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 1673196
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 1489144
+          },
+          {
+            "month": "2027-12",
+            "baseYen": 1161532
+          },
+          {
+            "month": "2028-01",
+            "baseYen": 1022148
+          },
+          {
+            "month": "2028-02",
+            "baseYen": 940376
+          },
+          {
+            "month": "2028-03",
+            "baseYen": 836934
+          },
+          {
+            "month": "2028-04",
+            "baseYen": 677916
+          }
+        ]
+      },
+      {
+        "key": "YJ-P19",
+        "source": "consignment",
+        "probabilityBps": 10000,
+        "conversionBps": 2000,
+        "salesConversionBps": 2000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 21210535,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 1392201,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2026-12",
+            "baseYen": 4271682
+          },
+          {
+            "month": "2027-01",
+            "baseYen": 3545496
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 2765486
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 2378317
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 2211834
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 1747348
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 1380404
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 1131931
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 950822
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 827215
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 744493
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 647708
+          }
+        ]
+      },
+      {
+        "key": "YJ-P20",
+        "source": "consignment",
+        "probabilityBps": 9000,
+        "conversionBps": 2000,
+        "salesConversionBps": 2000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 13269901,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 2309428,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2027-02",
+            "baseYen": 2670450
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 2296587
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 1791337
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 1630116
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 1483405
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 1320230
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 1135397
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 942379
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 735055
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 580693
+          },
+          {
+            "month": "2027-12",
+            "baseYen": 534237
+          },
+          {
+            "month": "2028-01",
+            "baseYen": 459443
+          }
+        ]
+      },
+      {
+        "key": "YJ-P21",
+        "source": "consignment",
+        "probabilityBps": 5000,
+        "conversionBps": 2000,
+        "salesConversionBps": 2000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 9108908,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 2776841,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2027-03",
+            "baseYen": 1927321
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 1734588
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 1439708
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 1252545
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 1027086
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 914106
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 813554
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 724063
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 622694
+          },
+          {
+            "month": "2027-12",
+            "baseYen": 529289
+          },
+          {
+            "month": "2028-01",
+            "baseYen": 492238
+          },
+          {
+            "month": "2028-02",
+            "baseYen": 408557
+          }
+        ]
+      },
+      {
+        "key": "YJ-P22",
+        "source": "consignment",
+        "probabilityBps": 2000,
+        "conversionBps": 2000,
+        "salesConversionBps": 2000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 5234200,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 1046843,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2026-12",
+            "baseYen": 523420
+          },
+          {
+            "month": "2027-01",
+            "baseYen": 523420
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 523420
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 523420
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 523420
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 523420
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 523420
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 523420
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 523420
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 523420
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 523420
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 523423
+          }
+        ]
+      },
+      {
+        "key": "YJ-P23",
+        "source": "consignment",
+        "probabilityBps": 7000,
+        "conversionBps": 2000,
+        "salesConversionBps": 2000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 14537489,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 2084515,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2027-01",
+            "baseYen": 2663621
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 2477167
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 2105591
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 1642360
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 1445276
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 1315201
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 1065312
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 980087
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 842874
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 767015
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 682643
+          },
+          {
+            "month": "2027-12",
+            "baseYen": 634857
+          }
+        ]
+      },
+      {
+        "key": "YJ-P24",
+        "source": "consignment",
+        "probabilityBps": 1000,
+        "conversionBps": 2000,
+        "salesConversionBps": 2000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 4547889,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 1515974,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2027-01",
+            "baseYen": 505321
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 505321
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 505321
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 505321
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 505321
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 505321
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 505321
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 505321
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 505321
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 505321
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 505321
+          },
+          {
+            "month": "2027-12",
+            "baseYen": 505332
+          }
+        ]
+      },
+      {
+        "key": "YJ-P25",
+        "source": "contract_work",
+        "probabilityBps": 10000,
+        "conversionBps": 1000,
+        "salesConversionBps": 1000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 27736000,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 0,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2026-12",
+            "baseYen": 8320800
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 8320800
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 11094400
+          }
+        ]
+      },
+      {
+        "key": "YJ-P26",
+        "source": "contract_work",
+        "probabilityBps": 8000,
+        "conversionBps": 1500,
+        "salesConversionBps": 1500,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 23531000,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 0,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2027-01",
+            "baseYen": 7059300
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 7059300
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 9412400
+          }
+        ]
+      },
+      {
+        "key": "YJ-P27",
+        "source": "contract_work",
+        "probabilityBps": 7000,
+        "conversionBps": 1200,
+        "salesConversionBps": 1200,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 56463000,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 0,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2027-02",
+            "baseYen": 16938900
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 16938900
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 22585200
+          }
+        ]
+      },
+      {
+        "key": "YJ-P28",
+        "source": "contract_work",
+        "probabilityBps": 4000,
+        "conversionBps": 1000,
+        "salesConversionBps": 1000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 11273320,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 2254672,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2026-12",
+            "baseYen": 1127332
+          },
+          {
+            "month": "2027-01",
+            "baseYen": 1127332
+          },
+          {
+            "month": "2027-02",
+            "baseYen": 1127332
+          },
+          {
+            "month": "2027-03",
+            "baseYen": 1127332
+          },
+          {
+            "month": "2027-04",
+            "baseYen": 1127332
+          },
+          {
+            "month": "2027-05",
+            "baseYen": 1127332
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 1127332
+          },
+          {
+            "month": "2027-07",
+            "baseYen": 1127332
+          },
+          {
+            "month": "2027-08",
+            "baseYen": 1127332
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 1127332
+          },
+          {
+            "month": "2027-10",
+            "baseYen": 1127332
+          },
+          {
+            "month": "2027-11",
+            "baseYen": 1127340
+          }
+        ]
+      },
+      {
+        "key": "YJ-P30",
+        "source": "contract_work",
+        "probabilityBps": 3000,
+        "conversionBps": 1000,
+        "salesConversionBps": 1000,
+        "placement": "in_period",
+        "cashScheduled": true,
+        "inPeriod": {
+          "revenueBaseYen": 53392000,
+          "deductionYen": 0
+        },
+        "nextPeriod": {
+          "revenueBaseYen": 0,
+          "deductionYen": 0
+        },
+        "cash": [
+          {
+            "month": "2027-03",
+            "baseYen": 16017600
+          },
+          {
+            "month": "2027-06",
+            "baseYen": 16017600
+          },
+          {
+            "month": "2027-09",
+            "baseYen": 21356800
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "source": "consignment",
+        "step": "meeting",
+        "countX100": 300,
+        "dealYen": 9289186,
+        "conversionBps": 2000,
+        "salesConversionBps": 2000,
+        "hoursX100": 300
+      },
+      {
+        "source": "acquisition",
+        "step": "meeting",
+        "countX100": 450,
+        "dealYen": 31345186,
+        "conversionBps": 2000,
+        "salesConversionBps": 2000,
+        "hoursX100": 300
+      },
+      {
+        "source": "contract_work",
+        "step": "proposal",
+        "countX100": 500,
+        "dealYen": 33098451,
+        "conversionBps": 1000,
+        "salesConversionBps": 1000,
+        "hoursX100": 4000
+      }
+    ]
+  },
+  "scenarios": {
+    "standard": {
+      "assumptions": {
+        "salesMultiplierBps": 10000,
+        "recoveryAmountBps": 10000,
+        "meetingToProposalBps": 5000,
+        "proposalToContractBps": 3000,
+        "paymentDelayMonths": 0
+      },
+      "actions": [
+        {
+          "source": "consignment",
+          "step": "meeting",
+          "countX100": 300
+        },
+        {
+          "source": "acquisition",
+          "step": "meeting",
+          "countX100": 450
+        },
+        {
+          "source": "contract_work",
+          "step": "proposal",
+          "countX100": 500
+        }
+      ],
+      "expectedYen": 304568245,
+      "actualYen": 40795080,
+      "weightedYen": 253740772,
+      "actionYen": 10032393,
+      "actualPlusWeightedYen": 294535852,
+      "expectedSalesYen": 338792344,
+      "actualSalesYen": 55344080,
+      "weightedSalesYen": 273415871,
+      "actionSalesYen": 10032393,
+      "actualPlusWeightedSalesYen": 328759951,
+      "bySource": [
+        {
+          "source": "contract_work",
+          "status": "connected",
+          "actualYen": 0,
+          "weightedYen": 12392904,
+          "actionYen": 4964767,
+          "expectedYen": 17357671,
+          "actualSalesYen": 0,
+          "weightedSalesYen": 12392904,
+          "actionSalesYen": 4964767,
+          "expectedSalesYen": 17357671
+        },
+        {
+          "source": "own_investment",
+          "status": "connected",
+          "actualYen": 37589047,
+          "weightedYen": 162802484,
+          "actionYen": 0,
+          "expectedYen": 200391531,
+          "actualSalesYen": 37589047,
+          "weightedSalesYen": 168092084,
+          "actionSalesYen": 0,
+          "expectedSalesYen": 205681131
+        },
+        {
+          "source": "committee",
+          "status": "connected",
+          "actualYen": 1328669,
+          "weightedYen": 27530798,
+          "actionYen": 0,
+          "expectedYen": 28859467,
+          "actualSalesYen": 8600669,
+          "weightedSalesYen": 37433498,
+          "actionSalesYen": 0,
+          "expectedSalesYen": 46034167
+        },
+        {
+          "source": "acquisition",
+          "status": "connected",
+          "actualYen": 1877364,
+          "weightedYen": 41137435,
+          "actionYen": 4231600,
+          "expectedYen": 47246399,
+          "actualSalesYen": 9154364,
+          "weightedSalesYen": 45620234,
+          "actionSalesYen": 4231600,
+          "expectedSalesYen": 59006198
+        },
+        {
+          "source": "consignment",
+          "status": "connected",
+          "actualYen": 0,
+          "weightedYen": 9877151,
+          "actionYen": 836026,
+          "expectedYen": 10713177,
+          "actualSalesYen": 0,
+          "weightedSalesYen": 9877151,
+          "actionSalesYen": 836026,
+          "expectedSalesYen": 10713177
+        }
+      ],
+      "projects": [
+        {
+          "projectCode": "YJ-P01",
+          "source": "own_investment",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 49807899,
+          "weightedYen": 49807899,
+          "salesValueYen": 49807899,
+          "weightedSalesYen": 49807899,
+          "nextPeriodValueYen": 3338052,
+          "nextPeriodWeightedYen": 3338052,
+          "periodInflowYen": 49807899
+        },
+        {
+          "projectCode": "YJ-P02",
+          "source": "own_investment",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 18776119,
+          "weightedYen": 18776119,
+          "salesValueYen": 18776119,
+          "weightedSalesYen": 18776119,
+          "nextPeriodValueYen": 1675579,
+          "nextPeriodWeightedYen": 1675579,
+          "periodInflowYen": 18776119
+        },
+        {
+          "projectCode": "YJ-P03",
+          "source": "own_investment",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 73476082,
+          "weightedYen": 73476082,
+          "salesValueYen": 73476082,
+          "weightedSalesYen": 73476082,
+          "nextPeriodValueYen": 4135066,
+          "nextPeriodWeightedYen": 4135066,
+          "periodInflowYen": 73476082
+        },
+        {
+          "projectCode": "YJ-P04",
+          "source": "own_investment",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 19878902,
+          "weightedYen": 19878902,
+          "salesValueYen": 19878902,
+          "weightedSalesYen": 19878902,
+          "nextPeriodValueYen": 1577066,
+          "nextPeriodWeightedYen": 1577066,
+          "periodInflowYen": 19878902
+        },
+        {
+          "projectCode": "YJ-P05",
+          "source": "committee",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 24775511,
+          "weightedYen": 24775511,
+          "salesValueYen": 24775511,
+          "weightedSalesYen": 24775511,
+          "nextPeriodValueYen": 1562591,
+          "nextPeriodWeightedYen": 1562591,
+          "periodInflowYen": 70787176
+        },
+        {
+          "projectCode": "YJ-P06",
+          "source": "committee",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 5003326,
+          "weightedYen": 5003326,
+          "salesValueYen": 5003326,
+          "weightedSalesYen": 5003326,
+          "nextPeriodValueYen": 281616,
+          "nextPeriodWeightedYen": 281616,
+          "periodInflowYen": 12508315
+        },
+        {
+          "projectCode": "YJ-P07",
+          "source": "committee",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 6122271,
+          "weightedYen": 6122271,
+          "salesValueYen": 6122271,
+          "weightedSalesYen": 6122271,
+          "nextPeriodValueYen": 314397,
+          "nextPeriodWeightedYen": 314397,
+          "periodInflowYen": 24489087
+        },
+        {
+          "projectCode": "YJ-P08",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 16173712,
+          "weightedYen": 16173712,
+          "salesValueYen": 16173712,
+          "weightedSalesYen": 16173712,
+          "nextPeriodValueYen": 1247398,
+          "nextPeriodWeightedYen": 1247398,
+          "periodInflowYen": 80868561
+        },
+        {
+          "projectCode": "YJ-P09",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 11737975,
+          "weightedYen": 11737975,
+          "salesValueYen": 11737975,
+          "weightedSalesYen": 11737975,
+          "nextPeriodValueYen": 735019,
+          "nextPeriodWeightedYen": 735019,
+          "periodInflowYen": 58689877
+        },
+        {
+          "projectCode": "YJ-P10",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 12575265,
+          "weightedYen": 12575265,
+          "salesValueYen": 12575265,
+          "weightedSalesYen": 12575265,
+          "nextPeriodValueYen": 930859,
+          "nextPeriodWeightedYen": 930859,
+          "periodInflowYen": 62876327
+        },
+        {
+          "projectCode": "YJ-P11",
+          "source": "own_investment",
+          "placement": "in_period",
+          "probabilityBps": 6000,
+          "valueYen": 1439138,
+          "weightedYen": 863482,
+          "salesValueYen": 10255138,
+          "weightedSalesYen": 6153082,
+          "nextPeriodValueYen": 12230624,
+          "nextPeriodWeightedYen": 7338374,
+          "periodInflowYen": 6153081
+        },
+        {
+          "projectCode": "YJ-P13",
+          "source": "committee",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": -3315610,
+          "weightedYen": -3315610,
+          "salesValueYen": 1532390,
+          "weightedSalesYen": 1532390,
+          "nextPeriodValueYen": 681331,
+          "nextPeriodWeightedYen": 681331,
+          "periodInflowYen": 5107969
+        },
+        {
+          "projectCode": "YJ-P14",
+          "source": "committee",
+          "placement": "in_period",
+          "probabilityBps": 3000,
+          "valueYen": -16849000,
+          "weightedYen": -5054700,
+          "salesValueYen": 0,
+          "weightedSalesYen": 0,
+          "nextPeriodValueYen": 3976028,
+          "nextPeriodWeightedYen": 1192808,
+          "periodInflowYen": 0
+        },
+        {
+          "projectCode": "YJ-P15",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 1546551,
+          "weightedYen": 1546551,
+          "salesValueYen": 1546551,
+          "weightedSalesYen": 1546551,
+          "nextPeriodValueYen": 183097,
+          "nextPeriodWeightedYen": 183097,
+          "periodInflowYen": 7732755
+        },
+        {
+          "projectCode": "YJ-P16",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 8000,
+          "valueYen": 738417,
+          "weightedYen": 590733,
+          "salesValueYen": 2946417,
+          "weightedSalesYen": 2357133,
+          "nextPeriodValueYen": 748445,
+          "nextPeriodWeightedYen": 598756,
+          "periodInflowYen": 11785667
+        },
+        {
+          "projectCode": "YJ-P17",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 4000,
+          "valueYen": -3717003,
+          "weightedYen": -1486801,
+          "salesValueYen": 3073997,
+          "weightedSalesYen": 1229598,
+          "nextPeriodValueYen": 1950311,
+          "nextPeriodWeightedYen": 780124,
+          "periodInflowYen": 4918393
+        },
+        {
+          "projectCode": "YJ-P19",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 4242107,
+          "weightedYen": 4242107,
+          "salesValueYen": 4242107,
+          "weightedSalesYen": 4242107,
+          "nextPeriodValueYen": 278440,
+          "nextPeriodWeightedYen": 278440,
+          "periodInflowYen": 21210535
+        },
+        {
+          "projectCode": "YJ-P20",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 9000,
+          "valueYen": 2653980,
+          "weightedYen": 2388582,
+          "salesValueYen": 2653980,
+          "weightedSalesYen": 2388582,
+          "nextPeriodValueYen": 461885,
+          "nextPeriodWeightedYen": 415696,
+          "periodInflowYen": 11942909
+        },
+        {
+          "projectCode": "YJ-P21",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 5000,
+          "valueYen": 1821781,
+          "weightedYen": 910890,
+          "salesValueYen": 1821781,
+          "weightedSalesYen": 910890,
+          "nextPeriodValueYen": 555368,
+          "nextPeriodWeightedYen": 277684,
+          "periodInflowYen": 4554453
+        },
+        {
+          "projectCode": "YJ-P22",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 2000,
+          "valueYen": 1046840,
+          "weightedYen": 209368,
+          "salesValueYen": 1046840,
+          "weightedSalesYen": 209368,
+          "nextPeriodValueYen": 209368,
+          "nextPeriodWeightedYen": 41873,
+          "periodInflowYen": 1046840
+        },
+        {
+          "projectCode": "YJ-P23",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 7000,
+          "valueYen": 2907497,
+          "weightedYen": 2035247,
+          "salesValueYen": 2907497,
+          "weightedSalesYen": 2035247,
+          "nextPeriodValueYen": 416903,
+          "nextPeriodWeightedYen": 291832,
+          "periodInflowYen": 10176237
+        },
+        {
+          "projectCode": "YJ-P24",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 1000,
+          "valueYen": 909577,
+          "weightedYen": 90957,
+          "salesValueYen": 909577,
+          "weightedSalesYen": 90957,
+          "nextPeriodValueYen": 303194,
+          "nextPeriodWeightedYen": 30319,
+          "periodInflowYen": 454788
+        },
+        {
+          "projectCode": "YJ-P25",
+          "source": "contract_work",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 2773600,
+          "weightedYen": 2773600,
+          "salesValueYen": 2773600,
+          "weightedSalesYen": 2773600,
+          "nextPeriodValueYen": 0,
+          "nextPeriodWeightedYen": 0,
+          "periodInflowYen": 27736000
+        },
+        {
+          "projectCode": "YJ-P26",
+          "source": "contract_work",
+          "placement": "in_period",
+          "probabilityBps": 8000,
+          "valueYen": 3529650,
+          "weightedYen": 2823720,
+          "salesValueYen": 3529650,
+          "weightedSalesYen": 2823720,
+          "nextPeriodValueYen": 0,
+          "nextPeriodWeightedYen": 0,
+          "periodInflowYen": 18824800
+        },
+        {
+          "projectCode": "YJ-P27",
+          "source": "contract_work",
+          "placement": "in_period",
+          "probabilityBps": 7000,
+          "valueYen": 6775560,
+          "weightedYen": 4742892,
+          "salesValueYen": 6775560,
+          "weightedSalesYen": 4742892,
+          "nextPeriodValueYen": 0,
+          "nextPeriodWeightedYen": 0,
+          "periodInflowYen": 39524100
+        },
+        {
+          "projectCode": "YJ-P28",
+          "source": "contract_work",
+          "placement": "in_period",
+          "probabilityBps": 4000,
+          "valueYen": 1127332,
+          "weightedYen": 450932,
+          "salesValueYen": 1127332,
+          "weightedSalesYen": 450932,
+          "nextPeriodValueYen": 225467,
+          "nextPeriodWeightedYen": 90186,
+          "periodInflowYen": 4509320
+        },
+        {
+          "projectCode": "YJ-P30",
+          "source": "contract_work",
+          "placement": "in_period",
+          "probabilityBps": 3000,
+          "valueYen": 5339200,
+          "weightedYen": 1601760,
+          "salesValueYen": 5339200,
+          "weightedSalesYen": 1601760,
+          "nextPeriodValueYen": 0,
+          "nextPeriodWeightedYen": 0,
+          "periodInflowYen": 16017600
+        }
+      ],
+      "actionRows": [
+        {
+          "source": "consignment",
+          "step": "meeting",
+          "countX100": 300,
+          "dealYen": 9289186,
+          "valueYen": 1857837,
+          "expectedYen": 836026,
+          "salesValueYen": 1857837,
+          "expectedSalesYen": 836026
+        },
+        {
+          "source": "acquisition",
+          "step": "meeting",
+          "countX100": 450,
+          "dealYen": 31345186,
+          "valueYen": 6269037,
+          "expectedYen": 4231600,
+          "salesValueYen": 6269037,
+          "expectedSalesYen": 4231600
+        },
+        {
+          "source": "contract_work",
+          "step": "proposal",
+          "countX100": 500,
+          "dealYen": 33098451,
+          "valueYen": 3309845,
+          "expectedYen": 4964767,
+          "salesValueYen": 3309845,
+          "expectedSalesYen": 4964767
+        }
+      ],
+      "nextPeriodProfitYen": 27998163,
+      "componentCount": 32,
+      "distribution": {
+        "gridYen": 10000,
+        "exp": 194,
+        "pointCount": 9330,
+        "minYen": 263810000,
+        "maxYen": 366150000,
+        "sha256": "e88fbc963f7009f3095c9e7e6a38fb71e041a5872267d67a336ed59428f50a29"
+      },
+      "quantiles": {
+        "p10Yen": 289110000,
+        "p50Yen": 305570000,
+        "p90Yen": 318070000
+      },
+      "quantilesWithoutActions": {
+        "p10Yen": 280620000,
+        "p50Yen": 296850000,
+        "p90Yen": 304990000
+      },
+      "cash": {
+        "byMonth": [
+          {
+            "month": "2026-12",
+            "yen": 101823469
+          },
+          {
+            "month": "2027-01",
+            "yen": 87789590
+          },
+          {
+            "month": "2027-02",
+            "yen": 83869813
+          },
+          {
+            "month": "2027-03",
+            "yen": 78572334
+          },
+          {
+            "month": "2027-04",
+            "yen": 63547481
+          },
+          {
+            "month": "2027-05",
+            "yen": 61805084
+          },
+          {
+            "month": "2027-06",
+            "yen": 57955610
+          },
+          {
+            "month": "2027-07",
+            "yen": 45588318
+          },
+          {
+            "month": "2027-08",
+            "yen": 48793324
+          },
+          {
+            "month": "2027-09",
+            "yen": 34108769
+          }
+        ],
+        "periodYen": 663853792,
+        "lastTwoMonthsYen": 82902093,
+        "slipOutYen": 34108769,
+        "nextPeriodYen": 58589338,
+        "unscheduledCount": 0
+      },
+      "withoutFourItems": {
+        "expectedYen": 338792344,
+        "actualYen": 55344080,
+        "weightedYen": 273415871,
+        "actionYen": 10032393,
+        "distribution": {
+          "gridYen": 10000,
+          "exp": 194,
+          "pointCount": 8363,
+          "minYen": 303770000,
+          "maxYen": 399640000,
+          "sha256": "c729c220d39da2d82c2925c36a2dd5dc7ea202126d3b5f7234e51d842d7146d4"
+        },
+        "quantiles": {
+          "p10Yen": 326770000,
+          "p50Yen": 338820000,
+          "p90Yen": 350740000
+        }
+      },
+      "investmentRecovery": {
+        "rows": [
+          {
+            "kind": "own_investment",
+            "projectCode": "YJ-P01",
+            "investmentYen": 59970000,
+            "revenueYen": 11095706,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 11095706,
+            "remainingExpectedYen": 49807899,
+            "diffYen": -48874294,
+            "recoveryRateBps": 1850,
+            "status": "awaiting",
+            "projectedDiffYen": 933605
+          },
+          {
+            "kind": "own_investment",
+            "projectCode": "YJ-P02",
+            "investmentYen": 15147000,
+            "revenueYen": 4350694,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 4350694,
+            "remainingExpectedYen": 18776119,
+            "diffYen": -10796306,
+            "recoveryRateBps": 2872,
+            "status": "awaiting",
+            "projectedDiffYen": 7979813
+          },
+          {
+            "kind": "own_investment",
+            "projectCode": "YJ-P03",
+            "investmentYen": 76013000,
+            "revenueYen": 17075251,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 17075251,
+            "remainingExpectedYen": 73476082,
+            "diffYen": -58937749,
+            "recoveryRateBps": 2246,
+            "status": "awaiting",
+            "projectedDiffYen": 14538333
+          },
+          {
+            "kind": "own_investment",
+            "projectCode": "YJ-P04",
+            "investmentYen": 25613000,
+            "revenueYen": 5067396,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 5067396,
+            "remainingExpectedYen": 19878902,
+            "diffYen": -20545604,
+            "recoveryRateBps": 1978,
+            "status": "awaiting",
+            "projectedDiffYen": -666702
+          },
+          {
+            "kind": "committee",
+            "projectCode": "YJ-P05",
+            "investmentYen": 65940000,
+            "revenueYen": 5878037,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 5878037,
+            "remainingExpectedYen": 24775511,
+            "diffYen": -60061963,
+            "recoveryRateBps": 891,
+            "status": "awaiting",
+            "projectedDiffYen": -35286452
+          },
+          {
+            "kind": "committee",
+            "projectCode": "YJ-P06",
+            "investmentYen": 19520000,
+            "revenueYen": 1313360,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 1313360,
+            "remainingExpectedYen": 5003326,
+            "diffYen": -18206640,
+            "recoveryRateBps": 672,
+            "status": "awaiting",
+            "projectedDiffYen": -13203314
+          },
+          {
+            "kind": "committee",
+            "projectCode": "YJ-P07",
+            "investmentYen": 19200000,
+            "revenueYen": 1409272,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 1409272,
+            "remainingExpectedYen": 6122271,
+            "diffYen": -17790728,
+            "recoveryRateBps": 733,
+            "status": "awaiting",
+            "projectedDiffYen": -11668457
+          },
+          {
+            "kind": "committee",
+            "projectCode": "YJ-P13",
+            "investmentYen": 7272000,
+            "revenueYen": 0,
+            "periodInvestmentYen": 7272000,
+            "periodRevenueYen": 0,
+            "remainingExpectedYen": -3315610,
+            "diffYen": -7272000,
+            "recoveryRateBps": 0,
+            "status": "awaiting",
+            "projectedDiffYen": -10587610
+          }
+        ],
+        "total": {
+          "rowCount": 8,
+          "investmentYen": 288675000,
+          "revenueYen": 46189716,
+          "diffYen": -242485284,
+          "periodInvestmentYen": 7272000,
+          "periodRevenueYen": 46189716,
+          "projectedDiffYen": -47960784,
+          "recoveryRateBps": 1600,
+          "status": "awaiting"
+        }
+      }
+    },
+    "optimistic": {
+      "assumptions": {
+        "salesMultiplierBps": 11500,
+        "recoveryAmountBps": 11500,
+        "meetingToProposalBps": 5000,
+        "proposalToContractBps": 4000,
+        "paymentDelayMonths": 0
+      },
+      "actions": [
+        {
+          "source": "consignment",
+          "step": "meeting",
+          "countX100": 300
+        },
+        {
+          "source": "acquisition",
+          "step": "meeting",
+          "countX100": 450
+        },
+        {
+          "source": "contract_work",
+          "step": "proposal",
+          "countX100": 500
+        }
+      ],
+      "expectedYen": 348079347,
+      "actualYen": 40795080,
+      "weightedYen": 292894217,
+      "actionYen": 14390050,
+      "actualPlusWeightedYen": 333689297,
+      "expectedSalesYen": 382303446,
+      "actualSalesYen": 55344080,
+      "weightedSalesYen": 312569316,
+      "actionSalesYen": 14390050,
+      "actualPlusWeightedSalesYen": 367913396,
+      "bySource": [
+        {
+          "source": "contract_work",
+          "status": "connected",
+          "actualYen": 0,
+          "weightedYen": 12392904,
+          "actionYen": 6619690,
+          "expectedYen": 19012594,
+          "actualSalesYen": 0,
+          "weightedSalesYen": 12392904,
+          "actionSalesYen": 6619690,
+          "expectedSalesYen": 19012594
+        },
+        {
+          "source": "own_investment",
+          "status": "connected",
+          "actualYen": 37589047,
+          "weightedYen": 188016294,
+          "actionYen": 0,
+          "expectedYen": 225605341,
+          "actualSalesYen": 37589047,
+          "weightedSalesYen": 193305894,
+          "actionSalesYen": 0,
+          "expectedSalesYen": 230894941
+        },
+        {
+          "source": "committee",
+          "status": "connected",
+          "actualYen": 1328669,
+          "weightedYen": 33145823,
+          "actionYen": 0,
+          "expectedYen": 34474492,
+          "actualSalesYen": 8600669,
+          "weightedSalesYen": 43048523,
+          "actionSalesYen": 0,
+          "expectedSalesYen": 51649192
+        },
+        {
+          "source": "acquisition",
+          "status": "connected",
+          "actualYen": 1877364,
+          "weightedYen": 47980471,
+          "actionYen": 6488453,
+          "expectedYen": 56346288,
+          "actualSalesYen": 9154364,
+          "weightedSalesYen": 52463270,
+          "actionSalesYen": 6488453,
+          "expectedSalesYen": 68106087
+        },
+        {
+          "source": "consignment",
+          "status": "connected",
+          "actualYen": 0,
+          "weightedYen": 11358725,
+          "actionYen": 1281907,
+          "expectedYen": 12640632,
+          "actualSalesYen": 0,
+          "weightedSalesYen": 11358725,
+          "actionSalesYen": 1281907,
+          "expectedSalesYen": 12640632
+        }
+      ],
+      "projects": [
+        {
+          "projectCode": "YJ-P01",
+          "source": "own_investment",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 57279083,
+          "weightedYen": 57279083,
+          "salesValueYen": 57279083,
+          "weightedSalesYen": 57279083,
+          "nextPeriodValueYen": 3838759,
+          "nextPeriodWeightedYen": 3838759,
+          "periodInflowYen": 57279080
+        },
+        {
+          "projectCode": "YJ-P02",
+          "source": "own_investment",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 21592536,
+          "weightedYen": 21592536,
+          "salesValueYen": 21592536,
+          "weightedSalesYen": 21592536,
+          "nextPeriodValueYen": 1926915,
+          "nextPeriodWeightedYen": 1926915,
+          "periodInflowYen": 21592533
+        },
+        {
+          "projectCode": "YJ-P03",
+          "source": "own_investment",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 84497494,
+          "weightedYen": 84497494,
+          "salesValueYen": 84497494,
+          "weightedSalesYen": 84497494,
+          "nextPeriodValueYen": 4755325,
+          "nextPeriodWeightedYen": 4755325,
+          "periodInflowYen": 84497489
+        },
+        {
+          "projectCode": "YJ-P04",
+          "source": "own_investment",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 22860737,
+          "weightedYen": 22860737,
+          "salesValueYen": 22860737,
+          "weightedSalesYen": 22860737,
+          "nextPeriodValueYen": 1813625,
+          "nextPeriodWeightedYen": 1813625,
+          "periodInflowYen": 22860732
+        },
+        {
+          "projectCode": "YJ-P05",
+          "source": "committee",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 28491838,
+          "weightedYen": 28491838,
+          "salesValueYen": 28491838,
+          "weightedSalesYen": 28491838,
+          "nextPeriodValueYen": 1796980,
+          "nextPeriodWeightedYen": 1796980,
+          "periodInflowYen": 81405246
+        },
+        {
+          "projectCode": "YJ-P06",
+          "source": "committee",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 5753824,
+          "weightedYen": 5753824,
+          "salesValueYen": 5753824,
+          "weightedSalesYen": 5753824,
+          "nextPeriodValueYen": 323858,
+          "nextPeriodWeightedYen": 323858,
+          "periodInflowYen": 14384558
+        },
+        {
+          "projectCode": "YJ-P07",
+          "source": "committee",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 7040612,
+          "weightedYen": 7040612,
+          "salesValueYen": 7040612,
+          "weightedSalesYen": 7040612,
+          "nextPeriodValueYen": 361557,
+          "nextPeriodWeightedYen": 361557,
+          "periodInflowYen": 28162446
+        },
+        {
+          "projectCode": "YJ-P08",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 18599769,
+          "weightedYen": 18599769,
+          "salesValueYen": 18599769,
+          "weightedSalesYen": 18599769,
+          "nextPeriodValueYen": 1434507,
+          "nextPeriodWeightedYen": 1434507,
+          "periodInflowYen": 92998841
+        },
+        {
+          "projectCode": "YJ-P09",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 13498671,
+          "weightedYen": 13498671,
+          "salesValueYen": 13498671,
+          "weightedSalesYen": 13498671,
+          "nextPeriodValueYen": 845272,
+          "nextPeriodWeightedYen": 845272,
+          "periodInflowYen": 67493355
+        },
+        {
+          "projectCode": "YJ-P10",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 14461555,
+          "weightedYen": 14461555,
+          "salesValueYen": 14461555,
+          "weightedSalesYen": 14461555,
+          "nextPeriodValueYen": 1070487,
+          "nextPeriodWeightedYen": 1070487,
+          "periodInflowYen": 72307772
+        },
+        {
+          "projectCode": "YJ-P11",
+          "source": "own_investment",
+          "placement": "in_period",
+          "probabilityBps": 6000,
+          "valueYen": 2977408,
+          "weightedYen": 1786444,
+          "salesValueYen": 11793408,
+          "weightedSalesYen": 7076044,
+          "nextPeriodValueYen": 14065217,
+          "nextPeriodWeightedYen": 8439130,
+          "periodInflowYen": 7076043
+        },
+        {
+          "projectCode": "YJ-P13",
+          "source": "committee",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": -3085751,
+          "weightedYen": -3085751,
+          "salesValueYen": 1762249,
+          "weightedSalesYen": 1762249,
+          "nextPeriodValueYen": 783531,
+          "nextPeriodWeightedYen": 783531,
+          "periodInflowYen": 5874162
+        },
+        {
+          "projectCode": "YJ-P14",
+          "source": "committee",
+          "placement": "in_period",
+          "probabilityBps": 3000,
+          "valueYen": -16849000,
+          "weightedYen": -5054700,
+          "salesValueYen": 0,
+          "weightedSalesYen": 0,
+          "nextPeriodValueYen": 4572432,
+          "nextPeriodWeightedYen": 1371729,
+          "periodInflowYen": 0
+        },
+        {
+          "projectCode": "YJ-P15",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 1778533,
+          "weightedYen": 1778533,
+          "salesValueYen": 1778533,
+          "weightedSalesYen": 1778533,
+          "nextPeriodValueYen": 210561,
+          "nextPeriodWeightedYen": 210561,
+          "periodInflowYen": 8892663
+        },
+        {
+          "projectCode": "YJ-P16",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 8000,
+          "valueYen": 1180380,
+          "weightedYen": 944304,
+          "salesValueYen": 3388380,
+          "weightedSalesYen": 2710704,
+          "nextPeriodValueYen": 860712,
+          "nextPeriodWeightedYen": 688569,
+          "periodInflowYen": 13553516
+        },
+        {
+          "projectCode": "YJ-P17",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 4000,
+          "valueYen": -3255904,
+          "weightedYen": -1302361,
+          "salesValueYen": 3535096,
+          "weightedSalesYen": 1414038,
+          "nextPeriodValueYen": 2242858,
+          "nextPeriodWeightedYen": 897143,
+          "periodInflowYen": 5656153
+        },
+        {
+          "projectCode": "YJ-P19",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 4878423,
+          "weightedYen": 4878423,
+          "salesValueYen": 4878423,
+          "weightedSalesYen": 4878423,
+          "nextPeriodValueYen": 320206,
+          "nextPeriodWeightedYen": 320206,
+          "periodInflowYen": 24392111
+        },
+        {
+          "projectCode": "YJ-P20",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 9000,
+          "valueYen": 3052077,
+          "weightedYen": 2746869,
+          "salesValueYen": 3052077,
+          "weightedSalesYen": 2746869,
+          "nextPeriodValueYen": 531168,
+          "nextPeriodWeightedYen": 478051,
+          "periodInflowYen": 13734344
+        },
+        {
+          "projectCode": "YJ-P21",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 5000,
+          "valueYen": 2095048,
+          "weightedYen": 1047524,
+          "salesValueYen": 2095048,
+          "weightedSalesYen": 1047524,
+          "nextPeriodValueYen": 638673,
+          "nextPeriodWeightedYen": 319336,
+          "periodInflowYen": 5237619
+        },
+        {
+          "projectCode": "YJ-P22",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 2000,
+          "valueYen": 1203866,
+          "weightedYen": 240773,
+          "salesValueYen": 1203866,
+          "weightedSalesYen": 240773,
+          "nextPeriodValueYen": 240773,
+          "nextPeriodWeightedYen": 48154,
+          "periodInflowYen": 1203860
+        },
+        {
+          "projectCode": "YJ-P23",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 7000,
+          "valueYen": 3343622,
+          "weightedYen": 2340535,
+          "salesValueYen": 3343622,
+          "weightedSalesYen": 2340535,
+          "nextPeriodValueYen": 479438,
+          "nextPeriodWeightedYen": 335606,
+          "periodInflowYen": 11702674
+        },
+        {
+          "projectCode": "YJ-P24",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 1000,
+          "valueYen": 1046014,
+          "weightedYen": 104601,
+          "salesValueYen": 1046014,
+          "weightedSalesYen": 104601,
+          "nextPeriodValueYen": 348674,
+          "nextPeriodWeightedYen": 34867,
+          "periodInflowYen": 522999
+        },
+        {
+          "projectCode": "YJ-P25",
+          "source": "contract_work",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 2773600,
+          "weightedYen": 2773600,
+          "salesValueYen": 2773600,
+          "weightedSalesYen": 2773600,
+          "nextPeriodValueYen": 0,
+          "nextPeriodWeightedYen": 0,
+          "periodInflowYen": 27736000
+        },
+        {
+          "projectCode": "YJ-P26",
+          "source": "contract_work",
+          "placement": "in_period",
+          "probabilityBps": 8000,
+          "valueYen": 3529650,
+          "weightedYen": 2823720,
+          "salesValueYen": 3529650,
+          "weightedSalesYen": 2823720,
+          "nextPeriodValueYen": 0,
+          "nextPeriodWeightedYen": 0,
+          "periodInflowYen": 18824800
+        },
+        {
+          "projectCode": "YJ-P27",
+          "source": "contract_work",
+          "placement": "in_period",
+          "probabilityBps": 7000,
+          "valueYen": 6775560,
+          "weightedYen": 4742892,
+          "salesValueYen": 6775560,
+          "weightedSalesYen": 4742892,
+          "nextPeriodValueYen": 0,
+          "nextPeriodWeightedYen": 0,
+          "periodInflowYen": 39524100
+        },
+        {
+          "projectCode": "YJ-P28",
+          "source": "contract_work",
+          "placement": "in_period",
+          "probabilityBps": 4000,
+          "valueYen": 1127332,
+          "weightedYen": 450932,
+          "salesValueYen": 1127332,
+          "weightedSalesYen": 450932,
+          "nextPeriodValueYen": 225467,
+          "nextPeriodWeightedYen": 90186,
+          "periodInflowYen": 4509320
+        },
+        {
+          "projectCode": "YJ-P30",
+          "source": "contract_work",
+          "placement": "in_period",
+          "probabilityBps": 3000,
+          "valueYen": 5339200,
+          "weightedYen": 1601760,
+          "salesValueYen": 5339200,
+          "weightedSalesYen": 1601760,
+          "nextPeriodValueYen": 0,
+          "nextPeriodWeightedYen": 0,
+          "periodInflowYen": 16017600
+        }
+      ],
+      "actionRows": [
+        {
+          "source": "consignment",
+          "step": "meeting",
+          "countX100": 300,
+          "dealYen": 9289186,
+          "valueYen": 2136512,
+          "expectedYen": 1281907,
+          "salesValueYen": 2136512,
+          "expectedSalesYen": 1281907
+        },
+        {
+          "source": "acquisition",
+          "step": "meeting",
+          "countX100": 450,
+          "dealYen": 31345186,
+          "valueYen": 7209392,
+          "expectedYen": 6488453,
+          "salesValueYen": 7209392,
+          "expectedSalesYen": 6488453
+        },
+        {
+          "source": "contract_work",
+          "step": "proposal",
+          "countX100": 500,
+          "dealYen": 33098451,
+          "valueYen": 3309845,
+          "expectedYen": 6619690,
+          "salesValueYen": 3309845,
+          "expectedSalesYen": 6619690
+        }
+      ],
+      "nextPeriodProfitYen": 32184354,
+      "componentCount": 32,
+      "distribution": {
+        "gridYen": 10000,
+        "exp": 194,
+        "pointCount": 9903,
+        "minYen": 301100000,
+        "maxYen": 411900000,
+        "sha256": "a476df6f6981c166658594b5a6d73ecccf6ba0ad6bf5aed428540a8e43875ec7"
+      },
+      "quantiles": {
+        "p10Yen": 331840000,
+        "p50Yen": 348690000,
+        "p90Yen": 362890000
+      },
+      "quantilesWithoutActions": {
+        "p10Yen": 319730000,
+        "p50Yen": 335740000,
+        "p90Yen": 344170000
+      },
+      "cash": {
+        "byMonth": [
+          {
+            "month": "2026-12",
+            "yen": 115781225
+          },
+          {
+            "month": "2027-01",
+            "yen": 100043266
+          },
+          {
+            "month": "2027-02",
+            "yen": 94604054
+          },
+          {
+            "month": "2027-03",
+            "yen": 88321625
+          },
+          {
+            "month": "2027-04",
+            "yen": 72164838
+          },
+          {
+            "month": "2027-05",
+            "yen": 69229616
+          },
+          {
+            "month": "2027-06",
+            "yen": 64196352
+          },
+          {
+            "month": "2027-07",
+            "yen": 51229431
+          },
+          {
+            "month": "2027-08",
+            "yen": 53673228
+          },
+          {
+            "month": "2027-09",
+            "yen": 38196381
+          }
+        ],
+        "periodYen": 747440016,
+        "lastTwoMonthsYen": 91869609,
+        "slipOutYen": 38196381,
+        "nextPeriodYen": 67242442,
+        "unscheduledCount": 0
+      },
+      "withoutFourItems": {
+        "expectedYen": 382303446,
+        "actualYen": 55344080,
+        "weightedYen": 312569316,
+        "actionYen": 14390050,
+        "distribution": {
+          "gridYen": 10000,
+          "exp": 194,
+          "pointCount": 9118,
+          "minYen": 340600000,
+          "maxYen": 445850000,
+          "sha256": "2d178fa01710756e370966d54d7409d6690b7df7c5693f45b4a43cc19f76ea63"
+        },
+        "quantiles": {
+          "p10Yen": 368410000,
+          "p50Yen": 382280000,
+          "p90Yen": 396090000
+        }
+      },
+      "investmentRecovery": {
+        "rows": [
+          {
+            "kind": "own_investment",
+            "projectCode": "YJ-P01",
+            "investmentYen": 59970000,
+            "revenueYen": 11095706,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 11095706,
+            "remainingExpectedYen": 57279083,
+            "diffYen": -48874294,
+            "recoveryRateBps": 1850,
+            "status": "awaiting",
+            "projectedDiffYen": 8404789
+          },
+          {
+            "kind": "own_investment",
+            "projectCode": "YJ-P02",
+            "investmentYen": 15147000,
+            "revenueYen": 4350694,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 4350694,
+            "remainingExpectedYen": 21592536,
+            "diffYen": -10796306,
+            "recoveryRateBps": 2872,
+            "status": "awaiting",
+            "projectedDiffYen": 10796230
+          },
+          {
+            "kind": "own_investment",
+            "projectCode": "YJ-P03",
+            "investmentYen": 76013000,
+            "revenueYen": 17075251,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 17075251,
+            "remainingExpectedYen": 84497494,
+            "diffYen": -58937749,
+            "recoveryRateBps": 2246,
+            "status": "awaiting",
+            "projectedDiffYen": 25559745
+          },
+          {
+            "kind": "own_investment",
+            "projectCode": "YJ-P04",
+            "investmentYen": 25613000,
+            "revenueYen": 5067396,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 5067396,
+            "remainingExpectedYen": 22860737,
+            "diffYen": -20545604,
+            "recoveryRateBps": 1978,
+            "status": "awaiting",
+            "projectedDiffYen": 2315133
+          },
+          {
+            "kind": "committee",
+            "projectCode": "YJ-P05",
+            "investmentYen": 65940000,
+            "revenueYen": 5878037,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 5878037,
+            "remainingExpectedYen": 28491838,
+            "diffYen": -60061963,
+            "recoveryRateBps": 891,
+            "status": "awaiting",
+            "projectedDiffYen": -31570125
+          },
+          {
+            "kind": "committee",
+            "projectCode": "YJ-P06",
+            "investmentYen": 19520000,
+            "revenueYen": 1313360,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 1313360,
+            "remainingExpectedYen": 5753824,
+            "diffYen": -18206640,
+            "recoveryRateBps": 672,
+            "status": "awaiting",
+            "projectedDiffYen": -12452816
+          },
+          {
+            "kind": "committee",
+            "projectCode": "YJ-P07",
+            "investmentYen": 19200000,
+            "revenueYen": 1409272,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 1409272,
+            "remainingExpectedYen": 7040612,
+            "diffYen": -17790728,
+            "recoveryRateBps": 733,
+            "status": "awaiting",
+            "projectedDiffYen": -10750116
+          },
+          {
+            "kind": "committee",
+            "projectCode": "YJ-P13",
+            "investmentYen": 7272000,
+            "revenueYen": 0,
+            "periodInvestmentYen": 7272000,
+            "periodRevenueYen": 0,
+            "remainingExpectedYen": -3085751,
+            "diffYen": -7272000,
+            "recoveryRateBps": 0,
+            "status": "awaiting",
+            "projectedDiffYen": -10357751
+          }
+        ],
+        "total": {
+          "rowCount": 8,
+          "investmentYen": 288675000,
+          "revenueYen": 46189716,
+          "diffYen": -242485284,
+          "periodInvestmentYen": 7272000,
+          "periodRevenueYen": 46189716,
+          "projectedDiffYen": -18054911,
+          "recoveryRateBps": 1600,
+          "status": "awaiting"
+        }
+      }
+    },
+    "pessimistic": {
+      "assumptions": {
+        "salesMultiplierBps": 8500,
+        "recoveryAmountBps": 8500,
+        "meetingToProposalBps": 5000,
+        "proposalToContractBps": 2000,
+        "paymentDelayMonths": 1
+      },
+      "actions": [
+        {
+          "source": "consignment",
+          "step": "meeting",
+          "countX100": 300
+        },
+        {
+          "source": "acquisition",
+          "step": "meeting",
+          "countX100": 450
+        },
+        {
+          "source": "contract_work",
+          "step": "proposal",
+          "countX100": 500
+        }
+      ],
+      "expectedYen": 261563904,
+      "actualYen": 40795080,
+      "weightedYen": 214587325,
+      "actionYen": 6181499,
+      "actualPlusWeightedYen": 255382405,
+      "expectedSalesYen": 295788002,
+      "actualSalesYen": 55344080,
+      "weightedSalesYen": 234262423,
+      "actionSalesYen": 6181499,
+      "actualPlusWeightedSalesYen": 289606503,
+      "bySource": [
+        {
+          "source": "contract_work",
+          "status": "connected",
+          "actualYen": 0,
+          "weightedYen": 12392904,
+          "actionYen": 3309845,
+          "expectedYen": 15702749,
+          "actualSalesYen": 0,
+          "weightedSalesYen": 12392904,
+          "actionSalesYen": 3309845,
+          "expectedSalesYen": 15702749
+        },
+        {
+          "source": "own_investment",
+          "status": "connected",
+          "actualYen": 37589047,
+          "weightedYen": 137588671,
+          "actionYen": 0,
+          "expectedYen": 175177718,
+          "actualSalesYen": 37589047,
+          "weightedSalesYen": 142878270,
+          "actionSalesYen": 0,
+          "expectedSalesYen": 180467317
+        },
+        {
+          "source": "committee",
+          "status": "connected",
+          "actualYen": 1328669,
+          "weightedYen": 21915773,
+          "actionYen": 0,
+          "expectedYen": 23244442,
+          "actualSalesYen": 8600669,
+          "weightedSalesYen": 31818473,
+          "actionSalesYen": 0,
+          "expectedSalesYen": 40419142
+        },
+        {
+          "source": "acquisition",
+          "status": "connected",
+          "actualYen": 1877364,
+          "weightedYen": 34294399,
+          "actionYen": 2397906,
+          "expectedYen": 38569669,
+          "actualSalesYen": 9154364,
+          "weightedSalesYen": 38777198,
+          "actionSalesYen": 2397906,
+          "expectedSalesYen": 50329468
+        },
+        {
+          "source": "consignment",
+          "status": "connected",
+          "actualYen": 0,
+          "weightedYen": 8395578,
+          "actionYen": 473748,
+          "expectedYen": 8869326,
+          "actualSalesYen": 0,
+          "weightedSalesYen": 8395578,
+          "actionSalesYen": 473748,
+          "expectedSalesYen": 8869326
+        }
+      ],
+      "projects": [
+        {
+          "projectCode": "YJ-P01",
+          "source": "own_investment",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 42336714,
+          "weightedYen": 42336714,
+          "salesValueYen": 42336714,
+          "weightedSalesYen": 42336714,
+          "nextPeriodValueYen": 2837344,
+          "nextPeriodWeightedYen": 2837344,
+          "periodInflowYen": 40607148
+        },
+        {
+          "projectCode": "YJ-P02",
+          "source": "own_investment",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 15959701,
+          "weightedYen": 15959701,
+          "salesValueYen": 15959701,
+          "weightedSalesYen": 15959701,
+          "nextPeriodValueYen": 1424242,
+          "nextPeriodWeightedYen": 1424242,
+          "periodInflowYen": 15080424
+        },
+        {
+          "projectCode": "YJ-P03",
+          "source": "own_investment",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 62454669,
+          "weightedYen": 62454669,
+          "salesValueYen": 62454669,
+          "weightedSalesYen": 62454669,
+          "nextPeriodValueYen": 3514806,
+          "nextPeriodWeightedYen": 3514806,
+          "periodInflowYen": 59951241
+        },
+        {
+          "projectCode": "YJ-P04",
+          "source": "own_investment",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 16897066,
+          "weightedYen": 16897066,
+          "salesValueYen": 16897066,
+          "weightedSalesYen": 16897066,
+          "nextPeriodValueYen": 1340506,
+          "nextPeriodWeightedYen": 1340506,
+          "periodInflowYen": 16033389
+        },
+        {
+          "projectCode": "YJ-P05",
+          "source": "committee",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 21059184,
+          "weightedYen": 21059184,
+          "salesValueYen": 21059184,
+          "weightedSalesYen": 21059184,
+          "nextPeriodValueYen": 1328202,
+          "nextPeriodWeightedYen": 1328202,
+          "periodInflowYen": 57877787
+        },
+        {
+          "projectCode": "YJ-P06",
+          "source": "committee",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 4252827,
+          "weightedYen": 4252827,
+          "salesValueYen": 4252827,
+          "weightedSalesYen": 4252827,
+          "nextPeriodValueYen": 239373,
+          "nextPeriodWeightedYen": 239373,
+          "periodInflowYen": 10247266
+        },
+        {
+          "projectCode": "YJ-P07",
+          "source": "committee",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 5203930,
+          "weightedYen": 5203930,
+          "salesValueYen": 5203930,
+          "weightedSalesYen": 5203930,
+          "nextPeriodValueYen": 267237,
+          "nextPeriodWeightedYen": 267237,
+          "periodInflowYen": 20132245
+        },
+        {
+          "projectCode": "YJ-P08",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 13747655,
+          "weightedYen": 13747655,
+          "salesValueYen": 13747655,
+          "weightedSalesYen": 13747655,
+          "nextPeriodValueYen": 1060288,
+          "nextPeriodWeightedYen": 1060288,
+          "periodInflowYen": 65472831
+        },
+        {
+          "projectCode": "YJ-P09",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 9977279,
+          "weightedYen": 9977279,
+          "salesValueYen": 9977279,
+          "weightedSalesYen": 9977279,
+          "nextPeriodValueYen": 624766,
+          "nextPeriodWeightedYen": 624766,
+          "periodInflowYen": 48030610
+        },
+        {
+          "projectCode": "YJ-P10",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 10688975,
+          "weightedYen": 10688975,
+          "salesValueYen": 10688975,
+          "weightedSalesYen": 10688975,
+          "nextPeriodValueYen": 791230,
+          "nextPeriodWeightedYen": 791230,
+          "periodInflowYen": 50982282
+        },
+        {
+          "projectCode": "YJ-P11",
+          "source": "own_investment",
+          "placement": "in_period",
+          "probabilityBps": 6000,
+          "valueYen": -99133,
+          "weightedYen": -59479,
+          "salesValueYen": 8716867,
+          "weightedSalesYen": 5230120,
+          "nextPeriodValueYen": 10396030,
+          "nextPeriodWeightedYen": 6237618,
+          "periodInflowYen": 3703774
+        },
+        {
+          "projectCode": "YJ-P13",
+          "source": "committee",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": -3545468,
+          "weightedYen": -3545468,
+          "salesValueYen": 1302532,
+          "weightedSalesYen": 1302532,
+          "nextPeriodValueYen": 579132,
+          "nextPeriodWeightedYen": 579132,
+          "periodInflowYen": 3845829
+        },
+        {
+          "projectCode": "YJ-P14",
+          "source": "committee",
+          "placement": "in_period",
+          "probabilityBps": 3000,
+          "valueYen": -16849000,
+          "weightedYen": -5054700,
+          "salesValueYen": 0,
+          "weightedSalesYen": 0,
+          "nextPeriodValueYen": 3379623,
+          "nextPeriodWeightedYen": 1013886,
+          "periodInflowYen": 0
+        },
+        {
+          "projectCode": "YJ-P15",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 1314568,
+          "weightedYen": 1314568,
+          "salesValueYen": 1314568,
+          "weightedSalesYen": 1314568,
+          "nextPeriodValueYen": 155632,
+          "nextPeriodWeightedYen": 155632,
+          "periodInflowYen": 6186254
+        },
+        {
+          "projectCode": "YJ-P16",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 8000,
+          "valueYen": 296454,
+          "weightedYen": 237163,
+          "salesValueYen": 2504454,
+          "weightedSalesYen": 2003563,
+          "nextPeriodValueYen": 636178,
+          "nextPeriodWeightedYen": 508942,
+          "periodInflowYen": 9204441
+        },
+        {
+          "projectCode": "YJ-P17",
+          "source": "acquisition",
+          "placement": "in_period",
+          "probabilityBps": 4000,
+          "valueYen": -4178103,
+          "weightedYen": -1671241,
+          "salesValueYen": 2612897,
+          "weightedSalesYen": 1045158,
+          "nextPeriodValueYen": 1657764,
+          "nextPeriodWeightedYen": 663105,
+          "periodInflowYen": 3562279
+        },
+        {
+          "projectCode": "YJ-P19",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 3605790,
+          "weightedYen": 3605790,
+          "salesValueYen": 3605790,
+          "weightedSalesYen": 3605790,
+          "nextPeriodValueYen": 236674,
+          "nextPeriodWeightedYen": 236674,
+          "periodInflowYen": 17325817
+        },
+        {
+          "projectCode": "YJ-P20",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 9000,
+          "valueYen": 2255883,
+          "weightedYen": 2030294,
+          "salesValueYen": 2255883,
+          "weightedSalesYen": 2030294,
+          "nextPeriodValueYen": 392602,
+          "nextPeriodWeightedYen": 353341,
+          "periodInflowYen": 9430550
+        },
+        {
+          "projectCode": "YJ-P21",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 5000,
+          "valueYen": 1548514,
+          "weightedYen": 774257,
+          "salesValueYen": 1548514,
+          "weightedSalesYen": 774257,
+          "nextPeriodValueYen": 472062,
+          "nextPeriodWeightedYen": 236031,
+          "periodInflowYen": 3525522
+        },
+        {
+          "projectCode": "YJ-P22",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 2000,
+          "valueYen": 889814,
+          "weightedYen": 177962,
+          "salesValueYen": 889814,
+          "weightedSalesYen": 177962,
+          "nextPeriodValueYen": 177963,
+          "nextPeriodWeightedYen": 35592,
+          "periodInflowYen": 800829
+        },
+        {
+          "projectCode": "YJ-P23",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 7000,
+          "valueYen": 2471373,
+          "weightedYen": 1729961,
+          "salesValueYen": 2471373,
+          "weightedSalesYen": 1729961,
+          "nextPeriodValueYen": 354367,
+          "nextPeriodWeightedYen": 248056,
+          "periodInflowYen": 8148292
+        },
+        {
+          "projectCode": "YJ-P24",
+          "source": "consignment",
+          "placement": "in_period",
+          "probabilityBps": 1000,
+          "valueYen": 773141,
+          "weightedYen": 77314,
+          "salesValueYen": 773141,
+          "weightedSalesYen": 77314,
+          "nextPeriodValueYen": 257715,
+          "nextPeriodWeightedYen": 25771,
+          "periodInflowYen": 343616
+        },
+        {
+          "projectCode": "YJ-P25",
+          "source": "contract_work",
+          "placement": "in_period",
+          "probabilityBps": 10000,
+          "valueYen": 2773600,
+          "weightedYen": 2773600,
+          "salesValueYen": 2773600,
+          "weightedSalesYen": 2773600,
+          "nextPeriodValueYen": 0,
+          "nextPeriodWeightedYen": 0,
+          "periodInflowYen": 27736000
+        },
+        {
+          "projectCode": "YJ-P26",
+          "source": "contract_work",
+          "placement": "in_period",
+          "probabilityBps": 8000,
+          "valueYen": 3529650,
+          "weightedYen": 2823720,
+          "salesValueYen": 3529650,
+          "weightedSalesYen": 2823720,
+          "nextPeriodValueYen": 0,
+          "nextPeriodWeightedYen": 0,
+          "periodInflowYen": 18824800
+        },
+        {
+          "projectCode": "YJ-P27",
+          "source": "contract_work",
+          "placement": "in_period",
+          "probabilityBps": 7000,
+          "valueYen": 6775560,
+          "weightedYen": 4742892,
+          "salesValueYen": 6775560,
+          "weightedSalesYen": 4742892,
+          "nextPeriodValueYen": 0,
+          "nextPeriodWeightedYen": 0,
+          "periodInflowYen": 39524100
+        },
+        {
+          "projectCode": "YJ-P28",
+          "source": "contract_work",
+          "placement": "in_period",
+          "probabilityBps": 4000,
+          "valueYen": 1127332,
+          "weightedYen": 450932,
+          "salesValueYen": 1127332,
+          "weightedSalesYen": 450932,
+          "nextPeriodValueYen": 225467,
+          "nextPeriodWeightedYen": 90186,
+          "periodInflowYen": 4058388
+        },
+        {
+          "projectCode": "YJ-P30",
+          "source": "contract_work",
+          "placement": "in_period",
+          "probabilityBps": 3000,
+          "valueYen": 5339200,
+          "weightedYen": 1601760,
+          "salesValueYen": 5339200,
+          "weightedSalesYen": 1601760,
+          "nextPeriodValueYen": 0,
+          "nextPeriodWeightedYen": 0,
+          "periodInflowYen": 9610560
+        }
+      ],
+      "actionRows": [
+        {
+          "source": "consignment",
+          "step": "meeting",
+          "countX100": 300,
+          "dealYen": 9289186,
+          "valueYen": 1579161,
+          "expectedYen": 473748,
+          "salesValueYen": 1579161,
+          "expectedSalesYen": 473748
+        },
+        {
+          "source": "acquisition",
+          "step": "meeting",
+          "countX100": 450,
+          "dealYen": 31345186,
+          "valueYen": 5328681,
+          "expectedYen": 2397906,
+          "salesValueYen": 5328681,
+          "expectedSalesYen": 2397906
+        },
+        {
+          "source": "contract_work",
+          "step": "proposal",
+          "countX100": 500,
+          "dealYen": 33098451,
+          "valueYen": 3309845,
+          "expectedYen": 3309845,
+          "salesValueYen": 3309845,
+          "expectedSalesYen": 3309845
+        }
+      ],
+      "nextPeriodProfitYen": 23811960,
+      "componentCount": 32,
+      "distribution": {
+        "gridYen": 10000,
+        "exp": 194,
+        "pointCount": 8779,
+        "minYen": 226390000,
+        "maxYen": 320470000,
+        "sha256": "f75913e6d751403938fd498a10714e8db69e34167fda1327d5af888a048e4aee"
+      },
+      "quantiles": {
+        "p10Yen": 246750000,
+        "p50Yen": 262940000,
+        "p90Yen": 273880000
+      },
+      "quantilesWithoutActions": {
+        "p10Yen": 241610000,
+        "p50Yen": 257650000,
+        "p90Yen": 265540000
+      },
+      "cash": {
+        "byMonth": [
+          {
+            "month": "2027-01",
+            "yen": 87865701
+          },
+          {
+            "month": "2027-02",
+            "yen": 75535900
+          },
+          {
+            "month": "2027-03",
+            "yen": 73135559
+          },
+          {
+            "month": "2027-04",
+            "yen": 68823028
+          },
+          {
+            "month": "2027-05",
+            "yen": 54930106
+          },
+          {
+            "month": "2027-06",
+            "yen": 54380536
+          },
+          {
+            "month": "2027-07",
+            "yen": 51714851
+          },
+          {
+            "month": "2027-08",
+            "yen": 39947190
+          },
+          {
+            "month": "2027-09",
+            "yen": 43913403
+          }
+        ],
+        "periodYen": 550246274,
+        "lastTwoMonthsYen": 83860593,
+        "slipOutYen": 43913403,
+        "nextPeriodYen": 79870160,
+        "unscheduledCount": 0
+      },
+      "withoutFourItems": {
+        "expectedYen": 295788002,
+        "actualYen": 55344080,
+        "weightedYen": 234262423,
+        "actionYen": 6181499,
+        "distribution": {
+          "gridYen": 10000,
+          "exp": 194,
+          "pointCount": 7609,
+          "minYen": 266910000,
+          "maxYen": 353390000,
+          "sha256": "86ff3015a68b8ff829a17f611d832c7468ba38bb2586cb07bb9d6703366f2eb0"
+        },
+        "quantiles": {
+          "p10Yen": 285500000,
+          "p50Yen": 295800000,
+          "p90Yen": 305970000
+        }
+      },
+      "investmentRecovery": {
+        "rows": [
+          {
+            "kind": "own_investment",
+            "projectCode": "YJ-P01",
+            "investmentYen": 59970000,
+            "revenueYen": 11095706,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 11095706,
+            "remainingExpectedYen": 42336714,
+            "diffYen": -48874294,
+            "recoveryRateBps": 1850,
+            "status": "awaiting",
+            "projectedDiffYen": -6537580
+          },
+          {
+            "kind": "own_investment",
+            "projectCode": "YJ-P02",
+            "investmentYen": 15147000,
+            "revenueYen": 4350694,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 4350694,
+            "remainingExpectedYen": 15959701,
+            "diffYen": -10796306,
+            "recoveryRateBps": 2872,
+            "status": "awaiting",
+            "projectedDiffYen": 5163395
+          },
+          {
+            "kind": "own_investment",
+            "projectCode": "YJ-P03",
+            "investmentYen": 76013000,
+            "revenueYen": 17075251,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 17075251,
+            "remainingExpectedYen": 62454669,
+            "diffYen": -58937749,
+            "recoveryRateBps": 2246,
+            "status": "awaiting",
+            "projectedDiffYen": 3516920
+          },
+          {
+            "kind": "own_investment",
+            "projectCode": "YJ-P04",
+            "investmentYen": 25613000,
+            "revenueYen": 5067396,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 5067396,
+            "remainingExpectedYen": 16897066,
+            "diffYen": -20545604,
+            "recoveryRateBps": 1978,
+            "status": "awaiting",
+            "projectedDiffYen": -3648538
+          },
+          {
+            "kind": "committee",
+            "projectCode": "YJ-P05",
+            "investmentYen": 65940000,
+            "revenueYen": 5878037,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 5878037,
+            "remainingExpectedYen": 21059184,
+            "diffYen": -60061963,
+            "recoveryRateBps": 891,
+            "status": "awaiting",
+            "projectedDiffYen": -39002779
+          },
+          {
+            "kind": "committee",
+            "projectCode": "YJ-P06",
+            "investmentYen": 19520000,
+            "revenueYen": 1313360,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 1313360,
+            "remainingExpectedYen": 4252827,
+            "diffYen": -18206640,
+            "recoveryRateBps": 672,
+            "status": "awaiting",
+            "projectedDiffYen": -13953813
+          },
+          {
+            "kind": "committee",
+            "projectCode": "YJ-P07",
+            "investmentYen": 19200000,
+            "revenueYen": 1409272,
+            "periodInvestmentYen": 0,
+            "periodRevenueYen": 1409272,
+            "remainingExpectedYen": 5203930,
+            "diffYen": -17790728,
+            "recoveryRateBps": 733,
+            "status": "awaiting",
+            "projectedDiffYen": -12586798
+          },
+          {
+            "kind": "committee",
+            "projectCode": "YJ-P13",
+            "investmentYen": 7272000,
+            "revenueYen": 0,
+            "periodInvestmentYen": 7272000,
+            "periodRevenueYen": 0,
+            "remainingExpectedYen": -3545468,
+            "diffYen": -7272000,
+            "recoveryRateBps": 0,
+            "status": "awaiting",
+            "projectedDiffYen": -10817468
+          }
+        ],
+        "total": {
+          "rowCount": 8,
+          "investmentYen": 288675000,
+          "revenueYen": 46189716,
+          "diffYen": -242485284,
+          "periodInvestmentYen": 7272000,
+          "periodRevenueYen": 46189716,
+          "projectedDiffYen": -77866661,
+          "recoveryRateBps": 1600,
+          "status": "awaiting"
+        }
+      }
+    }
+  },
+  "tornado": [
+    {
+      "key": "recoveryAmountBps",
+      "pessimistic": {
+        "value": 8500,
+        "expectedYen": 273739407,
+        "periodCashYen": 621706057
+      },
+      "optimistic": {
+        "value": 11500,
+        "expectedYen": 335397080,
+        "periodCashYen": 706001451
+      },
+      "swingYen": 61657673,
+      "cashSwingYen": 84295394
+    },
+    {
+      "key": "salesMultiplierBps",
+      "pessimistic": {
+        "value": 8500,
+        "expectedYen": 295483492,
+        "periodCashYen": 622415151
+      },
+      "optimistic": {
+        "value": 11500,
+        "expectedYen": 313652999,
+        "periodCashYen": 705292357
+      },
+      "swingYen": 18169507,
+      "cashSwingYen": 82877206
+    },
+    {
+      "key": "proposalToContractBps",
+      "pessimistic": {
+        "value": 2000,
+        "expectedYen": 301224114,
+        "periodCashYen": 663853792
+      },
+      "optimistic": {
+        "value": 4000,
+        "expectedYen": 307912377,
+        "periodCashYen": 663853792
+      },
+      "swingYen": 6688263,
+      "cashSwingYen": 0
+    },
+    {
+      "key": "meetingToProposalBps",
+      "pessimistic": {
+        "value": 4000,
+        "expectedYen": 303554720,
+        "periodCashYen": 663853792
+      },
+      "optimistic": {
+        "value": 6000,
+        "expectedYen": 305581771,
+        "periodCashYen": 663853792
+      },
+      "swingYen": 2027051,
+      "cashSwingYen": 0
+    },
+    {
+      "key": "paymentDelayMonths",
+      "pessimistic": {
+        "value": 1,
+        "expectedYen": 304568245,
+        "periodCashYen": 629745023
+      },
+      "optimistic": {
+        "value": 0,
+        "expectedYen": 304568245,
+        "periodCashYen": 663853792
+      },
+      "swingYen": 0,
+      "cashSwingYen": 34108769
+    }
+  ],
+  "candidates": [
+    {
+      "source": "acquisition",
+      "step": "meeting",
+      "addCountX100": 100,
+      "hoursX100": 300,
+      "expectedDeltaYen": 940355
+    },
+    {
+      "source": "consignment",
+      "step": "meeting",
+      "addCountX100": 100,
+      "hoursX100": 300,
+      "expectedDeltaYen": 278676
+    },
+    {
+      "source": "contract_work",
+      "step": "proposal",
+      "addCountX100": 100,
+      "hoursX100": 4000,
+      "expectedDeltaYen": 992954
+    }
+  ],
+  "proposals": {
+    "triggered": true,
+    "conditions": {
+      "forecastError": {
+        "triggered": false,
+        "rows": [],
+        "unforecastCount": 8
+      },
+      "overdueNextAction": {
+        "triggered": true,
+        "rows": [
+          {
+            "projectCode": "YJ-P21",
+            "recordedOn": "2026-11-12",
+            "dueOn": "2026-11-20"
+          },
+          {
+            "projectCode": "YJ-P23",
+            "recordedOn": "2026-11-21",
+            "dueOn": "2026-11-24"
+          }
+        ]
+      },
+      "sourceImbalance": {
+        "triggered": true,
+        "mostShortSource": "consignment"
+      },
+      "insufficientRate": {
+        "triggered": true,
+        "rows": [
+          {
+            "role": "producer",
+            "source": "contract_work",
+            "step": "planning_memo",
+            "count": 7
+          },
+          {
+            "role": "producer",
+            "source": "contract_work",
+            "step": "budget_estimate",
+            "count": 5
+          },
+          {
+            "role": "producer",
+            "source": "contract_work",
+            "step": "proposal",
+            "count": 3
+          },
+          {
+            "role": "producer",
+            "source": "own_investment",
+            "step": "pitch_document",
+            "count": 2
+          },
+          {
+            "role": "producer",
+            "source": "own_investment",
+            "step": "approval_request",
+            "count": 1
+          },
+          {
+            "role": "producer",
+            "source": "own_investment",
+            "step": "approval_decision",
+            "count": 0
+          },
+          {
+            "role": "producer",
+            "source": "committee",
+            "step": "committee_sounding",
+            "count": 2
+          },
+          {
+            "role": "producer",
+            "source": "committee",
+            "step": "informal_consent",
+            "count": 2
+          },
+          {
+            "role": "sales_sourcing",
+            "source": "acquisition",
+            "step": "rights_holder_meeting",
+            "count": 5
+          },
+          {
+            "role": "sales_sourcing",
+            "source": "acquisition",
+            "step": "term_sheet",
+            "count": 3
+          },
+          {
+            "role": "sales_sourcing",
+            "source": "consignment",
+            "step": "rights_holder_meeting",
+            "count": 6
+          },
+          {
+            "role": "sales_sourcing",
+            "source": "consignment",
+            "step": "term_sheet",
+            "count": 4
+          },
+          {
+            "role": "sales_selling",
+            "source": "acquisition",
+            "step": "productization",
+            "count": 4
+          },
+          {
+            "role": "sales_selling",
+            "source": "acquisition",
+            "step": "buyer_proposal",
+            "count": 3
+          },
+          {
+            "role": "sales_selling",
+            "source": "consignment",
+            "step": "productization",
+            "count": 1
+          },
+          {
+            "role": "sales_selling",
+            "source": "consignment",
+            "step": "buyer_proposal",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "forecastErrorDetail": [
+      {
+        "projectCode": "YJ-P01",
+        "month": "2026-11",
+        "forecastVersion": "架空の試算 第1版",
+        "forecastCreatedOn": "2026-09-15",
+        "actualSalesYen": 11095706,
+        "forecastSalesYen": 11041336,
+        "thresholdYen": 1104133,
+        "exceeded": false,
+        "direction": "over",
+        "ratioBps": 10049
+      },
+      {
+        "projectCode": "YJ-P05",
+        "month": "2026-11",
+        "forecastVersion": "架空の試算 第1版",
+        "forecastCreatedOn": "2026-09-15",
+        "actualSalesYen": 5878037,
+        "forecastSalesYen": 5466574,
+        "thresholdYen": 546657,
+        "exceeded": false,
+        "direction": "over",
+        "ratioBps": 10752
+      }
+    ],
+    "shortfall": {
+      "fictional": true,
+      "planVersionNo": 2,
+      "awaitingExcluded": [],
+      "ratios": [
+        {
+          "source": "contract_work",
+          "ratioBps": 14202
+        },
+        {
+          "source": "own_investment",
+          "ratioBps": 11593
+        },
+        {
+          "source": "committee",
+          "ratioBps": 13517
+        },
+        {
+          "source": "acquisition",
+          "ratioBps": 11833
+        },
+        {
+          "source": "consignment",
+          "ratioBps": 9263
+        }
+      ],
+      "triggered": true,
+      "mostShortSource": "consignment",
+      "allAbovePlan": false,
+      "pick": {
+        "source": "consignment",
+        "step": "meeting",
+        "addCountX100": 100
+      },
+      "pickReason": "top_candidate_of_most_short_source"
+    },
+    "probabilityPick": {
+      "computedAtRuntime": true,
+      "by": "probabilityPick(inputs, 目標額)（このファイル）",
+      "rule": "1時間あたりの届く確率の増分が最大の候補。目標額は試験が実行時に作る"
+    }
+  },
+  "branchCases": {
+    "notice": "延長の種（kpi-seed.json の branchCases）の架空の小さな入力を golden と同じ関数に通した結果。種の本体では通らない分岐を固定する",
+    "periodBoundary": {
+      "items": [
+        {
+          "key": "YJ-X31",
+          "source": "acquisition",
+          "probabilityBps": 8000,
+          "conversionBps": 2000,
+          "salesConversionBps": 2000,
+          "placement": "in_period",
+          "cashScheduled": true,
+          "inPeriod": {
+            "revenueBaseYen": 5000000,
+            "deductionYen": 500000
+          },
+          "nextPeriod": {
+            "revenueBaseYen": 9000000,
+            "deductionYen": 0
+          },
+          "cash": [
+            {
+              "month": "2026-12",
+              "baseYen": 2000000
+            },
+            {
+              "month": "2027-09",
+              "baseYen": 3000000
+            },
+            {
+              "month": "2027-10",
+              "baseYen": 4000000
+            },
+            {
+              "month": "2028-09",
+              "baseYen": 5000000
+            }
+          ]
+        }
+      ],
+      "excluded": [],
+      "actions": [
+        {
+          "source": "acquisition",
+          "step": "meeting",
+          "countX100": 200,
+          "dealYen": 31345186,
+          "conversionBps": 2000,
+          "salesConversionBps": 2000,
+          "hoursX100": 300
+        }
+      ]
+    },
+    "forecastError": {
+      "rows": [
+        {
+          "projectCode": "YJ-X01",
+          "month": "2026-10",
+          "forecastVersion": "架空の版 第1版",
+          "forecastCreatedOn": "2026-09-01",
+          "actualSalesYen": 2000000,
+          "forecastSalesYen": 1400000,
+          "thresholdYen": 140000,
+          "exceeded": true,
+          "direction": "over",
+          "ratioBps": 14285
+        },
+        {
+          "projectCode": "YJ-X02",
+          "month": "2026-11",
+          "forecastVersion": "架空の版 第1版",
+          "forecastCreatedOn": "2026-09-01",
+          "actualSalesYen": 600000,
+          "forecastSalesYen": 1000000,
+          "thresholdYen": 100000,
+          "exceeded": true,
+          "direction": "under",
+          "ratioBps": 6000
+        },
+        {
+          "projectCode": "YJ-X03",
+          "month": "2026-11",
+          "forecastVersion": "架空の版 第1版",
+          "forecastCreatedOn": "2026-09-01",
+          "actualSalesYen": 1100000,
+          "forecastSalesYen": 1000000,
+          "thresholdYen": 100000,
+          "exceeded": false,
+          "direction": "over",
+          "ratioBps": 11000
+        },
+        {
+          "projectCode": "YJ-X04",
+          "month": "2026-11",
+          "forecastVersion": "架空の版 第1版",
+          "forecastCreatedOn": "2026-09-01",
+          "actualSalesYen": 62000,
+          "forecastSalesYen": 50000,
+          "thresholdYen": 10000,
+          "exceeded": true,
+          "direction": "over",
+          "ratioBps": 12400
+        },
+        {
+          "projectCode": "YJ-X05",
+          "month": "2026-11",
+          "forecastVersion": "架空の版 第1版",
+          "forecastCreatedOn": "2026-09-01",
+          "actualSalesYen": 58000,
+          "forecastSalesYen": 50000,
+          "thresholdYen": 10000,
+          "exceeded": false,
+          "direction": "over",
+          "ratioBps": 11600
+        },
+        {
+          "projectCode": "YJ-X06",
+          "month": "2026-11",
+          "forecastVersion": "架空の版 第1版",
+          "forecastCreatedOn": "2026-09-01",
+          "actualSalesYen": 1100000,
+          "forecastSalesYen": 1000000,
+          "thresholdYen": 100000,
+          "exceeded": false,
+          "direction": "over",
+          "ratioBps": 11000
+        }
+      ],
+      "unforecastCount": 1
+    },
+    "nextAction": [
+      {
+        "projectCode": "YJ-X21",
+        "recordedOn": "2026-11-10",
+        "dueOn": "2026-11-30",
+        "hasNextAction": true,
+        "overdue": false
+      },
+      {
+        "projectCode": "YJ-X22",
+        "recordedOn": "2026-11-10",
+        "dueOn": "2026-11-29",
+        "hasNextAction": true,
+        "overdue": true
+      },
+      {
+        "projectCode": "YJ-X23",
+        "recordedOn": "2026-11-25",
+        "dueOn": "2026-12-05",
+        "hasNextAction": true,
+        "overdue": false
+      },
+      {
+        "projectCode": "YJ-X24",
+        "recordedOn": "2026-11-12",
+        "dueOn": "2026-11-15",
+        "hasNextAction": true,
+        "overdue": true
+      },
+      {
+        "projectCode": "YJ-X25",
+        "recordedOn": "2026-11-15",
+        "dueOn": null,
+        "hasNextAction": false,
+        "overdue": false
+      }
+    ],
+    "passRate": [
+      {
+        "role": "sales_sourcing",
+        "source": "acquisition",
+        "step": "rights_holder_meeting",
+        "nextStep": "term_sheet",
+        "count": 1,
+        "advancedCount": 1,
+        "projectCodes": [
+          "YJ-XC11"
+        ],
+        "advancedProjectCodes": [
+          "YJ-XC11"
+        ],
+        "observedRateBps": 10000,
+        "provisionalRateBps": 5000,
+        "status": "insufficient",
+        "appliedRateBps": 5000
+      },
+      {
+        "role": "sales_sourcing",
+        "source": "acquisition",
+        "step": "term_sheet",
+        "nextStep": "mg_contract",
+        "count": 1,
+        "advancedCount": 0,
+        "projectCodes": [
+          "YJ-XC11"
+        ],
+        "advancedProjectCodes": [],
+        "observedRateBps": 0,
+        "provisionalRateBps": 3000,
+        "status": "insufficient",
+        "appliedRateBps": 3000
+      },
+      {
+        "role": "sales_sourcing",
+        "source": "consignment",
+        "step": "rights_holder_meeting",
+        "nextStep": "term_sheet",
+        "count": 9,
+        "advancedCount": 6,
+        "projectCodes": [
+          "YJ-XC01",
+          "YJ-XC02",
+          "YJ-XC03",
+          "YJ-XC04",
+          "YJ-XC05",
+          "YJ-XC06",
+          "YJ-XC07",
+          "YJ-XC08",
+          "YJ-XC09"
+        ],
+        "advancedProjectCodes": [
+          "YJ-XC01",
+          "YJ-XC02",
+          "YJ-XC03",
+          "YJ-XC04",
+          "YJ-XC05",
+          "YJ-XC06"
+        ],
+        "observedRateBps": 6666,
+        "provisionalRateBps": 5000,
+        "status": "measured",
+        "appliedRateBps": 6666
+      },
+      {
+        "role": "sales_sourcing",
+        "source": "consignment",
+        "step": "term_sheet",
+        "nextStep": "consignment_contract",
+        "count": 8,
+        "advancedCount": 2,
+        "projectCodes": [
+          "YJ-XC01",
+          "YJ-XC02",
+          "YJ-XC03",
+          "YJ-XC04",
+          "YJ-XC05",
+          "YJ-XC06",
+          "YJ-XC07",
+          "YJ-XC10"
+        ],
+        "advancedProjectCodes": [
+          "YJ-XC01",
+          "YJ-XC02"
+        ],
+        "observedRateBps": 2500,
+        "provisionalRateBps": 3000,
+        "status": "insufficient",
+        "appliedRateBps": 3000
+      }
+    ],
+    "awaitingExcluded": {
+      "fictional": true,
+      "planVersionNo": 2,
+      "awaitingExcluded": [
+        "committee"
+      ],
+      "ratios": [
+        {
+          "source": "contract_work",
+          "ratioBps": 14202
+        },
+        {
+          "source": "own_investment",
+          "ratioBps": 11593
+        },
+        {
+          "source": "acquisition",
+          "ratioBps": 11833
+        },
+        {
+          "source": "consignment",
+          "ratioBps": 9263
+        }
+      ],
+      "triggered": true,
+      "mostShortSource": "consignment",
+      "allAbovePlan": false,
+      "pick": {
+        "source": "consignment",
+        "step": "meeting",
+        "addCountX100": 100
+      },
+      "pickReason": "top_candidate_of_most_short_source"
+    },
+    "scheduledInvestment": {
+      "standard": {
+        "rows": [
+          {
+            "kind": "own_investment",
+            "projectCode": "YJ-X41",
+            "investmentYen": 30000000,
+            "revenueYen": 5000000,
+            "periodInvestmentYen": 8000000,
+            "periodRevenueYen": 4000000,
+            "remainingExpectedYen": 40000000,
+            "diffYen": -25000000,
+            "recoveryRateBps": 1666,
+            "status": "awaiting",
+            "projectedDiffYen": 15000000
+          },
+          {
+            "kind": "committee",
+            "projectCode": "YJ-X42",
+            "investmentYen": 18000000,
+            "revenueYen": 5000000,
+            "periodInvestmentYen": 8000000,
+            "periodRevenueYen": 4000000,
+            "remainingExpectedYen": 28000000,
+            "diffYen": -13000000,
+            "recoveryRateBps": 2777,
+            "status": "awaiting",
+            "projectedDiffYen": 15000000
+          }
+        ],
+        "total": {
+          "rowCount": 2,
+          "investmentYen": 48000000,
+          "revenueYen": 10000000,
+          "diffYen": -38000000,
+          "periodInvestmentYen": 16000000,
+          "periodRevenueYen": 8000000,
+          "projectedDiffYen": 30000000,
+          "recoveryRateBps": 2083,
+          "status": "awaiting"
+        }
+      },
+      "optimistic": {
+        "rows": [
+          {
+            "kind": "own_investment",
+            "projectCode": "YJ-X41",
+            "investmentYen": 30000000,
+            "revenueYen": 5000000,
+            "periodInvestmentYen": 8000000,
+            "periodRevenueYen": 4000000,
+            "remainingExpectedYen": 46000000,
+            "diffYen": -25000000,
+            "recoveryRateBps": 1666,
+            "status": "awaiting",
+            "projectedDiffYen": 21000000
+          },
+          {
+            "kind": "committee",
+            "projectCode": "YJ-X42",
+            "investmentYen": 18000000,
+            "revenueYen": 5000000,
+            "periodInvestmentYen": 8000000,
+            "periodRevenueYen": 4000000,
+            "remainingExpectedYen": 34000000,
+            "diffYen": -13000000,
+            "recoveryRateBps": 2777,
+            "status": "awaiting",
+            "projectedDiffYen": 21000000
+          }
+        ],
+        "total": {
+          "rowCount": 2,
+          "investmentYen": 48000000,
+          "revenueYen": 10000000,
+          "diffYen": -38000000,
+          "periodInvestmentYen": 16000000,
+          "periodRevenueYen": 8000000,
+          "projectedDiffYen": 42000000,
+          "recoveryRateBps": 2083,
+          "status": "awaiting"
+        }
+      },
+      "pessimistic": {
+        "rows": [
+          {
+            "kind": "own_investment",
+            "projectCode": "YJ-X41",
+            "investmentYen": 30000000,
+            "revenueYen": 5000000,
+            "periodInvestmentYen": 8000000,
+            "periodRevenueYen": 4000000,
+            "remainingExpectedYen": 34000000,
+            "diffYen": -25000000,
+            "recoveryRateBps": 1666,
+            "status": "awaiting",
+            "projectedDiffYen": 9000000
+          },
+          {
+            "kind": "committee",
+            "projectCode": "YJ-X42",
+            "investmentYen": 18000000,
+            "revenueYen": 5000000,
+            "periodInvestmentYen": 8000000,
+            "periodRevenueYen": 4000000,
+            "remainingExpectedYen": 22000000,
+            "diffYen": -13000000,
+            "recoveryRateBps": 2777,
+            "status": "awaiting",
+            "projectedDiffYen": 9000000
+          }
+        ],
+        "total": {
+          "rowCount": 2,
+          "investmentYen": 48000000,
+          "revenueYen": 10000000,
+          "diffYen": -38000000,
+          "periodInvestmentYen": 16000000,
+          "periodRevenueYen": 8000000,
+          "projectedDiffYen": 18000000,
+          "recoveryRateBps": 2083,
+          "status": "awaiting"
+        }
+      }
+    }
+  },
+  "notInGolden": [
+    {
+      "item": "市場の前提のうち契約までの月数・窓口に出るまでの月数・受託の実費の超過",
+      "why": "効きの幅と式（実費の超過を何に掛けるか、要件の要確認3）が段B #12 で決まるまで、シナリオと効きは段A の5つの前提だけで数える"
+    },
+    {
+      "item": "行動の時期（行動の月ごとの組の契約・窓口・入金の月）と時間の上限（いちばん多い月）",
+      "why": "段B #12（FR-REV-KPI-030・032）。golden は段A と同じく行動の時期を期待値に入れない"
+    },
+    {
+      "item": "自社出資・製作委員会の行動、買付の1件の MG・商品化の費用",
+      "why": "1件の粗利の式（出資額・MG・商品化の費用を引く）が段B #12 で決まるまで行動の計画に入れない"
+    },
+    {
+      "item": "行動の候補 (2) 段階を進める・(3) 交渉",
+      "why": "一手の時間と通る確率の混ぜ方の細目は段B #12（scenario_trials）"
+    },
+    {
+      "item": "カスタムのシナリオ",
+      "why": "scenario_values の上書きは段B #12。計画は「3シナリオ」"
+    },
+    {
+      "item": "作り手・権利元へ渡る額",
+      "why": "人へ渡る割合・成功報酬・買付の MG＋超過分（要件の要確認4・11）は段B #2・#16"
+    },
+    {
+      "item": "需給（供給・需要・見込み）",
+      "why": "段B #11 の需給の集計は表を足さず元の件数を出すので、種の延長が要らない。golden に入れるかは #11 で決める"
+    }
+  ]
+}

@@ -11,3 +11,4 @@ dist-worker-check/
 .ci-d1/
 __pycache__/
 *.pyc
+public/pdfjs/

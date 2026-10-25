@@ -1,14 +1,17 @@
 import {ExpensePaymentsPanel} from './pl-bs/ExpensePayments.jsx';
 import BroadcastWorkspace from "./BroadcastWorkspace.jsx";
 import ProductionWorkspace from "./ProductionWorkspace.jsx";
+import Preprod from "./preprod/Preprod.jsx";
 import AnalyticsWorkspace from "./AnalyticsWorkspace.jsx";
 import MgLedger from "./MgLedger.jsx";
+import AcqMgBuy from "./acquisition/AcqMgBuy.jsx";
 import TaxLedger from "./TaxLedger.jsx";
 import WorkCatalog from "./WorkCatalog.jsx";
 import Definitions from "./Definitions.jsx";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import IncomeDashboard from "./IncomeDashboard.jsx";
+import { incomeLabels, unsettledSummary, incomeStatText } from "./accounting/work-income/work-income-view-model.mjs";
 import Settlement from "./Settlement.jsx";
 import RightsIntake from "./RightsIntake.jsx";
 import ReportMapping from "./ReportMapping.jsx";
@@ -51,14 +54,28 @@ import { TeamPage } from "./admin/TeamPage.jsx";
 import { PartnersPage } from "./partners/PartnersPage.jsx";
 import { ExpensesPage } from "./work/ExpensesPage.jsx";
 import { PlBsPage } from "./pl-bs/PlBsPage.jsx";
+import ScenarioCompare from "./revenue/scenario/ScenarioCompare.jsx";
+import YojitsuFolder from "./revenue/yojitsu/YojitsuFolder.jsx";
+import Budget from "./planning/budget/Budget.jsx";
+import PostProduction from "./production/post/PostProduction.jsx";
+import Manufacturing from "./manufacturing/Manufacturing.jsx";
+import Cashbook from "./accounting/cashbook/Cashbook.jsx";
+import ProduceBoard from "./planning/produce/ProduceBoard.jsx";
+import Kikaku from "./planning/kikaku/Kikaku.jsx";
+import ShootRecords from "./production/shoot-records/ShootRecords.jsx";
+import Chotatsu from "./acquisition/chotatsu/Chotatsu.jsx";
+import Folders, {FoldersClosed} from "./revenue/folders/Folders.jsx";
+import { ContractProductionPanel } from "./planning/contract-production/ContractProductionPanel.jsx";
 import { RecordForm } from "./ui/RecordForm.jsx";
 import DesignCanvas from "./DesignCanvas.jsx";
 import { ScriptWorkflow } from "./Workflow.jsx";
 import { RoyaltyPeriodsPage } from "./royalty/RoyaltyPeriodsPage.jsx";
+import { RoyaltyFolderPage } from "./royalty/RoyaltyFolderPage.jsx";
 import { RoyaltyLedgerPage } from "./royalty/RoyaltyLedgerPage.jsx";
 import { RoyaltyStatementsPage } from "./royalty/RoyaltyStatementsPage.jsx";
 import { RoyaltyAgreementsPage } from "./royalty/RoyaltyAgreementsPage.jsx";
 import { CommitteeMonthlyPage } from "./committee/CommitteeMonthlyPage.jsx";
+import CommitteeLedger from "./committee/ledger/CommitteeLedger.jsx";
 import Workbench from "./Workbench.jsx";
 import DemoSamples from "./DemoSamples.jsx";
 import { destinationAfterOrgChange, afterOrgChangeOptions } from "./demo-guide.mjs";
@@ -82,7 +99,7 @@ function Login({ onLogin }) {
       setError(x.message);
     }
   }
-  return <main className="login"><section className="card login-card"><p className="eyebrow">ローカルの試作環境（架空データ）</p><h1>業務基幹・売上基幹</h1><p>企画から宣伝分析まで、同じ作品と共通DBでつなぎます。</p><form onSubmit={submit}><label>架空メンバー<input list="fixture-users" value={email} onChange={(e) => setEmail(e.target.value)} /><datalist id="fixture-users"><option value="admin@openingnight.invalid" /><option value="editor@openingnight.invalid" /><option value="production@openingnight.invalid" /><option value="outsider@other.invalid" /></datalist></label><button>ローカルで参加</button></form>{error && <p className="error">{error}</p>}<small>承認したローカル招待の .invalid メールも直接入力できます。この入口は127.0.0.1専用で、外部送信は行いません。</small></section></main>;
+  return <main className="login"><section className="card login-card"><p className="eyebrow">ローカルの試作環境（架空データ）</p><h1>OpeningNight</h1><form onSubmit={submit}><label>架空メンバー<input list="fixture-users" value={email} onChange={(e) => setEmail(e.target.value)} /><datalist id="fixture-users"><option value="admin@openingnight.invalid" /><option value="editor@openingnight.invalid" /><option value="production@openingnight.invalid" /><option value="outsider@other.invalid" /></datalist></label><button>ローカルで参加</button></form>{error && <p className="error">{error}</p>}<small>承認したローカル招待の .invalid メールも直接入力できます。この入口は127.0.0.1専用で、外部送信は行いません。</small></section></main>;
 }
 function Field({ label, name, type = "text", options, required = true, value, onChange, placeholder, hidden = false, readOnly = false }) {
   if (hidden) return <input type="hidden" name={name} value={value} />;
@@ -119,7 +136,7 @@ function Planning({ data, reload, onNavigate }) {
     setRevision((value) => value + 1);
   };
   const projectOptions = data.projects.map((x) => ({ value: x.id, label: `${x.code}｜${x.title}` }));
-  return <div className="stack"><div className="two"><BulkImportPanel entity="projects" label="案件" onCommitted={refresh} /><BulkImportPanel entity="works" label="作品" onCommitted={refresh} /></div><section className="card toolbar"><p className="note">登録済みの作品の名称・形式・売上見込は「マスタの表編集」で直し、承認して反映します（コードは変えられません）。案件は登録後に変更しません。</p>{data.currentUser?.role !== "production" && <button type="button" className="secondary" onClick={() => onNavigate?.("業務データ編集")}>作品を表で直す</button>}</section><div className="two" key={`planning-${revision}`}><ResourcePanel title="案件" resource="projects" bootstrap={data} onChanged={reload} fields={[{ name: "code", label: "案件コード" }, { name: "title", label: "案件名" }, { name: "status", label: "状態", options: optionsOf("projectStatus") }, { name: "budget_yen", label: "予算（円）", type: "number", required: false }]} /><ResourcePanel title="作品" resource="works" bootstrap={data} onChanged={reload} fields={[{ name: "project_id", label: "案件", options: projectOptions }, { name: "code", label: "作品コード" }, { name: "title", label: "作品名" }, { name: "format", label: "形式", options: [{ value: "film", label: "映画" }, { value: "series", label: "シリーズ" }] }, { name: "forecast_yen", label: "売上見込（円）", type: "number", required: false }]} /></div></div>;
+  return <div className="stack"><div className="two"><BulkImportPanel entity="projects" label="案件" onCommitted={refresh} /><BulkImportPanel entity="works" label="作品" onCommitted={refresh} /></div><section className="card toolbar"><p className="note">登録済みの作品の名称・形式・売上見込は「マスタの表編集」で直し、承認して反映します（コードは変えられません）。案件は登録後に変更しません。</p>{data.currentUser?.role !== "production" && <button type="button" className="secondary" onClick={() => onNavigate?.("業務データ編集")}>作品を表で直す</button>}</section><div className="two" key={`planning-${revision}`}><ResourcePanel title="案件" resource="projects" bootstrap={data} onChanged={reload} fields={[{ name: "code", label: "案件コード" }, { name: "title", label: "案件名" }, { name: "status", label: "状態", options: optionsOf("projectStatus") }, { name: "budget_yen", label: "予算（円）", type: "number", required: false }]} /><ResourcePanel title="作品" resource="works" bootstrap={data} onChanged={reload} fields={[{ name: "project_id", label: "案件", options: projectOptions }, { name: "code", label: "作品コード" }, { name: "title", label: "作品名" }, { name: "format", label: "形式", options: [{ value: "film", label: "映画" }, { value: "series", label: "シリーズ" }] }, { name: "forecast_yen", label: "売上見込（円）", type: "number", required: false }]} /></div><ContractProductionPanel key={`contract-${revision}`} request={api} role={data.currentUser?.role} /></div>;
 }
 function ProductAllocation({ data, onChanged }) {
   const [productId, setProductId] = useState(data.products[0]?.id || ""), [current, setCurrent] = useState(null), [rows, setRows] = useState([]), [notice, setNotice] = useState(null), [busy, setBusy] = useState(false), loadNo = useRef(0);
@@ -366,7 +383,10 @@ function Publicity({ data }) {
   const own = lists.workId === data.selectedWorkId ? lists : { campaigns: [], exposures: [], observations: [] }, observationTable = observationRows(own.observations, own.exposures, own.campaigns, data.metrics);
   return <div className="stack">{loadError && <Notice message={`宣伝の一覧を読み込めませんでした: ${loadError}`} error />}<div className="two"><ResourcePanel title="宣伝施策" resource="campaigns" bootstrap={data} onChanged={bump} filter={(x) => x.work_id === data.selectedWorkId} fields={[{ name: "project_id", label: "案件ID", defaultValue: data.selectedWork?.project_id, type: "number", hidden: true }, { name: "work_id", label: "作品ID", defaultValue: data.selectedWorkId, type: "number", hidden: true }, { name: "name", label: "施策名" }, { name: "objective", label: "目的" }, { name: "audience_hypothesis", label: "対象仮説", required: false }, { name: "starts_on", label: "開始日", type: "date" }, { name: "ends_on", label: "終了日", type: "date" }, { name: "target_region", label: "対象地域", required: false }, { name: "target_channel", label: "対象流通", required: false }]} /><ExposurePanel data={data} campaigns={own.campaigns} exposures={own.exposures} onChanged={bump} /></div><ManualObservation data={data} campaigns={own.campaigns} exposures={own.exposures} onSaved={bump} /><ImportPanel data={data} publicity onCommitted={bump} /><section className="card"><header className="section-head"><h2>指標観測</h2><span className="count">{observationTable.length}件</span></header><DataTable rows={observationTable} empty="この作品の指標観測はまだありません" /></section><PublicityAnalytics data={data} revision={revision} campaigns={own.campaigns} /></div>;
 }
+// 作品の月別収支。基準（計上・入金。フェーズ1 #16）は URL の basis（既定は計上）。見出しに基準を出し、入金の未確定（税込）は差引に入れずに知らせる
 function Income({ data }) {
+  const shell = useShell();
+  const basis = shell.getParam("basis", "") === "cash" ? "cash" : "accrual", words = incomeLabels(basis);
   const [overview, setOverview] = useState(null), [detail, setDetail] = useState(null), [selectedMonth, setSelectedMonth] = useState(""), [error, setError] = useState(""), [loading, setLoading] = useState(false);
   const overviewRequest = useRef(0), detailRequest = useRef(0), currentWork = useRef(data.selectedWorkId);
   currentWork.current = data.selectedWorkId;
@@ -379,34 +399,35 @@ function Income({ data }) {
     setSelectedMonth("");
     setError("");
     setLoading(true);
-    api(`/analytics/income?workId=${workId}`).then((result) => {
+    api(`/analytics/income?workId=${workId}&basis=${basis}`).then((result) => {
       if (requestId === overviewRequest.current && workId === currentWork.current) setOverview(result);
     }).catch((reason) => {
       if (requestId === overviewRequest.current && workId === currentWork.current) setError(reason.message);
     }).finally(() => {
       if (requestId === overviewRequest.current && workId === currentWork.current) setLoading(false);
     });
-  }, [data.selectedWorkId]);
+  }, [data.selectedWorkId, basis]);
   async function selectMonth(month) {
     setSelectedMonth(month);
     setDetail(null);
     setError("");
     const requestId = ++detailRequest.current, workId = data.selectedWorkId;
     try {
-      const result = await api(`/analytics/income?workId=${workId}&month=${month}`);
+      const result = await api(`/analytics/income?workId=${workId}&month=${month}&basis=${basis}`);
       if (requestId === detailRequest.current && workId === currentWork.current) setDetail(result);
     } catch (reason) {
       if (requestId === detailRequest.current && workId === currentWork.current) setError(reason.message);
     }
   }
-  const allocationRows = (detail?.allocatedLines || []).map((line) => ({ 売上明細: line.sale_id, 配賦先作品: data.works.find((work) => work.id === line.allocated_work_id)?.title || `作品 ${line.allocated_work_id}`, 配賦率: `${(Number(line.allocation_bps) / 100).toFixed(2)}%`, 税抜: yen(line.amount_ex_tax), 税額: yen(line.tax_amount), 税込: yen(line.amount_inc_tax) }));
+  const allocationRows = (detail?.allocatedLines || []).map((line) => ({ ...(line.received_on ? { 入金日: line.received_on } : {}), 売上明細: line.sale_id, 配賦先作品: data.works.find((work) => work.id === line.allocated_work_id)?.title || `作品 ${line.allocated_work_id}`, 配賦率: `${(Number(line.allocation_bps) / 100).toFixed(2)}%`, 税抜: yen(line.amount_ex_tax), 税額: yen(line.tax_amount), 税込: yen(line.amount_inc_tax) }));
+  const shownBasis = overview?.basis || basis, shownWords = incomeLabels(shownBasis);
   return <div className="stack">
     {loading && <section className="card"><p className="empty" aria-live="polite">月別収支を読み込んでいます。</p></section>}
     <Notice message={error} error />
     {overview && <>
-      <section className="card income-summary"><header><h2>作品収支</h2><p className="income-caution">登録済みデータの集計です。報告の網羅性は未確認で、分配・仕入・代理店手数料は未反映です。差引は「売上報告額 − 登録経費」で、代理店利益ではありません。</p></header><div className="stats"><div><strong>{overview.monthly?.length ? yen(overview.sales.exTax) : "未登録"}</strong><span>売上報告額（税抜）</span></div><div><strong>{overview.monthly?.length ? yen(overview.expenses.exTax) : "未登録"}</strong><span>登録経費（税抜）</span></div><div><strong>{overview.monthly?.length ? yen(overview.profitExTax) : "未登録"}</strong><span>差引（税抜）</span></div></div></section>
-      <IncomeDashboard monthly={overview.monthly} selectedMonth={selectedMonth} onSelectMonth={selectMonth} workTitle={data.selectedWork?.title} />
-      <section className="card income-detail"><header className="section-head"><div><h2>月別明細</h2><p className="note">{selectedMonth ? `${monthText(selectedMonth)}の会計計上明細` : "グラフまたは数値表から会計の計上月を選択してください。"}</p></div></header>{selectedMonth && !detail && <p className="empty" aria-live="polite">明細を読み込んでいます。</p>}{detail && <><div className="stats"><div><strong>{yen(detail.sales.exTax)}</strong><span>月の売上報告額（税抜）</span></div><div><strong>{yen(detail.expenses.exTax)}</strong><span>月の登録経費（税抜）</span></div><div><strong>{yen(detail.profitExTax)}</strong><span>月の差引（税抜）</span></div></div><DataTable rows={allocationRows} bootstrap={data} empty="この月の売上明細は未登録です。" /></>}</section>
+      <section className="card income-summary"><header><h2>作品収支</h2><p className="note income-basis" data-basis={shownBasis}><strong>{shownWords.heading}</strong></p><div className="on-segmented" role="group" aria-label="基準">{[["accrual", "計上"], ["cash", "入金"]].map(([value, label]) => <button key={value} type="button" aria-pressed={basis === value} onClick={() => shell.setParam("basis", value, { replace: true })}>{label}</button>)}</div><p className="income-caution">{shownWords.caution}</p></header><div className="stats"><div><strong>{incomeStatText(overview, overview.sales.exTax, yen)}</strong><span>{shownWords.revenue}</span></div><div><strong>{incomeStatText(overview, overview.expenses.exTax, yen)}</strong><span>{shownWords.cost}</span></div><div><strong>{incomeStatText(overview, overview.profitExTax, yen)}</strong><span>{shownWords.profit}</span></div></div>{unsettledSummary(overview.unsettled) && <UiNotice tone="warn" compact message={unsettledSummary(overview.unsettled)} />}</section>
+      <IncomeDashboard monthly={overview.monthly} selectedMonth={selectedMonth} onSelectMonth={selectMonth} workTitle={data.selectedWork?.title} basis={shownBasis} />
+      <section className="card income-detail"><header className="section-head"><div><h2>月別明細</h2><p className="note">{selectedMonth ? `${monthText(selectedMonth)}の${shownWords.detail}` : shownWords.pick}</p></div></header>{selectedMonth && !detail && <p className="empty" aria-live="polite">明細を読み込んでいます。</p>}{detail && <><div className="stats"><div><strong>{yen(detail.sales.exTax)}</strong><span>月の{shownWords.revenue}</span></div><div><strong>{yen(detail.expenses.exTax)}</strong><span>月の{shownWords.cost}</span></div><div><strong>{yen(detail.profitExTax)}</strong><span>月の{shownWords.profit}</span></div></div>{unsettledSummary(detail.unsettled) && <UiNotice tone="warn" compact message={unsettledSummary(detail.unsettled)} />}<DataTable rows={allocationRows} bootstrap={data} empty={shownBasis === "cash" ? "この月の入金の明細はありません。" : "この月の売上明細は未登録です。"} /></>}</section>
     </>}
   </div>;
 }
@@ -415,22 +436,15 @@ function Income({ data }) {
 const HIDDEN_FOR_PRODUCTION = hiddenPagesForRole("production");
 const HIDDEN_FOR_EDITOR = hiddenPagesForRole("editor");
 const HIDDEN_FOR_ADMIN = hiddenPagesForRole("admin");
-function readTheme() {
-  try {
-    return localStorage.getItem("on-theme") || "auto";
-  } catch {
-    return "auto";
-  }
-}
 function LoadFailure({ error, title, onRetry }) {
   return <main className="login"><section className="card login-card"><UiNotice title={title} error={error} onRetry={onRetry} retryLabel="再接続する" /></section></main>;
 }
 // Worker（Cloudflare Access）で認証が切れたときの表示。ローカルの架空メンバーのログイン画面は出さない
 function SignedOut() {
-  return <main className="login"><section className="card login-card"><p className="eyebrow">OpeningNight</p><h1>業務基幹・売上基幹</h1><p>サインインが必要です。もう一度入ると、Cloudflare Access で本人確認をしてから開きます。</p><p><button type="button" onClick={() => window.location.assign("/")}>もう一度入る</button></p></section></main>;
+  return <main className="login"><section className="card login-card"><h1>OpeningNight</h1><p>サインインが必要です。もう一度入ると、Cloudflare Access で本人確認をしてから開きます。</p><p><button type="button" onClick={() => window.location.assign("/")}>もう一度入る</button></p></section></main>;
 }
 function App() {
-  const [session, setSession] = useState(void 0), [bootstrap, setBootstrap] = useState(null), [theme, setTheme] = useState(readTheme), [loadError, setLoadError] = useState(null);
+  const [session, setSession] = useState(void 0), [bootstrap, setBootstrap] = useState(null), [loadError, setLoadError] = useState(null);
   const [mode, setMode] = useState(null);
   const [orgs, setOrgs] = useState([]), [orgsError, setOrgsError] = useState(null), [orgSwitching, setOrgSwitching] = useState(false), [orgReloading, setOrgReloading] = useState(false), [orgError, setOrgError] = useState(""), [orgNotice, setOrgNotice] = useState("");
   const nav = useAppShellState({ request: api, works: bootstrap?.works || [] });
@@ -536,14 +550,6 @@ function App() {
       channelRef.current = null;
     };
   }, []);
-  useEffect(() => {
-    try {
-      localStorage.setItem("on-theme", theme);
-    } catch {
-    }
-    if (theme === "auto") document.documentElement.removeAttribute("data-theme");
-    else document.documentElement.dataset.theme = theme;
-  }, [theme]);
   // 組織を切り替える（上部の「組織」で選んで「切り替える」を押したとき・デモ資料などの「組織を切り替えて開く」）。
   // 未保存の変更は先に確かめ、切り替えたらホームへ移って作品・取引先などを読み直す。after を渡すと、読み直したあとにその画面へ移る。
   // 切り替えたら true、取りやめ・失敗は false
@@ -612,9 +618,20 @@ function App() {
   const data = { ...bootstrap, currentUser: session, selectedWorkId, selectedWork: bootstrap.works.find((w) => w.id === selectedWorkId) };
   const hidden = session.role === "production" ? HIDDEN_FOR_PRODUCTION : session.role === "admin" ? HIDDEN_FOR_ADMIN : HIDDEN_FOR_EDITOR;
   const navigate = nav.navigate;
-  const screens = { "番販・放送": <BroadcastWorkspace data={data} request={api} onNavigate={nav.navigate} onSelect={nav.selectWork} />, "分析・Lightdash": <AnalyticsWorkspace request={api} data={data} />, "業務データ編集": <Workbench data={data} request={api} initialDataset="works" />, "売上データ編集": <Workbench data={data} request={api} initialDataset="sales_import" />, "MG契約・台帳": <MgLedger data={data} request={api} />, "権利先・MG帳票": <RightsReports data={data} request={api} />, "税ルール・台帳": <TaxLedger data={data} request={api} onNavigate={nav.navigate} />, "作品・商品マスタ": <div className="stack"><div className="two"><BulkImportPanel entity="works" label="作品" onCommitted={reload} /><BulkImportPanel entity="products" label="商品" onCommitted={reload} /></div><WorkCatalog request={api} data={data} onSelect={nav.selectWork} reload={reload} /></div>, "設計・定義": <Definitions onNavigate={nav.navigate} />, "台本・香盤": <ScriptWorkflow key={selectedWorkId} data={data} request={api} reload={reload} />, "原本取り込み": <SalesImportWizard data={data} request={api} reload={reload} onNavigate={nav.navigate} />, "帳票センター": <ReportCatalog data={data} onNavigate={nav.navigate} onSwitchOrg={switchOrg} />, "経費集計シート": <ExpenseSheet />, "売上集計シート": <SalesSheet data={data} onSwitchOrg={switchOrg} />, "月別消込": <ReceiptSheet data={data} request={api} onNavigate={nav.navigate} />, "営業作品一覧": <SalesCatalog data={data} request={api} />, "全作品のウィンドウ": <ReleaseWindowsPage request={api} />, "取引先別リスト": <PartnerListsPage request={api} />, "提案資料": <ProposalsPage request={api} />, ホーム: <HomeQueue data={data} />, "企画・作品": <Planning data={data} reload={reload} onNavigate={nav.navigate} />, 制作: <ProductionWorkspace key={selectedWorkId} data={data} request={api} onNavigate={nav.navigate} onSwitchOrg={switchOrg} />, "商品・営業": <SalesViewSwitch request={api} workTitle={data.selectedWork?.title} workView={<Products data={data} reload={reload} />} />, 営業資料: <SalesMaterials data={data} request={api} />, 取引先: <Partners data={data} reload={reload} />, 売上: <SalesPage data={data} onNavigate={nav.navigate} manualSlot={(refresh) => <SalesEntryTarget data={data}>{(target) => <ManualSale data={target} onSaved={() => { reload(); refresh(); }} />}</SalesEntryTarget>} legacySlot={(refresh) => <SalesEntryTarget data={data}>{(target) => <ImportPanel data={target} onCommitted={() => { reload(); refresh(); }} />}</SalesEntryTarget>} />, "請求・入金": <Billing data={data} request={api} onNavigate={nav.navigate} />, "報告書マッピング": <ReportMapping data={data} request={api} />, 経費: <Expenses data={data} />, 宣伝: <Publicity data={data} />, 収支: <Income data={data} />, "PL・BS": <PlBsPage data={data} onNavigate={nav.navigate} />, "調達・権利": <RightsIntake data={data} request={api} />, "権利・分配": <Settlement data={data} request={api} />, 製作委員会: <Committee data={data} request={api} />, "ロイヤリティ作成": <RoyaltyPeriodsPage data={data} onNavigate={nav.navigate} />, "ロイヤリティ集計": <RoyaltyLedgerPage data={data} onNavigate={nav.navigate} />, "ロイヤリティ報告書": <RoyaltyStatementsPage data={data} onNavigate={nav.navigate} />, "ロイヤリティ契約": <RoyaltyAgreementsPage data={data} onNavigate={nav.navigate} />, "委員会月次収支": <CommitteeMonthlyPage data={data} onNavigate={nav.navigate} />, 拡張項目: <ExtensionsPage data={data} reload={reload} />, チーム: <TeamPage data={data} />, ER: <ErPage data={data} /> };
+  const screens = { "番販・放送": <BroadcastWorkspace data={data} request={api} onNavigate={nav.navigate} onSelect={nav.selectWork} />, "分析・Lightdash": <AnalyticsWorkspace request={api} data={data} />, "業務データ編集": <Workbench data={data} request={api} initialDataset="works" />, "売上データ編集": <Workbench data={data} request={api} initialDataset="sales_import" />, "MG契約・台帳": <MgLedger data={data} request={api} />, "MG 買付": <AcqMgBuy data={data} request={api} />, "権利先・MG帳票": <RightsReports data={data} request={api} />, "税ルール・台帳": <TaxLedger data={data} request={api} onNavigate={nav.navigate} />, "作品・商品マスタ": <div className="stack"><div className="two"><BulkImportPanel entity="works" label="作品" onCommitted={reload} /><BulkImportPanel entity="products" label="商品" onCommitted={reload} /></div><WorkCatalog request={api} data={data} onSelect={nav.selectWork} reload={reload} /></div>, "設計・定義": <Definitions onNavigate={nav.navigate} />, "台本・香盤": <ScriptWorkflow key={selectedWorkId} data={data} request={api} reload={reload} />, "原本取り込み": <SalesImportWizard data={data} request={api} reload={reload} onNavigate={nav.navigate} />, "帳票センター": <ReportCatalog data={data} onNavigate={nav.navigate} onSwitchOrg={switchOrg} />, "経費集計シート": <ExpenseSheet />, "売上集計シート": <SalesSheet data={data} onSwitchOrg={switchOrg} />, "月別消込": <ReceiptSheet data={data} request={api} onNavigate={nav.navigate} />, "営業作品一覧": <SalesCatalog data={data} request={api} />, "全作品のウィンドウ": <ReleaseWindowsPage request={api} />, "取引先別リスト": <PartnerListsPage request={api} />, "提案資料": <ProposalsPage request={api} />, ホーム: <HomeQueue data={data} />, "企画・作品": <Planning data={data} reload={reload} onNavigate={nav.navigate} />, プリプロ: <Preprod key={selectedWorkId} data={data} request={api} onNavigate={nav.navigate} />, 制作: <ProductionWorkspace key={selectedWorkId} data={data} request={api} onNavigate={nav.navigate} onSwitchOrg={switchOrg} />, "商品・営業": <SalesViewSwitch request={api} workTitle={data.selectedWork?.title} workView={<Products data={data} reload={reload} />} />, 営業資料: <SalesMaterials data={data} request={api} />, 取引先: <Partners data={data} reload={reload} />, 売上: <SalesPage data={data} onNavigate={nav.navigate} manualSlot={(refresh) => <SalesEntryTarget data={data}>{(target) => <ManualSale data={target} onSaved={() => { reload(); refresh(); }} />}</SalesEntryTarget>} legacySlot={(refresh) => <SalesEntryTarget data={data}>{(target) => <ImportPanel data={target} onCommitted={() => { reload(); refresh(); }} />}</SalesEntryTarget>} />, "請求・入金": <Billing data={data} request={api} onNavigate={nav.navigate} />, "報告書マッピング": <ReportMapping data={data} request={api} />, 経費: <Expenses data={data} />, 宣伝: <Publicity data={data} />, 収支: <Income data={data} />, "PL・BS": <PlBsPage data={data} onNavigate={nav.navigate} />, "調達・権利": <RightsIntake data={data} request={api} />, "権利・分配": <Settlement data={data} request={api} />, 製作委員会: <Committee data={data} request={api} />, "ロイヤリティフォルダ": <RoyaltyFolderPage onNavigate={nav.navigate} />, "ロイヤリティ作成": <RoyaltyPeriodsPage data={data} onNavigate={nav.navigate} />, "ロイヤリティ集計": <RoyaltyLedgerPage data={data} onNavigate={nav.navigate} />, "ロイヤリティ報告書": <RoyaltyStatementsPage data={data} onNavigate={nav.navigate} />, "ロイヤリティ契約": <RoyaltyAgreementsPage data={data} onNavigate={nav.navigate} />, "委員会月次収支": <CommitteeMonthlyPage data={data} onNavigate={nav.navigate} />, "委員会の台帳": <CommitteeLedger request={api} />, 拡張項目: <ExtensionsPage data={data} reload={reload} />, チーム: <TeamPage data={data} />, ER: <ErPage data={data} /> };
   screens["データ一覧"] = <DataBrowser />;
   screens["取込履歴"] = <ImportHistory />;
+  screens["シナリオの比較"] = <ScenarioCompare request={api} />;
+  screens["予実管理"] = <YojitsuFolder request={api} onNavigate={nav.navigate} />;
+  screens["予算書"] = <Budget request={api} />;
+  screens["ポスプロ"] = <PostProduction request={api} />;
+  screens["製造"] = <Manufacturing request={api} />;
+  screens["入出金"] = <Cashbook request={api} />;
+  screens["プロデュース管理"] = <ProduceBoard request={api} />;
+  screens["企画"] = <Kikaku request={api} />;
+  screens["撮影の記録"] = <ShootRecords key={selectedWorkId} request={api} workId={data.selectedWorkId} />;
+  screens["調達"] = <Chotatsu request={api} />;
+  screens["フォルダ"] = mode === "local" ? <Folders /> : <FoldersClosed />;
   screens["デモ資料"] = <DemoSamples onNavigate={nav.navigate} works={data.works} partners={data.partners} products={data.products} request={api} currentOrgId={session.orgId} currentOrgName={orgs.find((org) => org.id === session.orgId)?.name || ""} onSwitchOrg={switchOrg} />;
   screens["設計キャンバス"] = <DesignCanvas screenKeys={Object.keys(screens)} request={api} currentUser={session} onNavigate={nav.navigate} renderScreen={(name) => hidden.has(name) ? <p>この役割では参照できません</p> : <LocalShellProvider readOnly>{screens[name]}</LocalShellProvider>} />;
   // 組織を切り替えたあと読み直す間は画面を描かない（前の組織の画面が新しい組織のデータを読みにいかないように）。組織が変わったら外枠ごと作り直す
@@ -624,6 +641,6 @@ function App() {
     {nav.missingWork && <UiNotice tone="warn" message={missingWorkNotice(nav.missingWork, data.selectedWork?.title, { canSwitchOrg: orgs.length >= 2 && !orgsError })} onDismiss={nav.dismissMissingWork} />}
     {loadError && <UiNotice title="最新の内容を読み込めませんでした。表示は前に読み込んだ内容です" error={loadError.error} onRetry={reload} retryLabel="読み直す" onDismiss={() => setLoadError(null)} />}
   </> : null;
-  return <AppShell key={`org-${session.orgId}`} state={nav} session={session} bootstrap={bootstrap} screens={screens} hiddenPages={hidden} theme={theme} onTheme={setTheme} orgs={orgs} orgsError={orgsError} onRetryOrgs={reloadOrgs} onSwitchOrg={switchOrg} orgSwitching={orgSwitching} orgError={orgError} notice={shellNotice} onLogout={logout} />;
+  return <AppShell key={`org-${session.orgId}`} state={nav} session={session} bootstrap={bootstrap} screens={screens} hiddenPages={hidden} orgs={orgs} orgsError={orgsError} onRetryOrgs={reloadOrgs} onSwitchOrg={switchOrg} orgSwitching={orgSwitching} orgError={orgError} notice={shellNotice} onLogout={logout} mode={mode} />;
 }
 createRoot(document.getElementById("root")).render(<App />);

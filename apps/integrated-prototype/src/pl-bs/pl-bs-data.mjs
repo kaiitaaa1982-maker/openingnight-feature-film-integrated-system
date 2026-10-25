@@ -100,8 +100,9 @@ export async function loadPlBsInput(db, identity, ctx, {from, to, asOf, workIds,
   const expenseRows = (await resolveExpenseAccounts(db,orgId,await db.all(`SELECT * FROM ${expenseSource({history:true})} WHERE org_id=? ORDER BY id`, [orgId])))
     .filter((row) => (row.work_id != null ? targetIds.has(row.work_id) : includeCompany));
   const expenseIds = new Set(expenseRows.map((row) => row.id));
-  const expensePayments = (await db.all('SELECT id, expense_id, paid_on, amount_yen FROM expense_payments WHERE org_id=? ORDER BY id', [orgId]))
-    .filter((row) => expenseIds.has(row.expense_id)).map((row) => ({id: row.id, expenseId: row.expense_id, paidOn: row.paid_on, amount: row.amount_yen}));
+  const cashSide = await loadCashSide(db, orgId);
+  const visiblePayments = cashSide.expensePayments.filter((row) => expenseIds.has(row.expenseId));
+  const expensePayments = visiblePayments.map((row) => ({id: row.id, expenseId: row.expenseId, paidOn: row.paidOn, amount: row.amount}));
 
   const settlement=await loadSettlement(db,orgId);
   const expenseVoids=expenseRows.filter(e=>e.expense_voided_on);
@@ -147,7 +148,9 @@ export async function loadPlBsInput(db, identity, ctx, {from, to, asOf, workIds,
   const weightsOf = new Map();
   for (const row of weights) {
     if (!weightsOf.has(row.statement_id)) weightsOf.set(row.statement_id, []);
-    weightsOf.get(row.statement_id).push({workId: row.work_id, weight: Math.max(0, Number(row.amount) || 0)});
+    // net は充当を引いた明細の額そのもの（入金ベースの税抜換算が報告書どおりの支払かを見る。読めない額は null）
+    const net = Number.isSafeInteger(Number(row.amount)) ? Number(row.amount) : null;
+    weightsOf.get(row.statement_id).push({workId: row.work_id, weight: Math.max(0, Number(row.amount) || 0), net});
   }
   const royaltyPayments = [];
   for (const event of events) {
@@ -199,19 +202,12 @@ export async function loadPlBsInput(db, identity, ctx, {from, to, asOf, workIds,
       JOIN committee_report_snapshots s ON s.org_id=e.org_id AND s.id=e.committee_snapshot_id WHERE e.org_id=? AND e.partner_id=? ORDER BY e.id`, [orgId, selfPartnerId]))
     .filter((row) => targetIds.has(row.work_id)).map((row) => ({workId: row.work_id, receivedOn: row.paid_on, amount: row.reverses_event_id ? -row.amount_yen : row.amount_yen})) : [];
 
-  // 請求の入金（入金を請求書の作品ごとの税込額の比で分ける。取消は取消日に負の額）
-  const [allocations, invoiceLines] = await Promise.all([
-    db.all(`SELECT a.receipt_id, a.invoice_id, a.amount_yen, r.received_on, x.reversed_on FROM billing_receipt_allocations a
-      JOIN billing_receipts r ON r.org_id=a.org_id AND r.id=a.receipt_id LEFT JOIN billing_receipt_reversals x ON x.org_id=a.org_id AND x.receipt_id=a.receipt_id
-      WHERE a.org_id=? ORDER BY a.receipt_id, a.invoice_id`, [orgId]),
-    db.all(`SELECT l.invoice_id, l.sale_id, l.amount_inc_tax, lw.work_id, lw.allocation_bps FROM billing_invoice_lines l
-      JOIN billing_invoice_line_works lw ON lw.org_id=l.org_id AND lw.invoice_id=l.invoice_id AND lw.sale_id=l.sale_id WHERE l.org_id=? ORDER BY l.invoice_id, l.sale_id, lw.work_id`, [orgId]),
-  ]);
+  // 請求の入金（入金を請求書の作品ごとの税込額の比で分ける。取消は取消日に負の額）。BS の売掛金・現預金が使う。入金ベースの PL は cashSide を税抜にして使う
   const byInvoiceSale = new Map();
-  for (const row of invoiceLines) {
-    const key = `${row.invoice_id}:${row.sale_id}`;
-    if (!byInvoiceSale.has(key)) byInvoiceSale.set(key, {invoiceId: row.invoice_id, amount: row.amount_inc_tax, shares: []});
-    byInvoiceSale.get(key).shares.push({work_id: row.work_id, allocation_bps: row.allocation_bps});
+  for (const row of cashSide.invoiceLines) {
+    const key = `${row.invoiceId}:${row.saleId}`;
+    if (!byInvoiceSale.has(key)) byInvoiceSale.set(key, {invoiceId: row.invoiceId, amount: row.incTax, shares: []});
+    byInvoiceSale.get(key).shares.push({work_id: row.workId, allocation_bps: row.bps});
   }
   const invoiceWeights = new Map();
   for (const item of byInvoiceSale.values()) {
@@ -223,13 +219,16 @@ export async function loadPlBsInput(db, identity, ctx, {from, to, asOf, workIds,
     for (const [workId, amount] of parts) map.set(workId, (map.get(workId) || 0) + amount);
   }
   const receipts = [];
-  for (const row of allocations) {
-    const weightMap = invoiceWeights.get(row.invoice_id) || new Map();
+  const visibleAllocations = [];
+  for (const row of cashSide.receiptAllocations) {
+    const weightMap = invoiceWeights.get(row.invoiceId) || new Map();
     const list = [...weightMap.entries()].map(([workId, weight]) => ({workId, weight: Math.max(0, weight)}));
     if (!includeCompany && !list.some((item) => targetIds.has(item.workId))) continue;
-    receipts.push({receiptId: row.receipt_id, invoiceId: row.invoice_id, receivedOn: row.received_on, amount: row.amount_yen, weights: list});
-    if (row.reversed_on) receipts.push({receiptId: row.receipt_id, invoiceId: row.invoice_id, receivedOn: row.reversed_on, amount: -row.amount_yen, weights: list});
+    visibleAllocations.push(row);
+    receipts.push({receiptId: row.receiptId, invoiceId: row.invoiceId, receivedOn: row.receivedOn, amount: row.amount, weights: list});
+    if (row.reversedOn) receipts.push({receiptId: row.receiptId, invoiceId: row.invoiceId, receivedOn: row.reversedOn, amount: -row.amount, weights: list});
   }
+  const visibleInvoices = new Set(visibleAllocations.map((row) => row.invoiceId));
 
   // 手入力の額（取り消されていない行）
   const manualRows = liveManualRows(await db.all('SELECT id, account_id, month, kind, amount_yen, tax_yen, work_id, status, reverses_id FROM gl_manual_amounts WHERE org_id=? ORDER BY id', [orgId]))
@@ -247,6 +246,31 @@ export async function loadPlBsInput(db, identity, ctx, {from, to, asOf, workIds,
       accountId:row.expense_account_id,accountName:row.expense_account_name,section:row.expense_section,systemKey:row.expense_system_key,recognitionTiming:row.expense_recognition_timing,classificationOrigin:row.expense_classification_origin,
       exTax: row.actual_ex_tax, tax: row.tax_amount, incTax: row.actual_inc_tax})),
     expenseSettlement, expensePayments, royaltyAccruals, royaltyRecoups, royaltyAdvances, royaltyPayments, committee, investmentPayments, committeeReceipts, receipts, manual: manualRows, mg,
+    // 入金ベース（basis=cash）の材料。税抜への換算と作品・案件の絞り込みは src/reports/pl-bs-cash-model.mjs
+    cashSide: {receiptAllocations: visibleAllocations, invoiceLines: cashSide.invoiceLines.filter((row) => visibleInvoices.has(row.invoiceId)), expensePayments: visiblePayments},
+  };
+}
+
+// 入出金の記録（入金ベースの PL・作品別収支・作品の月別収支と、PL・BS の BS が読む）。組織の全件を読み、見てよい範囲は呼び出し側が作品・案件で絞る。
+// 請求の入金: 消込（入金日・取消日・消込の額・請求の税込額）と、請求明細（税抜・税込）×作品の配賦。
+// 経費の出金: 取消の行（reversesId。額は負）と、出金の源泉の控除額（withheld。会計の確認の無い出金は null）
+export async function loadCashSide(db, orgId) {
+  const [allocations, invoiceLines, payments] = await Promise.all([
+    db.all(`SELECT a.receipt_id, a.invoice_id, a.amount_yen, r.received_on, x.reversed_on, i.amount_inc_tax AS invoice_inc_tax FROM billing_receipt_allocations a
+      JOIN billing_receipts r ON r.org_id=a.org_id AND r.id=a.receipt_id JOIN billing_invoices i ON i.org_id=a.org_id AND i.id=a.invoice_id
+      LEFT JOIN billing_receipt_reversals x ON x.org_id=a.org_id AND x.receipt_id=a.receipt_id
+      WHERE a.org_id=? ORDER BY a.receipt_id, a.invoice_id`, [orgId]),
+    db.all(`SELECT l.invoice_id, l.sale_id, l.amount_ex_tax, l.amount_inc_tax, lw.work_id, lw.allocation_bps FROM billing_invoice_lines l
+      JOIN billing_invoice_line_works lw ON lw.org_id=l.org_id AND lw.invoice_id=l.invoice_id AND lw.sale_id=l.sale_id WHERE l.org_id=? ORDER BY l.invoice_id, l.sale_id, lw.work_id`, [orgId]),
+    db.all(`SELECT p.id, p.expense_id, p.paid_on, p.amount_yen, p.method, p.reverses_id, a.withheld_yen FROM expense_payments p
+      LEFT JOIN expense_payment_accounting a ON a.org_id=p.org_id AND a.payment_id=p.id WHERE p.org_id=? ORDER BY p.id`, [orgId]),
+  ]);
+  return {
+    receiptAllocations: allocations.map((row) => ({receiptId: row.receipt_id, invoiceId: row.invoice_id, amount: row.amount_yen, receivedOn: row.received_on,
+      reversedOn: row.reversed_on ?? null, invoiceIncTax: row.invoice_inc_tax})),
+    invoiceLines: invoiceLines.map((row) => ({invoiceId: row.invoice_id, saleId: row.sale_id, exTax: row.amount_ex_tax, incTax: row.amount_inc_tax, workId: row.work_id, bps: row.allocation_bps})),
+    expensePayments: payments.map((row) => ({id: row.id, expenseId: row.expense_id, paidOn: row.paid_on, amount: row.amount_yen, method: row.method,
+      reversesId: row.reverses_id ?? null, withheld: row.withheld_yen ?? null})),
   };
 }
 

@@ -24,9 +24,13 @@ export async function runScheduledPgExport(env, {loadClient, report = writeLog, 
   const progress = {tables: 0, rows: 0};
   let client;
   try {
-    if (!env.HYPERDRIVE?.connectionString) throw exportError('binding_missing');
+    // 書き出しは全組織を読むので、行単位の権限（pg/rls.sql）の外のロール（BYPASSRLS の integrated_export）の束ね HYPERDRIVE_EXPORT を先に使う。
+    // 無ければアプリの束ね（integrated_app）。RLS を当てたあとにアプリの束ねで読むと、row_security = off の読み取りが 42501 で失敗する
+    // （部分的な写しにはならない。pg-export-store.mjs）。手順は core の docs/platform/operations/runbooks/15-rls-export-role.md
+    const binding = env.HYPERDRIVE_EXPORT ?? env.HYPERDRIVE;
+    if (!binding?.connectionString) throw exportError('binding_missing');
     const Client = await loadClient();
-    client = new Client({connectionString: env.HYPERDRIVE.connectionString});
+    client = new Client({connectionString: binding.connectionString});
     client.on?.('error', () => { /* query と end の失敗で通知する。生のエラーはログに出さない */ });
     await client.connect();
     const {manifestKey, manifest} = await exportPgDatabase({db: new PgDatabase(client), bucket: env.PG_EXPORTS, artifacts: env.PRIVATE_ARTIFACTS,

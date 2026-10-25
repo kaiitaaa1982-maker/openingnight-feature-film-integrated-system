@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {openTestDb} from './test-db.mjs';
 import {createApp} from '../src/app.mjs';
 import {
@@ -356,4 +357,63 @@ test('税計算台帳: 有効計は知っている項目だけを日本語で、
   assert.equal(validateTaxRule({effectiveFrom: '2026-10-01', precision: '0', reason: '架空', evidence: '架空'}).ok, true);
   const bad = validateTaxRule({effectiveFrom: '2026-10-01', effectiveTo: '2026-09-01', precision: '5', reason: ' ', evidence: ''});
   assert.deepEqual(Object.keys(bad.errors).sort(), ['effectiveTo', 'evidence', 'precision', 'reason']);
+});
+
+// Z3 がわざと壊した版で見つけた消込の反例（formal/receipt_matching_cases.json。入金の確認の計画 #4）を、入金フォームの論理へ流す。
+// 最後の入金より前の段（入金・取消）を /api/receipt-sheet の rows の形にし、最後の入金をフォームで入れて「内容を確認」したときの検査を見る
+const formalCases = JSON.parse(readFileSync(new URL('../formal/receipt_matching_cases.json', import.meta.url), 'utf8')).cases;
+
+function formalSheet(c) {
+  const ids = Object.fromEntries(c.invoices.map((invoice, index) => [invoice.key, 101 + index]));
+  const before = c.steps.slice(0, -1);
+  const reversedOn = Object.fromEntries(before.filter((step) => step.reverse).map((step) => [step.reverse, step.reversed_on]));
+  const receipts = before.filter((step) => step.receipt);
+  const rows = c.invoices.map((invoice) => ({
+    id: ids[invoice.key], invoice_number: `ON-INV-FORMAL-${invoice.key}`, partner_id: 2, partner_name: '架空配信',
+    invoice_date: invoice.invoice_date, due_date: '2026-12-31', plannedDate: '2026-12-31', amount_inc_tax: invoice.amount_yen,
+    status: 'issued', voided_on: null, isVoid: false,
+    events: receipts.flatMap((step, index) => step.allocations.filter((a) => a.invoice === invoice.key).map((a) => ({
+      receipt_id: index + 1, reference: `FORMAL-${step.receipt}`, received_on: step.received_on, amount_yen: a.amount_yen,
+      reversed_on: reversedOn[step.receipt] ?? null}))),
+  }));
+  return {rows, ids};
+}
+
+function enterReceipt(rows, ids, step) {
+  const candidates = receiptCandidates(rows, {partnerId: 2, receivedOn: step.received_on});
+  let state = initialReceiptState({partnerId: 2, receivedOn: step.received_on, rows});
+  state = setReceiptField(state, 'reference', `FORMAL-${step.receipt}`, candidates);
+  state = setReceiptField(state, 'amountText', String(step.amount_yen), candidates);
+  for (const a of step.allocations) state = setAllocationText(state, candidates, ids[a.invoice], String(a.amount_yen));
+  return {candidates, check: validateReceipt(state, candidates, existingReceipts(rows))};
+}
+
+for (const c of formalCases.filter((row) => row.replay?.form)) {
+  test(`Z3 の消込の反例（${c.broken}）を入金フォームの検査が断る: ${c.name}`, () => {
+    const {rows, ids} = formalSheet(c);
+    const {check} = enterReceipt(rows, ids, c.steps.at(-1));
+    const [field, key] = c.replay.form.path.split('.');
+    assert.equal(check.ok, false);
+    assert.equal(check.payload, null, '登録の本文を作らない');
+    assert.deepEqual(Object.keys(check.errors), [field], JSON.stringify(check.errors));
+    assert.equal(key ? check.errors[field][ids[key]] : check.errors[field], c.replay.form.error, JSON.stringify(check.errors));
+  });
+}
+
+test('Z3 の消込の反例のうち入金フォームに流さないものは、流さない理由と流す時（#7）を持つ', () => {
+  const pending = formalCases.filter((c) => !c.replay?.form);
+  assert.deepEqual(pending.map((c) => c.broken), ['控除の種類の検査なし', '合計が控除を数えない'], '入金フォームに流さない反例を足すときは、ここに名前を足して理由を書く');
+  for (const c of pending) assert.match(c.pending?.form ?? '', /#7/, c.name);
+});
+
+test('取り消した入金の分は、取消日以後の入金日でだけ未消込に戻る（DB のトリガーと同じ。入金日を入れないときは今の未消込）', () => {
+  const rows = [{id: 101, invoice_number: 'ON-INV-FORMAL-A', partner_id: 2, partner_name: '架空配信', invoice_date: '2026-11-02', due_date: '2026-12-31',
+    amount_inc_tax: 110000, status: 'issued', events: [{receipt_id: 1, reference: 'FORMAL-R1', received_on: '2026-11-10', amount_yen: 110000, reversed_on: '2026-11-20'}]}];
+  assert.deepEqual(receiptCandidates(rows, {partnerId: 2, receivedOn: '2026-11-19'}), [], '取消日の前日は取り消した入金がまだ効いていて、未消込は0');
+  assert.deepEqual(receiptCandidates(rows, {partnerId: 2, receivedOn: '2026-11-20'}).map((row) => [row.invoiceId, row.open]), [[101, 110000]]);
+  assert.deepEqual(receiptCandidates(rows, {partnerId: 2}).map((row) => [row.invoiceId, row.open]), [[101, 110000]]);
+  assert.equal(normalizeInvoice(rows[0]).open, 110000, '請求の一覧の未消込（基準日なし）は取消をすべて外す');
+  const {check} = enterReceipt(rows, {A: 101}, {receipt: 'R2', received_on: '2026-11-20', amount_yen: 110000, allocations: [{invoice: 'A', amount_yen: 110000}]});
+  assert.equal(check.ok, true, JSON.stringify(check.errors));
+  assert.deepEqual(check.payload.allocations, [{invoiceId: 101, amountYen: 110000}]);
 });

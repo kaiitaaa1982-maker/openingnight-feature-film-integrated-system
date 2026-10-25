@@ -26,6 +26,7 @@ tags: testing, node-test, verify
 - `src/app.mjs` を境界に import を逆引きする。import で届かない入力は `test/select-map.json`、URL→route の行は PR3。未対応・異常・git 差分取得の失敗は全部。R3 の金額・identity/役割・ログ・T0 の金額/権限からの依存・SQL/DB/試験の土台なども全部
 - 履歴が無い間の q は 0.1。R は見逃しの確率ではない。閾値は暫定 0.02、抜き取りは SHA を種に max(5本, 残りの20%)。初月の設定を保ち、10%への移行と閾値の確定は影の期間の実績で決める。全体が選ばれた場合の PG の検証は CI に委ね、手元で PGlite 全体を起動しない
 - SQLite は `node --test --test-concurrency=1 test/<名前>.test.mjs ...`、PGlite は **ファイルを明示して** `node scripts/test-pg.mjs test/<名前>.test.mjs ...`。`ON_TEST_PG_URL` を渡さなければ PGlite。T0 のパスは core ルートからの相対パスなので、core の試験は core で実行する
+- CI の `npm test` は2組（`npm test -- --test-shard=i/2`）。入口は `scripts/test-npm.mjs` で、旗をファイルの前に読む。`package.json` の `test` を `node --test test/*.test.mjs` に戻すと、同じ旗がファイルの後ろに付いて全部が流れる。引数なしの `npm test`（手元と `integrated-deploy.yml`）は全部を流す
 - `pg-matrix.json` の `sqliteOnly` の本は SQLite で流す。`pg-db`・`pg-ddl` は本自体が PGlite との比較を行い、CI では本物の PostgreSQL に対しても流す。`pg-ddl` に加えて `node scripts/pg-ddl.mjs --check` も行う。CI の guard と check-cloud-db-config も省かない
 - 作り手は push したら、確かめ役に渡す前に **draft の PR を開く**。`ci.yml` は PR を開く前のブランチへの push では走らず、draft の PR では走る
 - 結果が無い・実行中を緑と読まない。代表にマージを頼むのは、**最後の head SHA の CI が終わり、結果を PR の本文かコメントに書いてから**

@@ -1,3 +1,4 @@
+import {normalizedExpenseCategory} from './expense-model.mjs';
 // 全集計の経費読取口。通常は取消済みを除外。帳簿は元行と取消日を読み、取消月に反対額を出す。
 // asOf はISO日付のみ。組織の条件は呼出側のSQLでも必須。
 export function expenseSource({history=false,asOf='9999-12-31'}={}) {
@@ -12,15 +13,19 @@ export function expenseSource({history=false,asOf='9999-12-31'}={}) {
  ${history?'':`WHERE (${voidOn} IS NULL OR ${voidOn}>'${asOf}')`})`;
 }
 
-export const normalizedExpenseCategory=value=>String(value??'').normalize('NFKC').trim();
-export async function resolveExpenseAccounts(db,orgId,rows){
- const [versions,aliases,categories]=await Promise.all([
-  db.all('SELECT * FROM expense_accounting_versions WHERE org_id=? ORDER BY version_no',[orgId]),
-  db.all('SELECT * FROM expense_category_alias_versions WHERE org_id=? ORDER BY version_no',[orgId]),
-  db.all(`SELECT k.*,g.id account_id,g.name account_name,g.section,g.system_key FROM expense_category_versions k
+export {normalizedExpenseCategory};
+// 経費の会計の対応を読む3文（明細の会計の版・費目の別名の版・費用区分の版と勘定科目）。読み取りの一括（readBatch）にも渡せる形
+export function expenseAccountStatements(orgId){
+ return [
+  {sql:'SELECT * FROM expense_accounting_versions WHERE org_id=? ORDER BY version_no',params:[orgId]},
+  {sql:'SELECT * FROM expense_category_alias_versions WHERE org_id=? ORDER BY version_no',params:[orgId]},
+  {sql:`SELECT k.*,g.id account_id,g.name account_name,g.section,g.system_key FROM expense_category_versions k
    JOIN gl_account_class_versions cl ON cl.org_id=k.org_id AND cl.id=k.account_class_version_id
-   JOIN gl_accounts g ON g.org_id=cl.org_id AND g.id=cl.account_id WHERE k.org_id=?`,[orgId])
- ]);
+   JOIN gl_accounts g ON g.org_id=cl.org_id AND g.id=cl.account_id WHERE k.org_id=?`,params:[orgId]},
+ ];
+}
+// 経費の行に費用区分（勘定科目）を付ける。reads は expenseAccountStatements の3文の結果（同じ順）
+export function applyExpenseAccounts(rows,[versions,aliases,categories]){
  const byExpense=new Map(versions.map(v=>[v.expense_id,v])),byAlias=new Map(aliases.map(v=>[v.alias_text,v])),byCategory=new Map(categories.map(v=>[v.id,v]));
  return rows.map(row=>{const a=byExpense.get(Math.abs(row.id)),alias=byAlias.get(normalizedExpenseCategory(row.category));
   const candidate=byCategory.get(a?(a.active?a.category_version_id:null):(alias?.active?alias.category_version_id:null));
@@ -29,4 +34,7 @@ export async function resolveExpenseAccounts(db,orgId,rows){
    expense_system_key:k?.system_key??null,expense_recognition_timing:k?.recognition_timing??null,
    expense_category_version_id:k?.id??null,expense_classification_origin:k?(a?'明細の会計版':'採用済みの完全一致対応'):'費用区分未整備'};
  });
+}
+export async function resolveExpenseAccounts(db,orgId,rows){
+ return applyExpenseAccounts(rows,await Promise.all(expenseAccountStatements(orgId).map(s=>db.all(s.sql,s.params))));
 }

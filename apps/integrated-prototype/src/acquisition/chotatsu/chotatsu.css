@@ -1,0 +1,76 @@
+/* 調達の画面。黒・白・灰＋赤1色、角丸0・影なし。赤は「! 要確認」と遅れ・NG だけ（見本 3-case-view の A） */
+.chotatsu {
+  --ink: #111; --paper: #fff; --soft: #f3f1ec; --sub: #5e5850; --faint: #6b655c; --rule: #cfc8ba; --red: #b3261e;
+  display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 16px; color: var(--ink); background: var(--paper); font-size: 14px; line-height: 1.6;
+}
+.chotatsu * { border-radius: 0; box-shadow: none; box-sizing: border-box; }
+.chotatsu .ch-tree { border-right: 1px solid var(--rule); padding: 8px 0; font-size: 13px; display: flex; flex-direction: column; }
+.chotatsu .ch-node { background: none; border: 0; border-left: 3px solid transparent; text-align: left; font: inherit; color: inherit; padding: 2px 10px; cursor: pointer; white-space: nowrap; }
+.chotatsu .ch-node.l1 { font-weight: 800; }
+.chotatsu .ch-node.l2 { padding-left: 22px; }
+.chotatsu .ch-node.l3 { padding-left: 34px; color: var(--sub); }
+.chotatsu .ch-node.on { border-left-color: var(--ink); font-weight: 800; color: var(--ink); }
+.chotatsu .ch-main { min-width: 0; }
+.chotatsu .ch-bar, .chotatsu .ch-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+.chotatsu .ch-alert { display: inline-block; background: var(--red); color: #fff; padding: 4px 10px; font-weight: 800; }
+.chotatsu .ch-btn { border: 1px solid var(--ink); background: var(--paper); color: var(--ink); padding: 4px 12px; font: inherit; cursor: pointer; }
+.chotatsu .ch-btn.main { background: var(--ink); color: #fff; }
+.chotatsu .ch-btn[disabled] { border-color: var(--rule); color: var(--faint); background: var(--soft); cursor: not-allowed; }
+.chotatsu .ch-table { border-collapse: collapse; width: 100%; margin: 6px 0; }
+.chotatsu .ch-table th, .chotatsu .ch-table td { border: 1px solid var(--rule); padding: 4px 8px; font-size: 13px; text-align: left; white-space: nowrap; }
+.chotatsu .ch-table th { background: var(--soft); font-weight: 800; border-bottom: 2px solid var(--ink); }
+.chotatsu .n, .chotatsu input.n { text-align: right; font-variant-numeric: tabular-nums; }
+.chotatsu .ch-table .m { text-align: center; }
+.chotatsu .ch-row { cursor: pointer; }
+.chotatsu .ch-row.sel { background: var(--soft); }
+.chotatsu tr.closed td { color: var(--faint); }
+.chotatsu .ch-sub { color: var(--sub); font-size: 12px; margin-left: 8px; }
+.chotatsu .ch-faint { color: var(--faint); }
+.chotatsu .ch-red { color: var(--red); font-weight: 800; }
+.chotatsu .ch-chip { display: inline-block; border: 1px solid var(--ink); font-size: 11px; padding: 0 6px; margin-left: 6px; }
+/* 段の札（済は黒地、遅は赤地、未は薄く、止は点線、今・予は枠だけ） */
+.chotatsu .ch-c { display: inline-block; min-width: 22px; text-align: center; border: 1px solid var(--ink); font-size: 11px; line-height: 18px; }
+.chotatsu .ch-c.done { background: var(--ink); color: #fff; }
+.chotatsu .ch-c.late { background: var(--red); color: #fff; border-color: var(--red); }
+.chotatsu .ch-c.todo { border-color: var(--rule); color: var(--faint); }
+.chotatsu .ch-c.stop { border-style: dashed; color: var(--faint); }
+.chotatsu .ch-box { border: 1px solid var(--ink); padding: 10px 12px; margin: 8px 0; }
+.chotatsu .ch-detail { border: 1px solid var(--ink); padding: 12px; margin-top: 16px; }
+.chotatsu .ch-head { display: flex; align-items: center; gap: 8px; color: var(--sub); font-size: 13px; }
+.chotatsu .ch-close { margin-left: auto; padding: 0 8px; }
+.chotatsu .ch-verdict { border: 1px solid var(--ink); padding: 8px 12px; font-weight: 800; margin: 8px 0 12px; }
+.chotatsu .ch-nums { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); border: 1px solid var(--ink); margin-bottom: 12px; }
+.chotatsu .ch-nums > div { padding: 8px 10px; border-right: 1px solid var(--rule); min-width: 0; }
+.chotatsu .ch-nums > div:last-child { border-right: 0; }
+.chotatsu .ch-nums .l { font-size: 11px; color: var(--sub); }
+.chotatsu .ch-nums .v { font-size: 16px; overflow-wrap: anywhere; font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; }
+.chotatsu .ch-exc { border: 1px solid var(--red); padding: 6px 10px; margin-bottom: 12px; }
+.chotatsu .ch-exc p { margin: 2px 0; }
+.chotatsu .ch-exc b { color: var(--red); margin-right: 6px; }
+.chotatsu .ch-stages { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 12px; }
+.chotatsu .ch-stages div { border: 1px solid var(--ink); margin-left: -1px; padding: 6px; text-align: center; white-space: nowrap; }
+.chotatsu .ch-stages .done { background: var(--ink); color: #fff; }
+.chotatsu .ch-stages .late { background: var(--red); color: #fff; border-color: var(--red); }
+.chotatsu .ch-stages .todo { color: var(--faint); border-color: var(--rule); }
+.chotatsu .ch-stages .stop { color: var(--faint); border-style: dashed; }
+.chotatsu .ch-stages .now { font-weight: 800; }
+.chotatsu .ch-sec { border-top: 2px solid var(--ink); margin-top: 14px; padding-top: 4px; }
+.chotatsu .ch-sec h3 { font-size: 15px; font-weight: 800; margin: 0 0 4px; }
+.chotatsu .ch-form { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: flex-end; margin: 6px 0; }
+.chotatsu .ch-f { display: flex; flex-direction: column; font-size: 11px; color: var(--sub); }
+.chotatsu .ch-f input, .chotatsu .ch-f select, .chotatsu .ch-edit input, .chotatsu .ch-edit select {
+  font: inherit; font-size: 13px; color: var(--ink); border: 1px solid var(--rule); background: var(--paper); padding: 2px 6px; min-width: 0;
+}
+.chotatsu .ch-f input:not([type="checkbox"]) { width: 140px; }
+.chotatsu .ch-edit input { width: 100%; }
+.chotatsu .ch-edit td { padding: 2px 4px; }
+.chotatsu .ch-kv { display: flex; flex-wrap: wrap; gap: 4px 8px; margin: 4px 0; font-size: 13px; }
+.chotatsu .ch-kv span { color: var(--sub); font-size: 11px; margin-left: 8px; }
+.chotatsu .ch-kv span:first-child { margin-left: 0; }
+.chotatsu a { color: var(--ink); }
+@media (max-width: 900px) {
+  .chotatsu { grid-template-columns: 1fr; }
+  .chotatsu .ch-tree { border-right: 0; border-bottom: 1px solid var(--rule); }
+  .chotatsu .ch-nums { grid-template-columns: repeat(3, 1fr); }
+  .chotatsu .ch-main { overflow-x: auto; }
+}

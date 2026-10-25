@@ -1,4 +1,4 @@
-import {buildMgReport} from './rights-reports.mjs';
+import {buildMgReport,effectiveMgLedger,mgRemainingYen} from './rights-reports.mjs';
 
 const fail=(message,status=400)=>Object.assign(new Error(message),{status});
 const metrics=['eligibleYen','appliedYen','overageYen','recognizedYen'];
@@ -34,6 +34,22 @@ function rollup(contracts){
   unverifiedCount:total(contracts,'unverifiedCount')};
 }
 
+// 条件版の選び方（FR-SETL-MGL-050）: 基準月の末日までに始まった版のうち、版の番号が最大のもの（同じ番号は ID の大きい方）。始まっていなければ null。
+// MG 集計（buildMgPortfolio）と売上集計シートの MG の列（sales-sheet-routes.mjs）が同じ選び方を使う
+export function selectMgTermVersion(versions,month){
+ return versions.filter(v=>v.starts_on&&v.starts_on.slice(0,7)<=month).sort((a,b)=>b.version-a.version||b.id-a.id)[0]||null;
+}
+// 契約1件の、基準月の条件版と未消化残高（実充当。FR-SETL-MGL-026）。残高は MG 帳票（buildMgReport の contractRemainingYen）と同じ計算
+// versions: 契約のすべての条件版、ledger: 契約のすべての台帳の行（product_id つき）。版が始まっていなければ null。
+// ledgerProductIds: 基準月までの訂正を反映した台帳の行の商品。MG 帳票の商品の行は「選んだ版の商品＋この商品」（buildMgReport の allProducts）
+export function mgContractStatus({versions,ledger,accountingMonth}){
+ const month=monthOf(accountingMonth),selected=selectMgTermVersion(versions,month);
+ if(!selected)return null;
+ const effective=effectiveMgLedger(ledger,month);
+ return {version:selected,guaranteeYen:safe(selected.mg_amount_yen),remainingAppliedYen:mgRemainingYen(selected.mg_amount_yen,effective),
+  ledgerProductIds:new Set(effective.map(entry=>Number(entry.product_id)))};
+}
+
 /** Each item contains one contract and all its immutable versions and ledger rows. */
 export function buildMgPortfolio({direction,accountingMonth,contracts,works=[]}){
  if(!['incoming','outgoing'].includes(direction))throw fail('受取MGか支払MGを選択してください');
@@ -44,7 +60,7 @@ export function buildMgPortfolio({direction,accountingMonth,contracts,works=[]})
   const key=Number(item.contract.id);
   if(seen.has(key))throw fail('同じMG契約が重複しています',409);
   seen.add(key);
-  const selected=item.versions.filter(v=>v.starts_on&&v.starts_on.slice(0,7)<=month).sort((a,b)=>b.version-a.version||b.id-a.id)[0];
+  const selected=selectMgTermVersion(item.versions,month);
   if(!selected){notStartedCount++;continue;}
   const report=buildMgReport({...item,direction,selectedVersionId:selected.id,accountingMonth:month});
   const effectiveIds=new Set(report.sourceEntryIds.map(Number));

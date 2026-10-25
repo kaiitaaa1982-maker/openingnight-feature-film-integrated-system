@@ -47,7 +47,7 @@ export function ExpensesPage({data, bulkSlot, renderList}) {
         {state.rows && <DataGrid columns={COLUMNS} rows={rows} rowKey="category" persistKey="expense-budget" showTotals totalLabel="合計"
           emptyText="この作品の経費はまだありません" exportSpec={{name: '経費の予算対比', title: `費目別の予算対比${work ? `（${work.title}）` : ''}`}} />}
       </section>
-      <button type="button" aria-label="売上基幹の経費集計シートを開く" onClick={() => shell.navigate("経費集計シート")}>売上基幹の経費集計シートを開く</button>
+      <button type="button" aria-label="経費集計シートを開く" onClick={() => shell.navigate("経費集計シート")}>経費集計シートを開く</button>
       {renderList?.({suggestions, onChanged: () => setRevision((n) => n + 1), filter: (row) => expensesInScope([row], work).length > 0})}
     </div>
   );

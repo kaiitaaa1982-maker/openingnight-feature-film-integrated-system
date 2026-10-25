@@ -1,5 +1,5 @@
 import {D1Database} from './d1-db.mjs';
-import {D1_INLINE_VALUE_BYTES} from './d1-limits.mjs';
+import {D1_INLINE_VALUE_BYTES, D1_MAX_STATEMENTS} from './d1-limits.mjs';
 
 const markerPrefix='@r2:v1:';
 const encoder=new TextEncoder();
@@ -10,6 +10,7 @@ const externalColumns=new Map([
   ['workbench_source_artifacts',new Set(['raw_base64','extraction_json'])],
   ['workflow_raw_artifacts',new Set(['original_base64','extraction_json'])],
   ['expense_source_files',new Set(['original_base64'])],
+  ['source_documents',new Set(['content_base64'])],
   ['sales_source_files',new Set(['original_base64','extraction_json'])],
   ['sales_source_selections',new Set(['canonical_csv'])],
   ['import_previews',new Set(['payload_json'])],
@@ -21,7 +22,7 @@ const externalColumns=new Map([
 ]);
 const hydrationColumns=new Set([...externalColumns.values()].flatMap(columns=>[...columns]));
 // 大きさによらず、いつも R2 に置く列（D1 には参照だけを書く）
-const forcedExternalColumns=new Set(['raw_base64','original_base64','extraction_json']);
+const forcedExternalColumns=new Set(['raw_base64','original_base64','extraction_json','content_base64']);
 
 async function sha256(bytes){const digest=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(digest)].map(value=>value.toString(16).padStart(2,'0')).join('')}
 function marker(key,hash,size){return `${markerPrefix}${key}:${hash}:${size}`}
@@ -60,7 +61,7 @@ export class R2LargeValueDatabase {
 
 // 本番（Cloudflare D1）の入口。D1 の束ねを D1Database で開き、R2 の層で包む。名前・引数・エラーの文・文の数の上限（既定500）はいままでのまま
 export class R2BackedD1Database extends R2LargeValueDatabase {
-  constructor(binding,bucket,{prefix='private/workbench',maxBatchStatements=500}={}){super(new D1Database(binding),bucket,{prefix,maxBatchStatements});this.binding=binding}
+  constructor(binding,bucket,{prefix='private/workbench',maxBatchStatements=D1_MAX_STATEMENTS}={}){super(new D1Database(binding),bucket,{prefix,maxBatchStatements});this.binding=binding}
 }
 
 export const cloudR2Internals={markerPrefix,parseMarker,insertColumns,largeValueBytes,maxHydratedBytes,hydrationColumns,externalColumns,forcedExternalColumns};

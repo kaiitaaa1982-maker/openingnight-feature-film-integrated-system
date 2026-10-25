@@ -20,8 +20,10 @@ import {
   MG_AMOUNT_LABELS, MG_DIRECTION_LABELS, MG_DIRECTION_SHORT, MG_MODE_LABELS, MG_STATUS_LABELS, contractProgress, progressTotals, latestVersion,
   ledgerView, priorAppliedYen, mgCandidate, fillAmounts, candidateDifference, differenceText, sumMismatch, nextReportPeriod, derivePhases, emptyPhase,
   emptyContractForm, contractFormFromVersion, evaluationState, evaluationGapText, buildContractPayload, buildReportPayload, workbookToMgImport,
-  sheetToMgImport, splitCsv, mgTemplateSheets, signedYen,
+  sheetToMgImport, splitCsv, mgTemplateSheets, signedYen, effectiveLedger, contractIdOf,
 } from './mg-ledger-import.mjs';
+import {MgSellList} from './mg-sell/MgSellList.jsx';
+import {buildVoidPayload, isVoidEntry} from './mg-sell/void-model.mjs';
 import './mg.css';
 
 const DIRECTION_TABS = [{id: 'incoming', label: MG_DIRECTION_LABELS.incoming}, {id: 'outgoing', label: MG_DIRECTION_LABELS.outgoing}];
@@ -523,7 +525,26 @@ const LEDGER_COLUMNS = [
   {key: 'reportReceivedOn', label: '実報告受領日', type: 'date', hidden: true},
 ];
 
-function LedgerDetail({row, readOnly, onCorrect, successor}) {
+// 報告の取消（4つの額を0にした訂正版を足す。void-model.mjs）。2段で確かめ、理由を必須にする
+function VoidControl({row, onVoid}) {
+  const [open, setOpen] = useState(false);
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  if (!open) return <button type="button" className="secondary" onClick={() => setOpen(true)}>この報告を取り消す</button>;
+  const payload = buildVoidPayload(row, reason);
+  return (
+    <div className="mg-void">
+      <p className="mg-muted">取り消すと、この報告は訂正前として残り、回収の計算から外れます（額0円の取消の行を足します。元の行は消えません）。</p>
+      <FormField label="取消の理由（必須）" value={reason} onChange={setReason} />
+      <div className="on-form-actions">
+        <button type="button" disabled={!payload || busy} onClick={async () => { setBusy(true); try { await onVoid(payload); } finally { setBusy(false); } }}>取り消す</button>
+        <button type="button" className="text" onClick={() => { setOpen(false); setReason(''); }}>やめる</button>
+      </div>
+    </div>
+  );
+}
+
+function LedgerDetail({row, readOnly, onCorrect, onVoid, successor}) {
   return (
     <div className="mg-ledger-detail">
       <dl>
@@ -535,7 +556,13 @@ function LedgerDetail({row, readOnly, onCorrect, successor}) {
         {row.reversesSource && <><dt>訂正元</dt><dd>{row.reversesSource}（元の報告は訂正前として残しています）</dd></>}
         {successor && <><dt>訂正版</dt><dd>{successor.sourceReference}（{monthText(successor.accountingMonth)}計上）</dd></>}
       </dl>
-      {!row.superseded && !readOnly && <button type="button" className="secondary" onClick={() => onCorrect(row)}>この報告の訂正版を入力</button>}
+      {!row.superseded && !readOnly && !isVoidEntry(row.raw) && (
+        <div className="on-form-actions">
+          <button type="button" className="secondary" onClick={() => onCorrect(row)}>この報告の訂正版を入力</button>
+          {onVoid && <VoidControl row={row} onVoid={onVoid} />}
+        </div>
+      )}
+      {isVoidEntry(row.raw) && <p className="mg-muted">この行は取消の記録です（額0円）。</p>}
     </div>
   );
 }
@@ -906,6 +933,11 @@ export default function MgLedger({request: requestProp}) {
   const partyOf = (contract) => parties.find((p) => Number(p.id) === Number(contract.party_id));
   const progress = useMemo(() => new Map(contracts.map((c) => [Number(c.id), contractProgress(c, data.ledger, direction)])), [contracts, data.ledger, direction]);
   const totals = progressTotals([...progress.values()]);
+  // MG 作品の一覧に渡す契約ごとの回収と有効な台帳の行（数字はこの画面の contractProgress と同じ）
+  const sellItems = useMemo(() => {
+    const effective = effectiveLedger(data.ledger);
+    return contracts.map((c) => ({contract: c, progress: progress.get(Number(c.id)), entries: effective.filter((r) => contractIdOf(r, direction) === Number(c.id))}));
+  }, [contracts, data.ledger, progress, direction]);
   const selected = contracts.find((c) => String(c.id) === String(selectedParam)) || null;
   const selectedProgress = selected ? progress.get(Number(selected.id)) : null;
   const productOptions = useMemo(() => {
@@ -942,6 +974,23 @@ export default function MgLedger({request: requestProp}) {
     setReportNonce((n) => n + 1);
     load();
   }
+  // MG 作品の一覧から契約を開く（同じ契約を押し直しても閉じない）。詳細の節へ寄せる
+  function openFromList(contractId) {
+    const contract = contracts.find((c) => Number(c.id) === Number(contractId));
+    if (!contract) return;
+    setSelected(String(contract.id));
+    setLedgerContract(String(contract.id));
+    setCorrection(null);
+    setTimeout(() => detailRef.current?.scrollIntoView?.({behavior: 'smooth', block: 'start'}), 0);
+  }
+  async function voidEntry(payload) {
+    try {
+      await request('/mg/ledger', {method: 'POST', body: JSON.stringify(payload)});
+      saved('報告を取り消しました（取消の行を足しました。元の行は訂正前として残ります）');
+    } catch (error) {
+      setNotice(errorNotice(error, {unique: 'この報告は既に訂正か取消がされています。再読込して確認してください'}));
+    }
+  }
   function startCorrection(row) {
     setSelected(String(row.contractId));
     setCorrection(row);
@@ -974,6 +1023,9 @@ export default function MgLedger({request: requestProp}) {
 
       {data.loadedAt && (
         <>
+          {direction === 'incoming' && (
+            <MgSellList items={sellItems} partners={parties} today={todayJst()} onOpen={openFromList} />
+          )}
           <section className="card mg-contracts" aria-label={`${directionShort}の契約`}>
             <header className="mg-section-head">
               <div>
@@ -1082,7 +1134,7 @@ export default function MgLedger({request: requestProp}) {
               </div>
             </div>
             <DataGrid columns={LEDGER_COLUMNS} rows={rows} rowKey="key" persistKey={`mg-ledger-${direction}`} emptyText={data.ledger.some((r) => (direction === 'incoming' ? r.incoming_contract_id : r.outgoing_contract_id)) ? '条件に合う報告はありません' : `${directionShort}の報告はまだありません`}
-              renderDetail={(row) => <LedgerDetail row={row} readOnly={readOnly} successor={successors.get(row.id)} onCorrect={startCorrection} />}
+              renderDetail={(row) => <LedgerDetail row={row} readOnly={readOnly} successor={successors.get(row.id)} onCorrect={startCorrection} onVoid={direction === 'incoming' ? voidEntry : null} />}
               exportSpec={{name: `${directionShort}台帳`, title: `${directionShort}台帳`, period: ledgerMonth || '', conditions, dataAsOf: data.loadedAt,
                 notes: [`累計の${L.appliedRecoupYen}・未消化残高は、契約ごとに計上月の順で訂正前を除いて積み上げた値。残高はその行の条件版の保証額から計算。`, '訂正前の報告の金額は合計に含めません。受取MGと支払MGは合算しません。']}} />
           </section>

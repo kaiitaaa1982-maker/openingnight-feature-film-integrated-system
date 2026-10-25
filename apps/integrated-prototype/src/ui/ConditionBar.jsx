@@ -7,7 +7,7 @@ import {FormField} from './FormField.jsx';
 import {EntityPicker} from './EntityPicker.jsx';
 import {toEntityItems} from './entity-match.mjs';
 import {
-  readConditions, paramUpdates, fiscalYearOptions, fiscalRuleText, PERIOD_PRESETS, BASIS_OPTIONS, TAX_OPTIONS,
+  readConditions, paramUpdates, fiscalYearOptions, fiscalRuleText, PERIOD_PRESETS, BASIS_OPTIONS, CASH_BASIS_OPTIONS, TAX_OPTIONS,
   DIRECTION_OPTIONS, AXIS_OPTIONS, CONDITION_LABELS, CONDITION_KEYS, isYm,
 } from './condition-model.mjs';
 import './forms.css';
@@ -82,6 +82,9 @@ export function ConditionBar({
       )}
       {want.has('basis') && (
         <Segmented label={label('basis')} options={BASIS_OPTIONS} value={values?.basis} disabled={disabled} onChange={(value) => set('basis', value)} />
+      )}
+      {want.has('cashBasis') && (
+        <Segmented label={label('cashBasis')} options={CASH_BASIS_OPTIONS} value={values?.cashBasis} disabled={disabled} onChange={(value) => set('cashBasis', value)} />
       )}
       {want.has('tax') && (
         <Segmented label={label('tax')} options={TAX_OPTIONS} value={values?.tax} disabled={disabled} onChange={(value) => set('tax', value)} />
