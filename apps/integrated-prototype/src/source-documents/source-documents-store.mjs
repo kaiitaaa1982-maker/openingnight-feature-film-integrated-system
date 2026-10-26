@@ -155,8 +155,9 @@ export async function listSourceDocuments(db, orgId, {kind = null, from = null, 
   if (q != null && q.trim()) {
     // % と _ も検索する文字として扱う。両DBで同じ部分一致にする。
     const pattern = `%${q.trim().replace(/[!%_]/g, '!$&')}%`;
-    where.push("(LOWER(file_name) LIKE LOWER(?) ESCAPE '!' OR LOWER(external_location) LIKE LOWER(?) ESCAPE '!')");
-    params.push(pattern, pattern);
+    // 場所は、いまの場所（最新の移動先）と最初の場所の両方を探す
+    where.push(`(LOWER(file_name) LIKE LOWER(?) ESCAPE '!' OR LOWER(${CURRENT_LOCATION}) LIKE LOWER(?) ESCAPE '!' OR LOWER(external_location) LIKE LOWER(?) ESCAPE '!')`);
+    params.push(pattern, pattern, pattern);
   }
   if (limit != null && (!positiveInt(limit) || limit > 200)) fail('一覧の件数は1〜200件です');
   if (limit != null) params.push(limit);

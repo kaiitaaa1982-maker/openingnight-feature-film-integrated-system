@@ -78,6 +78,17 @@ test('FR-CORE-DATA-062 FR-CORE-DATA-063 目録の移動は事前確認で書か�
   assert.equal((await documents.getSourceDocument(db, 1, id)).external_location, last.to_location);
 });
 
+test('FR-CORE-DATA-062 一覧の検索は、移動したあとの場所でも最初の場所でも見つかる', async (t) => {
+  const {db, call} = await fixture(t);
+  const {id} = await register(db);
+  await call([line(NEXT)]);
+  const found = async (q) => (await documents.listSourceDocuments(db, 1, {q})).map((doc) => doc.id);
+  assert.deepEqual(await found('ORG/F01'), [id]);
+  assert.deepEqual(await found('current/F01_企画'), [id]);
+  assert.deepEqual(await found('架空企画'), [id]);
+  assert.deepEqual(await found('別の場所'), []);
+});
+
 test('FR-CORE-DATA-063 現在のキーが目録にあれば行の順によらず重複とし、最新の移動先でも同じ判定をする', async (t) => {
   const {db, call} = await fixture(t);
   const {id} = await register(db);

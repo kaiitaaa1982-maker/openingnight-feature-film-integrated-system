@@ -9,7 +9,7 @@
     "yojitsu/kpi-seed.json": "c982b952f9f8d909afe600332da8527a4c222b0389e9ff4a5c368bac1349e3a5",
     "kpi-metrics/seed.json": "b91504bc5ee218ab3923bf930ce2359941a7ce58a35253989f6f7e0ae8f3dedc",
     "receipt-matching/invoices.json": "e7778d887cd8343242a35444cae2175fe4db2d656766ef348c594da9e7637b0a",
-    "yojitsu/expected.json": "6c05c8d47f41683ed6e28521a83d5042700626a158edc9958b58e761b1f92540"
+    "yojitsu/expected.json": "3ce35763efe49a7e6dd83b7c4e10d7af005e89c9ded31f16168009ce1994425b"
   },
   "rules": [
     "期間は種の設定の期間のうち締めた月を含む期間。実績は期間の始まり〜締めた月、予測は締めた月の次の月〜期間の終わり、来期は次の期間（来期の入金・粗利の見込）",
