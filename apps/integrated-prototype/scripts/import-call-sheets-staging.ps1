@@ -26,7 +26,7 @@ if ($WorkId -le 0) { Write-Host '止まった: -WorkId（staging の作品 ID）
 if (-not $PdfFolder) { Write-Host '止まった: -PdfFolder（原本の PDF のフォルダ）を入れる'; exit 2 }
 if (-not (Test-Path -LiteralPath $CredentialFile)) { Write-Host ('止まった: 登録が無い。先に staging-access-credential.ps1 を流す（' + $CredentialFile + '）'); exit 1 }
 $saved = Import-Clixml -LiteralPath $CredentialFile
-if ($saved.Kind -ne 'openingnight-staging-access') { Write-Host '止まった: 登録の種類が違う'; exit 1 }
+if ($saved.Kind -ne 'example-staging-access') { Write-Host '止まった: 登録の種類が違う'; exit 1 }
 $nodeArgs = @($entry, '--staging', '--work-id', [string]$WorkId, '--source', $SourceFile, '--files', $PdfFolder)
 if ($Org -gt 0) { $nodeArgs += @('--org', [string]$Org) }
 $secret = $saved.Credential.GetNetworkCredential().Password

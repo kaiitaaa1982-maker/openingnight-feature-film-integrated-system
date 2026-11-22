@@ -1,5 +1,5 @@
 // 共通の原本の中身を返す（会社ルートの plans/2026-11-06-r2-ingest.md の A）。
-// inline は DB の中身を、external は業務データの置き場（R2 openingnight-business-data）から読む。
+// inline は DB の中身を、external は業務データの置き場（R2 example-business-data）から読む。
 // 置き場は「キーを渡すと中身を返す」関数 readBusinessObject(key) だけで受け取り、書き込み・削除の口は持たない。
 // 読んだ中身の SHA-256 が記録と違えば返さない（置き場の取り違え・書き換えを画面に出さない）。
 import {getSourceDocument, sha256Hex} from './source-documents-store.mjs';

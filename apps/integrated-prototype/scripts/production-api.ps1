@@ -18,7 +18,7 @@ param(
 $ErrorActionPreference = 'Stop'
 if (-not (Test-Path -LiteralPath $CredentialFile)) { Write-Host ('止まった: 登録が無い。先に production-access-credential.ps1 を流す（' + $CredentialFile + '）'); exit 1 }
 $saved = Import-Clixml -LiteralPath $CredentialFile
-if ($saved.Kind -ne 'openingnight-production-access') { Write-Host '止まった: 登録の種類が違う'; exit 1 }
+if ($saved.Kind -ne 'example-production-access') { Write-Host '止まった: 登録の種類が違う'; exit 1 }
 $nodeArgs = @((Join-Path $PSScriptRoot 'production-api.mjs'), $Method, $ApiPath)
 if ($BodyFile) { $nodeArgs += @('--body', $BodyFile) }
 if ($Apply) { $nodeArgs += '--apply' }

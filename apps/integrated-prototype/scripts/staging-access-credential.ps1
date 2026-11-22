@@ -22,6 +22,6 @@ if ($null -eq $credential -or [string]::IsNullOrWhiteSpace($credential.UserName)
 if ($credential.UserName -notmatch '^[0-9a-f]{32}\.access$') { Write-Host '止まった: Client ID は 32 桁の英数字のあとに .access が付く形'; exit 1 }
 $folder = Split-Path -Parent $Path
 if (-not (Test-Path -LiteralPath $folder)) { New-Item -ItemType Directory -Path $folder | Out-Null }
-[pscustomobject]@{ Kind = 'openingnight-staging-access'; Credential = $credential } | Export-Clixml -LiteralPath $Path
+[pscustomobject]@{ Kind = 'example-staging-access'; Credential = $credential } | Export-Clixml -LiteralPath $Path
 Write-Host ('登録した: ' + $Path + '（この Windows の利用者だけが読める。中身は出さない）')
 exit 0

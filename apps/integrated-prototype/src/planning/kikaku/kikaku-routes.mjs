@@ -57,7 +57,7 @@ function budgetFixedFrom(fixRows) {
   return {versionNo: no, fixedOn: String(last?.createdAt ?? '').slice(0, 10)};
 }
 
-// readBusinessObject: 外の置き場（R2 openingnight-business-data）からキーで中身を読む関数。無いときは external の原本を開けない
+// readBusinessObject: 外の置き場（R2 example-business-data）からキーで中身を読む関数。無いときは external の原本を開けない
 export function registerKikakuRoutes(app, {db, bad, body, permittedProjects, readBusinessObject = null}) {
   if (!app || !db || typeof bad !== 'function' || typeof body !== 'function' || typeof permittedProjects !== 'function') {
     throw new Error('kikaku routes require app, db, bad, body and permittedProjects');

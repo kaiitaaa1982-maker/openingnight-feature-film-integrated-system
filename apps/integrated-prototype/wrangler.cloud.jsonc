@@ -55,7 +55,7 @@
     // コードは get だけを使う（src/cloud-worker.mjs の readBusinessObject）。書き込み・削除・一覧はしない
     {
       "binding": "BUSINESS_DATA",
-      "bucket_name": "openingnight-business-data"
+      "bucket_name": "example-business-data"
     }
   ],
   "durable_objects": {
@@ -133,7 +133,7 @@
         // コードは get だけを使う（src/cloud-worker.mjs の readBusinessObject）。書き込み・削除はしない
         {
           "binding": "BUSINESS_DATA",
-          "bucket_name": "openingnight-business-data"
+          "bucket_name": "example-business-data"
         }
       ],
       "durable_objects": {
