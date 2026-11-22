@@ -75,6 +75,8 @@ function Detail({row, offices, request, onChanged}) {
   }, [row.id, row.workId, request, reloadNo]);
   if (!detail) return <p className="pm-sub">{msg || '読み込み中'}</p>;
   const linked = new Set(detail.documents.map((d) => d.document_id));
+  // 作品のプリプロの保管庫に置いた原本は、名前を押すと開く（保管庫に無い原本は名前だけ。原本の置き場から開く）
+  const placed = new Set(vault.map((d) => d.document_id));
   const choices = vault.filter((d) => !linked.has(d.document_id));
   async function save(v) {
     await request(`/permits/${row.id}/versions`, {method: 'POST', body: JSON.stringify({...toBody(v), baseVersionNo: row.versionNo})});
@@ -89,7 +91,8 @@ function Detail({row, offices, request, onChanged}) {
     <div className="pm-detail">
       {detail.canWrite ? <PermitForm initial={toForm(row)} offices={offices} works={[]} onSave={save} onCancel={onChanged} /> : null}
       <table aria-label="原本"><thead><tr><th>書類</th><th>ファイル</th><th>受領</th></tr></thead>
-        <tbody>{detail.documents.map((d) => <tr key={d.id}><td><span className="pm-tag">{PERMIT_DOCUMENT_ROLES[d.role]}</span></td><td>{d.file_name}</td><td>{md(d.received_on)}</td></tr>)}
+        <tbody>{detail.documents.map((d) => <tr key={d.id}><td><span className="pm-tag">{PERMIT_DOCUMENT_ROLES[d.role]}</span></td>
+          <td>{placed.has(d.document_id) ? <a href={`/api/preprod/works/${row.workId}/documents/${d.document_id}/content`} target="_blank" rel="noopener">{d.file_name}</a> : d.file_name}</td><td>{md(d.received_on)}</td></tr>)}
           {!detail.documents.length && <tr><td colSpan={3} className="pm-sub">—</td></tr>}</tbody></table>
       {detail.canWrite && (
         <div className="pm-act">

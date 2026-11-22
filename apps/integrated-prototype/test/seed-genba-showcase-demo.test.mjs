@@ -9,14 +9,14 @@ import {readFile} from 'node:fs/promises';
 import {openTestDb} from './test-db.mjs';
 import {createApp} from '../src/app.mjs';
 import {seedSalesDemo, SALES_DEMO} from '../scripts/seed-sales-demo.mjs';
-import {seedGenbaShowcaseDemo, fictionalCallSheetPdf} from '../scripts/seed-genba-showcase-demo.mjs';
+import {seedGenbaShowcaseDemo, fictionalCallSheetPdf, GENBA_DEMO} from '../scripts/seed-genba-showcase-demo.mjs';
 import {tableCounts} from '../scripts/seed-all-demo.mjs';
 
 const source = JSON.parse(await readFile(new URL('../demo-fixtures/genba-showcase/genba-showcase.json', import.meta.url), 'utf8'));
 
-async function readAs(db, path) {
+async function readAs(db, path, email = SALES_DEMO.adminEmail) {
   const app = createApp({db, mode: 'local'});
-  const login = await app.request('/api/local/login', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({email: SALES_DEMO.adminEmail})});
+  const login = await app.request('/api/local/login', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({email})});
   const cookie = login.headers.get('set-cookie').split(';')[0];
   const response = await app.request(`/api${path}`, {headers: {cookie}});
   assert.equal(response.status, 200, path);
@@ -57,8 +57,36 @@ test('作品 DEMO-W02 に日々スケ・小道具・許可申請が入り、2回
   const expectedPermitStates = source.permits.applications.map((row) => row.state).sort();
   assert.deepEqual(mine.map((row) => row.state).sort(), expectedPermitStates);
 
+  // 申請書・略図の架空の見本が、申請ごとに元データのとおり結び付く
+  for (const application of source.permits.applications) {
+    const row = mine.find((r) => r.place === application.place);
+    const detail = await readAs(db, `/permits/${row.id}`);
+    assert.deepEqual(detail.documents.map((d) => [d.file_name, d.role]).sort(), (application.documents ?? []).map((d) => [d.file, d.role]).sort(), application.place);
+  }
+
   const before = await tableCounts(db);
   const second = await seedGenbaShowcaseDemo(db);
+  assert.equal(second.skipped, true);
+  assert.deepEqual(await tableCounts(db), before);
+});
+
+test('--standalone: この作品だけを持つ架空の制作会社を作って入れ、管理者はその組織だけに所属する。2回目は何も書かない', async (t) => {
+  const db = await openTestDb({t});
+  const first = await seedGenbaShowcaseDemo(db, {standalone: true});
+  assert.equal(first.skipped, false);
+  assert.equal(first.orgCode, GENBA_DEMO.orgCode);
+  const org = await db.get('SELECT id FROM organizations WHERE code=?', [GENBA_DEMO.orgCode]);
+  const works = await db.all('SELECT code, title FROM works WHERE org_id=?', [org.id]);
+  assert.deepEqual(works.map((w) => w.code), ['DEMO-W02']);
+  const memberships = await db.all('SELECT m.org_id FROM memberships m JOIN users u ON u.id=m.user_id WHERE u.email=?', [GENBA_DEMO.adminEmail]);
+  assert.deepEqual(memberships.map((m) => Number(m.org_id)), [Number(org.id)]);
+  const props = await readAs(db, `/props?workId=${first.workId}`, GENBA_DEMO.adminEmail);
+  assert.equal(props.items.length, source.props.items.length);
+  const expectedDocuments = source.permits.applications.reduce((n, a) => n + (a.documents ?? []).length, 0);
+  assert.equal(first.documents, expectedDocuments);
+
+  const before = await tableCounts(db);
+  const second = await seedGenbaShowcaseDemo(db, {standalone: true});
   assert.equal(second.skipped, true);
   assert.deepEqual(await tableCounts(db), before);
 });

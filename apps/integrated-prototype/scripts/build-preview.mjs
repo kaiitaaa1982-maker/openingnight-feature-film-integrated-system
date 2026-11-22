@@ -259,11 +259,28 @@ export function availsExportUrls(responses, asOf) {
 
 // 行を押したときにだけ読む応答（巡回では発行されない）の URL。記録した一覧から組み立てる:
 // PL・BS の作品別の残高の委員会作品 → 出資と払込、取引先別リストの明細 → 明細の履歴（放送の明細は放送の条件も）、
-// 小道具の作品の札（会社全体の画面なので巡回では最初の作品しか開かない）→ 札の作品ごとの小道具
+// 小道具の作品の札（会社全体の画面なので巡回では最初の作品しか開かない）→ 札の作品ごとの小道具、
+// 許可申請の行 → 申請の中身と作品の保管庫、申請の中身 → 結び付いた書類の原本（保管庫に置いたもの）
 export function detailApiUrls(responses) {
   const urls = new Set();
   for (const [key, entry] of responses) {
     if (entry.status !== 200) continue;
+    if (key === 'GET /api/permits') {
+      for (const row of entry.body?.applications || []) {
+        if (!Number.isInteger(row.id) || !Number.isInteger(row.workId)) continue;
+        urls.add(`/api/permits/${row.id}`);
+        urls.add(`/api/preprod/works/${row.workId}/documents`);
+      }
+    }
+    const permit = /^GET \/api\/permits\/(\d+)$/.exec(key);
+    if (permit) {
+      const workId = entry.body?.application?.work_id;
+      const vault = responses.get(`GET /api/preprod/works/${workId}/documents`)?.body?.documents || [];
+      const placed = new Set(vault.map((d) => d.document_id));
+      for (const doc of entry.body?.documents || []) {
+        if (Number.isInteger(workId) && placed.has(doc.document_id)) urls.add(`/api/preprod/works/${workId}/documents/${doc.document_id}/content`);
+      }
+    }
     if (key === 'GET /api/props' || key.startsWith('GET /api/props?')) {
       for (const work of entry.body?.works || []) if (Number.isInteger(work.id)) urls.add(`/api/props?workId=${work.id}`);
     }
@@ -620,6 +637,15 @@ export async function buildPreview(options, log = console.log) {
     for (const href of links.slice(0, API_LINK_LIMIT)) {
       tracker.page = href;
       await context.request.get(`${origin}${href}`).then(() => { fetchedLinks += 1; }, () => {});
+    }
+    // 記録した中身から、さらに押したときだけ読む応答（申請の中身 → 書類の原本）を、増えなくなるまで記録する
+    for (let round = 0; round < 3; round += 1) {
+      const more = detailApiUrls(responses).filter((href) => !responses.has(snapshotKey('GET', href)));
+      if (!more.length) break;
+      for (const href of more) {
+        tracker.page = href;
+        await context.request.get(`${origin}${href}`).then(() => { fetchedLinks += 1; }, () => {});
+      }
     }
     await browser.close();
     browser = null;

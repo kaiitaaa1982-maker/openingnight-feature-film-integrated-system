@@ -1137,7 +1137,17 @@
     "appliedOn": "2026-11-27",
     "pickupOn": "2026-12-02",
     "receivedOn": "2026-12-02",
-    "feeYen": 2100
+    "feeYen": 2100,
+    "documents": [
+     {
+      "file": "permit-01-application.pdf",
+      "role": "application"
+     },
+     {
+      "file": "permit-01-sketch.pdf",
+      "role": "sketch"
+     }
+    ]
    },
    {
     "office": "架空中央警察署",
@@ -1147,7 +1157,17 @@
     "state": "submitted",
     "appliedOn": "2026-12-01",
     "pickupOn": "2026-12-08",
-    "feeYen": 2100
+    "feeYen": 2100,
+    "documents": [
+     {
+      "file": "permit-02-application.pdf",
+      "role": "application"
+     },
+     {
+      "file": "permit-02-sketch.pdf",
+      "role": "sketch"
+     }
+    ]
    },
    {
     "office": "架空北警察署",
@@ -1158,7 +1178,17 @@
     "appliedOn": "2026-11-30",
     "pickupOn": "2026-12-04",
     "receivedOn": "2026-12-04",
-    "feeYen": 2100
+    "feeYen": 2100,
+    "documents": [
+     {
+      "file": "permit-03-application.pdf",
+      "role": "application"
+     },
+     {
+      "file": "permit-03-sketch.pdf",
+      "role": "sketch"
+     }
+    ]
    },
    {
     "office": "架空県 県民の森管理事務所",
@@ -1168,7 +1198,13 @@
     "state": "permitted",
     "appliedOn": "2026-11-20",
     "pickupOn": "2026-11-27",
-    "receivedOn": "2026-11-28"
+    "receivedOn": "2026-11-28",
+    "documents": [
+     {
+      "file": "permit-04-application.pdf",
+      "role": "application"
+     }
+    ]
    },
    {
     "office": "架空県 県民の森管理事務所",
@@ -1177,7 +1213,13 @@
     "startsOn": "2026-12-11",
     "state": "returned",
     "appliedOn": "2026-11-20",
-    "note": "火気の使用は不可。焚き火の場面は差し替え"
+    "note": "火気の使用は不可。焚き火の場面は差し替え",
+    "documents": [
+     {
+      "file": "permit-05-application.pdf",
+      "role": "application"
+     }
+    ]
    },
    {
     "office": "架空市 河川管理課",
@@ -1186,7 +1228,13 @@
     "startsOn": "2026-12-11",
     "state": "submitted",
     "appliedOn": "2026-11-28",
-    "pickupOn": "2026-12-09"
+    "pickupOn": "2026-12-09",
+    "documents": [
+     {
+      "file": "permit-06-application.pdf",
+      "role": "application"
+     }
+    ]
    },
    {
     "office": "架空市立自然史博物館 総務課",
@@ -1198,7 +1246,13 @@
     "appliedOn": "2026-11-10",
     "pickupOn": "2026-11-24",
     "receivedOn": "2026-11-24",
-    "feeYen": 30000
+    "feeYen": 30000,
+    "documents": [
+     {
+      "file": "permit-07-application.pdf",
+      "role": "application"
+     }
+    ]
    },
    {
     "office": "架空市立自然史博物館 総務課",
@@ -1206,7 +1260,13 @@
     "place": "博物館 地下収蔵庫（閉館後）",
     "startsOn": "2026-12-07",
     "state": "draft",
-    "note": "閉館後の入室は学芸員の立ち会いが条件"
+    "note": "閉館後の入室は学芸員の立ち会いが条件",
+    "documents": [
+     {
+      "file": "permit-08-application.pdf",
+      "role": "application"
+     }
+    ]
    }
   ]
  }

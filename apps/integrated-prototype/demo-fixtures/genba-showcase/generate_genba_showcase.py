@@ -3,7 +3,8 @@
 
 作品「七月の標本室（架空）」（DEMO-W02）に、日々スケ・香盤・ロケ地・小道具・許可申請を、実務で使っている画面と同じ形で入れる。
 題名・人物・俳優・場所・住所・会社・担当はすべて架空で、実在の作品・人物・団体とは関係ない。実データからは何も写していない。
-使い方: python demo-fixtures/genba-showcase/generate_genba_showcase.py（同じフォルダの genba-showcase.json を書き直す）
+許可申請には、申請書と略図の架空の見本の PDF（permits/ の下）を付ける。実在の様式ではなく、値もすべて架空。
+使い方: python demo-fixtures/genba-showcase/generate_genba_showcase.py（同じフォルダの genba-showcase.json と permits/*.pdf を書き直す。reportlab が要る）
 """
 import json
 from pathlib import Path
@@ -151,6 +152,67 @@ permits = {"note": "公開デモ用の許可申請（架空）。提出先・場
     {"office": "架空市立自然史博物館 総務課", "kind": "facility", "place": "博物館 標本室・展示室・館長室", "startsOn": d1, "endsOn": d6, "state": "permitted", "appliedOn": "2026-11-10", "pickupOn": "2026-11-24", "receivedOn": "2026-11-24", "feeYen": 30000},
     {"office": "架空市立自然史博物館 総務課", "kind": "facility", "place": "博物館 地下収蔵庫（閉館後）", "startsOn": d1, "state": "draft", "note": "閉館後の入室は学芸員の立ち会いが条件"},
   ]}
+
+# 許可申請の架空の見本の PDF（申請書。道路は略図も）
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
+import os
+# 日本語の字形を PDF に埋め込む（埋め込まないと、読む側の環境によって文字が出ない）。IPA ゴシックを既定で探し、ON_JA_FONT で替えられる
+FONT_CANDIDATES = [os.environ.get("ON_JA_FONT"), "/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf", "C:/Windows/Fonts/ipag.ttf", "/Library/Fonts/ipag.ttf"]
+FONT_PATH = next((f for f in FONT_CANDIDATES if f and Path(f).exists()), None)
+if not FONT_PATH:
+    raise SystemExit("日本語のフォント（IPA ゴシック ipag.ttf）が見つかりません。ON_JA_FONT でパスを渡してください")
+pdfmetrics.registerFont(TTFont("HeiseiKakuGo-W5", FONT_PATH))
+PDF_DIR = OUT.with_name("permits")
+PDF_DIR.mkdir(exist_ok=True)
+KIND_TITLE = {"road": "道路使用許可申請書", "park": "公園使用許可申請書", "facility": "施設使用申請書"}
+
+def sample_header(c, title):
+    w, h = A4
+    c.setFont("HeiseiKakuGo-W5", 16); c.drawString(50, h - 60, f"{title}（架空の見本）")
+    c.setFillColorRGB(0.75, 0.13, 0.12); c.setFont("HeiseiKakuGo-W5", 9)
+    c.drawString(50, h - 78, "公開デモ用の架空の見本です。実在の様式ではなく、申請者・場所・日付・連絡先はすべて架空です。")
+    c.setFillColorRGB(0, 0, 0)
+    return h - 110
+
+def write_application(path, app):
+    c = canvas.Canvas(str(path), pagesize=A4)
+    y = sample_header(c, KIND_TITLE[app["kind"]])
+    period = app["startsOn"] if not app.get("endsOn") else f'{app["startsOn"]} 〜 {app["endsOn"]}'
+    rows = [("提出先", app["office"]), ("申請者", "株式会社サンプル（架空） 制作部"), ("作品", "七月の標本室（架空）"), ("目的", "映画の撮影"),
+        ("場所又は区間", app["place"]), ("期間", f"{period} 8時00分〜17時00分"),
+        ("方法又は形態", "カメラ1台・三脚を使って撮影する。歩行者・車両は誘導する"), ("現場の責任者", "制作部 担当C（架空） 連絡先 000-0000-0000"),
+        ("申請日", app.get("appliedOn") or "（未提出）")]
+    c.setFont("HeiseiKakuGo-W5", 11)
+    for label, value in rows:
+        c.rect(50, y - 8, 495, 28); c.line(170, y - 8, 170, y + 20)
+        c.drawString(58, y + 2, label); c.drawString(178, y + 2, value[:38])
+        y -= 28
+    c.showPage(); c.save()
+
+def write_sketch(path, app):
+    c = canvas.Canvas(str(path), pagesize=A4)
+    y = sample_header(c, "略図")
+    c.setFont("HeiseiKakuGo-W5", 10); c.drawString(50, y, f"場所: {app['place'][:44]}")
+    top = y - 40
+    c.setFillColorRGB(0.92, 0.92, 0.92); c.rect(50, top - 80, 495, 80, fill=1); c.setFillColorRGB(0, 0, 0); c.drawString(58, top - 20, "車道")
+    c.rect(50, top - 180, 495, 100); c.drawString(58, top - 100, "歩道")
+    c.setStrokeColorRGB(0.75, 0.13, 0.12); c.setDash(5, 3); c.rect(180, top - 165, 220, 60); c.setDash()
+    c.setFillColorRGB(0.75, 0.13, 0.12); c.drawString(190, top - 140, "撮影で使う範囲"); c.setFillColorRGB(0, 0, 0); c.setStrokeColorRGB(0, 0, 0)
+    c.circle(370, top - 135, 5, fill=1); c.drawString(330, top - 160, "カメラ・三脚")
+    c.drawString(50, top - 210, "寸法（現地で測った値・架空）: 歩道の幅 3.0m ／ 撮影で使う範囲の幅 1.5m ／ 撮影する長さ 20m")
+    c.showPage(); c.save()
+
+for index, app in enumerate(permits["applications"], start=1):
+    docs = []
+    name = f"permit-{index:02d}-application.pdf"
+    write_application(PDF_DIR / name, app); docs.append({"file": name, "role": "application"})
+    if app["kind"] == "road":
+        name = f"permit-{index:02d}-sketch.pdf"
+        write_sketch(PDF_DIR / name, app); docs.append({"file": name, "role": "sketch"})
+    app["documents"] = docs
 
 OUT.write_text(json.dumps({"note": "公開デモ用の撮影現場の記録（架空）。実在の作品・人物・団体・場所とは関係ない。", "callSheets": callsheets, "props": props, "permits": permits}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 print(OUT, len(sheets), "sheets,", len(P), "props,", len(permits["applications"]), "permits")

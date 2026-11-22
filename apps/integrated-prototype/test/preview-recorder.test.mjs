@@ -232,7 +232,7 @@ test('書き出し先: 既定はアプリの dist-preview。前回のプレビ�
   }
 });
 
-test('行を押したときにだけ読む応答: PL・BS の委員会作品の出資と払込、取引先別リストの明細の履歴（放送の明細は放送の条件も）、小道具の札の作品ごとの一覧を記録する', async () => {
+test('行を押したときにだけ読む応答: PL・BS の委員会作品の出資と払込、取引先別リストの明細の履歴（放送の明細は放送の条件も）、小道具の札の作品ごとの一覧、許可申請の中身と結び付いた書類の原本を記録する', async () => {
   const {detailApiUrls} = await import('../scripts/build-preview.mjs');
   const responses = new Map([
     ['GET /api/reports/pl-bs?from=2025-05&to=2026-04&asOf=2026-06', {status: 200, body: {workBalances: [{workId: 31, kind: 'committee'}, {workId: 32, kind: 'own'}, {workId: 33, kind: 'committee'}]}}],
@@ -241,11 +241,17 @@ test('行を押したときにだけ読む応答: PL・BS の委員会作品の�
     ['GET /api/partner-lists/4/entries?asOf=2026-09-26&soonDays=30', {status: 200, body: {entries: [{entry_id: 50, distribution_name: '放送'}, {entry_id: 51, distribution_name: '配信'}]}}],
     ['GET /api/partner-lists/5/entries?asOf=2026-09-26&soonDays=30', {status: 403, body: {ok: false}}],
     ['GET /api/props', {status: 200, body: {workId: 3, works: [{id: 3, title: '一'}, {id: 4, title: '二'}]}}],
+    ['GET /api/permits', {status: 200, body: {applications: [{id: 7, workId: 3}]}}],
+    ['GET /api/preprod/works/3/documents', {status: 200, body: {documents: [{document_id: 20}, {document_id: 21}]}}],
+    ['GET /api/permits/7', {status: 200, body: {application: {id: 7, work_id: 3}, documents: [{document_id: 20}, {document_id: 99}]}}],
   ]);
   assert.deepEqual(detailApiUrls(responses), [
     '/api/committee-investments?workId=31', '/api/committee-investments?workId=33',
     '/api/partner-list-entries/50/history', '/api/partner-list-entries/50/broadcast-terms', '/api/partner-list-entries/51/history',
     '/api/props?workId=3', '/api/props?workId=4',
+    '/api/permits/7', '/api/preprod/works/3/documents',
+    // 保管庫に置いた原本だけ（99 は保管庫に無いので開けない）
+    '/api/preprod/works/3/documents/20/content',
   ]);
   // 取引先別リストは全部のリストを開く（制作担当には出さない）
   const works = [{id: 1, code: 'W01', title: '一'}];
