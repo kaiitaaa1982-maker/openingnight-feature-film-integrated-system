@@ -8,6 +8,7 @@ import React, {useEffect, useMemo, useRef, useState} from 'react';
 import './production-ui.css';
 import ProductionLocationPlan from './ProductionLocationPlan.jsx';
 import {PrepTaskPanel} from './FieldOperations.jsx';
+import CallSheetImport from './production/CallSheetImport.jsx';
 import {useShell} from './shell/context.mjs';
 import {KoubanDemoEntry, useKoubanDemoPlace} from './DemoGuide.jsx';
 import {showKoubanDemoEntry} from './demo-guide.mjs';
@@ -18,14 +19,17 @@ import {OUTPUT_LABELS} from './ui/ReportOutputBar.jsx';
 import {downloadReportXlsx, reportBaseName} from './xlsx-report.mjs';
 import {downloadDocument} from './report-output.mjs';
 import {jstToday} from './work/catalog-model.mjs';
+import CallSheetCheck from './production/CallSheetCheck.jsx';
 import {
   PRODUCTION_TABS, productionTab, OUTCOME_LABELS, SLOT_KIND_LABELS, splitDayTime, joinDayTime, rebaseDayTime, dayTimeText,
   timeRangeError, shootDateText, countGraphChanges, wardrobeGaps, gapSummary, pageText, koubanGroups, dayLabel, koubanSheet, koubanCharacters,
   dayTimeline, dailyScheduleSheet, callSheet, costumeSheet, sceneCostumeSheet, productionPrintHtml,
 } from './work/production-print.mjs';
 
-const initial = {characters: [], locations: [], locationPlans: [], sceneDetails: [], appearances: [], looks: [], sceneLooks: [], daySlots: [], calls: []};
-const copyGraph = (data) => Object.fromEntries(Object.keys(initial).map((key) => [key, (data?.[key] || []).map((row) => ({...row}))]));
+const initial = {characters: [], locations: [], locationPlans: [], sceneDetails: [], appearances: [], looks: [], sceneLooks: [], daySlots: [], calls: [], dayCrews: []};
+// 撮影日ごとのスタッフの数は、読み込んだ撮影日（days の crew_count）から作り、保存では dayCrews として送る
+const crewRows = (data) => data?.dayCrews || (data?.days || []).map((day) => ({day_id: day.id, crew_count: day.crew_count ?? null}));
+const copyGraph = (data) => Object.fromEntries(Object.keys(initial).map((key) => [key, (key === 'dayCrews' ? crewRows(data) : data?.[key] || []).map((row) => ({...row}))]));
 const newKey = () => globalThis.crypto?.randomUUID?.() || `p${Date.now()}${Math.random().toString(36).slice(2)}`;
 const nullable = (value) => (value === '' ? null : value);
 const labelScene = (scene) => `S#${scene.scene_no}${scene.synopsis ? ` ${scene.synopsis}` : ''}`;
@@ -129,6 +133,7 @@ export default function ProductionWorkspace({data, request: requestProp, onNavig
   const [newScene, setNewScene] = useState(emptyScene), [sceneEdit, setSceneEdit] = useState(null), [sceneEditBase, setSceneEditBase] = useState('');
   const [roleName, setRoleName] = useState(''), [lookCharacter, setLookCharacter] = useState(''), [locationName, setLocationName] = useState('');
   const [confirmDiscard, setConfirmDiscard] = useState(false), [dayScope, setDayScope] = useState('day');
+  const [callSheetOpen, setCallSheetOpen] = useState(false);
   const [tabParam, setTab] = useParamState(shell, 'tab', 'kouban');
   const [dayParam, setDayParam] = useParamState(shell, 'day', null);
   const [costumeView, setCostumeView] = useParamState(shell, 'view', 'looks');
@@ -151,7 +156,7 @@ export default function ProductionWorkspace({data, request: requestProp, onNavig
     }
   }
   useEffect(() => {
-    setSnapshot(null); setGraph(initial); setNotice(null); setDayEdit(null); setSceneEdit(null); setNewScene(emptyScene()); setConfirmDiscard(false);
+    setSnapshot(null); setGraph(initial); setNotice(null); setDayEdit(null); setSceneEdit(null); setNewScene(emptyScene()); setConfirmDiscard(false); setCallSheetOpen(false);
     load();
   }, [workId]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -367,7 +372,13 @@ export default function ProductionWorkspace({data, request: requestProp, onNavig
   function setCall(targetDay, characterKey, field, value) {
     change('calls', (rows) => (rows.some((item) => item.day_id === targetDay.id && item.character_key === characterKey)
       ? rows.map((item) => (item.day_id === targetDay.id && item.character_key === characterKey ? {...item, [field]: value} : item))
-      : [...rows, {day_id: targetDay.id, character_key: characterKey, call_time: '', ready_time: '', note: '', [field]: value}]));
+      : [...rows, {day_id: targetDay.id, character_key: characterKey, call_time: '', ready_time: '', wrap_time: '', note: '', [field]: value}]));
+  }
+  function setCrew(targetDay, value) {
+    const crew_count = value === '' ? null : Number(value);
+    change('dayCrews', (rows) => (rows.some((item) => item.day_id === targetDay.id)
+      ? rows.map((item) => (item.day_id === targetDay.id ? {...item, crew_count} : item))
+      : [...rows, {day_id: targetDay.id, crew_count}]));
   }
 
   const noticeView = notice && <Notice tone={notice.tone} message={notice.message} error={notice.error} details={notice.details} onDismiss={() => setNotice(null)} />;
@@ -545,11 +556,13 @@ export default function ProductionWorkspace({data, request: requestProp, onNavig
                     <strong>{character.name}</strong>
                     <TimeField label="入り" value={call?.call_time || ''} shootDate={day.shoot_date} onChange={(value) => setCall(day, character.key, 'call_time', value)} />
                     <TimeField label="支度完了" value={call?.ready_time || ''} shootDate={day.shoot_date} onChange={(value) => setCall(day, character.key, 'ready_time', value)} />
+                    <TimeField label="バラし" value={call?.wrap_time || ''} shootDate={day.shoot_date} onChange={(value) => setCall(day, character.key, 'wrap_time', value)} />
                   </div>
                 );
               })}
             </div>
           </div>
+          <CallSheetCheck day={day} graph={graph} characters={characters} scenes={scenes} readOnly={readOnly} onCrew={(value) => setCrew(day, value)} />
         </Section>
       )}
       {dayEdit && (
@@ -724,6 +737,7 @@ export default function ProductionWorkspace({data, request: requestProp, onNavig
         <div>
           <h2>撮影の編成</h2>
           <button type="button" className="text" onClick={() => (onNavigate || shell.navigate)?.('台本・香盤')}>台本を取り込む ↗</button>
+          {!readOnly && <button type="button" className="text" onClick={() => setCallSheetOpen(true)}>日々スケを取り込む</button>}
         </div>
         <div className="production-save">
           <span className={graphChanges ? 'production-pending' : ''} aria-live="polite">{pendingText}</span>
@@ -737,6 +751,7 @@ export default function ProductionWorkspace({data, request: requestProp, onNavig
           actions={<><button type="button" onClick={discardChanges}>取り消して保存済みに戻す</button><button type="button" className="secondary" onClick={() => setConfirmDiscard(false)}>戻らない</button></>} />
       )}
       {readOnly && <Notice tone="info" message="閲覧専用の表示です。保存はできません。" compact />}
+      {callSheetOpen && !readOnly && <CallSheetImport work={data.selectedWork} request={request} disabled={unsavedCount > 0} onDone={load} onClose={() => setCallSheetOpen(false)} />}
       {noticeView}
       <Tabs label="制作の表示" value={tab} onChange={(id) => setTab(id)} tabs={PRODUCTION_TABS.map((item) => ({...item, badge: item.id === 'costume' && gapInfo.total ? gapInfo.total : undefined}))}>
         {(active) => <div className="stack">{panels[active]}</div>}

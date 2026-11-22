@@ -115,8 +115,8 @@ test('login defaults to the lowest org_id membership, regardless of insertion or
   assert.equal(orgs.status, 200);
   assert.equal(orgs.body.currentOrgId, 1);
   assert.deepEqual(orgs.body.orgs, [
-    {id: 1, code: 'demo', name: 'オープニングナイト試作チーム', role: 'admin'},
-    {id: 2, code: 'other', name: '別組織（境界検証）', role: 'editor'},
+    {id: 1, code: 'demo', name: 'オープニングナイト試作チーム', role: 'admin', kind: 'demo'},
+    {id: 2, code: 'other', name: '別組織（境界検証）', role: 'editor', kind: 'demo'},
   ]);
   // 最小の所属が失効していれば、次に有効な所属で入る
   await db.run("UPDATE memberships SET expires_at='2000-01-01T00:00:00.000Z' WHERE org_id=1 AND user_id=9");
@@ -154,7 +154,7 @@ test('switching org sets an HttpOnly Lax cookie bound to the user, changes ident
 
   const toTwo = await switchOrg(app, admin, 2);
   assert.equal(toTwo.status, 200);
-  assert.deepEqual(toTwo.body.org, {id: 2, code: 'other', name: '別組織（境界検証）', role: 'admin'});
+  assert.deepEqual(toTwo.body.org, {id: 2, code: 'other', name: '別組織（境界検証）', role: 'admin', kind: 'demo'});
   assert.match(toTwo.setCookie, /on_org=1%3A2/);
   assert.match(toTwo.setCookie, /HttpOnly/i);
   assert.match(toTwo.setCookie, /SameSite=Lax/i);

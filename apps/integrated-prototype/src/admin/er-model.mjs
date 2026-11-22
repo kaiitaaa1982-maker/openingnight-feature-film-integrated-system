@@ -1,4 +1,4 @@
-// 表の構造（ER）画面と設計キャンバスで使う純関数。表・列の和名、業務のまとまりごとの分類、参照の向き。
+// 表の定義の受け口（er-routes・data-browser-routes）と試験で使う純関数。表・列の和名、業務のまとまりごとの分類、参照の向き。
 // DB の表名・列名は識別のために残すが、画面の主表示は和名にする（和名が無いものは「和名未登録」と書く）。
 import {columnLabel} from '../ui/labels.mjs';
 import {foreignKeys} from '../design-model.mjs';
@@ -30,6 +30,8 @@ export const TABLE_LABELS = Object.freeze({
   yojitsu_activity_cancellations: '予実の活動記録の取消',
   // 制作費の版（移行 0016。フェーズ1 #5）
   production_cost_versions: '制作費の版',
+  // 制作の実費の行と取消・確認（移行 0068。番号は仮）
+  production_actual_lines: '制作の実費の行', production_actual_line_voids: '制作の実費の行の取消', production_actual_line_checks: '制作の実費の行の確認',
   // 指標マスタ（移行 0017。行動指標の計画 段B #9）
   kpi_metric_versions: '指標マスタ（版）', kpi_metric_steps: '指標マスタの段',
   // 案件収支の予実の語を選ぶ設定と月の設定（移行 0018。フェーズ1 #14）
@@ -57,12 +59,17 @@ export const TABLE_LABELS = Object.freeze({
   // 予算書の型（テンプレ）と行の内訳（移行 0028）
   budget_templates: '予算書の型', budget_template_versions: '予算書の型（版）', budget_template_items: '予算書の型の費目',
   budget_version_templates: '予算書の版の型', budget_line_items: '予算書の行の内訳',
+  // 予算書の読み取りの定義（移行 0066）
+  budget_read_profiles: '予算書の読み取りの定義', budget_read_versions: '予算書の読み取りの定義（版）', budget_read_approvals: '予算書の読み取りの定義の判定',
+  budget_version_reads: '予算書の版を読んだ定義',
   // 企画（移行 0050）
   planning_documents: '企画の原本の結び付き', planning_profile_versions: '企画の項目（版）', planning_profile_people: '企画の体制の候補',
   planning_trial_versions: '試算（版）', planning_trial_rates: '試算の率', planning_trial_lines: '試算の詳細の行', planning_trial_investments: '試算の出資',
   project_owner_versions: '案件の担当者（版）', planning_materials: '企画の素材', planning_facts: '企画の事実（抜き出し）',
   // 撮影の結果・撮影日の記録の原本・日報の項目（移行 0051。プロダクションの撮影の記録）
   shooting_scene_results: '撮影の結果', shooting_day_records: '撮影日の記録の原本', shooting_day_report_items: '日報の項目',
+  // 香盤の読みの記録と、撮影の結果の行と読みの束の結び（移行 0069。番号は仮）
+  shooting_scene_reads: '香盤の読みの記録', shooting_scene_result_reads: '撮影の結果と読みの束の結び',
   chotatsu_cases: '調達の案件', chotatsu_case_versions: '調達の案件の版', chotatsu_stage_events: '調達の段の出来事', chotatsu_estimates: '調達の試算の版', chotatsu_estimate_lines: '調達の試算の見積の行',
   chotatsu_agreements: '調達の合意', chotatsu_ringi: '調達の稟議', chotatsu_contracts: '調達の契約', chotatsu_materials: '調達の素材の受領', chotatsu_handoffs: '調達から製造への引き渡し',
   chotatsu_handoff_events: '調達から製造への引き渡しの段', chotatsu_documents: '調達の原本の結び付き', chotatsu_case_expenses: '調達の経費の結び付き',
@@ -70,6 +77,12 @@ export const TABLE_LABELS = Object.freeze({
   production_arrangement_versions: '手配の版', scene_art_item_versions: '美術の項目の版', scene_shoot_plan_versions: 'シーンの撮影の方針の版',
   // プリプロの保管庫の置き場（移行 0054）
   preprod_document_placements: 'プリプロの保管庫の置き場',
+  // 撮影の許可申請（移行 0060）
+  permit_offices: '許可申請の提出先', permit_office_versions: '許可申請の提出先の設定の版', permit_applications: '許可申請', permit_application_versions: '許可申請の版', permit_application_documents: '許可申請の原本の結び付き',
+  // 小道具の品目と打ち合わせ（移行 0061）
+  prop_meetings: '小道具の打ち合わせ', prop_items: '小道具の品目', prop_item_versions: '小道具の品目の版',
+  // 制作部の業務のひな型（移行 0057）
+  work_template_folders: '業務のひな型のフォルダ', work_templates: '業務のひな型', work_template_versions: '業務のひな型の版', work_template_folder_revisions: '業務のひな型のフォルダの直し', work_template_moves: '業務のひな型の移動', work_template_files: '業務のひな型の原本（Office）',
   // 現場の連絡帳（移行 0055。共通の部品 src/notebook/）
   notebook_spaces: '連絡帳のスペース', notebook_posts: '連絡帳の連絡', notebook_receipts: '連絡帳の既読と了解',
   partner_profile_versions: '取引先の請求・連絡先（版）', distribution_master: '流通区分マスタ', distribution_types: '流通の種類',
@@ -281,7 +294,7 @@ export function groupTablesByConcept(tables, objects = []) {
   return groups;
 }
 
-// 制作担当は制作に関わる業務のまとまり（production:true）の表だけを見る（設計キャンバスと同じ範囲）。
+// 制作担当は制作に関わる業務のまとまり（production:true）の表だけを見る。
 export function tablesForRole(tables, role, objects = []) {
   const list = Array.isArray(tables) ? tables : [];
   if (role !== 'production') return list;

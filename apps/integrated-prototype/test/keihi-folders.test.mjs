@@ -70,11 +70,34 @@ test('置いた月・外す・月の締め: 要入力が残ると締められず
  m=await f.call('/expense-folders/month?month=2026-09');assert.equal(m.data.files.length,0);assert.deepEqual(m.data.removed.map(x=>x.id),[a]);
  assert.deepEqual((await f.call('/expense-folders/month?month=2026-08')).data.files.map(x=>x.id),[b]);
  await f.post('/expense-folders/close',{month:'2026-09'});m=await f.call('/expense-folders/month?month=2026-09');assert.equal(m.data.closure.state,'closed');
- await new Promise(r=>setTimeout(r,1100));const c=await up('fictional placement C');await f.post('/expense-folders/place',{file_id:c,month:'2026-09'});
+ const c=await up('fictional placement C');await f.post('/expense-folders/place',{file_id:c,month:'2026-09'});
  m=await f.call('/expense-folders/month?month=2026-09');assert.equal(m.data.closure.state,'after');
  const y=await f.call('/expense-folders/year?fy=2026');assert.equal(y.data.cells.find(x=>x.month==='2026-09').closure,'after');
  for(const [sql,params] of [['UPDATE expense_month_closures SET reason=?',['x']],['DELETE FROM expense_file_placements WHERE file_id=?',[a]],['UPDATE expense_file_placement_voids SET reason=?',['x']]])await assert.rejects(f.db.run(sql,params),/immutable/,sql);
  await assert.rejects(f.db.run("INSERT INTO expense_file_placements(id,org_id,file_id,placed_month,reason,created_by) VALUES(999,1,?,'2026-09','二重（架空）',1)",[c]),/duplicate expense file placement/);
  await assert.rejects(f.db.run("INSERT INTO expense_month_closures(id,org_id,month,kind,file_count,reason,created_by) VALUES(998,1,'2026-13','close',0,'形（架空）',1)"),/CHECK|check constraint/i);
  const prod=await f.login('production@openingnight.invalid');assert.equal((await f.call('/expense-folders/close',{month:'2026-10'},prod)).status,403);
+}finally{await f.close?.();}});
+
+// DB の時計を戻して刻む: 中で書く経費の置き場所・月の締めの行の created_at を、DB の「いま」の seconds 秒前にする。
+// CI の runner（WSL）は試験の途中で時計が数秒戻ることがある（core の records/2026-11-12-incident.md の3）。その形を、時計に触らずに作る
+async function stampedBack(f,seconds,run){
+ const now=(await f.db.get('SELECT CURRENT_TIMESTAMP AS n')).n,at=new Date(Date.parse(now.replace(' ','T')+'Z')-seconds*1000).toISOString().slice(0,19).replace('T',' ');
+ const batch=f.db.batch;f.db.batch=statements=>batch.call(f.db,statements.map(s=>/^INSERT INTO expense_(month_closures|file_placements)\(/.test(s.sql)?{...s,sql:s.sql.replace(') VALUES(',',created_at) VALUES(').replace(/\)$/,',?)'),params:[...s.params,at]}:s));
+ try{return await run();}finally{f.db.batch=batch;}
+}
+
+test('締めと置いた原本の前後は書いた順で決め、時刻に頼らない: 時計が戻っても締めたまま、締めのあとに置いた原本は時刻が前でも「締めのあとに追加」、最新の締めが今の状態',async(t)=>{const f=await setupExpense({t});try{
+ const up=async text=>(await f.post('/expense-source-files',{file_name:text+'.pdf',media_type:'application/pdf',original_base64:btoa(text),reason:'確認（架空）'})).id;
+ const state=async()=>[(await f.call('/expense-folders/month?month=2026-09')).data.closure?.state??null,(await f.call('/expense-folders/year?fy=2026')).data.cells.find(x=>x.month==='2026-09').closure];
+ const a=await up('fictional clock A');await f.post('/expense-folders/place',{file_id:a,month:'2026-09'});await f.post(`/expense-folders/files/${a}/remove`,{reason:'宣伝の校正紙（架空）'});
+ await stampedBack(f,5,()=>f.post('/expense-folders/close',{month:'2026-09'}));// 締めの時刻が、前に置いた行より前になる
+ assert.deepEqual(await state(),['closed','closed']);
+ const c=await up('fictional clock C');await stampedBack(f,10,()=>f.post('/expense-folders/place',{file_id:c,month:'2026-09'}));// 置いた時刻が締めより前になる
+ await f.post(`/expense-folders/files/${c}/remove`,{reason:'二重に届いた（架空）'});// 外しても、締めのあとに置いた記録は残る
+ assert.deepEqual(await state(),['after','after']);
+ await f.post('/expense-folders/close',{month:'2026-09',kind:'reopen'});assert.deepEqual(await state(),[null,null]);
+ await f.post('/expense-folders/close',{month:'2026-09'});assert.deepEqual(await state(),['closed','closed']);// ID は乱数なので、ID の順では最新の締めが決まらない
+ const d=await up('fictional clock D');await stampedBack(f,30,()=>f.post('/expense-folders/place',{file_id:d,month:'2026-09'}));await f.post(`/expense-folders/files/${d}/remove`,{reason:'二重に届いた（架空）'});
+ assert.deepEqual(await state(),['after','after']);
 }finally{await f.close?.();}});

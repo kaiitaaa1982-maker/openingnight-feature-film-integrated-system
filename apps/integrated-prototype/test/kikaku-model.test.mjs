@@ -1,7 +1,29 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {computeTrial, deckBoard, normalizeTrialInput, readiness, templateTrial, DECK_PAGES, addMonths} from '../src/planning/kikaku/kikaku-model.mjs';
+import {computeTrial, deckBoard, documentRevisions, normalizeTrialInput, openTarget, readiness, templateTrial, DECK_PAGES, addMonths} from '../src/planning/kikaku/kikaku-model.mjs';
+
+test('FR-PLAN-KIKAKU-054 同じ種類・役・名前の原本を古い順に 版1・版2 と数え、最新に印を付ける。名前は NFC で比べ、役が違えば別の列', () => {
+  const docs = [
+    {id: 4, kind: 'deck', role: 'draft', fileName: '企画書.pptx', createdAt: '2026-11-07T03:00:00Z'},
+    {id: 3, kind: 'deck', role: 'submitted', fileName: '企画書.pptx', createdAt: '2026-11-06T03:00:00Z'},
+    {id: 2, kind: 'deck', role: 'draft', fileName: '企画書.pptx'.normalize('NFD'), createdAt: '2026-11-05T03:00:00Z'},
+    {id: 1, kind: 'trial', role: null, fileName: '試算.xlsx', createdAt: '2026-11-04T03:00:00Z'},
+  ];
+  const r = documentRevisions(docs);
+  assert.deepEqual(r.map((d) => [d.id, d.revision, d.revisionCount, d.latest]), [[4, 2, 2, true], [3, 1, 1, true], [2, 1, 2, false], [1, 1, 1, true]]);
+  assert.deepEqual(documentRevisions([]), []);
+});
+
+test('FR-PLAN-KIKAKU-053 開き方: PDF・画像は表示、pptx・docx・xlsx は PowerPoint・Word・Excel、media_type が無ければ拡張子で決める', () => {
+  assert.deepEqual(openTarget({fileName: '企画書.pdf', mediaType: 'application/pdf'}), {view: true, app: null});
+  assert.deepEqual(openTarget({fileName: '図.png', mediaType: null}), {view: true, app: null});
+  assert.deepEqual(openTarget({fileName: '企画書.pptx', mediaType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'}), {view: false, app: 'PowerPoint'});
+  assert.deepEqual(openTarget({fileName: '申請書.docx', mediaType: null}), {view: false, app: 'Word'});
+  assert.deepEqual(openTarget({fileName: '試算.xlsx', mediaType: 'application/octet-stream'}), {view: false, app: 'Excel'});
+  assert.deepEqual(openTarget({fileName: 'deck.key', mediaType: null}), {view: false, app: null});
+  assert.deepEqual(openTarget({}), {view: false, app: null});
+});
 
 // 正解表は、会社ルートの売上試算の3段の型（架空のデータ）を Excel で再計算した値。実装の関数を使わずに抜き出した
 const golden = JSON.parse(readFileSync(new URL('./fixtures/kikaku/trial-3dan.json', import.meta.url), 'utf8'));

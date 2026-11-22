@@ -36,6 +36,8 @@ tags: logging, error-handling, privacy
 起動の知らせ（`server.mjs`・`server-production.mjs`）と、エラーの受け止め口（サーバーは `app.mjs` の `app.onError` と `report-issuance-routes.mjs` の帳票の失敗、画面は `ui/ErrorBoundary.jsx`、閲覧用プレビューは `preview/preview-main.mjs`）だけ。
 ほかの場所で使うと検査が落ちる。足すときは、なぜ受け止め口に集められないかを PR に書く。
 
+`source-documents/source-upload.mjs` は、置き場に置けなかった失敗（中身がハッシュと合わない・通信が途中で切れた）を 400 に替えて返すので `app.onError` を通らない。理由を残すため、その1か所だけ `console.error` を書く。
+
 `data-platform/cloud-pg-export.mjs` は定時実行の受け止め口で、HTTP の `app.onError` を通らないため例外とする（成功の `console.log` と失敗の `console.error` の2か所）。
 ログは固定の名前（`pg_daily_export_succeeded`・`pg_daily_export_failed`・`pg_daily_export_close_failed`）の JSON 1行にし、出すのは次だけにする。元のエラーの message・SQL・行・金額・接続文字列は渡さない。
 

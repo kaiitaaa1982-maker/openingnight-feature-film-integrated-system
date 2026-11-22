@@ -207,3 +207,10 @@ export async function linkExpense(db, orgId, caseId, expenseId, estimateLineId, 
 }
 
 export const toNumber = num;
+// 原本の置き場から辿る調達。案件名は最新の版を使う（版が無ければ案件コード）。
+export const readChotatsuSourceLinks = (db, orgId) => db.all(`SELECT d.source_document_id AS document_id,
+  c.id AS target_id,COALESCE(v.title,c.case_code) AS name,COUNT(*) AS n FROM chotatsu_documents d
+  JOIN chotatsu_cases c ON c.org_id=d.org_id AND c.id=d.case_id
+  LEFT JOIN chotatsu_case_versions v ON v.org_id=c.org_id AND v.case_id=c.id
+    AND v.version_no=(SELECT MAX(x.version_no) FROM chotatsu_case_versions x WHERE x.org_id=c.org_id AND x.case_id=c.id)
+  WHERE d.org_id=? GROUP BY d.source_document_id,c.id,v.title,c.case_code ORDER BY name,c.id`, [orgId]);

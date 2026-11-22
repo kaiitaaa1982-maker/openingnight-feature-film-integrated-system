@@ -29,6 +29,7 @@ import {registerPartnerProfileRoutes} from './partners/partner-profile-routes.mj
 import {registerDataBrowserRoutes} from './admin/data-browser-routes.mjs';
 import {registerR2ManifestRoutes} from './source-documents/r2-manifest-routes.mjs';
 import {registerSourceDocumentRoutes} from './source-documents/source-documents-routes.mjs';
+import {UPLOAD_PATH, MAX_UPLOAD_BYTES} from './source-documents/source-upload.mjs';
 import {registerWorkQueueRoutes} from './work-queue.mjs';
 import {registerReceivablesRoutes} from './billing/receivables-routes.mjs';
 import {registerRoyaltyStatementRoutes} from './royalty-statement-routes.mjs';
@@ -73,20 +74,26 @@ import { registerYojitsuRoutes } from './revenue/yojitsu/yojitsu-routes.mjs';
 import { registerYojitsuFolderRoutes } from './revenue/yojitsu/folder-routes.mjs';
 import { registerProfitRoutes } from './accounting/profit/profit-routes.mjs';
 import { registerProductionCostRoutes } from './expenses/production-cost/production-cost-routes.mjs';
+import { registerActualLineRoutes } from './expenses/production-actual/actual-lines-routes.mjs';
 import { registerBudgetRoutes } from './planning/budget/budget-routes.mjs';
 import { registerManufacturingRoutes } from './manufacturing/mfg-routes.mjs';
 import { registerCashbookRoutes } from './accounting/cashbook/cashbook-routes.mjs';
 import { registerProduceRoutes } from './planning/produce/produce-routes.mjs';
 import { registerKikakuRoutes } from './planning/kikaku/kikaku-routes.mjs';
 import { registerShootRecordRoutes } from './production/shoot-records/shoot-records-routes.mjs';
+import { registerShootAiResultRoutes } from './production/shoot-records/ai-results-routes.mjs';
 import { registerChotatsuRoutes } from './acquisition/chotatsu/chotatsu-routes.mjs';
 import { registerPreprodRoutes } from './preprod/preprod-routes.mjs';
 import { registerVaultRoutes } from './preprod/vault-routes.mjs';
+import { registerPermitRoutes } from './preprod/permits/permit-routes.mjs';
+import { registerPropRoutes } from './preprod/props/props-routes.mjs';
 import { registerNotebookRoutes } from './notebook/notebook-routes.mjs';
+import { registerWorkTemplateRoutes } from './production/work-templates/work-templates-routes.mjs';
 import { registerSelfMultiplierRoutes } from './revenue/metrics/self-multiplier-routes.mjs';
 import { registerInvestmentApprovalRoutes } from './planning/investment-approval/investment-approval-routes.mjs';
 import { registerActivityImportRoutes } from './revenue/yojitsu/activity-import-routes.mjs';
 import { registerPostRoutes } from './production/post/post-routes.mjs';
+import { registerAllWorksRoutes } from './ledger/all-works/all-works-routes.mjs';
 
 const encoder = new TextEncoder();
 const json = value => JSON.stringify(value);
@@ -293,15 +300,22 @@ function normalizeResource(name, source) {
   return data;
 }
 
-export function createApp({ db, mode = 'local', authenticate, extractDocument, extractWorkbenchFile, suggestMappings, ai = { enabled: false, provider: null, modelAllowlist: [], maxCalls: 0, maxTokens: 0 } }) {
+export function createApp({ db, mode = 'local', authenticate, extractDocument, extractWorkbenchFile, suggestMappings, readBusinessObject = null, addBusinessObject = null, ai = { enabled: false, provider: null, modelAllowlist: [], maxCalls: 0, maxTokens: 0 } }) {
   const app = new Hono();
   app.use('/api/*',async(c,next)=>{
     c.header('Cache-Control','private, no-store');
     if(!['GET','HEAD'].includes(c.req.method)) {
       const origin=c.req.header('Origin');
       if(origin && origin!==new URL(c.req.url).origin) return bad(c,'別サイトからの操作は受け付けません',403);
+      if(c.req.method==='POST' && c.req.path===UPLOAD_PATH){
+        // 画面から足す原本だけは中身をそのまま受ける。本文は読まずに置き場へ流すので、大きさは Content-Length で見る（95MB まで）
+        if(!/^application\/octet-stream(?:;|$)/i.test(c.req.header('Content-Type')||''))return bad(c,'ファイルの中身をそのまま送信してください',415);
+        if(Number(c.req.header('Content-Length'))>MAX_UPLOAD_BYTES)return bad(c,`1つ ${MAX_UPLOAD_BYTES/1024/1024}MB までです。大きいものはドライブに置いてください`,413);
+        return next();
+      }
       if(c.req.method!=='DELETE' && !/^application\/json(?:;|$)/i.test(c.req.header('Content-Type')||''))return bad(c,'JSON形式で送信してください',415);
-      const limit=['/api/workflow/artifacts/extract','/api/workbench/files/extract','/api/sales-import/files'].includes(c.req.path)||/^\/api\/production\/shoot-records\/days\/\d+\/records$/.test(c.req.path)?8*1024*1024:/^\/api\/(imports|mapped-imports|bulk\/[^/]+|workbench\/drafts|sales-import)(\/|$)/.test(c.req.path)?Math.max(512000,importLimits(mode).bytes*2):512000;// 取込の上限（ローカル2,000行・約2MB）まで受け取れるようにする。Worker は従来の512KBのまま
+      // 原本を base64 で受け取る受け口は、共通の原本の表の上限 12MB（base64 で約16MB）まで通す。上限の判定と 413 の文は各受け口が持つ（FR-PLAN-KIKAKU-055）
+      const limit=/^\/api\/(work-templates\/templates\/\d+\/files|planning\/kikaku\/\d+\/(documents|materials))$/.test(c.req.path)?17*1024*1024:['/api/workflow/artifacts/extract','/api/workbench/files/extract','/api/sales-import/files'].includes(c.req.path)||/^\/api\/production\/shoot-records\/days\/\d+\/records$/.test(c.req.path)?8*1024*1024:/^\/api\/(imports|mapped-imports|bulk\/[^/]+|workbench\/drafts|sales-import)(\/|$)/.test(c.req.path)?Math.max(512000,importLimits(mode).bytes*2):512000;// 取込の上限（ローカル2,000行・約2MB）まで受け取れるようにする。Worker は従来の512KBのまま
       const bytes=await c.req.raw.clone().arrayBuffer();if(bytes.byteLength>limit)return bad(c,`入力は${Math.floor(limit/1024)}KB以内です`,413);
     }
     await next();
@@ -343,10 +357,10 @@ export function createApp({ db, mode = 'local', authenticate, extractDocument, e
   const settleOrgChoice = (c, i) => { if (i.org_fallback) deleteCookie(c, ORG_COOKIE, {path: '/'}); };
   app.get('/api/semantic-definitions', c=>c.json(semanticDocument));
   app.get('/api/session', c => { const i=c.get('identity'); settleOrgChoice(c,i); return c.json({ ok:true,user:{id:i.user_id,email:i.email,displayName:i.display_name,role:i.role,orgId:i.org_id},orgReset:Boolean(i.org_fallback),mode }); });
-  // 所属している組織の一覧（有効な所属だけ、org_id の小さい順）。画面は2つ以上のときだけ「組織」の切替を出す
+  // 所属している組織の一覧（有効な所属だけ、org_id の小さい順）。kind は本番（real）かデモ（demo）か。画面は2つ以上のときだけ「組織」の切替を出す
   app.get('/api/session/orgs', async c => {
     const i=c.get('identity'); settleOrgChoice(c,i);
-    const orgs=(await activeMemberships(db,i.user_id)).map(m=>({id:m.org_id,code:m.org_code,name:m.org_name,role:m.role}));
+    const orgs=(await activeMemberships(db,i.user_id)).map(m=>({id:m.org_id,code:m.org_code,name:m.org_name,role:m.role,kind:m.org_kind}));
     return c.json({ok:true,currentOrgId:i.org_id,orgs});
   });
   // 所属している組織のうち、デモ・機能がある組織（画面の「組織を切り替えて開く」の案内用）。返すのは組織の id と名前だけで、
@@ -374,7 +388,7 @@ export function createApp({ db, mode = 'local', authenticate, extractDocument, e
     if(!target) return bad(c,'所属していない組織には切り替えられません',403);
     setCookie(c,ORG_COOKIE,orgCookieValue(i.user_id,orgId),orgCookieOptions(c.req.url));
     if(target.org_id!==Number(i.org_id)) await db.run('INSERT INTO org_switch_events(org_id,user_id,from_org_id) VALUES(?,?,?)',[orgId,i.user_id,Number(i.org_id)]);
-    return c.json({ok:true,org:{id:target.org_id,code:target.org_code,name:target.org_name,role:target.role}});
+    return c.json({ok:true,org:{id:target.org_id,code:target.org_code,name:target.org_name,role:target.role,kind:target.org_kind}});
   });
   app.get('/api/workflow/capabilities',c=>c.json({ok:true,extractionEnabled:typeof extractDocument==='function',mappingAiEnabled:typeof suggestMappings==='function'}));
   app.delete('/api/session', async c => {
@@ -1010,7 +1024,7 @@ export function createApp({ db, mode = 'local', authenticate, extractDocument, e
   registerWorkQueueRoutes(app,{db,permittedProjects,settlementWork});
   registerDataBrowserRoutes(app,{db,bad});
   registerR2ManifestRoutes(app,{db,bad});
-  registerSourceDocumentRoutes(app,{db,bad});
+  registerSourceDocumentRoutes(app,{db,bad,readBusinessObject,addBusinessObject});
   registerPartnerProfileRoutes(app,{db,bad,body});
   registerWorkflowRoutes(app,{db,bad,body,canonical,sha256,nowIso,permittedProjects,settlementWork,extractDocument,suggestMappings});
   registerScriptStructuringRoutes(app,{db,bad,permittedProjects});
@@ -1021,20 +1035,26 @@ export function createApp({ db, mode = 'local', authenticate, extractDocument, e
   registerYojitsuFolderRoutes(app,{db,bad,permittedProjectScope});
   registerProfitRoutes(app,{db,bad,permittedProjectScope,sha256,canonical});
   registerProductionCostRoutes(app,{db,bad,body,permittedProjects});
-  registerBudgetRoutes(app,{db,bad,body,permittedProjects});
+  registerActualLineRoutes(app,{db,bad,body,permittedProjects});
+  registerBudgetRoutes(app,{db,bad,body,permittedProjects,sha256});
   registerManufacturingRoutes(app,{db,bad,body,permittedProjects});
   registerCashbookRoutes(app,{db,bad,body,sha256});
   registerProduceRoutes(app,{db,bad,body,permittedProjects});
-  registerKikakuRoutes(app,{db,bad,body,permittedProjects});
+  registerKikakuRoutes(app,{db,bad,body,permittedProjects,readBusinessObject});
   registerShootRecordRoutes(app,{db,bad,body,permittedProjects});
+  registerShootAiResultRoutes(app,{db,bad,body,permittedProjects});
   registerChotatsuRoutes(app,{db,bad,body,permittedProjects});
   registerPreprodRoutes(app,{db,bad,body,permittedProjects});
   registerVaultRoutes(app,{db,bad,body,permittedProjects});
+  registerPermitRoutes(app,{db,bad,body,permittedProjects});
+  registerPropRoutes(app,{db,bad,body,permittedProjects});
   registerNotebookRoutes(app,{db,bad,body,permittedProjects});
+  registerWorkTemplateRoutes(app,{db,bad,body});
   registerSelfMultiplierRoutes(app,{db,bad});
   registerInvestmentApprovalRoutes(app,{db,bad,body,permittedProjects,permittedProjectScope,sha256,canonical});
   registerPostRoutes(app,{db,bad,body,permittedProjects});
   registerActivityImportRoutes(app,{db,bad,permittedProjectScope});
+  registerAllWorksRoutes(app,{db,bad,permittedProjectScope});
   app.get('/api/audit',async c=>{const i=c.get('identity');if(i.role!=='admin')return bad(c,'管理者だけが参照できます',403);return c.json({ok:true,rows:await db.all('SELECT * FROM audit_log WHERE org_id=? ORDER BY id DESC',[i.org_id])});});
 
   registerWorkIncomeRoutes(app,{db,bad,permittedProjects});

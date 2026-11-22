@@ -50,6 +50,12 @@
     {
       "binding": "PRIVATE_ARTIFACTS",
       "bucket_name": "openingnight-integrated-demo"
+    },
+    // 業務データの置き場（読むだけ。会社ルートの plans/2026-11-06-r2-ingest.md の A）。staging と同じバケット。
+    // コードは get だけを使う（src/cloud-worker.mjs の readBusinessObject）。書き込み・削除・一覧はしない
+    {
+      "binding": "BUSINESS_DATA",
+      "bucket_name": "openingnight-business-data"
     }
   ],
   "durable_objects": {
@@ -122,6 +128,12 @@
         {
           "binding": "PG_EXPORTS",
           "bucket_name": "openingnight-integrated-demo-staging-pg-exports"
+        },
+        // 業務データの置き場（会社ルートの plans/2026-11-06-r2-ingest.md の A。代表 2026-11-06）。
+        // コードは get だけを使う（src/cloud-worker.mjs の readBusinessObject）。書き込み・削除はしない
+        {
+          "binding": "BUSINESS_DATA",
+          "bucket_name": "openingnight-business-data"
         }
       ],
       "durable_objects": {

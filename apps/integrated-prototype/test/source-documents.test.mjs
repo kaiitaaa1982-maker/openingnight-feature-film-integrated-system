@@ -4,6 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {openTestDb} from './test-db.mjs';
 import {MAX_INLINE_BYTES, SourceDocumentError, getSourceDocument, listSourceDocuments, registerSourceDocument, sha256Hex} from '../src/source-documents/source-documents-store.mjs';
+import {readSourceContent} from '../src/source-documents/source-content.mjs';
 
 const bytesOf = (text) => new TextEncoder().encode(text);
 const base = {orgId: 1, userId: 1, kind: 'contract', fileName: '架空の契約書.pdf', mediaType: 'application/pdf', receivedOn: '2026-10-01'};
@@ -75,4 +76,20 @@ test('FR-CORE-DATA-060 一覧は種類と受けた日の範囲で絞れ、中身
   assert.deepEqual(october.map((r) => r.received_on), ['2026-10-15']);
   assert.equal('content_base64' in october[0], false);
   assert.equal((await listSourceDocuments(db, 1, {from: '2026-10-01'})).length, 2);
+});
+
+test('FR-PLAN-KIKAKU-053 共通の読み口は中身を同じ名前・同じ媒体の種類で inline に返し、download では attachment にする。別の組織からは見えない', async (t) => {
+  const db = await openTestDb(t);
+  const content = bytesOf('架空の企画書の中身');
+  const {id} = await registerSourceDocument(db, {...base, kind: 'other', fileName: '架空の企画書 v1.pptx', mediaType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', bytes: content});
+  const shown = await readSourceContent(db, 1, id);
+  assert.equal(shown.status, 200);
+  assert.deepEqual([...shown.body], [...content]);
+  assert.equal(shown.headers['content-type'], 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
+  assert.equal(shown.headers['content-disposition'], `inline; filename="______ v1.pptx"; filename*=UTF-8''${encodeURIComponent('架空の企画書 v1.pptx')}`);
+  assert.equal(shown.headers['cache-control'], 'private, no-store');
+  const saved = await readSourceContent(db, 1, id, {download: true});
+  assert.equal(saved.status, 200);
+  assert.match(saved.headers['content-disposition'], /^attachment; filename="______ v1\.pptx"; filename\*=UTF-8''/);
+  assert.equal((await readSourceContent(db, 2, id)).status, 404, '別の組織の原本は無いものとして断る');
 });

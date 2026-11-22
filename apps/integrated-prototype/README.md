@@ -85,8 +85,8 @@ node scripts/seed-all-demo.mjs --db data/demo-sales.sqlite --twice --check-api
 - `src/server.mjs`: `127.0.0.1:9041` のローカルサーバー
 - `src/worker.mjs`: Cloudflare Access JWT検証、DB所属照合、D1、静的アセット認証
 - `src/ai-adapter.mjs`: Workers AI / Service Binding向けの無効既定アダプター
-- `src/main.jsx`: React業務画面と実スキーマから取得するERビュー
-- `src/WorkCatalog.jsx` / `src/DesignCanvas.jsx`: 放送ウィンドウ一覧と概念・ER・画面を結ぶ設計表示
+- `src/main.jsx`: React業務画面の入口（画面の登録）
+- `src/WorkCatalog.jsx`: 放送ウィンドウ一覧
 - `wrangler.jsonc`: 配備無効のローカル準備用Worker構成。実ID・秘密値なし
 - `wrangler.cloud.jsonc`: 本人限定Cloudflare環境のWorker構成。公開版では、ドメインと識別子を架空の値に置き換えている（下の「Cloudflare本人限定環境」）
 

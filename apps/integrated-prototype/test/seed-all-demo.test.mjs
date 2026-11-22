@@ -39,13 +39,13 @@ before(async (t) => {
 after(() => base?.close());
 
 test('流す順は 売上 → 売上の流通の分類 → 制作 → 営業基幹 → 番販・放送 → PL・BS で、白紙の DB へ1回で全部入る', () => {
-  assert.deepEqual(DEMO_SEED_STEPS.map((step) => step.key), ['sales', 'distribution', 'kouban', 'eigyo', 'broadcast', 'plbs', 'expenses', 'masters', 'expense-originals', 'scenario']);
+  assert.deepEqual(DEMO_SEED_STEPS.map((step) => step.key), ['sales', 'distribution', 'kouban', 'eigyo', 'broadcast', 'plbs', 'expenses', 'masters', 'expense-originals', 'scenario', 'genba']);
   // 流通の分類の付け替えは、旧区分で入れた DB（2026-09-25 の本番）だけが対象。白紙の DB では売上の seed が流通マスタの ID で分類済み
   assert.deepEqual(first.map((row) => [row.key, row.skipped]), DEMO_SEED_STEPS.map((step) => [step.key, step.key === 'distribution']));
   assert.equal(first.find((row) => row.key === 'distribution').result.reclassified, 0);
   // どの seed の書き込みか分かるように記録する（順番どおりに並ぶ）
   const order = [...new Set(firstBatches.map((batch) => batch.step))];
-  assert.deepEqual(order, ['sales', 'kouban', 'eigyo', 'broadcast', 'plbs', 'expenses', 'masters', 'expense-originals', 'scenario']);
+  assert.deepEqual(order, ['sales', 'kouban', 'eigyo', 'broadcast', 'plbs', 'expenses', 'masters', 'expense-originals', 'scenario', 'genba']);
 });
 
 test('2回目はどの seed も入れ済みで、表の行数が変わらず、ログインのほかは書かない', () => {

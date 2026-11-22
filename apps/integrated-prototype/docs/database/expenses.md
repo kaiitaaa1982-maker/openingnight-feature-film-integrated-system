@@ -219,6 +219,26 @@ erDiagram
     INTEGER id PK "行のID"
     INTEGER partner_id FK "支払先の取引先（partners）"
   }
+  production_actual_line_checks {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER work_id FK "作品（行と同じ）"
+    INTEGER line_id PK, FK "確かめた行（production_actual_lines）"
+  }
+  production_actual_line_voids {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER work_id FK "作品（行と同じ）"
+    INTEGER line_id PK, FK "取り消した行（production_actual_lines）"
+    INTEGER replacement_line_id FK "置き換えの行（production_actual_lines。同じ作品の行。取消した行は指せない）"
+  }
+  production_actual_lines {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER project_id FK "案件（作品の案件）"
+    INTEGER work_id FK "作品（works）"
+    INTEGER payee_partner_id FK "支払先の取引先（partners。任意）"
+    INTEGER source_document_id FK "証憑の原本（source_documents。任意）"
+    INTEGER shooting_day_id FK "撮影日（shooting_days。同じ作品の撮影日だけ。任意）"
+  }
   production_cost_versions {
     INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
     INTEGER work_id PK, FK "作品（works）"
@@ -291,6 +311,13 @@ erDiagram
   expenses }o--|| projects : "project_id"
   gl_account_class_versions }o--|| gl_accounts : "account_id"
   partner_payment_term_versions }o--|| partners : "partner_id"
+  production_actual_line_checks }o--|| production_actual_lines : "work_id,line_id"
+  production_actual_line_voids }o--o| production_actual_lines : "work_id,replacement_line_id"
+  production_actual_line_voids }o--|| production_actual_lines : "work_id,line_id"
+  production_actual_lines }o--o| shooting_days : "work_id,shooting_day_id"
+  production_actual_lines }o--o| source_documents : "source_document_id"
+  production_actual_lines }o--o| partners : "payee_partner_id"
+  production_actual_lines }o--|| works : "project_id,work_id"
   production_cost_versions }o--o| partners : "counterparty_partner_id"
   production_cost_versions }o--o| committee_term_versions : "committee_term_version_id"
   production_cost_versions }o--o| work_finance_versions : "work_id,work_finance_revision"
@@ -344,6 +371,9 @@ erDiagram
 | [expenses](#expenses) | 経費 | 案件や作品にかかった経費1件（予算と実績）。経費の入力（請求書つき）や経費集計シートの取込で作る。請求書につながった行（expense_details がある行）は書き換えも削除もできず、取消と新しい経費で直す。請求書につながっていない整備前の行だけ、版を確かめて書き換える |
 | [gl_account_class_versions](#gl_account_class_versions) | 勘定科目の分類（版） | 勘定科目（gl_accounts）ごとの、残高の借貸・流動か固定か・支払や消込での役割の版。管理者が経費の会計設定（初期の採用を含む）で積み、書き換えない。 |
 | [partner_payment_term_versions](#partner_payment_term_versions) | 取引先の支払条件（版） | 支払先ごとの締め・支払日・支払方法の版。管理者が経費の会計設定で積み、請求書の日付を計算するときに適用開始日で選ぶ。 |
+| [production_actual_line_checks](#production_actual_line_checks) | 制作の実費の行の確認 | 実費の行を人が確かめた記録（追記だけ。1行に1回まで。取消した行は確かめない）。この行の無い実費の行が「未確認」 |
+| [production_actual_line_voids](#production_actual_line_voids) | 制作の実費の行の取消 | 実費の行の取消（追記だけ。1行に1回まで。理由が必須）。置き換えの行（同じ作品の行）を指せる。取消した行は合計から外れ、置き換えの行が入る |
+| [production_actual_lines](#production_actual_lines) | 制作の実費の行 | 制作チームが記録する、作品で実際にかかった費用の1行1件（追記だけ。変更・削除は DB が断る。直すときは取消の行と置き換えの行）。費目は予算書の大分類 A〜K。税込は必須で、税抜と税額は分かるときだけ2つそろえて持ち、税込＝税抜＋税額（分からなければ2つとも空で「不明」）。未確認の印は持たず、確認の行が無いことから導く。AI が入れた行は読みの記録を持つ |
 | [production_cost_versions](#production_cost_versions) | 制作費の版 | 成功報酬の線（閾値）にする制作費の版（追記だけ。変更・削除・同じ番号の入れ直しは DB が断る）。作品ごとの連番で、最新の version_no の版がその時点の制作費。額は税抜の整数円で、版の無い作品は「制作費の版なし」（0円で埋めない）。根拠は3種類: 出資額から作る最初の版（作品の費用の最新の版の確定した自社の出資額か、委員会の契約の最新の条件版の出資額の合計をトリガーが照らす。委員会は税の区分が不明）、出資の記録が無い作品の最初の版を契約書から手で入れる版（契約書の参照・締結日・相手・額が必須。税込の契約は税抜に戻した額と戻し方）、追加の契約で委員会・自社の払う額が増えたときの追加の版（前の版の額＋追加額。負担の種別は出資者の追加出資か借入）。内訳（制作費・P&A）は2つの和が版の額 |
 
 ## expense_accounting_versions
@@ -1530,6 +1560,104 @@ erDiagram
 - トリガー partner_payment_term_versions_no_delete: 削除の前
 - トリガー partner_payment_term_versions_no_update: 更新の前
 - トリガー partner_payment_term_versions_sequence: 追加の前
+
+## production_actual_line_checks
+
+**制作の実費の行の確認** — 実費の行を人が確かめた記録（追記だけ。1行に1回まで。取消した行は確かめない）。この行の無い実費の行が「未確認」
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | work_id | INTEGER | 作品（行と同じ） | 不可 | - | FK（複合）→ production_actual_lines |
+| 3 | line_id | INTEGER | 確かめた行（production_actual_lines） | 不可 | - | PK（複合）、FK（複合）→ production_actual_lines |
+| 4 | checked_by | INTEGER | 確かめた人（users） | 不可 | - | FK（複合）→ memberships |
+| 5 | checked_at | TEXT | 確かめた日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の主キー: (org_id, line_id)
+- 複合の参照: (org_id, checked_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, work_id, line_id) → production_actual_lines(org_id, work_id, id)
+- 索引 production_actual_line_checks_author_idx: (org_id, checked_by)
+- 索引 production_actual_line_checks_work_idx: (org_id, work_id, line_id)
+- トリガー production_actual_line_checks_live: 追加の前
+- トリガー production_actual_line_checks_no_delete: 削除の前
+- トリガー production_actual_line_checks_no_update: 更新の前
+
+## production_actual_line_voids
+
+**制作の実費の行の取消** — 実費の行の取消（追記だけ。1行に1回まで。理由が必須）。置き換えの行（同じ作品の行）を指せる。取消した行は合計から外れ、置き換えの行が入る
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | work_id | INTEGER | 作品（行と同じ） | 不可 | - | FK（複合）→ production_actual_lines、FK（複合）→ production_actual_lines |
+| 3 | line_id | INTEGER | 取り消した行（production_actual_lines） | 不可 | - | PK（複合）、FK（複合）→ production_actual_lines |
+| 4 | reason | TEXT | 取消の理由 | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 1000 |
+| 5 | replacement_line_id | INTEGER | 置き換えの行（production_actual_lines。同じ作品の行。取消した行は指せない） | 可 | - | FK（複合）→ production_actual_lines |
+| 6 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 7 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の主キー: (org_id, line_id)
+- 複合の一意: (org_id, replacement_line_id)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, work_id, replacement_line_id) → production_actual_lines(org_id, work_id, id)
+- 複合の参照: (org_id, work_id, line_id) → production_actual_lines(org_id, work_id, id)
+- CHECK: replacement_line_id IS NULL OR replacement_line_id<>line_id
+- 索引 production_actual_line_voids_author_idx: (org_id, created_by)
+- 索引 production_actual_line_voids_replacement_idx: (org_id, work_id, replacement_line_id)
+- 索引 production_actual_line_voids_work_idx: (org_id, work_id, line_id)
+- トリガー production_actual_line_voids_live_replacement: 追加の前
+- トリガー production_actual_line_voids_no_delete: 削除の前
+- トリガー production_actual_line_voids_no_update: 更新の前
+
+## production_actual_lines
+
+**制作の実費の行** — 制作チームが記録する、作品で実際にかかった費用の1行1件（追記だけ。変更・削除は DB が断る。直すときは取消の行と置き換えの行）。費目は予算書の大分類 A〜K。税込は必須で、税抜と税額は分かるときだけ2つそろえて持ち、税込＝税抜＋税額（分からなければ2つとも空で「不明」）。未確認の印は持たず、確認の行が無いことから導く。AI が入れた行は読みの記録を持つ
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | project_id | INTEGER | 案件（作品の案件） | 不可 | - | FK（複合）→ works |
+| 4 | work_id | INTEGER | 作品（works） | 不可 | - | FK（複合）→ shooting_days、FK（複合）→ works |
+| 5 | entry_key | TEXT | 取り込みの鍵（組織で一意。同じ取り込みを2回入れない。送られなければ受け口が作る） | 不可 | - | CHECK: length(entry_key) BETWEEN 1 AND 100 AND ltrim(entry_key,'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.:')='' |
+| 6 | spent_on | TEXT | 支払った日（YYYY-MM-DD） | 不可 | - | CHECK: length(spent_on)=10 AND substr(spent_on,5,1)='-' AND substr(spent_on,8,1)='-' AND ltrim(substr(spent_on,1,4)\|\|substr(spent_on,6,2)\|\|substr(spent_on,9,2),'0123456789')='' AND substr(spent_on,6,2) BETWEEN '01' AND '12' AND substr(spent_on,9,2) BETWEEN '01' AND '31' |
+| 7 | category_code | TEXT（列挙） | 費目（予算書の大分類 A〜K のコード） | 不可 | - | 値: A / B / C / D / E / F / G / H / I / J / K |
+| 8 | payee_partner_id | INTEGER | 支払先の取引先（partners。任意） | 可 | - | FK（複合）→ partners |
+| 9 | payee_name | TEXT | 領収書に書いてあった支払先の名前 | 不可 | - | CHECK: length(trim(payee_name)) BETWEEN 1 AND 200 |
+| 10 | description | TEXT | 内容（任意） | 可 | - | CHECK: description IS NULL OR length(trim(description)) BETWEEN 1 AND 500 |
+| 11 | inc_tax_yen | INTEGER | 税込（整数円。必須。0円の行は持たない） | 不可 | - | CHECK: typeof(inc_tax_yen)='integer' AND inc_tax_yen BETWEEN -1000000000000 AND 1000000000000 AND inc_tax_yen<>0 |
+| 12 | ex_tax_yen | INTEGER | 税抜（整数円。分かるときだけ。空は不明） | 可 | - | CHECK: ex_tax_yen IS NULL OR (typeof(ex_tax_yen)='integer' AND ex_tax_yen BETWEEN -1000000000000 AND 1000000000000) |
+| 13 | tax_yen | INTEGER | 税額（整数円。税抜と2つそろえて持つ） | 可 | - | CHECK: tax_yen IS NULL OR (typeof(tax_yen)='integer' AND tax_yen BETWEEN -1000000000000 AND 1000000000000) |
+| 14 | source_document_id | INTEGER | 証憑の原本（source_documents。任意） | 可 | - | FK（複合）→ source_documents |
+| 15 | shooting_day_id | INTEGER | 撮影日（shooting_days。同じ作品の撮影日だけ。任意） | 可 | - | FK（複合）→ shooting_days |
+| 16 | entry_method | TEXT（列挙） | 入れ方（human 人・ai AI） | 不可 | - | 値: human / ai |
+| 17 | ai_read_json | TEXT | AI の読みの記録（JSON。model 読んだモデルの名前・readFields 読んだ欄・unreadFields 読めなかった欄。原本の中身や本文は持たない。AI の行だけ） | 可 | - | CHECK: ai_read_json IS NULL OR (length(ai_read_json) BETWEEN 2 AND 2000 AND json_valid(ai_read_json) AND json_type(ai_read_json)='object' AND json_extract(ai_read_json,'$.model') IS NOT NULL) |
+| 18 | created_by | INTEGER | 作成した利用者（users） | 不可 | - | FK（複合）→ memberships |
+| 19 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, work_id, id)
+- 複合の一意: (org_id, entry_key)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, work_id, shooting_day_id) → shooting_days(org_id, work_id, id)
+- 複合の参照: (org_id, source_document_id) → source_documents(org_id, id)
+- 複合の参照: (org_id, payee_partner_id) → partners(org_id, id)
+- 複合の参照: (org_id, project_id, work_id) → works(org_id, project_id, id)
+- CHECK: (ex_tax_yen IS NULL AND tax_yen IS NULL) OR (ex_tax_yen IS NOT NULL AND tax_yen IS NOT NULL AND ex_tax_yen+tax_yen=inc_tax_yen AND ((inc_tax_yen>0 AND ex_tax_yen>0 AND tax_yen>=0) OR (inc_tax_yen<0 AND ex_tax_yen<0 AND tax_yen<=0)))
+- CHECK: (entry_method='ai' AND ai_read_json IS NOT NULL) OR (entry_method='human' AND ai_read_json IS NULL)
+- 索引 production_actual_lines_author_idx: (org_id, created_by)
+- 索引 production_actual_lines_day_idx: (org_id, work_id, shooting_day_id)
+- 索引 production_actual_lines_document_idx: (org_id, source_document_id)
+- 索引 production_actual_lines_partner_idx: (org_id, payee_partner_id)
+- 索引 production_actual_lines_work_idx: (org_id, work_id, spent_on)
+- トリガー production_actual_lines_no_delete: 削除の前
+- トリガー production_actual_lines_no_update: 更新の前
 
 ## production_cost_versions
 

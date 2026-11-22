@@ -191,3 +191,8 @@ export async function isActiveMember(db, orgId, userId) {
 export async function readFact(db, orgId, projectId, factId) {
   return db.get('SELECT id,material_id,body,value_int,label,target,pages,state FROM planning_facts WHERE org_id=? AND project_id=? AND id=?', [orgId, projectId, factId]);
 }
+// 原本の置き場から辿る企画。案件をまたぐ結び付きを落とさない。
+export const readPlanningSourceLinks = (db, orgId) => db.all(`SELECT d.document_id,
+  p.id AS target_id,p.title AS name,COUNT(*) AS n FROM planning_documents d
+  JOIN projects p ON p.org_id=d.org_id AND p.id=d.project_id
+  WHERE d.org_id=? GROUP BY d.document_id,p.id,p.title ORDER BY p.title,p.id`, [orgId]);

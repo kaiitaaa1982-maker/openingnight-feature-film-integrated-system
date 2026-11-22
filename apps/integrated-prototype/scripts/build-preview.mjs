@@ -41,7 +41,7 @@ export const PROPOSAL_MONTHS_AFTER = 5;
 // 今の組織に香盤のデモがあり売上集計シートも採用済みなら画面が読まないが、記録には入れておく（restrictOrgs で記録する組織だけに絞る）
 export const PREVIEW_ALWAYS_GETS = Object.freeze(['/api/session/org-features']);
 // 巡回しない画面。入力の値から保存しない POST で毎回計算するので、記録できる GET の応答が無い（プレビューは POST を通さず、画面が「プレビューでは計算できません」と出す）
-export const PREVIEW_UNRECORDED_PAGES = Object.freeze(['シナリオの比較', 'フォルダ']);
+export const PREVIEW_UNRECORDED_PAGES = Object.freeze(['シナリオの比較', 'フォルダ', '表の見本']);
 const ALLOWED_EMAIL_TLDS = ['.invalid', '.example', '.test', '.localhost'];
 
 export function parseArgs(argv) {
@@ -258,11 +258,15 @@ export function availsExportUrls(responses, asOf) {
 }
 
 // 行を押したときにだけ読む応答（巡回では発行されない）の URL。記録した一覧から組み立てる:
-// PL・BS の作品別の残高の委員会作品 → 出資と払込、取引先別リストの明細 → 明細の履歴（放送の明細は放送の条件も）
+// PL・BS の作品別の残高の委員会作品 → 出資と払込、取引先別リストの明細 → 明細の履歴（放送の明細は放送の条件も）、
+// 小道具の作品の札（会社全体の画面なので巡回では最初の作品しか開かない）→ 札の作品ごとの小道具
 export function detailApiUrls(responses) {
   const urls = new Set();
   for (const [key, entry] of responses) {
     if (entry.status !== 200) continue;
+    if (key === 'GET /api/props' || key.startsWith('GET /api/props?')) {
+      for (const work of entry.body?.works || []) if (Number.isInteger(work.id)) urls.add(`/api/props?workId=${work.id}`);
+    }
     if (key.startsWith('GET /api/reports/pl-bs?')) {
       for (const row of entry.body?.workBalances || []) if (row.kind === 'committee' && Number.isInteger(row.workId)) urls.add(`/api/committee-investments?workId=${row.workId}`);
     }

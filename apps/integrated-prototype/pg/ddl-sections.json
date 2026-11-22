@@ -880,6 +880,195 @@
         "expected_foreign_keys": "952",
         "expected_indexes": "256"
       }
+    },
+    {
+      "file": "0057_work_templates.sql",
+      "sha256": "e8587b650cbe8d757de0ab88d9a8859f09b98c85deb6e969a449c267c7a881cd",
+      "statements": 34,
+      "foreign_keys": 14,
+      "identities": 6,
+      "fingerprint": {
+        "generator": "pg-ddl 1",
+        "source_sha256": "0fbf10bbe1509593f9ac81abfb178fdbe0816c0f8604f4249d60f81dc921bcfa",
+        "migrations_sha256": "0fbf10bbe1509593f9ac81abfb178fdbe0816c0f8604f4249d60f81dc921bcfa",
+        "app_ddl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "ddl_sha256": "1a720df0ee3b3c037554ca43134c10b2dd6399a6134812b87eba2c9458adf623",
+        "last_migration": "0057_work_templates.sql",
+        "expected_tables": "395",
+        "expected_triggers": "930",
+        "expected_functions": "322",
+        "expected_identities": "244",
+        "expected_foreign_keys": "966",
+        "expected_indexes": "266"
+      }
+    },
+    {
+      "file": "0058_production_wrap_crew.sql",
+      "sha256": "a57331a1b7d777aadbb34e4f031df7212660f0e8fc961cd38f74ab747aeea5e7",
+      "statements": 2,
+      "foreign_keys": 0,
+      "identities": 0,
+      "fingerprint": {
+        "generator": "pg-ddl 1",
+        "source_sha256": "188e6d19f09fc362167357efff1cb9ae49da8994d31ae3c88904c22c20bed1ad",
+        "migrations_sha256": "188e6d19f09fc362167357efff1cb9ae49da8994d31ae3c88904c22c20bed1ad",
+        "app_ddl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "ddl_sha256": "e56a96d8b8ec469c227fa44fcb4ba1fdade8b1806244d89a2c76352a79b8be04",
+        "last_migration": "0058_production_wrap_crew.sql",
+        "expected_tables": "395",
+        "expected_triggers": "930",
+        "expected_functions": "322",
+        "expected_identities": "244",
+        "expected_foreign_keys": "966",
+        "expected_indexes": "266"
+      }
+    },
+    {
+      "file": "0059_organization_kind.sql",
+      "sha256": "04e4c46ba65cf717d107bd66763ecb00e72c349f10818786f5caadaa694d1e6c",
+      "statements": 1,
+      "foreign_keys": 0,
+      "identities": 0,
+      "fingerprint": {
+        "generator": "pg-ddl 1",
+        "source_sha256": "db06172ef7e12a2f837b7bcdedbdefb87f4835f1415ba4bc09a622d523d34bf1",
+        "migrations_sha256": "db06172ef7e12a2f837b7bcdedbdefb87f4835f1415ba4bc09a622d523d34bf1",
+        "app_ddl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "ddl_sha256": "a4008010149b94f7554618667a87920e9c989aa5c0b0ba00d73c5006ec12e552",
+        "last_migration": "0059_organization_kind.sql",
+        "expected_tables": "395",
+        "expected_triggers": "930",
+        "expected_functions": "322",
+        "expected_identities": "244",
+        "expected_foreign_keys": "966",
+        "expected_indexes": "266"
+      }
+    },
+    {
+      "file": "0060_permit_applications.sql",
+      "sha256": "d743e765f33ff11938d3684f8de0419930f287d2e46c228a10dfa1a173e803c0",
+      "statements": 25,
+      "foreign_keys": 11,
+      "identities": 5,
+      "fingerprint": {
+        "generator": "pg-ddl 1",
+        "source_sha256": "deb1a7e5da93962f22aa655fa472b4fe2fe03b923c06e162c87d378cbddc8343",
+        "migrations_sha256": "deb1a7e5da93962f22aa655fa472b4fe2fe03b923c06e162c87d378cbddc8343",
+        "app_ddl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "ddl_sha256": "4f39e5568777762ef6ed21525fc1362e8e488384ef5b8dc6d3293498ba3dbbad",
+        "last_migration": "0060_permit_applications.sql",
+        "expected_tables": "400",
+        "expected_triggers": "942",
+        "expected_functions": "324",
+        "expected_identities": "249",
+        "expected_foreign_keys": "977",
+        "expected_indexes": "274"
+      }
+    },
+    {
+      "file": "0061_prop_items.sql",
+      "sha256": "4b08663bb5812cb8733811e2c8d232698724724e22bab73d17014ab8dc9eaeb2",
+      "statements": 16,
+      "foreign_keys": 7,
+      "identities": 3,
+      "fingerprint": {
+        "generator": "pg-ddl 1",
+        "source_sha256": "82b28a2767febf215cd1330c20217320291a99f8f6dd9349a47dd3d370208629",
+        "migrations_sha256": "82b28a2767febf215cd1330c20217320291a99f8f6dd9349a47dd3d370208629",
+        "app_ddl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "ddl_sha256": "cca0b262c12c7004041314d2cc415d747a740b2fd61fcd33eb487f1a94fe2170",
+        "last_migration": "0061_prop_items.sql",
+        "expected_tables": "403",
+        "expected_triggers": "950",
+        "expected_functions": "326",
+        "expected_identities": "252",
+        "expected_foreign_keys": "984",
+        "expected_indexes": "279"
+      }
+    },
+    {
+      "file": "0066_budget_read_definitions.sql",
+      "sha256": "b39d6a5783d88cd6d842b22da20477fef3cd72b3868b829bc9731a8449a6a832",
+      "statements": 21,
+      "foreign_keys": 7,
+      "identities": 3,
+      "fingerprint": {
+        "generator": "pg-ddl 1",
+        "source_sha256": "81080809040025ea4a61f1b5f37b251d4244d99570508f8da16b1450db5d6eee",
+        "migrations_sha256": "81080809040025ea4a61f1b5f37b251d4244d99570508f8da16b1450db5d6eee",
+        "app_ddl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "ddl_sha256": "db2d4bfaee347924f24a26f51ed7182442dc2af9a36f66a58565d72c906dd7a1",
+        "last_migration": "0066_budget_read_definitions.sql",
+        "expected_tables": "407",
+        "expected_triggers": "963",
+        "expected_functions": "331",
+        "expected_identities": "255",
+        "expected_foreign_keys": "991",
+        "expected_indexes": "283"
+      }
+    },
+    {
+      "file": "0067_budget_read_seeds.sql",
+      "sha256": "d0f6fd84b61b3efbfe403029b852da1d7518d0a716905ed2a94992762dbb5488",
+      "statements": 6,
+      "foreign_keys": 0,
+      "identities": 0,
+      "fingerprint": {
+        "generator": "pg-ddl 1",
+        "source_sha256": "2d1f57272f702f0d54c32b75d95ff5f2cb125cbc034413da60c6329ca30e72bd",
+        "migrations_sha256": "2d1f57272f702f0d54c32b75d95ff5f2cb125cbc034413da60c6329ca30e72bd",
+        "app_ddl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "ddl_sha256": "ec0b3b11d563c39e6c5cbc12ae69b98860aa5f99db15a8e6b820eea69d18e0ae",
+        "last_migration": "0067_budget_read_seeds.sql",
+        "expected_tables": "407",
+        "expected_triggers": "963",
+        "expected_functions": "331",
+        "expected_identities": "255",
+        "expected_foreign_keys": "991",
+        "expected_indexes": "283"
+      }
+    },
+    {
+      "file": "0068_production_actual_lines.sql",
+      "sha256": "297249803c08bdff7ca2fc29362e15c6cbbafbb829a2ec657738e1e42ce808e9",
+      "statements": 21,
+      "foreign_keys": 10,
+      "identities": 1,
+      "fingerprint": {
+        "generator": "pg-ddl 1",
+        "source_sha256": "b59591735f822c8b186497b53d2ce923c08a5638168a8597495cac9a5c539b5c",
+        "migrations_sha256": "b59591735f822c8b186497b53d2ce923c08a5638168a8597495cac9a5c539b5c",
+        "app_ddl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "ddl_sha256": "0b0e8fcb796abf3fd75e78ff4dec7f2b1a550846dd0bc1d0b701ae5da8acb262",
+        "last_migration": "0068_production_actual_lines.sql",
+        "expected_tables": "410",
+        "expected_triggers": "971",
+        "expected_functions": "333",
+        "expected_identities": "256",
+        "expected_foreign_keys": "1001",
+        "expected_indexes": "293"
+      }
+    },
+    {
+      "file": "0069_shooting_scene_reads.sql",
+      "sha256": "d3c29e0e79724f93f5225bbbad79e8901d7cc6e3e2319ecc3f29ac9f910e29d6",
+      "statements": 14,
+      "foreign_keys": 7,
+      "identities": 1,
+      "fingerprint": {
+        "generator": "pg-ddl 1",
+        "source_sha256": "8a21d52ba6ea9ec4e358faf44a78785344fd814cdb516a6cc17da247be9eb472",
+        "migrations_sha256": "8a21d52ba6ea9ec4e358faf44a78785344fd814cdb516a6cc17da247be9eb472",
+        "app_ddl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "ddl_sha256": "1370aec5d55c38ddcd4a0356675c8cc99c8511cd49f801fa8245f65890701f30",
+        "last_migration": "0069_shooting_scene_reads.sql",
+        "expected_tables": "412",
+        "expected_triggers": "978",
+        "expected_functions": "336",
+        "expected_identities": "257",
+        "expected_foreign_keys": "1008",
+        "expected_indexes": "298"
+      }
     }
   ]
 }

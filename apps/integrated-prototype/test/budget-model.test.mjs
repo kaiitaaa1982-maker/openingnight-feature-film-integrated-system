@@ -3,10 +3,12 @@
 // 値から手で書いた（実装の関数で期待値を作らない）
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {BUDGET_CATEGORIES, budgetFolderState, budgetTotals, budgetVerdict, categoryFromLabel, checkParsedBudget, compareBudgetVersions,
+import {BUDGET_CATEGORIES, budgetFolderState, budgetReadNotices, budgetTotals, budgetVerdict, categoryFromLabel, checkParsedBudget, compareBudgetVersions,
   currentFixedVersionNo, departmentTotals, noticesForLines, referenceDiffs} from '../src/planning/budget/budget-model.mjs';
 import {readBudgetFile} from '../src/planning/budget/budget-xlsx.mjs';
-import {buildBudgetXlsx, fictionalBudgetSheets} from './fixtures/folder-budget/build-budget-xlsx.mjs';
+import {compileBudgetReadDefinition, firstTarget} from '../src/planning/budget/budget-read-model.mjs';
+import {BUDGET_READ_SEEDS} from '../src/planning/budget/budget-read-seeds.mjs';
+import {buildBudgetXlsx, fictionalBudgetSheets, fictionalCodeDetailSheets, fictionalNamedBudgetSheets} from './fixtures/folder-budget/build-budget-xlsx.mjs';
 
 const line = (categoryCode, amountExTaxYen, extra = {}) => ({categoryCode, amountExTaxYen, name: extra.name ?? `${categoryCode}-${amountExTaxYen}`, ...extra});
 
@@ -42,7 +44,7 @@ test('FR-PLAN-BUDGET-006 部署ごとの小計を出し、部署の無い行は�
   assert.deepEqual(rows, [{departmentId: 1, subtotalYen: 200000, lineCount: 1}, {departmentId: 2, subtotalYen: 350000, lineCount: 2}, {departmentId: null, subtotalYen: 100000, lineCount: 1}]);
 });
 
-test('FR-PLAN-BUDGET-008 FR-PLAN-BUDGET-009 FR-PLAN-BUDGET-012 左右2区画の予算書を見出しの名前で読み、区分の小計の行で明細を区分に割り当て、セルの黄色を確定の印にし、キャストの別表と2枚目は読まない', () => {
+test('FR-PLAN-BUDGET-008 FR-PLAN-BUDGET-009 FR-PLAN-BUDGET-012 FR-PLAN-BUDGET-040 左右2区画の予算書を（初期値の定義で）見出しの名前で読み、区分の小計の行で明細を区分に割り当て、セルの黄色を確定の印にし、キャストの別表と2枚目は読まない', () => {
   const parsed = readBudgetFile(buildBudgetXlsx(fictionalBudgetSheets()));
   assert.equal(parsed.ok, true);
   assert.equal(parsed.sheet, '予算');
@@ -99,12 +101,30 @@ test('FR-PLAN-BUDGET-010 区分の小計が明細の和と合わなければ、�
   assert.ok(budgetVerdict(checks).failedKeys.includes('subtotal:B'));
 });
 
-test('FR-PLAN-BUDGET-014 原本に合計の行が無い予算書は合計の検査を飛ばし（未判定）、明細から導いた額だけで下書きにできる', () => {
+test('FR-PLAN-BUDGET-014 FR-PLAN-BUDGET-043 原本に合計の行が無い予算書は合計の検査を飛ばし（未判定）、明細から導いた額だけで下書きにでき（判定は例外なしのまま）、「総合計を読めなかった」の知らせを1件出す', () => {
   const parsed = readBudgetFile(buildBudgetXlsx(fictionalBudgetSheets({noTotals: true})));
   const {checks, totals} = checkParsedBudget(parsed);
   assert.equal(totals.totalExTaxYen, 3510000); // 制作管理費・予備費の行も無い
   for (const key of ['direct', 'total', 'estimate', 'tax', 'total_inc_tax']) assert.equal(checks.find((c) => c.key === key).ok, null, key);
   assert.equal(budgetVerdict(checks).kind, 'draft_ok');
+  assert.deepEqual(budgetReadNotices({sourceKind: 'file', checks}), [{kind: 'total_unread', cell: null, label: '総合計を読めなかった'}]);
+});
+
+test('FR-PLAN-BUDGET-043 知らせは xlsx から読んで総合計の照合を飛ばした版だけに出し、総合計を読めた版・画面で作った版・見積りと消費税だけが無い版・総合計の照合を持たない過去の形の検査には出さない', () => {
+  const read = (sheets) => checkParsedBudget(readBudgetFile(buildBudgetXlsx(sheets))).checks;
+  assert.deepEqual(budgetReadNotices({sourceKind: 'file', checks: read(fictionalBudgetSheets())}), []); // 総合計の行がある（額は合わないが読めた）
+  assert.deepEqual(budgetReadNotices({sourceKind: 'file', checks: read(fictionalCodeDetailSheets({noUnknown: true}))}), []); // GRAND TOTAL を読めた
+  const noTotals = read(fictionalBudgetSheets({noTotals: true}));
+  for (const sourceKind of ['screen', 'copy']) assert.deepEqual(budgetReadNotices({sourceKind, checks: noTotals}), [], sourceKind);
+  // 総合計だけが読めて、見積り・消費税・税込・制作管理費が無い（照合は飛ばす）なら知らせない
+  const totalOnly = noTotals.map((check) => (check.key === 'total' ? {...check, ok: true, statedYen: check.derivedYen, cell: 'N30'} : check));
+  assert.deepEqual(budgetReadNotices({sourceKind: 'file', checks: totalOnly}), []);
+  // 総合計の行はあるが値が読めない（数式だけで値の無いセル）も「読めなかった」
+  assert.deepEqual(budgetReadNotices({sourceKind: 'file', checks: [{key: 'total', ok: null, statedYen: null, derivedYen: 1000, cell: 'N30'}]}),
+    [{kind: 'total_unread', cell: 'N30', label: '総合計を読めなかった'}]);
+  // 過去の形の検査の回（総合計の照合が無い・JSON が配列でない）でも落ちずに、知らせない
+  for (const checks of [[], [{key: 'direct', ok: null}], null, undefined, {}]) assert.deepEqual(budgetReadNotices({sourceKind: 'file', checks}), [], JSON.stringify(checks));
+  assert.deepEqual(budgetReadNotices(), []);
 });
 
 test('FR-PLAN-BUDGET-008 FR-PLAN-BUDGET-011 FR-PLAN-BUDGET-013 列の順と位置が違っても見出しの名前で読み、小計の行に閉じられない明細と A〜K に当たらない区分と値の無い数式と円未満の端数は例外、見出しの無いブックは形違い', () => {
@@ -172,4 +192,86 @@ test('FR-PLAN-BUDGET-021 作品画面の進み具合は、版なし→未着手�
   assert.deepEqual(budgetFolderState({versions: [{versionNo: 1}, {versionNo: 2}], fixes: [{seq: 1, action: 'fix', versionNo: 1}]}),
     {state: 'done', done: 1, total: 1, reason: '確定 rev1・下書き rev2'});
   assert.equal(budgetFolderState({versions: [{versionNo: 1}], fixes: [{seq: 1, action: 'fix', versionNo: 1}, {seq: 2, action: 'void', versionNo: 1}]}).state, 'in_progress');
+});
+
+test('FR-PLAN-BUDGET-021 FR-PLAN-BUDGET-043 最新の版に知らせ（総合計を読めなかった）があれば進み具合は要確認で、例外のほうを先に出し、確定版があれば完了のまま', () => {
+  const notices = [{kind: 'total_unread', cell: null, label: '総合計を読めなかった'}];
+  assert.deepEqual(budgetFolderState({versions: [{versionNo: 1}], latestVerdict: {kind: 'draft_ok', failed: 0}, latestNotices: notices}),
+    {state: 'needs_review', done: 0, total: 1, reason: '総合計を読めなかった', notice: true});
+  assert.deepEqual(budgetFolderState({versions: [{versionNo: 1}], latestVerdict: {kind: 'exceptions', failed: 1}, latestNotices: notices}),
+    {state: 'needs_review', done: 0, total: 1, reason: '例外 1'});
+  assert.equal(budgetFolderState({versions: [{versionNo: 1}], fixes: [{seq: 1, action: 'fix', versionNo: 1}], latestNotices: notices}).state, 'done');
+});
+
+test('FR-PLAN-BUDGET-008 費目名に架空の人名・会社名を混ぜた正解表も同じ区分・額・セルで読み、キャストの別表の名前は取り込まない', () => {
+  const plain = readBudgetFile(buildBudgetXlsx(fictionalBudgetSheets()));
+  const named = readBudgetFile(buildBudgetXlsx(fictionalNamedBudgetSheets()));
+  assert.equal(named.ok, true);
+  const shape = (parsed) => parsed.lines.map((l) => [l.cell, l.categoryCode, l.lineNo, l.amountExTaxYen, l.unitPriceYen, l.qtyMilli, l.unit, l.confirmed]);
+  assert.deepEqual(shape(named), shape(plain));
+  const byCell = new Map(named.lines.map((l) => [l.cell, l.name]));
+  assert.equal(byCell.get('B20'), '監督料 架空太郎');
+  assert.equal(byCell.get('J11'), '機材レンタル 架空機材株式会社');
+  assert.equal(byCell.get('B11'), '企画開発費');
+  assert.equal(JSON.stringify(named).includes('架空プロ'), false);
+  assert.equal(JSON.stringify(named).includes('主人公'), false);
+});
+
+test('FR-PLAN-BUDGET-002 FR-PLAN-BUDGET-008 FR-PLAN-BUDGET-040 Code・Detail・Description の書式は（初期値の定義で）、小計の SUM の範囲で明細を区分に割り当て、小計の名前の規則で A〜K・制作管理費・予備費に当て、同じ区分の小計はまとめる', () => {
+  const parsed = readBudgetFile(buildBudgetXlsx(fictionalCodeDetailSheets()));
+  assert.equal(parsed.ok, true);
+  assert.equal(parsed.form, 'code_detail');
+  assert.deepEqual(Object.keys(parsed.categories).sort(), ['A', 'D', 'E', 'H', 'I']);
+  const byCell = new Map(parsed.lines.map((l) => [l.cell, l]));
+  assert.deepEqual(['B5', 'B6'].map((c) => byCell.get(c).categoryCode), ['A', 'A']);
+  assert.equal(byCell.get('B5').name, '脚本料 架空太郎');
+  // 監督費とスタッフ費は D に、ロケーション費(1)(2) は H にまとまる。小計の額は足し、セルは + でつなぐ
+  assert.deepEqual(parsed.lines.filter((l) => l.categoryCode === 'D').map((l) => [l.cell, l.lineNo]), [['B8', 1], ['B15', 2]]);
+  assert.deepEqual(parsed.categories.D.subtotal, {yen: 620000, cell: 'F9+F17', formula: null});
+  assert.deepEqual(parsed.categories.H.subtotal, {yen: 100000, cell: 'F19+F21', formula: null});
+  assert.equal(parsed.categories.A.subtotal.formula, 'SUM(F5:F6)');
+  // Detail が空で Description だけの行は、直前の Detail を前に付ける。Detail の無い行は Description のセルを指す
+  assert.equal(byCell.get('C13').name, 'ロケハン ガソリン代');
+  assert.equal(byCell.get('C13').categoryCode, 'E');
+  assert.equal(byCell.get('B15').qtyMilli, 3000);
+  assert.equal(byCell.get('B15').unitPriceYen, 40000);
+  // 額の無い行（撮影助手・謎の費目の枠）は明細にしない。額0で明細の無い区分の分からない小計は取り込まない部分
+  assert.equal(parsed.lines.some((l) => l.name === '撮影助手'), false);
+  assert.deepEqual(parsed.ignored, [{kind: 'empty_subtotal', cell: 'B23'}]);
+  // 名前の無い小計は、範囲の明細の名前（劇伴）から I を補い、人が確かめる印を付ける。黄色は確定の印
+  assert.deepEqual(parsed.inferredCategories, [{cell: 'B25', label: '', code: 'I'}]);
+  assert.equal(byCell.get('B24').confirmed, true);
+  // 区分の分からない小計に明細があれば、その明細は区分の無い行・小計は A〜K に当たらない区分
+  assert.deepEqual(parsed.unknownSubtotals, [{cell: 'B27', label: '未分類の部 Unknown'}]);
+  assert.deepEqual(parsed.uncategorized.map((l) => l.cell), ['B26']);
+  // 制作管理費・予備費は小計の額で読み、明細にしない。節の合計は読まず、総合計（GRAND TOTAL）だけを原本の総合計にする
+  assert.equal(parsed.stated.managementFeeYen, 100000);
+  assert.equal(parsed.stated.contingencyYen, 50000);
+  assert.deepEqual(parsed.stated.total, {yen: 1312000, cell: 'F34', formula: 'SUM(F10+F28+F33)'});
+  assert.equal(parsed.lines.some((l) => /制作管理|予備/.test(l.name)), false);
+  // 見出しの上の注記と、右の別表（見出しが無い）は読まない
+  assert.deepEqual(parsed.header.notes, ['*撮影日数: 3日']);
+  assert.equal(parsed.lines.some((l) => l.cell?.startsWith('J')), false);
+  assert.equal(budgetVerdict(checkParsedBudget(parsed).checks).kind, 'exceptions');
+});
+
+test('FR-PLAN-BUDGET-002 FR-PLAN-BUDGET-010 Code・Detail・Description の書式で区分が全部決まれば、区分の小計と総合計を明細から照らして下書きにでき、区分の名前の規則は英字を語の境で当てる', () => {
+  const parsed = readBudgetFile(buildBudgetXlsx(fictionalCodeDetailSheets({noUnknown: true})));
+  const {checks, totals} = checkParsedBudget(parsed);
+  assert.equal(totals.totalExTaxYen, 1305000);
+  assert.deepEqual(checks.filter((c) => c.key.startsWith('subtotal:')).map((c) => [c.key, c.ok]),
+    [['subtotal:A', true], ['subtotal:D', true], ['subtotal:E', true], ['subtotal:H', true], ['subtotal:I', true]]);
+  assert.equal(checks.find((c) => c.key === 'total').ok, true);
+  assert.equal(budgetVerdict(checks).kind, 'draft_ok');
+  // 規則（初期値の定義 Code・Detail・Description の categories）: 英字は語の境で当てる（additional の中の dit を拾わない）。制作管理費・予備費は区分でなく別の印
+  const codeDetail = compileBudgetReadDefinition(BUDGET_READ_SEEDS.find((seed) => seed.name === 'Code・Detail・Description').definition);
+  const codeDetailCategory = (label) => firstTarget(codeDetail.categories, label);
+  assert.equal(codeDetailCategory('キャスト費 Additional Talent'), 'B');
+  assert.equal(codeDetailCategory('Post Production Sound'), 'I');
+  assert.equal(codeDetailCategory('Editing'), 'J');
+  assert.equal(codeDetailCategory('制作管理/Production fee'), 'managementFee');
+  assert.equal(codeDetailCategory('Contingency'), 'contingency');
+  assert.equal(codeDetailCategory('Additional'), null);
+  // 従来の書式（科目・金額(税抜)）は今までどおり読む
+  assert.equal(readBudgetFile(buildBudgetXlsx(fictionalBudgetSheets())).form, undefined);
 });

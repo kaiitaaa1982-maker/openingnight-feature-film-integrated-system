@@ -277,6 +277,61 @@ test('FR-CORE-DATA-031 業務の API の利用者の確かめは、いままで�
   assert.equal((await verifyAccessToken(request(HEALTH_DB_PATH, {token: await serviceToken()}), cfg, {keys, requireEmail: false})).common_name, 'synthetic.access');
 });
 
+test('サービストークンは ACCESS_SERVICE_TOKENS の表にあるものだけ、決めたメンバーのメールに読み替える（plans/2026-11-06-r2-ingest.md の B）', async () => {
+  const {serviceTokenEmail} = await import('../src/cloud-security.mjs');
+  const map = JSON.stringify({'synthetic.access': ' Admin@OpeningNight.invalid '});
+  assert.equal(serviceTokenEmail({common_name: 'synthetic.access'}, map), 'admin@openingnight.invalid');
+  assert.equal(serviceTokenEmail({common_name: 'other.access'}, map), null, '表に無いトークン');
+  assert.equal(serviceTokenEmail({common_name: 'synthetic.access'}, undefined), null, '表が無い');
+  assert.equal(serviceTokenEmail({common_name: 'synthetic.access'}, '{壊れた'), null, '壊れた表');
+  assert.equal(serviceTokenEmail({common_name: 'synthetic.access'}, '["synthetic.access"]'), null, '配列の表');
+  assert.equal(serviceTokenEmail({common_name: 'synthetic.access'}, JSON.stringify({'synthetic.access': 'not-an-email'})), null, 'メールの形でない');
+  assert.equal(serviceTokenEmail({common_name: 'toString'}, map), null, '表の持ち物でない名前');
+  assert.equal(serviceTokenEmail({email: 'x@openingnight.invalid', common_name: 'synthetic.access'}, map), null, 'メールのある JWT は読み替えない');
+});
+
+test('Worker: 表にあるサービストークンは決めたメンバーとして業務の API を通り、表に無いトークンは今までどおり 403', async () => {
+  const mapped = await worker.fetch(request('/api/bootstrap', {token: await serviceToken()}),
+    pgEnv({ACCESS_SERVICE_TOKENS: JSON.stringify({'synthetic.access': 'admin@openingnight.invalid'})}), context().ctx);
+  assert.equal(mapped.status, 200);
+  assert.match(await mapped.text(), /風のあとさき/);
+  const unmapped = await worker.fetch(request('/api/bootstrap', {token: await serviceToken()}), pgEnv(), context().ctx);
+  assert.equal(unmapped.status, 403);
+  const strangerMap = await worker.fetch(request('/api/bootstrap', {token: await serviceToken()}),
+    pgEnv({ACCESS_SERVICE_TOKENS: JSON.stringify({'synthetic.access': 'stranger@nowhere.invalid'})}), context().ctx);
+  assert.equal(strangerMap.status, 403, '読み替えた先がメンバーでなければ通さない');
+});
+
+test('FR-CORE-DATA-066 呼び出しの経路の印は、メールの無い JWT（サービストークン）が service_token、メールのある JWT が access', async () => {
+  const {accessVia} = await import('../src/cloud-security.mjs');
+  assert.equal(accessVia({common_name: 'synthetic.access'}), 'service_token');
+  assert.equal(accessVia({email: 'admin@openingnight.invalid', common_name: 'synthetic.access'}), 'access');
+  assert.equal(accessVia({email: 'admin@openingnight.invalid'}), 'access');
+});
+
+test('FR-CORE-DATA-066 FR-EXP-PCOST-047 Worker: サービストークンで読み替えた identity は印を持ち、実費の行は人の行が 400・確認が 403。同じメンバーのメールの JWT は印が access で人の行を足せる', async () => {
+  const env = pgEnv({ACCESS_SERVICE_TOKENS: JSON.stringify({'synthetic.access': 'admin@openingnight.invalid'})});
+  const post = async (token, path, payload) => worker.fetch(new Request(ORIGIN + path, {method: 'POST',
+    headers: {'Cf-Access-Jwt-Assertion': token, Origin: ORIGIN, 'Sec-Fetch-Site': 'same-origin', 'content-type': 'application/json'}, body: JSON.stringify(payload)}), env, context().ctx);
+  const line = (entryMethod) => ({spentOn: '2026-01-10', categoryCode: 'H', payeeName: '架空弁当店', incTaxYen: 1100, entryMethod,
+    ...(entryMethod === 'ai' ? {aiRead: {model: 'fict-reader-1', readFields: ['spentOn', 'categoryCode', 'payeeName', 'incTaxYen'], unreadFields: []}} : {})});
+  const url = '/api/expenses/works/1/actual-lines';
+  const asHuman = await post(await serviceToken(), url, {lines: [line('human')]});
+  assert.equal(asHuman.status, 400);
+  assert.deepEqual((await asHuman.json()).details.map((e) => e.field), ['entryMethod']);
+  const asAi = await post(await serviceToken(), url, {lines: [line('ai')]});
+  assert.equal(asAi.status, 201);
+  const {lineIds} = await asAi.json();
+  const checks = await post(await serviceToken(), `${url}/checks`, {lineIds});
+  assert.equal(checks.status, 403);
+  assert.equal((await checks.json()).error, '確認は、人が画面から行います');
+  const person = await post(await userToken(), url, {lines: [line('human')]});
+  assert.equal(person.status, 201);
+  const personChecks = await post(await userToken(), `${url}/checks`, {lineIds});
+  assert.equal(personChecks.status, 200);
+  assert.equal((await personChecks.json()).checked, 1);
+});
+
 // ---------- Worker の入口（src/cloud-worker.mjs の fetch） ----------
 
 const SECURITY_HEADERS = ['Cache-Control', 'X-Content-Type-Options', 'Referrer-Policy', 'X-Frame-Options', 'Permissions-Policy', 'Content-Security-Policy'];

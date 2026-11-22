@@ -7,9 +7,6 @@ import {createApi} from '../src/ui/api-client.mjs';
 import {
   validateInvitation, invitationRows, memberRows, proposalView, proposalCounts, analyticsView, defaultExpiryInput,
 } from '../src/admin/admin-model.mjs';
-import {definitionView, plainTerms, relationRows, sourceTables} from '../src/admin/definitions-model.mjs';
-import {analysisDefinitions, semanticDocument} from '../src/semantic-definitions.mjs';
-import {objects, relations} from '../src/design-model.mjs';
 
 async function setup(t) {
   const db = await openTestDb({t});
@@ -105,25 +102,4 @@ test('分析: 分析の経路が無い環境では、管理者にも「未接続
   } finally {
     await db.close();
   }
-});
-
-test('設計・定義: 数字の定義は業務の言葉で出し、表名・実装の状況・技術の言葉は技術情報へ', () => {
-  const views = analysisDefinitions.map(definitionView);
-  assert.equal(views.length, analysisDefinitions.length);
-  for (const view of views) {
-    assert.doesNotMatch([view.name, view.rule, view.sourceText].join(' '), /\b(dbt|DuckDB|sales_fact|sale_lines|product_works)\b/, view.id);
-    assert.ok(view.technical.some(([label]) => label === '元の表（DB名）'), view.id);
-  }
-  const verified = views.find((view) => view.id === 'workbench_verified_sales');
-  assert.match(verified.technical.find(([label]) => label === '元の定義文')[1], /dbt/);
-  assert.equal(verified.sourceText, '売上明細、商品の作品配賦');
-  assert.deepEqual(sourceTables(' sale_lines / product_works ').map((table) => table.name), ['sale_lines', 'product_works']);
-  assert.equal(plainTerms('分析用MCP・外部利用者向け認証は未接続'), 'AI向けの分析の接続口（MCP）・外部利用者向け認証は未接続');
-  assert.equal(plainTerms('DWHへの同期は未接続'), '分析用の保管庫への同期は未接続');
-  for (const text of semanticDocument.limitations) assert.doesNotMatch(plainTerms(text), /(?<!（)MCP(?!）)/);
-  const rows = relationRows(relations, objects);
-  assert.equal(rows.length, relations.length);
-  assert.ok(rows.every((row) => row.from && row.to && !/_/.test(row.from + row.to)), '関係は和名で出す');
-  const production = objects.filter((object) => object.production);
-  assert.ok(relationRows(relations, production).every((row) => production.some((object) => object.label === row.from) && production.some((object) => object.label === row.to)));
 });

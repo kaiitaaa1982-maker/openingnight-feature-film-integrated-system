@@ -1,0 +1,20 @@
+/* 表の見本の枠。見た目の決まり: core の docs/design/integrated-system-visual.md（色7つ・角丸0・影なし） */
+.ss{--ink:#111111;--paper:#ffffff;--soft:#f3f1ec;--sub:#5e5850;--faint:#6b655c;--rule:#cfc8ba;--red:#b3261e;
+  --jp:"Noto Sans JP","Yu Gothic","Hiragino Sans","Meiryo",sans-serif;
+  display:grid;gap:10px;min-width:0;color:var(--ink);background:var(--paper);font-family:var(--jp);font-size:15px}
+.ss *{border-radius:0;box-shadow:none}
+.ss-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding-bottom:8px;border-bottom:2px solid var(--ink)}
+.ss-mark{display:inline-flex;align-items:center;height:26px;padding:0 8px;border:1px solid var(--ink);font-size:13px;font-weight:700}
+.ss-switch{display:flex}
+.ss-switch button{min-height:44px;min-width:72px;padding:0 12px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);font:inherit;cursor:pointer}
+.ss-switch button+button{border-left:0}
+.ss-switch button:hover{background:var(--soft);color:var(--ink)}
+.ss-switch button[aria-pressed="true"],.ss-switch button[aria-pressed="true"]:hover{background:var(--ink);color:var(--paper);font-weight:700}
+.ss-received{margin-left:auto;color:var(--faint);font-size:13px;font-variant-numeric:tabular-nums}
+.ss-received b{color:var(--ink)}
+.ss-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+.ss-alert{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;background:var(--red);color:var(--paper);font-weight:800;font-size:18px;font-variant-numeric:tabular-nums}
+.ss-alert.is-done{background:var(--paper);color:var(--ink);border:1px solid var(--ink)}
+.ss-total{margin-left:auto;color:var(--faint);font-size:13px;font-variant-numeric:tabular-nums}
+.ss-total b{color:var(--ink);font-size:24px;font-weight:800}
+.ss-closed{margin:0;padding:12px;border:1px solid var(--ink);font-weight:700}

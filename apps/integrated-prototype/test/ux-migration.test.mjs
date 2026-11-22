@@ -212,7 +212,12 @@ test('D1 migration 0008 matches the broadcast proposal draft tables loaded by Lo
   // 0053（プリプロの手配・美術・撮影の方針）の3表・9トリガー・8索引を足した
   // 0054（プリプロの保管庫の置き場）の1表・2トリガー・5索引を足した
   // 0055（現場の連絡帳）の3表・6トリガー・7索引を足した
-  assert.deepEqual(manifest, {tables: 390, triggers: 912, indexes: 256, views: 0});
+  // 0057（業務ひな型）の6表・18トリガー・10索引を足した
+  // 0060（許可申請）の5表・12トリガー・8索引を足した
+  // 0061（小道具）の3表・8トリガー・5索引を足した
+  // 0068（制作の実費の行と取消・確認）の3表・8トリガー・10索引を足した
+  // 0069（香盤の読みの記録と撮影の結果の結び）の2表・7トリガー・5索引を足した
+  assert.deepEqual(manifest, {tables: 413, triggers: 978, indexes: 298, views: 0});
 });
 
 test('D1 migration 0009 is additive, immutable, scoped and identical to local master SQL',async()=>{

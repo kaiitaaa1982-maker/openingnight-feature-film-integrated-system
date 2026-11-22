@@ -1977,5 +1977,120 @@ ALTER TABLE "source_document_moves" ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS rls_org_member ON "source_document_moves";
 CREATE POLICY rls_org_member ON "source_document_moves" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
 
+-- work_template_folders
+ALTER TABLE "work_template_folders" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "work_template_folders";
+CREATE POLICY rls_org_member ON "work_template_folders" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- work_template_folder_revisions
+ALTER TABLE "work_template_folder_revisions" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "work_template_folder_revisions";
+CREATE POLICY rls_org_member ON "work_template_folder_revisions" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- work_templates
+ALTER TABLE "work_templates" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "work_templates";
+CREATE POLICY rls_org_member ON "work_templates" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- work_template_versions
+ALTER TABLE "work_template_versions" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "work_template_versions";
+CREATE POLICY rls_org_member ON "work_template_versions" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- work_template_moves
+ALTER TABLE "work_template_moves" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "work_template_moves";
+CREATE POLICY rls_org_member ON "work_template_moves" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- work_template_files
+ALTER TABLE "work_template_files" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "work_template_files";
+CREATE POLICY rls_org_member ON "work_template_files" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- permit_offices
+ALTER TABLE "permit_offices" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "permit_offices";
+CREATE POLICY rls_org_member ON "permit_offices" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- permit_office_versions
+ALTER TABLE "permit_office_versions" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "permit_office_versions";
+CREATE POLICY rls_org_member ON "permit_office_versions" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- permit_applications
+ALTER TABLE "permit_applications" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "permit_applications";
+CREATE POLICY rls_org_member ON "permit_applications" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- permit_application_versions
+ALTER TABLE "permit_application_versions" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "permit_application_versions";
+CREATE POLICY rls_org_member ON "permit_application_versions" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- permit_application_documents
+ALTER TABLE "permit_application_documents" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "permit_application_documents";
+CREATE POLICY rls_org_member ON "permit_application_documents" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- prop_meetings
+ALTER TABLE "prop_meetings" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "prop_meetings";
+CREATE POLICY rls_org_member ON "prop_meetings" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- prop_items
+ALTER TABLE "prop_items" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "prop_items";
+CREATE POLICY rls_org_member ON "prop_items" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- prop_item_versions
+ALTER TABLE "prop_item_versions" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "prop_item_versions";
+CREATE POLICY rls_org_member ON "prop_item_versions" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- budget_read_profiles
+ALTER TABLE "budget_read_profiles" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "budget_read_profiles";
+CREATE POLICY rls_org_member ON "budget_read_profiles" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- budget_read_versions
+ALTER TABLE "budget_read_versions" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "budget_read_versions";
+CREATE POLICY rls_org_member ON "budget_read_versions" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- budget_read_approvals
+ALTER TABLE "budget_read_approvals" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "budget_read_approvals";
+CREATE POLICY rls_org_member ON "budget_read_approvals" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- budget_version_reads
+ALTER TABLE "budget_version_reads" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "budget_version_reads";
+CREATE POLICY rls_org_member ON "budget_version_reads" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- production_actual_lines
+ALTER TABLE "production_actual_lines" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "production_actual_lines";
+CREATE POLICY rls_org_member ON "production_actual_lines" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- production_actual_line_voids
+ALTER TABLE "production_actual_line_voids" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "production_actual_line_voids";
+CREATE POLICY rls_org_member ON "production_actual_line_voids" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- production_actual_line_checks
+ALTER TABLE "production_actual_line_checks" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "production_actual_line_checks";
+CREATE POLICY rls_org_member ON "production_actual_line_checks" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- shooting_scene_reads
+ALTER TABLE "shooting_scene_reads" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "shooting_scene_reads";
+CREATE POLICY rls_org_member ON "shooting_scene_reads" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
+-- shooting_scene_result_reads
+ALTER TABLE "shooting_scene_result_reads" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS rls_org_member ON "shooting_scene_result_reads";
+CREATE POLICY rls_org_member ON "shooting_scene_result_reads" USING (org_id = ANY ((SELECT rls_member_org_ids())::bigint[])) WITH CHECK (org_id = ANY ((SELECT rls_member_org_ids())::bigint[]));
+
 -- schema_source_fingerprint
 -- schema_source_fingerprint: RLS をかけない（scripts/pg-rls.mjs の NON_ORG_TABLES に理由）

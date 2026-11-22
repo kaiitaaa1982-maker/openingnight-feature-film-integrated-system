@@ -2,8 +2,9 @@
 // 試算と判断の数字を含むので、読めるのは案件の財務の権限のある人（管理者と、案件の編集の権限を持つ編集担当）。制作担当には見せない。
 // 権限の無い案件と別の組織の案件は、有無を見せず同じ 403 にする。版は追加だけで、前の版は消さない。
 // 原本は共通の原本の置き場（source_documents）に1回だけ置き、クラウドでは本体が R2 に入る（src/cloud-r2-db.mjs）
-import {computeTrial, deckBoard, normalizeFactInput, normalizeMaterialInput, normalizeProfileInput, normalizeTrialInput, readiness, templateTrial,
+import {computeTrial, deckBoard, documentRevisions, normalizeFactInput, normalizeMaterialInput, normalizeProfileInput, normalizeTrialInput, readiness, templateTrial,
   SCENARIOS, TRIAL_TYPES} from './kikaku-model.mjs';
+import {readSourceContent} from '../../source-documents/source-content.mjs';
 import {addFact, addMaterial, addOwnerVersion, addProfileVersion, addTrialVersion, createKikakuProject, hasPlanningDocument, isActiveMember, linkPlanningDocument, putSourceDocument,
   readDocumentForProject, readFact, readListRows, readProject, readProjectDetailRows, readProjectsByIds, readStages, readTrialParts} from './kikaku-store.mjs';
 import {normalizeStageChange} from '../project/project-model.mjs';
@@ -56,7 +57,8 @@ function budgetFixedFrom(fixRows) {
   return {versionNo: no, fixedOn: String(last?.createdAt ?? '').slice(0, 10)};
 }
 
-export function registerKikakuRoutes(app, {db, bad, body, permittedProjects}) {
+// readBusinessObject: 外の置き場（R2 openingnight-business-data）からキーで中身を読む関数。無いときは external の原本を開けない
+export function registerKikakuRoutes(app, {db, bad, body, permittedProjects, readBusinessObject = null}) {
   if (!app || !db || typeof bad !== 'function' || typeof body !== 'function' || typeof permittedProjects !== 'function') {
     throw new Error('kikaku routes require app, db, bad, body and permittedProjects');
   }
@@ -167,19 +169,20 @@ export function registerKikakuRoutes(app, {db, bad, body, permittedProjects}) {
       return {revision: Number(t.revision), reason: t.reason, createdAt: t.created_at, recovery: Object.fromEntries(SCENARIOS.map((s) => [s, r.totals[s].recoveryBps]))};
     });
     const fixed = budgetFixedFrom(budgetFixRows);
+    // 確定版があればその版、無ければいちばん新しい版を下書きとして出す（FR-PLAN-KIKAKU-056）。4つの揃いの「予」は確定版だけで埋まる
     let budget = null;
-    if (fixed) {
-      const v = budgetVersions.find((x) => Number(x.version_no) === fixed.versionNo);
-      const lines = (await readBudgetLines(db, orgId, v.id)).map((l) => ({categoryCode: l.category_code, amountExTaxYen: Number(l.amount_ex_tax_yen)}));
-      const t = budgetTotals({lines, managementFeeYen: Number(v.management_fee_yen), contingencyYen: Number(v.contingency_yen), taxRateBps: Number(v.tax_rate_bps)});
-      budget = {versionNo: fixed.versionNo, totalExTaxYen: t.totalExTaxYen, fixedOn: fixed.fixedOn,
+    const shown = fixed ? budgetVersions.find((x) => Number(x.version_no) === fixed.versionNo) : budgetVersions.at(-1);
+    if (shown) {
+      const lines = (await readBudgetLines(db, orgId, shown.id)).map((l) => ({categoryCode: l.category_code, amountExTaxYen: Number(l.amount_ex_tax_yen)}));
+      const t = budgetTotals({lines, managementFeeYen: Number(shown.management_fee_yen), contingencyYen: Number(shown.contingency_yen), taxRateBps: Number(shown.tax_rate_bps)});
+      budget = {versionNo: Number(shown.version_no), status: fixed ? 'fixed' : 'draft', totalExTaxYen: t.totalExTaxYen, fixedOn: fixed?.fixedOn ?? null,
         diffFromTrialYen: trial ? t.totalExTaxYen - trial.input.costTotalYen : null};
     }
     const stageNow = rows.stages.at(-1) ?? null;
     const owners = rows.owners.filter((o) => o.started_on <= today());
-    const documents = rows.documents.map((d) => ({id: Number(d.id), documentId: Number(d.document_id), kind: d.kind, role: d.role, submittedTo: d.submitted_to,
+    const documents = documentRevisions(rows.documents.map((d) => ({id: Number(d.id), documentId: Number(d.document_id), kind: d.kind, role: d.role, submittedTo: d.submitted_to,
       submittedOn: d.submitted_on, note: d.note, fileName: d.file_name, mediaType: d.media_type, byteLength: Number(d.byte_length), createdAt: d.created_at,
-      storage: d.storage, externalLocation: d.storage === 'external' ? d.external_location : null}));
+      storage: d.storage, externalLocation: d.storage === 'external' ? d.external_location : null})));
     const ready = readiness({documents: documents.map((d) => ({kind: d.kind, role: d.role, submittedOn: d.submittedOn})),
       trialVersions: rows.trials.map((t) => ({createdAt: t.created_at})), budgetFixed: fixed,
       approvals: rows.approvals.map((a) => ({status: a.status, at: a.created_at})), stageCode: stageNow?.stage_code ?? null, stageEnteredOn: stageNow?.entered_on ?? null});
@@ -193,7 +196,7 @@ export function registerKikakuRoutes(app, {db, bad, body, permittedProjects}) {
         synopsisShort: profileNow.synopsis_short, synopsisLong: profileNow.synopsis_long, format: profileNow.format, episodeCount: profileNow.episode_count == null ? null : Number(profileNow.episode_count),
         plannedReleaseYear: profileNow.planned_release_year == null ? null : Number(profileNow.planned_release_year), submitTo: profileNow.submit_to, reason: profileNow.reason, createdAt: profileNow.created_at, people} : null,
       profileRevisions: profileRows.map((p) => ({revision: Number(p.revision), reason: p.reason, createdAt: p.created_at})),
-      trial, trialVersions: versionSummaries, trialTypes: TRIAL_TYPES, budget, documents,
+      trial, trialVersions: versionSummaries, trialTypes: TRIAL_TYPES, budget, documents, externalContent: Boolean(readBusinessObject),
       materials: rows.materials.map((m) => ({id: Number(m.id), kind: m.kind, title: m.title, label: m.label, source: m.source, url: m.url, documentId: m.document_id == null ? null : Number(m.document_id),
         fileName: m.file_name, acquiredOn: m.acquired_on, createdAt: m.created_at})),
       facts, board: deckBoard({facts, hasTrial: Boolean(trial), materialCount: rows.materials.length}),
@@ -300,6 +303,19 @@ export function registerKikakuRoutes(app, {db, bad, body, permittedProjects}) {
     const doc = await getSourceDocument(db, access.identity.org_id, documentId, {withContent: true});
     if (!doc?.bytes) return bad(c, 'この原本は外の置き場にあり、ここからは取り出せません', 409);
     return c.json({ok: true, fileName: doc.fileName ?? doc.file_name, mediaType: doc.mediaType ?? doc.media_type, byteLength: Number(doc.byteLength ?? doc.byte_length), base64: bytesBase64(doc.bytes)});
+  });
+
+  // 原本の中身をそのまま返す（クリックで開く）。PDF・画像はブラウザがその場で表示し、?download=1 は attachment で PowerPoint・Word・Excel に落とす。
+  // 案件への権限と結び付きを確かめてから、共通の原本の読み口（source-content.mjs）に渡す。external は readBusinessObject があるときだけ開ける
+  app.get('/api/planning/kikaku/:projectId/documents/:documentId/content', async (c) => {
+    const access = await projectAccess(c); if (access.error) return access.error;
+    const documentId = Number(c.req.param('documentId'));
+    if (!Number.isSafeInteger(documentId) || documentId <= 0) return bad(c, '原本の番号を確かめてください', 400);
+    const linked = await readDocumentForProject(db, access.identity.org_id, access.projectId, documentId);
+    if (!linked) return bad(c, FORBIDDEN, 403);
+    const result = await readSourceContent(db, access.identity.org_id, documentId, {readBusinessObject, download: c.req.query('download') === '1'});
+    if (result.status !== 200) return bad(c, result.error, result.status);
+    return new Response(result.body, {status: 200, headers: result.headers});
   });
 
   app.post('/api/planning/kikaku/:projectId/stage', async (c) => {

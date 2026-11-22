@@ -30,7 +30,7 @@ test('pg/schema.sql の最後に版の印の表があり、指紋と期待する
   const f = generated.fingerprint;
   assert.equal(createHash('sha256').update(sql.slice(0, at + 1)).digest('hex'), f.ddlSha256);
   assert.match(sql, new RegExp(`^-- 元の移行の指紋: sha256 ${f.sourceSha256}$`, 'm'));
-  assert.deepEqual(f.expected, { tables: 389, triggers: 912, functions: 316, identities: 238, foreignKeys: 952, indexes: 256 });
+  assert.deepEqual(f.expected, { tables: 412, triggers: 978, functions: 336, identities: 257, foreignKeys: 1008, indexes: 298 });
   assert.equal(f.expected.tables, generated.tables.length, '版の印の表は数えない');
   assert.ok(!generated.tables.includes(PG_FINGERPRINT_TABLE), 'D1・SQLite の表の一覧には入らない');
   assert.match(readFileSync(VERIFY_CATALOG_PATH, 'utf8'), new RegExp(`FROM ${PG_FINGERPRINT_TABLE}\\b`), 'verify-catalog.sql は同じ名前の表を読む');
@@ -43,9 +43,9 @@ test('pg/verify-catalog.sql は、当てた DDL の数（表355・トリガー82
   assert.deepEqual(rows.map((r) => r.item), [...MARK_ITEMS, ...COUNT_ITEMS], '項目は数と印だけ');
   const items = byItem(rows);
   for (const item of COUNT_ITEMS) assert.equal(items[item].ok, true, `${item}: ${items[item].actual} と ${items[item].expected}`);
-  assert.equal(items.tables.actual, '389');
-  assert.equal(items.triggers.actual, '912');
-  assert.equal(items.identities.actual, '238');
+  assert.equal(items.tables.actual, '412');
+  assert.equal(items.triggers.actual, '978');
+  assert.equal(items.identities.actual, '257');
   assert.equal(items.fingerprint_rows.ok, true);
   const f = generated.fingerprint;
   assert.deepEqual([items.generator.actual, items.last_migration.actual, items.source_sha256.actual, items.migrations_sha256.actual, items.app_ddl_sha256.actual, items.ddl_sha256.actual],
@@ -61,9 +61,9 @@ test('pg/verify-catalog.sql は、トリガー・索引の欠けと余計な表�
   await raw(pg).query('CREATE TABLE extra_probe_table (id bigint)');
   const items = byItem(await verifyCatalog(pg));
   assert.deepEqual(COUNT_ITEMS.filter((item) => items[item].ok === false), ['tables', 'triggers', 'foreign_keys', 'indexes']);
-  assert.equal(items.tables.actual, '390');
-  assert.equal(items.triggers.actual, '911');
-  assert.equal(items.indexes.actual, '255');
+  assert.equal(items.tables.actual, '413');
+  assert.equal(items.triggers.actual, '977');
+  assert.equal(items.indexes.actual, '297');
 });
 
 test('pg/reconcile.sql は生成物と一致し、SQLite と PostgreSQL で表ごとの件数と金額の列の合計が同じになり、差を見逃さない', async (t) => {
@@ -78,7 +78,7 @@ test('pg/reconcile.sql は生成物と一致し、SQLite と PostgreSQL で表�
   const norm = (rows) => rows.map((r) => [String(r.ord), r.table_name, String(r.row_count), r.money_sums]);
   const left = norm(await lite.all(sql));
   const right = norm((await raw(pg).query(sql)).rows);
-  assert.equal(left.length, 389);
+  assert.equal(left.length, 412);
   assert.deepEqual(right, left);
   const projects = left.find((r) => r[1] === 'projects');
   assert.match(projects[3], /^budget_yen=\d+;base_amount_yen=0$/);

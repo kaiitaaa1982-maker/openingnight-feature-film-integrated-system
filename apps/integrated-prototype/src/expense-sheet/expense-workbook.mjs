@@ -3,6 +3,7 @@ import {decodeXlsx} from '../xlsx.mjs';
 import {parseCsv,toCsv as csv} from '../csv.mjs';
 import {EXPENSE_COLUMN_VERSION,EXPENSE_LAYOUTS,IMPORT_LAYOUTS,EXPENSE_SHEET_NAME,EXPENSE_SHEET_ALIASES,expenseColumnsOfSet,expenseHeading,acceptsHeading,resolveExpenseSet} from './expense-columns.mjs';
 import {sheetColumns,negativeWithholding} from './sheet-model.mjs';
+import {isAdvanceBook,decodeAdvanceBook} from './advance-sheet.mjs';
 import {fail} from './expense-model.mjs';
 export const XLSX_TYPE='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 const encodeReportXlsx=sheets=>reportXlsx({sheets});
@@ -21,7 +22,9 @@ export function sampleRows(layout){const columns=expenseColumnsOfSet(templateLay
 export function expenseTemplate(layout,{samples=false}={}){const headers=templateHeaders(layout),columns=expenseColumnsOfSet(layout).map((c,n)=>({key:String(n),label:headers[n],type:c.type,...(c.type==='number'?{width:14}:{})})),rows=sampleRows(layout).map(r=>Object.fromEntries(r.map((v,n)=>[String(n),v])));
  return encodeReportXlsx([{name:EXPENSE_SHEET_NAME,columns,rows:samples?rows:[],freezeCols:2},{name:'入力ガイド',columns:[{key:'item',label:'項目'},{key:'guide',label:'入力の説明'}],rows:[{item:'対象',guide:'架空の記入例です。業務データを含みません。案件・発生日・税区分・証憑のまとまりは下見画面で確認してください。'},{item:'金額',guide:'税抜・消費税額を明示。源泉の控除は負数、対象外は0、未確認は空欄。税込欄は税抜＋税−源泉控除。税は選択した税区分で再検算します。'},{item:'請求書',guide:'同じ請求書の行範囲を指定してください。番号のない領収書も登録できます。締め日と予定日が空なら支払条件から候補を出します。条件がなければ手入力。'},{item:'出金日',guide:'参照専用です。入力した行は保留とし、経費登録では支払を作りません。出金予定画面から別途記録してください。'},{item:'記入例',guide:'1行目は13,200円の未払、2行目は支払先未登録、3行目は金額未確認です。下見には案件・発生日2026-09-14・税10%・源泉対象外を指定してください。'}]},{name:'記入例',columns,rows},{name:'版情報',columns:[{key:'key',label:'項目'},{key:'value',label:'値'}],rows:[{key:'形式版',value:EXPENSE_COLUMN_VERSION},{key:'列形式',value:layout},{key:'データ',value:'DEMO-*／架空の入力例。既存の架空経費と同じ検証事実。実績の複製登録には使わない。'}]}]);}
 // シートは「経費集計」を正とし、旧名「経費入力」も読む（両方あれば「経費集計」）。見出しは位置ごとに新しい見出しか旧22・25列の見出しに完全一致
-export function decodeExpenseFile(bytes,name){let rows;if(/\.csv$/i.test(name))rows=csvRows(new TextDecoder('utf-8',{fatal:true}).decode(bytes));else{const book=decodeXlsx(bytes);rows=[EXPENSE_SHEET_NAME,...EXPENSE_SHEET_ALIASES].map(sheet=>book.find(s=>s.name===sheet)).find(Boolean)?.rows;}
+// ORG 仮払精算明細書（IMPORT_FORMATS.fab_advance）は「仮払精算明細書(N行版)」のシートで見分け、数式のセルは保存された計算結果で読む（advance-sheet.mjs）。
+// ほかの xlsx は従来どおり数式を拒否する
+export function decodeExpenseFile(bytes,name){let rows;if(/\.csv$/i.test(name))rows=csvRows(new TextDecoder('utf-8',{fatal:true}).decode(bytes));else{const cached=decodeXlsx(bytes,{formulas:'cached'});if(isAdvanceBook(cached)&&!cached.some(s=>[EXPENSE_SHEET_NAME,...EXPENSE_SHEET_ALIASES].includes(s.name)))return decodeAdvanceBook(cached);const book=decodeXlsx(bytes);rows=[EXPENSE_SHEET_NAME,...EXPENSE_SHEET_ALIASES].map(sheet=>book.find(s=>s.name===sheet)).find(Boolean)?.rows;}
  if(!rows?.length)fail('経費集計シートがありません');const headers=rows[0],layout=IMPORT_LAYOUTS.find(l=>EXPENSE_LAYOUTS[l]===headers.length)??null;
  if(!layout||headers.some((v,n)=>!acceptsHeading(n+1,v)))fail('未対応の形式です。経費の22列または25列の雛形を使ってください');
  return {layout,rows:rows.slice(1).map((values,n)=>({row_no:n+2,values:Array.from({length:headers.length},(_,i)=>values[i]??null)})).filter(r=>r.values.some(v=>v!=null&&v!==''))};

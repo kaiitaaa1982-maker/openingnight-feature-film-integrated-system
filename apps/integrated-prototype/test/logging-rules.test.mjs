@@ -15,6 +15,7 @@ const CONSOLE_ALLOWED = new Map([
   ['src/server-production.mjs', 1],  // 起動の知らせ
   ['src/app.mjs', 1],                // app.onError（エラーの受け止め口）
   ['src/report-issuance-routes.mjs', 1], // 帳票の失敗
+  ['src/source-documents/source-upload.mjs', 1], // 置き場に置けなかった理由（400 に替えて返すので app.onError を通らない）
   ['src/preview/preview-main.mjs', 1],   // 閲覧用プレビュー（ブラウザ側）
   ['src/ui/ErrorBoundary.jsx', 1],        // 画面のエラーの受け止め口
 ]);

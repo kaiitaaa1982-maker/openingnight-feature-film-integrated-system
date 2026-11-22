@@ -5,6 +5,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Notice} from '../../ui/Notice.jsx';
 import DocumentPicker from './DocumentPicker.jsx';
+import {openTarget} from './kikaku-model.mjs';
 import './kikaku.css';
 
 const yen = (v) => (v == null ? '—' : Number(v).toLocaleString('ja-JP'));
@@ -151,7 +152,7 @@ function Summary({data, request, base, act}) {
         <div className="kk-card"><div className="kk-l">製作費（試算 rev{data.trial?.revision ?? '—'}）</div><div className="kk-big">{yen(data.trial?.input.costTotalYen)}</div></div>
         <div className="kk-card"><div className="kk-l">回収率 good</div><div className="kk-big">{pct(t?.good.recoveryBps)}</div><div className="kk-sub">even {pct(t?.even.recoveryBps)} ／ MAX {pct(t?.max.recoveryBps)}</div></div>
         <div className="kk-card"><div className="kk-l">±0 になる月 good</div><div className="kk-big">{t?.good.breakEvenMonth ?? (t ? '届かない' : '—')}</div></div>
-        <div className="kk-card"><div className="kk-l">予算書との差</div><div className="kk-big">{data.budget ? yen(data.budget.diffFromTrialYen) : '—'}</div>{data.budget && <div className="kk-sub">rev{data.budget.versionNo} {yen(data.budget.totalExTaxYen)}</div>}</div>
+        <div className="kk-card"><div className="kk-l">予算書 {data.budget && <span className={`kk-tag ${data.budget.status === 'fixed' ? 'done' : 'in_progress'}`}>{data.budget.status === 'fixed' ? '確定' : '下書き'}</span>}</div><div className="kk-big">{data.budget ? yen(data.budget.totalExTaxYen) : '—'}</div>{data.budget && <div className="kk-sub">rev{data.budget.versionNo} ／ 試算との差 {yen(data.budget.diffFromTrialYen)}</div>}</div>
         <div className="kk-card"><div className="kk-l">作り手への印税 good</div><div className="kk-big">{yen(t?.good.creator)}</div></div>
       </div>
       <div className="kk-two">
@@ -338,17 +339,27 @@ function Docs({data, request, base, act}) {
   const upload = (kind, file, extra = {}) => act(async () => {
     await request(`${base}/documents`, {method: 'POST', body: {kind, fileName: file.name, mediaType: file.type, base64: await readFileBase64(file), ...extra}});
   }, `${file.name} を置きました`);
-  const download = async (d) => {
-    const r = await request(`${base}/documents/${d.documentId}`);
+  // クリックで開く（会社ルートの plans/2026-10-22-folder-kikaku.md「クリックで開く」の第一切れ）。
+  // PDF・画像はブラウザの新しいタブにその場で表示、Office の種類は同じ名前のまま落として PowerPoint・Word・Excel で開く。
+  // 直した結果は、保存したファイルを「＋企画書」「＋試算」で置き直すと新しい版になる（表は変えず、受け口が版を数える）
+  const contentUrl = (d, download) => `/api${base}/documents/${d.documentId}/content${download ? '?download=1' : ''}`;
+  const open = (d) => {
+    const t = openTarget(d);
+    if (t.view) { window.open(contentUrl(d, false), '_blank', 'noopener'); return; }
     const a = document.createElement('a');
-    a.href = `data:${r.mediaType || 'application/octet-stream'};base64,${r.base64}`;
-    a.download = r.fileName; a.click();
+    a.href = contentUrl(d, true); a.download = d.fileName; a.click();
   };
   const list = (kind) => data.documents.filter((d) => d.kind === kind);
   const choose = (kind) => picker === kind && <DocumentPicker key={kind} request={request} base={base} kind={kind} extra={kind === 'deck' ? deck : {}}
     onClose={() => setPicker(null)} onLinked={() => { setPicker(null); act(async () => {}, '結び付けました'); }} />;
-  const file = (d) => d.storage === 'external' ? <span title={d.externalLocation}>{d.fileName}</span>
-    : <button type="button" className="kk-link" onClick={() => act(() => download(d))}>{d.fileName}</button>;
+  const howToOpen = (d) => { const t = openTarget(d); return t.app ? `${t.app} で開く` : t.view ? '開く' : '落とす'; };
+  const file = (d) => {
+    const closed = d.storage === 'external' && !data.externalContent;
+    const revision = d.revisionCount > 1 && <span className={`kk-tag ${d.latest ? 'done' : 'declined'}`} title={d.latest ? '最新の版' : '前の版'}>{d.latest ? `版${d.revision} 最新` : `版${d.revision}`}</span>;
+    if (closed) return <><span title={d.externalLocation}>{d.fileName}</span>{revision}<span className="kk-sub" title="外の置き場につながっていないので、ここからは開けません">置き場</span></>;
+    return <><button type="button" className="kk-link" title={howToOpen(d)} onClick={() => open(d)}>{d.fileName}</button>{revision}
+      <button type="button" className="kk-tag kk-open" onClick={() => open(d)}>{howToOpen(d)}</button></>;
+  };
   return (
     <div className="kk-two">
       <div className="kk-card">

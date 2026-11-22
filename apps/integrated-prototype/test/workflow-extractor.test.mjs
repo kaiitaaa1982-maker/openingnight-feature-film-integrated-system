@@ -43,7 +43,8 @@ test('local extractor handles DOCX, XLSX and text/scanned PDF without office app
 test('FR-PROD-SCHED-005 FR-PROD-SCHED-022 rule-based schedule reports availability conflict and never invents a date',()=>{
   const scenes=[{sceneNo:'S1',cast:['A'],location:'港',estimatedMinutes:60},{sceneNo:'S2',cast:['B'],location:'港',estimatedMinutes:60}];
   const proposal=proposeRuleBasedSchedule(scenes,{dates:[{date:'2026-10-01',budgetMinutes:120}],availability:{cast:{A:['2026-10-01'],B:[]},locations:{港:['2026-10-01']}},unit:'A班'});
-  assert.equal(proposal.commitAllowed,false);assert.deepEqual(proposal.days.map(x=>x.date),['2026-10-01']);assert.equal(proposal.conflicts[0].sceneNo,'S2');
+  assert.deepEqual(proposal.days.map(x=>x.date),['2026-10-01']);assert.equal(proposal.conflicts[0].sceneNo,'S2');
+  assert.deepEqual(proposal.unassigned.map(x=>[x.sceneNo,x.reason]),[['S2','時間予算・出演者・場所の候補日を同時に満たす日がありません']]);assert.deepEqual(proposal.days[0].scenes.map(x=>x.sceneNo),['S1']);
 });
 
 test('縦書きの台本PDFを列ごとに組み直し、番号付き・○◯〇の見出し、話数付きのS#、頁（1/8）、文字化けの疑いを出す',async()=>{

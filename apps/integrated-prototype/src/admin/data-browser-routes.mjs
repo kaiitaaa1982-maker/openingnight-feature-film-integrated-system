@@ -4,7 +4,7 @@ export {isLargeColumn} from './schema-visibility.mjs';
 import {readTableSchema, schemaForRole} from './er-routes.mjs';
 import {tableLabel, columnDisplayName, columnDescription} from './er-model.mjs';
 import {objects} from '../design-model.mjs';
-// 管理者向けの「データ一覧」と「取込履歴」。登録済みのデータを表のまま読み取り専用で確かめ、Excel/CSVで出す。
+// 管理者向けの表の定義・行の受け口（画面は 2026-11-02 に外した。秘匿の試験とプレビューの記録が使う）と「取込履歴」。登録済みのデータを表のまま読み取り専用で確かめ、Excel/CSVで出す。
 // 自組織の行だけ（org_id のある表）。セッション・利用者・組織・内部の排他用の表は出さず、秘密に見える列は伏せる。
 // 案件収支の予実の目標の版・計画の版とその子表・採用の記録（移行 0014）は、額から代表の報酬が割り戻せるので、管理者にも表名ごと出さない
 // （額は src/revenue/revenue-store.mjs の読み取りが owner 本人にだけ返す。FR-REV-YOJITSU-006、行動指標の計画 K2-12）
@@ -22,7 +22,7 @@ export function registerDataBrowserRoutes(app, {db, bad}) {
     return {...schema, tables: schemaForRole(schema.tables, role).filter((t) => !HIDDEN_TABLES.has(t.name)).map((t) => ({...t, definition: t.columns, columns: t.columns.map((c) => c.name), orgScoped: t.columns.some((c) => c.name === 'org_id')}))};
   }
 
-  const adminOnly = (c) => (c.get('identity').role === 'admin' ? null : bad(c, '行の中身・取込履歴は管理者だけが見られます。表の定義はデータ一覧で確認できます。', 403));
+  const adminOnly = (c) => (c.get('identity').role === 'admin' ? null : bad(c, '行の中身・取込履歴は管理者だけが見られます。', 403));
 
   app.get('/api/admin/tables', async (c) => {
     const role = c.get('identity').role;

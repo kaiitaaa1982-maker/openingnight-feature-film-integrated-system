@@ -13,3 +13,8 @@ export const readPlacementRows = (db, orgId, workId) => db.all(`SELECT p.*, d.fi
 // この作品の保管庫にその原本があるか（開く・置き場を変える・連絡帳の添付の判定）
 export const isPlacedInWork = async (db, orgId, workId, documentId) =>
   Boolean(await db.get('SELECT 1 AS ok FROM preprod_document_placements WHERE org_id=? AND work_id=? AND document_id=? LIMIT 1', [orgId, workId, documentId]));
+// 原本の置き場から辿る保管庫。置き直した記録も参照の行数に含める。
+export const readVaultSourceLinks = (db, orgId) => db.all(`SELECT p.document_id,
+  w.id AS target_id,w.id AS work_id,w.title AS name,COUNT(*) AS n FROM preprod_document_placements p
+  JOIN works w ON w.org_id=p.org_id AND w.id=p.work_id
+  WHERE p.org_id=? GROUP BY p.document_id,w.id,w.title ORDER BY w.title,w.id`, [orgId]);

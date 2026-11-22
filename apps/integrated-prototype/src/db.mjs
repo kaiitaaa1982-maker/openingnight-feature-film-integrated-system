@@ -159,6 +159,31 @@ export const notebookMigrationSql = readFileSync(resolve(here, '../migrations', 
 // 原本の場所の移動（0056）。作るだけの文なので0055のあとに毎回当てる。
 export const SOURCE_DOCUMENT_MOVES_MIGRATION = '0056_source_document_moves.sql';
 export const sourceDocumentMovesMigrationSql = readFileSync(resolve(here, '../migrations', SOURCE_DOCUMENT_MOVES_MIGRATION), 'utf8');
+// 制作部の業務のひな型の4表（フォルダ・ひな型・版・Office の原本の結び）。作るだけの文なので0056のあとに毎回当てる。番号 0057 は仮（調整役が決める）
+export const WORK_TEMPLATES_MIGRATION = '0057_work_templates.sql';
+export const workTemplatesMigrationSql = readFileSync(resolve(here, '../migrations', WORK_TEMPLATES_MIGRATION), 'utf8');
+// キャストのバラしの時刻と撮影日のスタッフの数（0058・ALTER TABLE の2文）。列がまだ無い DB にだけ、1つのトランザクションで当てる
+export const PRODUCTION_WRAP_CREW_MIGRATION = '0058_production_wrap_crew.sql';
+export const productionWrapCrewMigrationSql = readFileSync(resolve(here, '../migrations', PRODUCTION_WRAP_CREW_MIGRATION), 'utf8');
+// 組織の本番・デモの印（0059・ALTER TABLE の1文。既存の組織は demo）。列がまだ無い DB にだけ、1つのトランザクションで当てる
+export const ORGANIZATION_KIND_MIGRATION = '0059_organization_kind.sql';
+export const organizationKindMigrationSql = readFileSync(resolve(here, '../migrations', ORGANIZATION_KIND_MIGRATION), 'utf8');
+// 撮影の許可申請（提出先・その設定の版・申請・申請の版・原本の結び付きの5表）。作るだけの文なので0059のあとに毎回当てる。番号 0060 は調整役から受け取った
+export const PERMIT_APPLICATIONS_MIGRATION = '0060_permit_applications.sql';
+export const permitApplicationsMigrationSql = readFileSync(resolve(here, '../migrations', PERMIT_APPLICATIONS_MIGRATION), 'utf8');
+// 小道具の品目・その版・打ち合わせの3表（会社ルートの plans/2026-11-09-props-meeting.md）。作るだけの文なので0060のあとに毎回当てる。番号 0061 は仮（調整役が決める）
+export const PROP_ITEMS_MIGRATION = '0061_prop_items.sql';
+export const propItemsMigrationSql = readFileSync(resolve(here, '../migrations', PROP_ITEMS_MIGRATION), 'utf8');
+// 予算書の読み取りの定義・その版・承認・予算書の版が読まれた定義の版の4表（会社ルートの plans/2026-11-12-ingest-definitions.md の手順4）。
+// 作るだけの文なので0061のあとに毎回当てる。初期値を既存の組織に入れる 0067 は当てない（試作の組織には受け口が種から入れる）。番号 0066・0067 は仮（調整役が決める）
+export const BUDGET_READ_DEFINITIONS_MIGRATION = '0066_budget_read_definitions.sql';
+export const budgetReadDefinitionsMigrationSql = readFileSync(resolve(here, '../migrations', BUDGET_READ_DEFINITIONS_MIGRATION), 'utf8');
+// 制作の実費の行・その取消・確認の3表（会社ルートの plans/2026-11-20-genba-inbox.md の手順8）。作るだけの文なので0066のあとに毎回当てる。番号 0068 は仮（調整役が決める）
+export const PRODUCTION_ACTUAL_LINES_MIGRATION = '0068_production_actual_lines.sql';
+export const productionActualLinesMigrationSql = readFileSync(resolve(here, '../migrations', PRODUCTION_ACTUAL_LINES_MIGRATION), 'utf8');
+// 香盤の読みの記録と、撮影の結果の行と読みの束の結び（会社ルートの plans/2026-11-20-genba-inbox.md の手順7）。作るだけの文なので0068のあとに毎回当てる。番号 0069 は仮（調整役が決める）
+export const SHOOTING_SCENE_READS_MIGRATION = '0069_shooting_scene_reads.sql';
+export const shootingSceneReadsMigrationSql = readFileSync(resolve(here, '../migrations', SHOOTING_SCENE_READS_MIGRATION), 'utf8');
 
 export class LocalDatabase {
   // init: false は、表の定義も試作用の行も流さずに開く（本番の写しの上で書き込みを記録するとき。写しに行を黙って足さない）
@@ -241,6 +266,16 @@ export class LocalDatabase {
     this.raw.exec(preprodVaultMigrationSql);
     this.raw.exec(notebookMigrationSql);
     this.raw.exec(sourceDocumentMovesMigrationSql);
+    this.raw.exec(workTemplatesMigrationSql);
+    const callColumns = new Set(this.raw.prepare('PRAGMA table_info(production_calls)').all().map((row) => row.name));
+    if (!callColumns.has('wrap_time')) this.transaction('BEGIN IMMEDIATE', () => this.raw.exec(productionWrapCrewMigrationSql));
+    const orgColumns = new Set(this.raw.prepare('PRAGMA table_info(organizations)').all().map((row) => row.name));
+    if (!orgColumns.has('kind')) this.transaction('BEGIN IMMEDIATE', () => this.raw.exec(organizationKindMigrationSql));
+    this.raw.exec(permitApplicationsMigrationSql);
+    this.raw.exec(propItemsMigrationSql);
+    this.raw.exec(budgetReadDefinitionsMigrationSql);
+    this.raw.exec(productionActualLinesMigrationSql);
+    this.raw.exec(shootingSceneReadsMigrationSql);
   }
   // 入口の4つと読み取りの一括（FR-CORE-DATA-003・009）。エラーには共通のエラーの種類を付ける（src/data-platform/db-errors.mjs）。
   // 新しい行の ID は INSERT … RETURNING id を get で受け取る（lastInsertRowid は返さない。docs/rules/dialect.md）

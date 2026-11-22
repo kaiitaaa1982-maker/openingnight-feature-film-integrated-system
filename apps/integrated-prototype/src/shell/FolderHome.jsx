@@ -10,6 +10,7 @@ export function FolderHome({folders, works, onNavigate, onSelectWork, canOpenWor
       {folders.map((folder) => <section key={folder.id} className={`app-folder-card${folder.disabled ? ' is-disabled' : ''}`} aria-disabled={folder.disabled || undefined}>
         <h2><FolderName folder={folder} /></h2>
         {!folder.disabled && <PageLinks items={folder.items} onNavigate={onNavigate} />}
+        {!folder.disabled && folder.links?.length > 0 && <PageLinks items={folder.links} onNavigate={onNavigate} context={folder.id} />}
       </section>)}
     </div>
   </div>;

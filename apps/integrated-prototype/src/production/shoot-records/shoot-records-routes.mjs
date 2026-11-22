@@ -5,11 +5,16 @@
 // - POST /api/production/shoot-records/days/:dayId/records  原本を置く（写真・PDF など）か、理由つきで「不要」にする
 // - POST /api/production/shoot-records/days/:dayId/items    日報の項目を足す・直す・取り下げる
 // - GET  /api/production/shoot-records/records/:id/original 置いた原本を返す（中身は共通の原本の表 source_documents）
+// - GET  /api/production/shoot-records/leftover?workId=  作品の未解決のシーン（撮り残し）と件数、順延の移し先に選べる今日以降の撮影日（&scenes=all で全シーンの札も）
 // 読めるのは作品の案件に所属する人。書けるのは管理者と、制作担当・編集担当のうち案件に制作の権限を持つ人（香盤・日々スケの保存と同じ）。
 // 作品ごとの役目の表（SCHED-062）が入ったら、助監督・スクリプター・部署の役目で絞る。権限の無い作品と別の組織は、有無を見せず同じ 403
-import {addItem, addRecord, addResult, readAssignments, readDay, readDays, readItems, readProjectGrant, readRecordOriginal, readRecords, readRecordWork, readResults,
-  readScenes, readWork} from './shoot-records-store.mjs';
-import {buildMatrix, currentItems, latestBy, normalizeItemInput, normalizeRecordInput, normalizeResultInput, visibleItems} from './shoot-records-model.mjs';
+// ホームの作業キューの「撮り残したシーン」は leftoverQueueItem（work-queue.mjs から呼ぶ）
+import {addItem, addRecord, addResult, readAssignments, readDay, readDays, readItems, readLeftoverSources, readProjectGrant, readRecordOriginal, readRecords, readRecordWork,
+  readResults, readScenes, readWork} from './shoot-records-store.mjs';
+import {buildMatrix, currentItems, isSpareDay, latestBy, normalizeItemInput, normalizeRecordInput, normalizeResultInput, visibleItems} from './shoot-records-model.mjs';
+import {deriveLeftover, upcomingDays} from './leftover-model.mjs';
+import {sceneStates} from './scene-states-model.mjs';
+import {serviceTokenResultError} from './ai-results-model.mjs';
 import {dbErrorKind, isUniqueViolation} from '../../data-platform/db-errors.mjs';
 
 const FORBIDDEN = 'この作品の撮影の記録への権限がありません';
@@ -26,6 +31,17 @@ function toBase64(bytes) {
 }
 
 const positiveId = (raw) => (/^\d+$/.test(String(raw ?? '')) && Number.isSafeInteger(Number(raw)) && Number(raw) > 0 ? Number(raw) : null);
+
+// ホームの作業キューの「撮り残したシーン」（全役割）。組織の行をまとめて読み（作品ごとに SQL を回さない）、見てよい作品（workTitle の鍵）のシーンだけを引き算する。
+// 開く先は撮影の記録の画面の「未解決」（view=leftover。FR-PROD-SCHED-102）。行の workId で作品を選んで開く
+export async function leftoverQueueItem(db, orgId, {today, workTitle}) {
+  const titles = new Map([...workTitle].map(([workId, title]) => [Number(workId), title]));
+  const sources = await readLeftoverSources(db, orgId);
+  const {rows} = deriveLeftover({...sources, scenes: sources.scenes.filter((scene) => titles.has(Number(scene.work_id))), today});
+  return {id: 'leftover-scenes', title: '撮り残したシーン', page: '撮影の記録', params: {view: 'leftover'}, tone: 'bad',
+    rows: rows.map((row) => ({label: `S#${row.sceneNo}${row.location ? `・${row.location}` : ''}`,
+      detail: `${titles.get(row.workId)}・${row.reasonLabel}${row.lastShootDate ? `・${String(row.lastShootDate).replaceAll('-', '/')}` : ''}`, workId: row.workId}))};
+}
 
 export function registerShootRecordRoutes(app, {db, bad, body, permittedProjects, now = () => new Date()}) {
   if (!app || !db || typeof bad !== 'function' || typeof body !== 'function' || typeof permittedProjects !== 'function') {
@@ -84,6 +100,22 @@ export function registerShootRecordRoutes(app, {db, bad, body, permittedProjects
     return c.json({ok: true, work: {id: work.id, code: work.code, title: work.title}, canWrite: found.write, today: todayInJapan(now()), ...matrix});
   });
 
+  // 未解決のシーン（撮り残し）。未解決かどうかはプログラムの引き算だけで決める（leftover-model.mjs）
+  // ?scenes=all のときは、全シーンの札（撮れた・予定・欠番・未解決・未割当。同じ引き算に通す。scene-states-model.mjs）も返す（未解決の画面の「全シーン」）
+  app.get('/api/production/shoot-records/leftover', async (c) => {
+    const found = await workAccess(c, positiveId(c.req.query('workId')));
+    if (found.error) return found.error;
+    const scenesParam = c.req.query('scenes');
+    if (scenesParam !== undefined && scenesParam !== 'all') return bad(c, '全シーンは scenes=all で読みます', 400);
+    const {identity, work} = found;
+    const today = todayInJapan(now());
+    const sources = await readLeftoverSources(db, identity.org_id, work.id);
+    const {rows, counts} = deriveLeftover({...sources, today});
+    return c.json({ok: true, work: {id: work.id, code: work.code, title: work.title}, canWrite: found.write, today, rows, counts,
+      upcomingDays: upcomingDays(sources.days, today).map((day) => ({id: Number(day.id), shootDate: day.shoot_date, unit: day.unit, label: day.label, spare: isSpareDay(day)})),
+      ...(scenesParam === 'all' ? {scenes: sceneStates({...sources, today})} : {})});
+  });
+
   app.get('/api/production/shoot-records/days/:dayId', async (c) => {
     const found = await dayAccess(c);
     if (found.error) return found.error;
@@ -124,6 +156,9 @@ export function registerShootRecordRoutes(app, {db, bad, body, permittedProjects
     let input;
     try { input = normalizeResultInput(read.input); } catch (error) { return bad(c, error.message, 400, undefined, error); }
     const {identity, work, day} = found;
+    // サービストークン（AI）の呼び出しは、撮れた・一部を2回の読みの受け口（ai-results-routes.mjs）からだけ入れる（D-047 の4。FR-PROD-SCHED-106）
+    const viaError = serviceTokenResultError(input.result, identity.via ?? null);
+    if (viaError) return bad(c, viaError, 400);
     const sceneIds = new Set((await readScenes(db, identity.org_id, work.id)).map((row) => Number(row.id)));
     if (!sceneIds.has(input.sceneId)) return bad(c, 'この作品のシーンではありません', 400);
     if (input.postponedToDayId != null) {

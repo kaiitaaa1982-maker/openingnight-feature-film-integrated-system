@@ -52,6 +52,14 @@ export const EXPENSE_COLUMN_GROUPS=Object.freeze({standard25:'標準25列',added
 // 様式（位置の切り方）。取込は legacy22・standard25 を受ける。standard33 の取込・雛形は香盤表 #4c（新しい取込の表）で足す
 export const EXPENSE_LAYOUTS=Object.freeze({legacy22:22,standard25:25,standard33:33});
 export const IMPORT_LAYOUTS=Object.freeze(['legacy22','standard25']);
+// 経費集計シート以外で受ける書式。読んだ行は layout の位置の配列へ置き換え、原本はそのまま保存する（取込の表の layout は layout の値）
+// fab_advance: ORG 仮払精算明細書（立替一般経費精算フォーマット）。「仮払精算明細書(N行版)」のシートを読み、記載例のシートと「例」の行は読まない。
+//  見出しの行（No.・領収書日付…）を見出しの文字で探し、列はその見出しの位置で読む。支払金額は税込（150行版は税率ごとの列と合計の列）
+export const IMPORT_FORMATS=Object.freeze({fab_advance:Object.freeze({label:'ORG 仮払精算明細書',layout:'standard25',sheet:/^仮払精算明細書\((\d+)行版\)$/})});
+// 仮払精算明細書の見出し（改行・空白・「(プルダウンor手入力)」を除いた文字）→ 読む要素
+export const ADVANCE_HEADINGS=Object.freeze({'No.':'no','領収書日付':'date','項目':'category','支払先':'payee','支払金額':'amount','エビデンス有無':'evidence','領収証形式':'receipt_form','利用者氏名':'user','作品名':'work','購入品内容':'item','使用用途':'purpose','チェック時備考':'note'});
+// 見出しの上の欄（ラベル → 右隣の値）
+export const ADVANCE_FIELDS=Object.freeze({'作品名':'work','仮払申請時の件名':'subject','使用目的':'purpose','仮払金額':'advance_yen','実費':'actual_yen','残金':'remaining_yen','フォーマット作成日':'created_on','仮払精算者':'settler'});
 export const EXPENSE_SET_NAMES=Object.freeze([...Object.keys(EXPENSE_LAYOUTS),'accounting','payout']);
 // URL・保存した画面の別名（basic＝standard33、legacy＝legacy22）
 export const EXPENSE_SET_ALIASES=Object.freeze({basic:'standard33',legacy:'legacy22'});

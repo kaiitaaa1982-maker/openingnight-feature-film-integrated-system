@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {WORK_PAGES, EIGYO_PAGES, SALES_PAGES, SHARED_PAGES, normalizePage, pageArea} from '../src/navigation.mjs';
+import {WORK_PAGES, EIGYO_PAGES, SALES_PAGES, normalizePage, pageArea} from '../src/navigation.mjs';
 import {
   NAV_GROUPS, navItems, slugOf, pageOfSlug, displayLabel, pageScope, areaOf, visibleGroups, describePage,
   SUB_AREAS, DEFAULT_SUB_AREA, subAreaOf, menuGroups, subAreaTabs, subAreaEntry, rememberPage, rememberedPage, lastSubKey, lastAreaKey,
@@ -9,7 +9,7 @@ import {
 import {parseLocation} from '../src/shell/url-state.mjs';
 
 test('every page appears exactly once in the navigation groups with a unique slug and a description', () => {
-  const pages = [...WORK_PAGES, ...EIGYO_PAGES, ...SALES_PAGES, ...SHARED_PAGES];
+  const pages = [...WORK_PAGES, ...EIGYO_PAGES, ...SALES_PAGES];
   const items = navItems();
   assert.equal(items.length, pages.length);
   for (const page of pages) assert.equal(items.filter((item) => item.page === page).length, 1, page);
@@ -20,7 +20,10 @@ test('every page appears exactly once in the navigation groups with a unique slu
   for (const page of WORK_PAGES) assert.equal(areaOf(page), 'work', page);
   for (const page of EIGYO_PAGES) assert.equal(areaOf(page), 'eigyo', page);
   for (const page of SALES_PAGES) assert.equal(areaOf(page), 'sales', page);
-  for (const page of SHARED_PAGES) assert.equal(areaOf(page), 'shared', page);
+  // 管理・設計の欄は 2026-11-02 に外した。チーム・取込履歴は業務基幹（外枠では共通の欄）に属する
+  assert.equal('shared' in NAV_GROUPS, false);
+  for (const page of ['チーム', '取込履歴']) assert.equal(areaOf(page), 'work', page);
+  for (const slug of ['definitions', 'design-canvas', 'er', 'extensions', 'data']) assert.equal(pageOfSlug(slug), null, slug);
 });
 
 test('slug and page convert both ways; unknown values fall back safely', () => {
@@ -31,7 +34,7 @@ test('slug and page convert both ways; unknown values fall back safely', () => {
   assert.equal(displayLabel('原本取り込み'), '売上報告の取込');
   assert.equal(pageScope('帳票センター'), 'company');
   assert.equal(pageScope('制作'), 'work');
-  assert.equal(pageScope('ER'), 'none');
+  assert.equal(pageScope('チーム'), 'none');
   assert.ok(describePage('帳票センター').includes('年間売上'));
 });
 
@@ -62,9 +65,9 @@ test('every sales group belongs to one of the four sub-areas, and only sales pag
   assert.equal(DEFAULT_SUB_AREA, 'uriage');
   const ids = new Set(SUB_AREAS.map((sub) => sub.id));
   for (const group of NAV_GROUPS.sales) assert.ok(ids.has(group.sub), group.id);
-  for (const group of [...NAV_GROUPS.work, ...NAV_GROUPS.eigyo, ...NAV_GROUPS.shared]) assert.equal(group.sub, undefined, group.id);
+  for (const group of [...NAV_GROUPS.work, ...NAV_GROUPS.eigyo]) assert.equal(group.sub, undefined, group.id);
   for (const page of SALES_PAGES) assert.ok(ids.has(subAreaOf(page)), page);
-  for (const page of [...WORK_PAGES, ...EIGYO_PAGES, ...SHARED_PAGES]) assert.equal(subAreaOf(page), null, page);
+  for (const page of [...WORK_PAGES, ...EIGYO_PAGES]) assert.equal(subAreaOf(page), null, page);
   // 各業務の最初の画面は、その業務の中にある
   for (const sub of SUB_AREAS) assert.equal(subAreaOf(sub.home), sub.id, sub.home);
   assert.deepEqual(SUB_AREAS.map((sub) => sub.home), ['帳票センター', 'MG契約・台帳', 'ロイヤリティ作成', '委員会月次収支']);
@@ -105,7 +108,6 @@ test('the left menu shows only the current sub-area groups; other areas are unch
   assert.deepEqual(ids(menuGroups('sales', 'nope')), ids(menuGroups('sales', 'uriage')));
   assert.deepEqual(ids(menuGroups('work', 'mg')), ids(visibleGroups('work')));
   assert.deepEqual(ids(menuGroups('eigyo', 'mg')), ['eigyo-works', 'eigyo-partners', 'eigyo-deals']);
-  assert.deepEqual(ids(menuGroups('shared', 'mg')), ids(visibleGroups('shared')));
   // 計上（既定の業務）のメニューに請求・入金がある（検証レシピ login-roles の前提）
   assert.ok(menuGroups('sales', DEFAULT_SUB_AREA).some((group) => group.items.some((item) => item.page === '請求・入金')));
   // 4つの業務のメニューを合わせると売上基幹の全画面
@@ -147,12 +149,11 @@ test('remembered pages are stored per area and per sales sub-area', () => {
   rememberPage(storage, '請求・入金');
   rememberPage(storage, 'ロイヤリティ集計');
   rememberPage(storage, '制作');
-  rememberPage(storage, 'ER');
+  rememberPage(storage, 'チーム');
   assert.equal(lastSubKey('mg'), 'on-last-sales:mg');
   assert.equal(lastAreaKey('sales'), 'on-last-sales');
   assert.equal(storage.getItem('on-last-sales'), 'ロイヤリティ集計');
-  assert.equal(storage.getItem('on-last-work'), '制作');
-  assert.equal(storage.getItem('on-last-shared'), 'ER');
+  assert.equal(storage.getItem('on-last-work'), 'チーム');
   assert.equal(rememberedPage(storage, 'mg'), '権利先・MG帳票');
   assert.equal(rememberedPage(storage, 'uriage'), '請求・入金');
   assert.equal(rememberedPage(storage, 'royalty'), 'ロイヤリティ集計');
@@ -162,7 +163,7 @@ test('remembered pages are stored per area and per sales sub-area', () => {
   assert.equal(subAreaEntry('committee', rememberedPage(storage, 'committee')), '委員会月次収支');
   // 未知の画面は覚えない。保存できない環境（プライベートブラウズなど）でも落ちない
   rememberPage(storage, '存在しない画面');
-  assert.equal(storage.data.size, 6);
+  assert.equal(storage.data.size, 5);
   const broken = {getItem: () => { throw new Error('blocked'); }, setItem: () => { throw new Error('blocked'); }};
   assert.doesNotThrow(() => rememberPage(broken, '請求・入金'));
   assert.equal(rememberedPage(broken, 'uriage'), null);
@@ -174,8 +175,7 @@ test('production hides every sales page automatically; other roles keep the visi
   for (const page of [...SALES_PAGES, ...EIGYO_PAGES]) assert.ok(production.has(page), page);
   for (const page of [...PRODUCTION_HIDDEN_WORK_PAGES, ...ADMIN_ONLY_PAGES]) assert.ok(production.has(page), page);
   const visible = (hidden, pages) => pages.filter((page) => !hidden.has(page));
-  assert.deepEqual(visible(production, WORK_PAGES), ['フォルダ一覧', 'ホーム', '作品・商品マスタ', '企画・作品', 'プロデュース管理', 'プリプロ', '制作', '台本・香盤', '撮影の記録', 'ポスプロ', '宣伝']);
-  assert.deepEqual(visible(production, SHARED_PAGES), ['設計・定義', '設計キャンバス', 'ER', '拡張項目', 'データ一覧']);
+  assert.deepEqual(visible(production, WORK_PAGES), ['フォルダ一覧', 'ホーム', '全案件', '作品・商品マスタ', '企画・作品', 'プロデュース管理', 'プリプロ', '許可申請', '小道具', '制作', '台本・香盤', '撮影の記録', '業務ひな型', 'ポスプロ', '宣伝']);
   assert.deepEqual(visible(production, SALES_PAGES), []);
   assert.deepEqual(visible(production, EIGYO_PAGES), []);
   assert.deepEqual(visibleGroups('sales', production), []);

@@ -55,6 +55,10 @@
    "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。LocalDatabase が当てる SQLite の DDL（productionSql）を、表を消した SQLite の DB に2回当て直しても既存の行が変わらない。production-plans の1件を PR7 で分けた（表の外部キー・CHECK の拒否は本体が両方の DB で確かめる）"
   },
   {
+   "file": "purge-demo-org-sqlite.test.mjs",
+   "reason": "SQLite そのものを確かめる（規則の変更 2026-11-06。会社ルートの plans/2026-11-06-real-demo-split.md の手順2）。デモの組織を消す道具（scripts/purge-demo-org.mjs）は SQLite のファイルを開き、sqlite_master・PRAGMA から表と外部キーを引き、消せない記録を守るトリガーを1つのトランザクションの中だけ外して当て直す。道具を子プロセスで流し、ファイルの SQLite を開き直して確かめる。PostgreSQL の消し方を作るときに片づける"
+  },
+  {
    "file": "report-completion-sqlite.test.mjs",
    "reason": "SQLite そのものを確かめる（代表の決定 2026-10-03。段4で D1 と SQLite を外すときに片づける）。古い表の定義（放送の無い CHECK）の SQLite のファイルに migrateCommitteeChannels（sqlite_master を読む SQLite だけの移行）を当て、sqlite_master・rowid・PRAGMA で前後を比べて開き直す（report-completion の1件を PR6 で分けた）"
   },

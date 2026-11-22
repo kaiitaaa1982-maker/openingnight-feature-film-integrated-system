@@ -2,15 +2,19 @@
 // 読めるのは案件の財務の権限のある人（管理者と、案件の編集の権限を持つ編集担当）。制作担当には読ませない（FR-PLAN-BUDGET-020）。
 // 確定・取り消しは、作品ごとの役目の表（FR-PROD-SCHED-062）がまだ無いので管理者だけ（FR-PLAN-BUDGET-018）。自動で確定しない。
 // 権限の無い案件と別の組織の案件は、有無を見せず同じ 403 にする。予算書から制作費の版と projects.budget_yen には書かない（FR-PLAN-BUDGET-007・024）
+// 予算書 xlsx は、その組織の使用中（最後の判定が承認で、番号の最も大きい）の読み取りの定義の版で読み、読めた版を予算書の版に結び付ける（FR-PLAN-BUDGET-037・038）。
+// 定義を1つも持たない組織（移行 0067 のあとに作った組織）には、初めて読むときに種（budget-read-seeds.mjs）を初期値として入れる（FR-PLAN-BUDGET-040）
 import {readBudgetFile} from './budget-xlsx.mjs';
+import {BUDGET_READ_SEEDS} from './budget-read-seeds.mjs';
+import {budgetReadDefinitionText, inUseReadVersions} from './budget-read-model.mjs';
 import {buildBudgetWorkbook} from './budget-xlsx-write.mjs';
-import {BUDGET_CATEGORIES, budgetFolderState, budgetTotals, checkParsedBudget, checkRunRecord, checkScreenVersion, compareBudgetVersions,
+import {BUDGET_CATEGORIES, budgetFolderState, budgetReadNotices, budgetTotals, checkParsedBudget, checkRunRecord, checkScreenVersion, compareBudgetVersions,
   currentFixedVersionNo, departmentTotals, noticesForLines, normalizeBudgetVersionInput, versionInputFromParsed, normalizeTemplateItems,
   templateItemsFromLines, addItemsToTemplate} from './budget-model.mjs';
 import {addBudgetFix, addBudgetVersion, readBudgetCheckRuns, readBudgetFixes, readBudgetLines, readBudgetProject, readBudgetSummaries, readBudgetVersions,
   readProjectTitles, readProjectWorks, readVersionLinesFor, readLineItems, readVersionTemplate, readBudgetTemplates, readBudgetTemplate, readTemplateVersions,
-  readTemplateItems, addBudgetTemplate, addTemplateVersion} from './budget-store.mjs';
-import {dbErrorKind, isUniqueViolation} from '../../data-platform/db-errors.mjs';
+  readTemplateItems, addBudgetTemplate, addTemplateVersion, readBudgetReadVersions, addBudgetReadSeeds, readVersionReadDefinition} from './budget-store.mjs';
+import {dbErrorKind, isDbConflict, isUniqueViolation} from '../../data-platform/db-errors.mjs';
 
 const FORBIDDEN = 'この案件の予算書への権限がありません';
 const NOT_FIXER = '予算書を確定・取り消しできるのは管理者です（作品ごとのプロデューサーの役目はまだ扱えません）';
@@ -18,11 +22,18 @@ const STALE_MESSAGE = 'ほかの画面で予算書が変わりました。読み
 const STALE = /stale budget (version|fix)/;
 const lostRace = (error, table) => (dbErrorKind(error) === 'raise' && STALE.test(error.message)) || isUniqueViolation(error, table);
 const MAX_BASE64 = 28 * 1024 * 1024;
+const NO_DEFINITION = '使用中（承認済み）の予算書の読み取りの定義がありません。定義の版を承認してください';
+const READ_STALE = 'ほかの画面で読み取りの定義が変わりました。もう一度置いてください';
+// 検査を通らずに飛ばした読み取りの定義を、応答の警告にする（名前・版・誤り。画面は文字として出す）
+const skippedWarnings = (skipped = []) => (skipped.length ? {warnings: skipped.map(({name, versionNo, errors}) => ({kind: 'skipped_definition', name, versionNo, errors}))} : {});
+const skippedDetails = (skipped = []) => (skipped.length ? {skippedDefinitions: skipped.map(({name, versionNo, errors}) => ({name, versionNo, errors}))} : {});
 
 const lineView = (row) => ({categoryCode: row.category_code, lineNo: Number(row.line_no), workId: row.work_id == null ? null : Number(row.work_id),
   departmentId: row.department_id == null ? null : Number(row.department_id), name: row.name, unitPriceYen: row.unit_price_yen == null ? null : Number(row.unit_price_yen),
   qtyMilli: row.qty_milli == null ? null : Number(row.qty_milli), unit: row.unit, amountExTaxYen: Number(row.amount_ex_tax_yen), confirmedSource: row.confirmed_source,
   paymentMonth: row.payment_month, sourceCell: row.source_cell, note: row.note});
+// 検査の回から知らせ（総合計を読めなかった。FR-PLAN-BUDGET-043）を導く。version は sourceKind を持つ版
+const runNotices = (version, run) => (version && run ? budgetReadNotices({sourceKind: version.sourceKind, checks: JSON.parse(run.checks_json)}) : []);
 const versionView = (row) => ({id: Number(row.id), versionNo: Number(row.version_no), sourceKind: row.source_kind, sourceFileName: row.source_file_name,
   taxRateBps: Number(row.tax_rate_bps), managementFeeYen: Number(row.management_fee_yen), contingencyYen: Number(row.contingency_yen),
   sheetCreatedOn: row.sheet_created_on, headerNotes: row.header_notes, title: row.title, reason: row.reason, createdAt: row.created_at});
@@ -45,9 +56,29 @@ function xlsxResponse(bytes, filename) {
     'content-disposition': `attachment; filename="budget.xlsx"; filename*=UTF-8''${encodeURIComponent(filename)}`, 'cache-control': 'no-store'}});
 }
 
-export function registerBudgetRoutes(app, {db, bad, body, permittedProjects}) {
-  if (!app || !db || typeof bad !== 'function' || typeof body !== 'function' || typeof permittedProjects !== 'function') {
-    throw new Error('budget routes require app, db, bad, body and permittedProjects');
+export function registerBudgetRoutes(app, {db, bad, body, permittedProjects, sha256}) {
+  if (!app || !db || typeof bad !== 'function' || typeof body !== 'function' || typeof permittedProjects !== 'function' || typeof sha256 !== 'function') {
+    throw new Error('budget routes require app, db, bad, body, permittedProjects and sha256');
+  }
+
+  // 組織の使用中の読み取りの定義（定義ごとに1つ。作った順）。定義を1つも持たない組織には、先に種を初期値として入れる
+  async function readDefinitionsInUse(orgId, userId) {
+    let rows = await readBudgetReadVersions(db, orgId);
+    if (!rows.length) {
+      const seeds = await Promise.all(BUDGET_READ_SEEDS.map(async (seed) => {
+        const definitionJson = budgetReadDefinitionText(seed.definition);
+        return {name: seed.name, reason: seed.reason, definitionJson, definitionHash: await sha256(definitionJson)};
+      }));
+      try {
+        await addBudgetReadSeeds(db, orgId, seeds, {createdBy: userId});
+      } catch (error) {
+        // 同じ組織で同時に初めて読んだときは、先に入れた側の初期値を使う
+        if (!isDbConflict(error)) throw error;
+      }
+      rows = await readBudgetReadVersions(db, orgId);
+    }
+    return inUseReadVersions(rows.map((row) => ({profileId: Number(row.profile_id), profileName: row.profile_name, versionId: Number(row.version_id),
+      versionNo: Number(row.version_no), definitionJson: row.definition_json, definitionHash: row.definition_hash, latestAction: row.latest_action})));
   }
 
   async function financeProjectIds(identity) {
@@ -82,14 +113,16 @@ export function registerBudgetRoutes(app, {db, bad, body, permittedProjects}) {
     const fixedNo = currentFixedVersionNo(fixes.map((f) => ({seq: Number(f.seq), action: f.action, versionNo: Number(f.version_no)})));
     const latestRun = (versionId) => runs.filter((r) => Number(r.version_id) === versionId).at(-1) ?? null;
     const target = wantedNo == null ? versions.at(-1) : versions.find((v) => v.versionNo === wantedNo);
+    const latestVersion = versions.at(-1) ?? null;
+    const latestVersionRun = latestVersion ? latestRun(latestVersion.id) : null;
     const state = budgetFolderState({versions, fixes: fixes.map((f) => ({seq: Number(f.seq), action: f.action, versionNo: Number(f.version_no)})),
-      latestVerdict: (() => { const run = versions.length ? latestRun(versions.at(-1).id) : null; return run ? {kind: run.verdict, failed: Number(run.failed)} : null; })()});
+      latestVerdict: latestVersionRun ? {kind: latestVersionRun.verdict, failed: Number(latestVersionRun.failed)} : null, latestNotices: runNotices(latestVersion, latestVersionRun)});
     const base = {versions: versions.map((v) => ({...v, fixed: v.versionNo === fixedNo, verdict: latestRun(v.id)?.verdict ?? null})), fixedVersionNo: fixedNo,
       state, categories: BUDGET_CATEGORIES, works: works.map((w) => ({id: Number(w.id), code: w.code, title: w.title})),
       history: fixes.map((f) => ({seq: Number(f.seq), action: f.action, versionNo: Number(f.version_no), reason: f.reason, createdAt: f.created_at}))};
     if (!target) return {...base, version: null};
     const lines = attachItems((await readBudgetLines(db, orgId, target.id)).map(lineView), await readLineItems(db, orgId, target.id));
-    const template = await readVersionTemplate(db, orgId, target.id);
+    const [template, readDefinition] = await Promise.all([readVersionTemplate(db, orgId, target.id), readVersionReadDefinition(db, orgId, target.id)]);
     const totals = budgetTotals({lines, managementFeeYen: target.managementFeeYen, contingencyYen: target.contingencyYen, taxRateBps: target.taxRateBps});
     const run = latestRun(target.id);
     const previous = versions.filter((v) => v.versionNo < target.versionNo).at(-1);
@@ -101,9 +134,11 @@ export function registerBudgetRoutes(app, {db, bad, body, permittedProjects}) {
         contingencyYen: target.contingencyYen, taxRateBps: target.taxRateBps})};
     }
     return {...base, version: {...target, fixed: target.versionNo === fixedNo, lines, totals,
-      template: template ? {templateId: Number(template.template_id), name: template.name, versionNo: Number(template.version_no)} : null, departments: departmentTotals(lines),
+      template: template ? {templateId: Number(template.template_id), name: template.name, versionNo: Number(template.version_no)} : null,
+      readDefinition: readDefinition ? {name: readDefinition.name, versionNo: Number(readDefinition.version_no), definitionHash: readDefinition.definition_hash} : null,
+      departments: departmentTotals(lines),
       check: run ? {runNo: Number(run.run_no), verdict: run.verdict, passed: Number(run.passed), failed: Number(run.failed), checks: JSON.parse(run.checks_json)} : null,
-      notices: noticesForLines(lines.map((l) => ({...l, cell: l.sourceCell, marks: l.confirmedSource === 'fill' ? ['confirmed_from_fill'] : []}))),
+      notices: [...noticesForLines(lines.map((l) => ({...l, cell: l.sourceCell, marks: l.confirmedSource === 'fill' ? ['confirmed_from_fill'] : []}))), ...runNotices(target, run)],
       comparison}};
   }
 
@@ -117,7 +152,7 @@ export function registerBudgetRoutes(app, {db, bad, body, permittedProjects}) {
     const fixedIds = [];
     const rows = projects.map((p) => {
       const id = Number(p.id);
-      const own = versions.filter((v) => Number(v.project_id) === id).map((v) => ({id: Number(v.id), versionNo: Number(v.version_no),
+      const own = versions.filter((v) => Number(v.project_id) === id).map((v) => ({id: Number(v.id), versionNo: Number(v.version_no), sourceKind: v.source_kind,
         managementFeeYen: Number(v.management_fee_yen), contingencyYen: Number(v.contingency_yen), taxRateBps: Number(v.tax_rate_bps)}));
       const ownFixes = fixes.filter((f) => Number(f.project_id) === id).map((f) => ({seq: Number(f.seq), action: f.action, versionNo: Number(f.version_no)}));
       const latest = own.at(-1);
@@ -126,7 +161,7 @@ export function registerBudgetRoutes(app, {db, bad, body, permittedProjects}) {
       const fixed = own.find((v) => v.versionNo === fixedNo) ?? null;
       if (fixed) fixedIds.push(fixed.id);
       return {projectId: id, code: p.code, title: p.title, latestVersionNo: latest?.versionNo ?? null, fixedVersionNo: fixedNo, fixed,
-        state: budgetFolderState({versions: own, fixes: ownFixes, latestVerdict: run ? {kind: run.verdict, failed: Number(run.failed)} : null})};
+        state: budgetFolderState({versions: own, fixes: ownFixes, latestVerdict: run ? {kind: run.verdict, failed: Number(run.failed)} : null, latestNotices: runNotices(latest, run)})};
     });
     const lines = await readVersionLinesFor(db, identity.org_id, fixedIds);
     return c.json({ok: true, budgets: rows.map(({fixed, ...row}) => ({...row, fixedTotalExTaxYen: fixed ? budgetTotals({
@@ -154,9 +189,12 @@ export function registerBudgetRoutes(app, {db, bad, body, permittedProjects}) {
       await addBudgetVersion(db, identity.org_id, project.id, {...value, ...extra, versionNo}, {createdBy: identity.user_id});
     } catch (error) {
       if (lostRace(error, 'budget_versions')) return bad(c, STALE_MESSAGE, 409);
+      if (dbErrorKind(error) === 'raise' && /budget read version not approved/.test(error.message)) return bad(c, READ_STALE, 409);
       throw error;
     }
-    return c.json({ok: true, versionNo, verdict: extra.check.verdict, failed: extra.check.failed}, 201);
+    const notices = budgetReadNotices({sourceKind: extra.sourceKind, checks: extra.check.checks});
+    return c.json({ok: true, versionNo, verdict: extra.check.verdict, failed: extra.check.failed,
+      ...(extra.readDefinition ? {readDefinition: extra.readDefinition} : {}), ...skippedWarnings(extra.skippedDefinitions), ...(notices.length ? {notices} : {})}, 201);
   }
 
   // 画面で作った版（FR-PLAN-BUDGET-001・003）。前の版を写して直すときは copyOf に版の番号
@@ -195,16 +233,20 @@ export function registerBudgetRoutes(app, {db, bad, body, permittedProjects}) {
     if (typeof base64 !== 'string' || !base64 || base64.length > MAX_BASE64) return bad(c, '予算書のファイルがありません（20MB まで）', 400);
     const name = String(fileName ?? '').trim().slice(0, 240);
     if (!/\.xlsx$/i.test(name)) return bad(c, '予算書は xlsx で置いてください', 400);
+    const definitions = await readDefinitionsInUse(found.identity.org_id, found.identity.user_id);
+    if (!definitions.length) return bad(c, NO_DEFINITION, 422, {reason: 'no_definition'});
     let parsed;
-    try { parsed = readBudgetFile(Uint8Array.from(atob(base64), (ch) => ch.charCodeAt(0))); } catch (error) { return bad(c, `予算書を読めません: ${error.message}`, 422); }
-    if (!parsed.ok) return bad(c, parsed.message, 422, {reason: parsed.reason});
+    try { parsed = readBudgetFile(Uint8Array.from(atob(base64), (ch) => ch.charCodeAt(0)), {definitions}); } catch (error) { return bad(c, `予算書を読めません: ${error.message}`, 422); }
+    if (!parsed.ok) return bad(c, parsed.message, 422, {reason: parsed.reason, ...skippedDetails(parsed.skippedDefinitions)});
     const reason = String(read.input.reason ?? '').trim() || `予算書 ${name} から読んだ`;
     const works = await readProjectWorks(db, found.identity.org_id, found.project.id);
     const normalized = normalizeBudgetVersionInput(versionInputFromParsed(parsed, {reason}), {workIds: works.map((w) => Number(w.id))});
     if (!normalized.ok) return bad(c, normalized.errors.join('／'), 422, {errors: normalized.errors});
     const {checks} = checkParsedBudget(parsed, {taxRateBps: normalized.value.taxRateBps});
     return appendVersion(c, found, normalized.value, {sourceKind: 'file', sourceFileName: name, sheetCreatedOn: parsed.header.createdOn ?? null,
-      headerNotes: parsed.header.notes.length ? parsed.header.notes.join('／').slice(0, 2000) : null, check: checkRunRecord(checks)});
+      headerNotes: parsed.header.notes.length ? parsed.header.notes.join('／').slice(0, 2000) : null, check: checkRunRecord(checks),
+      readVersionId: parsed.readDefinition.readVersionId, readDefinition: {name: parsed.readDefinition.name, versionNo: parsed.readDefinition.versionNo},
+      skippedDefinitions: parsed.skippedDefinitions});
   });
 
   // 確定・取り消し（FR-PLAN-BUDGET-017〜019）。本文は {action: 'fix'|'void', versionNo, reason}
@@ -315,7 +357,7 @@ export function registerBudgetRoutes(app, {db, bad, body, permittedProjects}) {
     if (!normalized.ok) return bad(c, normalized.errors.join('／'), 400, {errors: normalized.errors});
     try {
       const templateId = await addBudgetTemplate(db, identity.org_id, {name, source: built.source, items: normalized.items, reason}, {createdBy: identity.user_id});
-      return c.json({ok: true, templateId, versionNo: 1, itemCount: normalized.items.length}, 201);
+      return c.json({ok: true, templateId, versionNo: 1, itemCount: normalized.items.length, ...skippedWarnings(built.source.skippedDefinitions)}, 201);
     } catch (error) {
       if (isUniqueViolation(error, 'budget_templates')) return bad(c, '同じ名前の型があります', 409);
       throw error;
@@ -353,7 +395,7 @@ export function registerBudgetRoutes(app, {db, bad, body, permittedProjects}) {
       }
       throw error;
     }
-    return c.json({ok: true, templateId: found.template.id, versionNo: latest.versionNo + 1, itemCount: normalized.items.length}, 201);
+    return c.json({ok: true, templateId: found.template.id, versionNo: latest.versionNo + 1, itemCount: normalized.items.length, ...skippedWarnings(source.skippedDefinitions)}, 201);
   });
 
   // 型の費目の出どころを読む（案件の版・予算書 xlsx・費目の一覧）
@@ -370,10 +412,12 @@ export function registerBudgetRoutes(app, {db, bad, body, permittedProjects}) {
     if (typeof input.base64 === 'string' && input.base64) {
       const name = String(input.fileName ?? '').trim().slice(0, 240);
       if (!/\.xlsx$/i.test(name) || input.base64.length > MAX_BASE64) return {error: bad(c, '型は xlsx（20MB まで）で置いてください', 400)};
+      const definitions = await readDefinitionsInUse(identity.org_id, identity.user_id);
+      if (!definitions.length) return {error: bad(c, NO_DEFINITION, 422, {reason: 'no_definition'})};
       let parsed;
-      try { parsed = readBudgetFile(Uint8Array.from(atob(input.base64), (ch) => ch.charCodeAt(0)), {keepEmpty: true}); } catch (error) { return {error: bad(c, `予算書を読めません: ${error.message}`, 422)}; }
-      if (!parsed.ok) return {error: bad(c, parsed.message, 422, {reason: parsed.reason})};
-      return {items: templateItemsFromLines(parsed.lines), source: {kind: 'file', fileName: name}};
+      try { parsed = readBudgetFile(Uint8Array.from(atob(input.base64), (ch) => ch.charCodeAt(0)), {keepEmpty: true, definitions}); } catch (error) { return {error: bad(c, `予算書を読めません: ${error.message}`, 422)}; }
+      if (!parsed.ok) return {error: bad(c, parsed.message, 422, {reason: parsed.reason, ...skippedDetails(parsed.skippedDefinitions)})};
+      return {items: templateItemsFromLines(parsed.lines), source: {kind: 'file', fileName: name, skippedDefinitions: parsed.skippedDefinitions}};
     }
     if (Array.isArray(input.items)) return {items: input.items, source: {kind: 'screen'}};
     return {error: bad(c, '型の出どころ（案件の版・予算書 xlsx・費目の一覧）を選んでください', 400)};

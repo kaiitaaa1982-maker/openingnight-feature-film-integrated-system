@@ -7,7 +7,8 @@
 //   4. 営業基幹（全作品のウィンドウ・取引先別リスト・売上集計シート・提案資料）… scripts/seed-eigyo-demo.mjs（連続ドラマのウィンドウは 3 の後だと入る）
 //   5. 番販・放送（放送履歴表・アベイルズリスト・放送ウィンドウ提案と、提案から作った下書き）… scripts/seed-broadcast-demo.mjs（4 の後）
 //   6. PL・BS（管理会計の試算）… scripts/seed-plbs-demo.mjs（公開月は 4 の劇場公開の窓から取る）
-//   （経費・作品マスタ・経費の原本の例のあと）最後: シナリオの比較（商談・活動・委託契約・自社出資・委員会）… scripts/seed-scenario-demo.mjs
+//   （経費・作品マスタ・経費の原本の例のあと）シナリオの比較（商談・活動・委託契約・自社出資・委員会）… scripts/seed-scenario-demo.mjs
+//   最後: 撮影現場の記録（作品 DEMO-W02 の日々スケ・小道具・許可申請）… scripts/seed-genba-showcase-demo.mjs
 // 使い方: node scripts/seed-all-demo.mjs --db <SQLiteのパス> [--as-of 2026-09-25] [--twice] [--record <書き込みの記録.jsonl>] [--only <節,…>] [--check-api]
 // ・--db の指定は必須。data/integrated.sqlite へは --allow-main-db を付けたときだけ書く。本番のD1・Cloudflare・設定・秘密値には触れない。
 // ・どの seed も目印で「もうあるか」を確かめるので、何度流しても増えない。--twice は続けてもう1回流し、表ごとの行数が変わらず、
@@ -36,9 +37,10 @@ import {fileURLToPath, pathToFileURL} from 'node:url';
 import {LocalDatabase} from '../src/db.mjs';
 import {PG_FINGERPRINT_TABLE} from '../src/data-platform/pg-fingerprint.mjs';
 import {createApp} from '../src/app.mjs';
-import {SALES_DEMO, seedSalesDemo, addMonths} from './seed-sales-demo.mjs';
+import {SALES_DEMO, seedSalesDemo, addMonths, assertDemoOrgTarget} from './seed-sales-demo.mjs';
 import {reclassifyDemoSalesDistribution, reclassifyTargets} from './seed-sales-distribution.mjs';
 import {seedKoubanDemo} from './seed-kouban-demo.mjs';
+import {seedGenbaShowcaseDemo} from './seed-genba-showcase-demo.mjs';
 import {seedEigyoDemo} from './seed-eigyo-demo.mjs';
 import {seedBroadcastDemo} from './seed-broadcast-demo.mjs';
 import {seedPlbsDemo} from './seed-plbs-demo.mjs';
@@ -74,6 +76,10 @@ export const DEMO_SEED_STEPS = Object.freeze([
   // シナリオの比較（段A）。売上・PL・BS・作品マスタの後に足す（PL・BS の架空データの期間の後の 2026-07 以後の売上・払込・入金だけを書く）
   {key: 'scenario', label: 'シナリオの比較（商談・活動・委託契約・自社出資・委員会）', script: 'scripts/seed-scenario-demo.mjs',
     run: (db, {log}) => seedScenarioDemo(db, {log}), skipped: (result) => result?.skipped === true},
+  // 撮影現場の記録（日々スケ・香盤・ロケ地・小道具・許可申請）を作品 DEMO-W02 に入れる。いちばん後に足す（前の節の ID を動かさない）。
+  // 日々スケの原本（架空の PDF）を書くので、本番の記録では --only から外す（経費の原本の例と同じ）
+  {key: 'genba', label: '撮影現場の記録（日々スケ・小道具・許可申請）', script: 'scripts/seed-genba-showcase-demo.mjs',
+    run: (db, {log}) => seedGenbaShowcaseDemo(db, {log}), skipped: (result) => result?.skipped === true},
 ].map((step) => Object.freeze(step)));
 
 // 文のコメント（-- から行末まで・/* … */）を1つの空白に置き換え、前後の空白を削る。文字（'…'）と名前（"…"・`…`・[…]）の中はそのまま。
@@ -443,8 +449,9 @@ export async function checkDemoApis(db, {asOf = SALES_DEMO.asOf, plFrom = '2025-
   return out;
 }
 
-// 6つの節を順に流す。only で一部だけ（キーの配列）
+// 6つの節を順に流す。only で一部だけ（キーの配列）。どの節も DEMO-SALES に書くので、その組織が本番（kind='real'）なら、最初の節の前に何も書かずに止める
 export async function seedAllDemo(db, {asOf = SALES_DEMO.asOf, python = process.env.ON_PYTHON || null, log = () => {}, only = null} = {}) {
+  await assertDemoOrgTarget(db, SALES_DEMO.orgCode);
   const results = [];
   for (const step of DEMO_SEED_STEPS) {
     if (only && !only.includes(step.key)) continue;

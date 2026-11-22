@@ -43,6 +43,20 @@
 .sr-item { padding-left: 8px; }
 .sr-form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
 .sr-form textarea, .sr-form button { grid-column: 1 / -1; }
+/* 上の切り替え「記録」「未解決」と、未解決の表（共通の表 EditSheet）。赤の面は「! 未解決 N」だけ */
+.sr-views { display: flex; margin: 0 0 10px; }
+.sr-views button:not(.sr-link) { min-height: 44px; min-width: 88px; font-size: 15px; background: var(--paper); color: var(--ink); }
+.sr-views button + button { border-left: 0; }
+.sr-views button[aria-pressed="true"] { background: var(--ink); color: var(--paper); font-weight: 800; }
+/* 未解決は .sr の外に置く（.sr のボタン・入力欄の決まりを共通の表に掛けない）。トークンは同じ7色 */
+.sr-left { --ink: #111111; --paper: #ffffff; --soft: #f3f1ec; --sub: #5e5850; --faint: #6b655c; --rule: #cfc8ba; --red: #b3261e;
+  --jp: "Noto Sans JP", "Yu Gothic", "Hiragino Sans", "Meiryo", sans-serif;
+  display: grid; gap: 10px; min-width: 0; font-family: var(--jp); color: var(--ink); background: var(--paper); }
+.sr-left * { border-radius: 0; box-shadow: none; }
+.sr-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.sr-alert { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; background: var(--red); color: var(--paper); font-weight: 800; font-size: 18px; font-variant-numeric: tabular-nums; }
+.sr-alert.is-done { background: var(--paper); color: var(--ink); border: 1px solid var(--ink); }
+.sr-fail { margin: 0; padding: 8px 12px; border: 1px solid var(--red); color: var(--red); font-weight: 700; }
 @media (max-width: 700px) {
   .sr-form { grid-template-columns: 1fr; }
   .sr-drop { padding: 28px 12px; }

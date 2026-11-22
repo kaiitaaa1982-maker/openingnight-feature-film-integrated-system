@@ -1,0 +1,11 @@
+{
+  "note": "小道具の取込の見本。作品・品目・人はすべて架空（scripts/import-props.mjs と test/import-props.test.mjs が読む）",
+  "work": {"code": "DEMO-PROPS", "title": "灯台守の娘（架空）"},
+  "items": [
+    {"key": "demo-001", "sceneLabel": "#3", "shootOn": "2027-01-16", "place": "灯台・階段", "name": "古いランタン", "quantity": "1", "kind": "hand", "department": "direction", "ownerLabel": "演出A", "state": "arranging", "nextAction": "架空の倉庫で探す", "dueOn": "2027-01-10", "source": "both", "scriptNote": "階段でランタンを掲げる"},
+    {"key": "demo-002", "sceneLabel": "#3", "shootOn": "2027-01-16", "place": "灯台・階段", "name": "灯油の缶", "quantity": "1", "kind": "hand", "state": "unassigned", "source": "script", "scriptNote": "足元に灯油の缶"},
+    {"key": "demo-003", "sceneLabel": "#5", "shootOn": "2027-01-16", "place": "灯台守の家・台所", "name": "焼き魚の朝食", "quantity": "多めに", "kind": "consumable", "department": "production", "state": "adjust", "nextAction": "人数を決める", "source": "meeting"},
+    {"key": "demo-004", "sceneLabel": "#9", "shootOn": "2027-01-17", "place": "灯台守の家・居間", "name": "写真立て", "quantity": "3", "kind": "dressing", "department": "production", "state": "adjust", "source": "both", "memo": "数を決める"},
+    {"key": "demo-005", "sceneLabel": "#15", "shootOn": "2027-01-17", "name": "壁の時計", "kind": "dressing", "state": "unneeded", "source": "meeting", "memo": "時計は使わない"}
+  ]
+}

@@ -21,3 +21,12 @@ export async function readWorkProject(db, orgId, workId) {
 export async function readScriptReviewByHash(db, orgId, artifactId, reviewHash) {
   return db.get('SELECT r.id,r.version_no,(SELECT MAX(x.id) FROM workflow_script_reviews x WHERE x.org_id=r.org_id AND x.artifact_id=r.artifact_id) latest_id FROM workflow_script_reviews r WHERE r.org_id=? AND r.artifact_id=? AND r.review_hash=?', [orgId, artifactId, reviewHash]);
 }
+// 原本の置き場から辿る撮影の記録。履歴も含む参照の行数。
+export const readShootingSourceLinks = (db, orgId) => db.all(`SELECT d.source_document_id AS document_id,
+  w.id AS target_id,w.id AS work_id,w.title AS name,COUNT(*) AS n FROM shooting_day_records d
+  JOIN works w ON w.org_id=d.org_id AND w.id=d.work_id
+  WHERE d.org_id=? AND d.source_document_id IS NOT NULL
+  GROUP BY d.source_document_id,w.id,w.title ORDER BY w.title,w.id`, [orgId]);
+
+// 撮影日のスタッフの数を書く文（制作の保存の batch に積む。移行 0058）。撮影日の更新（PATCH /api/field/days）は触れない
+export const crewCountStatement = (orgId, workId, dayId, crewCount) => ({sql: 'UPDATE shooting_days SET crew_count=? WHERE org_id=? AND work_id=? AND id=?', params: [crewCount, orgId, workId, dayId]});

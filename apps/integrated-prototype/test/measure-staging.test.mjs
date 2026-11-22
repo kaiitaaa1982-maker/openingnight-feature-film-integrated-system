@@ -357,7 +357,9 @@ test('トークンの残りが2時間を切っていたら、要求を1つも出
   const home = tempHome(t);
   const requests = [];
   const fetchImpl = async (url) => { requests.push(url); return new Response('{}', {status: 500}); };
-  const short = fakeJwt({exp: Math.floor(Date.now() / 1000) + 3600});
+  // 期限は1回だけ計算する（2回 Date.now() を読むと、秒の変わり目や時計の戻りで1秒ずれる）
+  const exp = Math.floor(Date.now() / 1000) + 3600;
+  const short = fakeJwt({exp});
   await assert.rejects(runMeasurement({url: STAGING, token: short, plan: 'a:2026-06', outDir: join(home, 'short'), fetchImpl, log: () => {}}),
     (error) => error instanceof MeasureStop && error.exitCode === 2 && error.message.includes(`cloudflared access login ${STAGING}`) && error.message.includes('同じコマンドで再開') && !error.message.includes(short));
   await assert.rejects(runMeasurement({url: STAGING, token: 'not-a-jwt-value', plan: 'a:2026-06', outDir: join(home, 'bad'), fetchImpl, log: () => {}}),
@@ -365,7 +367,7 @@ test('トークンの残りが2時間を切っていたら、要求を1つも出
   await assert.rejects(runMeasurement({url: STAGING, token: null, plan: 'a:2026-06', outDir: join(home, 'none'), fetchImpl, log: () => {}}),
     (error) => error instanceof MeasureStop && error.message.includes('ON_ACCESS_TOKEN'));
   assert.deepEqual(requests, []);
-  assert.equal(tokenExpiry(short), (Math.floor(Date.now() / 1000) + 3600) * 1000);
+  assert.equal(tokenExpiry(short), exp * 1000);
   assert.equal(tokenExpiry('a.b'), null);
 });
 

@@ -33,7 +33,7 @@ tags: migrations, parallel, coordination, ci, cost
 ## 共通のファイル
 
 - `src/app.mjs`・`src/navigation.mjs`・`src/shell/nav-model.mjs`・`src/main.jsx`・`test/shell-*.test.mjs` は、番号の順で後の PR が前の PR の上に寄せる。足すのは各自1〜2行
-- **画面を足したら、`src/shell/folder-nav.mjs` の `FOLDER_GROUPS` の該当するフォルダ（F01〜F20）の行にページ ID を1つ足す。** 全ページがちょうど1つのフォルダか「共通」「管理・設計」に入ることを `test/shell-folder-nav.test.mjs` が見る
+- **画面を足したら、`src/shell/folder-nav.mjs` の `FOLDER_GROUPS` の該当するフォルダ（F01〜F20）の行にページ ID を1つ足す。** 全ページがちょうど1つのフォルダか「共通」に入ることを `test/shell-folder-nav.test.mjs` が見る
 - 共通の画面部品（シェル・ナビ・共通の `styles.css`・`shell.css`）は調整役が1本で直す。各業務は触らない
 
 ## 見た目

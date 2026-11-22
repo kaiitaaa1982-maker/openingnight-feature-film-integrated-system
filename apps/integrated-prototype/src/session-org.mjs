@@ -38,9 +38,9 @@ function activeAt(value, now) {
   return Number.isFinite(at) && at > now;
 }
 
-// 利用者の有効な所属（active=1・期限内）を org_id の小さい順に。組織の名前・コードつき
+// 利用者の有効な所属（active=1・期限内）を org_id の小さい順に。組織の名前・コード・本番かデモか（org_kind。real・demo）つき
 export async function activeMemberships(db, userId, now = Date.now()) {
-  const rows = await db.all(`SELECT m.org_id, m.role, m.expires_at, o.code AS org_code, o.name AS org_name
+  const rows = await db.all(`SELECT m.org_id, m.role, m.expires_at, o.code AS org_code, o.name AS org_name, o.kind AS org_kind
     FROM memberships m JOIN organizations o ON o.id=m.org_id
     WHERE m.user_id=? AND m.active=1 ORDER BY m.org_id`, [userId]);
   return rows

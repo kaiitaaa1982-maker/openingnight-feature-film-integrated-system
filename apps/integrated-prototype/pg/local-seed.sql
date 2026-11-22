@@ -699,5 +699,24 @@ BEGIN
   PERFORM setval(pg_get_serial_sequence('notebook_posts', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM notebook_posts;
   PERFORM setval(pg_get_serial_sequence('notebook_receipts', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM notebook_receipts;
   PERFORM setval(pg_get_serial_sequence('source_document_moves', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM source_document_moves;
+  PERFORM setval(pg_get_serial_sequence('work_template_folders', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM work_template_folders;
+  PERFORM setval(pg_get_serial_sequence('work_template_folder_revisions', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM work_template_folder_revisions;
+  PERFORM setval(pg_get_serial_sequence('work_templates', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM work_templates;
+  PERFORM setval(pg_get_serial_sequence('work_template_versions', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM work_template_versions;
+  PERFORM setval(pg_get_serial_sequence('work_template_moves', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM work_template_moves;
+  PERFORM setval(pg_get_serial_sequence('work_template_files', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM work_template_files;
+  PERFORM setval(pg_get_serial_sequence('permit_offices', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM permit_offices;
+  PERFORM setval(pg_get_serial_sequence('permit_office_versions', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM permit_office_versions;
+  PERFORM setval(pg_get_serial_sequence('permit_applications', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM permit_applications;
+  PERFORM setval(pg_get_serial_sequence('permit_application_versions', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM permit_application_versions;
+  PERFORM setval(pg_get_serial_sequence('permit_application_documents', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM permit_application_documents;
+  PERFORM setval(pg_get_serial_sequence('prop_meetings', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM prop_meetings;
+  PERFORM setval(pg_get_serial_sequence('prop_items', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM prop_items;
+  PERFORM setval(pg_get_serial_sequence('prop_item_versions', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM prop_item_versions;
+  PERFORM setval(pg_get_serial_sequence('budget_read_profiles', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM budget_read_profiles;
+  PERFORM setval(pg_get_serial_sequence('budget_read_versions', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM budget_read_versions;
+  PERFORM setval(pg_get_serial_sequence('budget_read_approvals', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM budget_read_approvals;
+  PERFORM setval(pg_get_serial_sequence('production_actual_lines', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM production_actual_lines;
+  PERFORM setval(pg_get_serial_sequence('shooting_scene_reads', 'id'), COALESCE(MAX(id), 0) + 1, false) FROM shooting_scene_reads;
 END
 $seq$;

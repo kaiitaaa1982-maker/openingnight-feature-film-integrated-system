@@ -284,3 +284,40 @@ export function normalizeFactInput(raw) {
   if (materialId !== null && !isInt(materialId, 1, Number.MAX_SAFE_INTEGER)) errors.push({field: 'materialId', message: '素材が読めません'});
   return {ok: errors.length === 0, errors, value: {body, label: src.label, target: src.target, pages: pages.join(','), valueInt, materialId}};
 }
+
+// 原本の版（会社ルートの plans/2026-10-22-folder-kikaku.md「原本と DB の関係、クリックで開く」）。
+// 同じ案件・同じ種類・同じ役に、同じ名前で中身の違う原本を置き直したものを、古い順に 版1・版2… と数え、最新に印を付ける。
+// 表は変えない（source_documents に親子の列は無い）。planning_documents の行から計算する。名前は NFC で比べる。
+export function documentRevisions(documents = []) {
+  const key = (d) => [d.kind, d.role ?? '', String(d.fileName ?? '').normalize('NFC')].join('\u0000');
+  const groups = new Map();
+  for (const d of documents) {
+    const k = key(d);
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(d);
+  }
+  const marks = new Map();
+  for (const list of groups.values()) {
+    const sorted = [...list].sort((a, b) => String(a.createdAt ?? '').localeCompare(String(b.createdAt ?? '')) || Number(a.id) - Number(b.id));
+    sorted.forEach((d, i) => marks.set(d, {revision: i + 1, revisionCount: sorted.length, latest: i === sorted.length - 1}));
+  }
+  return documents.map((d) => ({...d, ...marks.get(d)}));
+}
+
+// 開き方。ブラウザで表示できる種類（PDF・画像・文字）は「開く」（その場で表示）、Office の種類は「PowerPoint・Word・Excel で開く」（落として開く）。
+// どちらでもない種類は落とすだけ。media_type が無い原本（目録から取り込んだ external など）は名前の拡張子で決める
+const OFFICE_APPS = Object.freeze([
+  {app: 'PowerPoint', ext: /\.(pptx?|ppsx?|potx?)$/i, media: /powerpoint|presentationml/i},
+  {app: 'Word', ext: /\.(docx?|dotx?|rtf)$/i, media: /msword|wordprocessingml|\/rtf/i},
+  {app: 'Excel', ext: /\.(xlsx?|xlsm|csv)$/i, media: /ms-excel|spreadsheetml|\/csv/i},
+]);
+const VIEWABLE_MEDIA = /^(application\/pdf|image\/|text\/)/i;
+const VIEWABLE_EXT = /\.(pdf|png|jpe?g|gif|webp|svg|txt|md)$/i;
+export function openTarget({fileName = '', mediaType = null} = {}) {
+  const name = String(fileName ?? '');
+  const media = typeof mediaType === 'string' ? mediaType : '';
+  const office = OFFICE_APPS.find((o) => o.ext.test(name) || (media && o.media.test(media)));
+  if (office) return {view: false, app: office.app};
+  const view = (media && VIEWABLE_MEDIA.test(media)) || VIEWABLE_EXT.test(name);
+  return {view: Boolean(view), app: null};
+}

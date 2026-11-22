@@ -1,5 +1,7 @@
 // ホームの作業キュー。役割と閲覧権限の範囲で「次に対応すること」を件数と先頭5件で返す。
 // 各項目は開く画面（page・params）を持ち、ホームから該当画面へ1手で移れる。制作担当には財務の項目を返さない。
+import {leftoverQueueItem} from './production/shoot-records/shoot-records-routes.mjs';
+import {scenePendingQueueItem} from './production/shoot-records/ai-results-routes.mjs';
 import {canContractVersion} from './mg.mjs';
 import {royaltyPeriods} from './royalty/royalty-data.mjs';
 
@@ -120,6 +122,10 @@ export function registerWorkQueueRoutes(app, {db, permittedProjects, settlementW
         rows: changes.map((cs) => ({label: cs.reason || '（理由なし）', detail: `${DATASET_LABELS[cs.dataset] || cs.dataset || ''}・申請 ${jstDateTime(cs.created_at)}`,
           page: cs.dataset === 'sales_import' ? '売上データ編集' : '業務データ編集', params: {draft: cs.draft_id}}))});
     }
+    // 撮り残したシーン（全役割）: 撮影日に入っていて、撮れた・欠番・今日以降の撮影日のどれにも入っていないシーン（FR-PROD-SCHED-095〜097）
+    push(await leftoverQueueItem(db, i.org_id, {today, workTitle}));
+    // 香盤の読みが割れたシーン（全役割）: いちばん新しい読みの束が割れていて、そのあとに人の結果が無い撮影日×シーン（FR-PROD-SCHED-108）
+    push(await scenePendingQueueItem(db, i.org_id, {workTitle}));
     return c.json({ok: true, today, role: i.role, items, total: items.reduce((n, item) => n + item.count, 0)});
   });
 }

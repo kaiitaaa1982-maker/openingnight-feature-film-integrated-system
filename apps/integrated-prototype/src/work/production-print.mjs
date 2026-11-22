@@ -140,6 +140,7 @@ const COLLECTION_KEYS = Object.freeze({
   sceneLooks: ['scene_id', 'look_key'],
   daySlots: ['day_id', 'key'],
   calls: ['day_id', 'character_key'],
+  dayCrews: ['day_id'],
 });
 // 値がすべて空の行は「無い」とみなす集まり（詳細を入れてから消した場合など）
 const EMPTY_MEANS_ABSENT = new Set(['sceneDetails', 'calls']);

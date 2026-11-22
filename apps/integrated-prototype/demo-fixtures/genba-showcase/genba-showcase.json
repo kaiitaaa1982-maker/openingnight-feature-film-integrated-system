@@ -1,0 +1,1213 @@
+{
+ "note": "公開デモ用の撮影現場の記録（架空）。実在の作品・人物・団体・場所とは関係ない。",
+ "callSheets": {
+  "note": "公開デモ用の日々スケ（架空）。題名・人物・俳優・場所はすべて架空。",
+  "work": {
+   "projectCode": "DEMO-W02",
+   "projectTitle": "七月の標本室（架空）",
+   "workCode": "DEMO-W02",
+   "workTitle": "七月の標本室（架空）",
+   "unit": "本隊"
+  },
+  "characters": [
+   {
+    "key": "mio",
+    "name": "汐見澪",
+    "short": "澪",
+    "actor": "架空 美咲"
+   },
+   {
+    "key": "kiryu",
+    "name": "桐生刑事",
+    "short": "桐",
+    "actor": "架空 剛"
+   },
+   {
+    "key": "kancho",
+    "name": "館長・真壁",
+    "short": "真",
+    "actor": "架空 宗一"
+   },
+   {
+    "key": "sota",
+    "name": "颯太",
+    "short": "颯",
+    "actor": "架空 陽"
+   },
+   {
+    "key": "nagisa",
+    "name": "渚（7年前）",
+    "short": "渚",
+    "actor": "架空 小春"
+   },
+   {
+    "key": "yui",
+    "name": "結衣",
+    "short": "結",
+    "actor": "架空 栞"
+   },
+   {
+    "key": "gakugei",
+    "name": "学芸員・野々村",
+    "short": "野",
+    "actor": "架空 誠"
+   },
+   {
+    "key": "ex_visitor",
+    "name": "来館者（EX）",
+    "short": "来館",
+    "actor": null,
+    "extra": true
+   }
+  ],
+  "groups": {},
+  "locations": [
+   {
+    "key": "museum",
+    "name": "架空市立自然史博物館",
+    "address": "架空県架空市森の台1-1",
+    "green_room": "2階 会議室",
+    "parking": "職員用駐車場 4台"
+   },
+   {
+    "key": "storage",
+    "name": "博物館・収蔵庫（同所地下）",
+    "address": "架空県架空市森の台1-1",
+    "note": "撮影は閉館後のみ"
+   },
+   {
+    "key": "police",
+    "name": "架空第三スタジオ（警察署セット）",
+    "address": "架空県架空市港南3-8-2",
+    "green_room": "控室A・B"
+   },
+   {
+    "key": "house",
+    "name": "汐見家（架空ハウススタジオ）",
+    "address": "架空県架空市緑ヶ丘5-14",
+    "green_room": "1階 和室",
+    "note": "スリッパ用意は制作部"
+   },
+   {
+    "key": "forest",
+    "name": "架空県民の森 キャンプ場",
+    "address": "架空県架空郡山里町1200",
+    "parking": "第2駐車場"
+   },
+   {
+    "key": "river",
+    "name": "架空川 河川敷",
+    "address": "架空県架空市川辺町 架空橋下"
+   },
+   {
+    "key": "station",
+    "name": "架空中央駅 北口",
+    "note": "集合場所"
+   }
+  ],
+  "sheets": [
+   {
+    "file": "day1-final.pdf",
+    "originPath": "current/DEMO/F03_プリプロダクション/架空/day1-final.pdf",
+    "stamp": "決",
+    "state": "fixed",
+    "date": "2026-12-07",
+    "weekday": "月",
+    "weather": "晴れ",
+    "sunrise": "06:38",
+    "sunset": "16:29",
+    "crew": "本隊",
+    "departure": "6:30 架空中央駅北口発",
+    "notes": [
+     "博物館は開館前の撮影。9時までに搬入を終える",
+     "収蔵庫は閉館後（17時〜）"
+    ],
+    "rows": [
+     {
+      "s": [
+       "1"
+      ],
+      "dn": "D",
+      "pages": 1.5,
+      "head": "博物館・標本室",
+      "synopsis": "七月、澪が標本ラベルの違和感に気づく",
+      "cast": [
+       "mio",
+       "gakugei"
+      ],
+      "start": "07:30"
+     },
+     {
+      "s": [
+       "2"
+      ],
+      "dn": "D",
+      "pages": 1,
+      "head": "博物館・展示室",
+      "synopsis": "来館者に紛れる颯太",
+      "cast": [
+       "sota",
+       "ex_visitor"
+      ]
+     },
+     {
+      "s": [
+       "5"
+      ],
+      "dn": "D",
+      "pages": 2,
+      "head": "博物館・館長室",
+      "synopsis": "真壁が7年前の寄贈記録を隠す",
+      "cast": [
+       "kancho",
+       "mio"
+      ]
+     },
+     {
+      "slot": "meal",
+      "label": "昼食休憩",
+      "start": "12:00",
+      "end": "13:00"
+     },
+     {
+      "s": [
+       "6",
+       "7"
+      ],
+      "dn": "D",
+      "pages": 2.5,
+      "head": "博物館・標本室",
+      "synopsis": "澪と颯太、ラベルの筆跡を比べる",
+      "cast": [
+       "mio",
+       "sota"
+      ]
+     },
+     {
+      "s": [
+       "12"
+      ],
+      "dn": "N",
+      "pages": 1.5,
+      "head": "博物館・収蔵庫",
+      "synopsis": "閉館後、収蔵庫の奥に古い木箱",
+      "cast": [
+       "mio",
+       "gakugei"
+      ],
+      "start": "17:30",
+      "end": "19:00",
+      "note": "照明部 先行"
+     }
+    ],
+    "calls": [
+     {
+      "who": [
+       "gakugei"
+      ],
+      "time": "08:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "kancho"
+      ],
+      "time": "08:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "mio"
+      ],
+      "time": "07:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "sota"
+      ],
+      "time": "08:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "ex_visitor"
+      ],
+      "time": "08:30",
+      "place": "museum",
+      "note": "受付で衣装確認"
+     }
+    ]
+   },
+   {
+    "file": "day2-final.pdf",
+    "originPath": "current/DEMO/F03_プリプロダクション/架空/day2-final.pdf",
+    "stamp": "決",
+    "state": "fixed",
+    "date": "2026-12-08",
+    "weekday": "火",
+    "weather": "曇り",
+    "sunrise": "06:39",
+    "sunset": "16:29",
+    "crew": "本隊",
+    "departure": "7:00 架空中央駅北口発",
+    "notes": [
+     "スタジオ入り 8:00。警察署セットは終日"
+    ],
+    "rows": [
+     {
+      "s": [
+       "3"
+      ],
+      "dn": "D",
+      "pages": 1,
+      "head": "警察署・捜査一課",
+      "synopsis": "桐生が7年前の失踪の資料を開く",
+      "cast": [
+       "kiryu"
+      ],
+      "start": "09:00"
+     },
+     {
+      "s": [
+       "8"
+      ],
+      "dn": "D",
+      "pages": 2,
+      "head": "警察署・取調室",
+      "synopsis": "颯太の聴取",
+      "cast": [
+       "kiryu",
+       "sota"
+      ]
+     },
+     {
+      "slot": "meal",
+      "label": "昼食休憩",
+      "start": "12:30",
+      "end": "13:30"
+     },
+     {
+      "s": [
+       "9",
+       "10"
+      ],
+      "dn": "D",
+      "pages": 2,
+      "head": "警察署・捜査一課",
+      "synopsis": "地図に赤い円を描く桐生",
+      "cast": [
+       "kiryu",
+       "mio"
+      ]
+     },
+     {
+      "s": [
+       "21"
+      ],
+      "dn": "N",
+      "pages": 1,
+      "head": "警察署・非常階段",
+      "synopsis": "桐生が報告書を手渡す",
+      "cast": [
+       "kiryu",
+       "mio"
+      ],
+      "end": "18:30"
+     }
+    ],
+    "calls": [
+     {
+      "who": [
+       "kiryu"
+      ],
+      "time": "08:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "mio"
+      ],
+      "time": "07:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "sota"
+      ],
+      "time": "08:00",
+      "place": "station"
+     }
+    ]
+   },
+   {
+    "file": "day3-final.pdf",
+    "originPath": "current/DEMO/F03_プリプロダクション/架空/day3-final.pdf",
+    "stamp": "決",
+    "state": "fixed",
+    "date": "2026-12-09",
+    "weekday": "水",
+    "weather": "晴れ",
+    "sunrise": "06:40",
+    "sunset": "16:29",
+    "crew": "本隊",
+    "departure": "6:45 架空中央駅北口発",
+    "notes": [
+     "ハウススタジオは近隣への挨拶済み。車両は2台まで"
+    ],
+    "rows": [
+     {
+      "s": [
+       "4"
+      ],
+      "dn": "D",
+      "pages": 1,
+      "head": "汐見家・リビング（朝）",
+      "synopsis": "澪と結衣の朝食",
+      "cast": [
+       "mio",
+       "yui"
+      ],
+      "start": "08:30"
+     },
+     {
+      "s": [
+       "11"
+      ],
+      "dn": "D",
+      "pages": 1.5,
+      "head": "汐見家・リビング",
+      "synopsis": "渚の写真を見つめる結衣",
+      "cast": [
+       "yui"
+      ]
+     },
+     {
+      "slot": "meal",
+      "label": "昼食休憩",
+      "start": "12:00",
+      "end": "13:00"
+     },
+     {
+      "s": [
+       "13",
+       "14"
+      ],
+      "dn": "D",
+      "pages": 2,
+      "head": "汐見家・渚の部屋",
+      "synopsis": "7年前の夏休みのノート",
+      "cast": [
+       "mio",
+       "yui"
+      ]
+     },
+     {
+      "s": [
+       "15"
+      ],
+      "dn": "N",
+      "pages": 1,
+      "head": "汐見家・玄関（夜）",
+      "synopsis": "颯太が訪ねてくる",
+      "cast": [
+       "mio",
+       "sota"
+      ],
+      "end": "19:30"
+     }
+    ],
+    "calls": [
+     {
+      "who": [
+       "mio"
+      ],
+      "time": "07:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "sota"
+      ],
+      "time": "08:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "yui"
+      ],
+      "time": "08:00",
+      "place": "station"
+     }
+    ]
+   },
+   {
+    "file": "day5-final.pdf",
+    "originPath": "current/DEMO/F03_プリプロダクション/架空/day5-final.pdf",
+    "stamp": "決",
+    "state": "fixed",
+    "date": "2026-12-11",
+    "weekday": "金",
+    "weather": "晴れ",
+    "sunrise": "06:42",
+    "sunset": "16:30",
+    "crew": "本隊",
+    "departure": "6:00 架空中央駅北口発",
+    "notes": [
+     "山の天気が変わりやすい。雨具・暖房器具は制作部",
+     "日没 16:30。夕景は 15:30 から"
+    ],
+    "rows": [
+     {
+      "s": [
+       "16"
+      ],
+      "dn": "D",
+      "pages": 1.5,
+      "head": "県民の森・キャンプ場",
+      "synopsis": "7年前のキャンプの回想（渚）",
+      "cast": [
+       "nagisa",
+       "yui",
+       "mio"
+      ],
+      "start": "08:00"
+     },
+     {
+      "s": [
+       "17",
+       "18"
+      ],
+      "dn": "D",
+      "pages": 2,
+      "head": "県民の森・観察小屋",
+      "synopsis": "古びた小屋で見つかるリボン",
+      "cast": [
+       "mio",
+       "sota",
+       "kiryu"
+      ]
+     },
+     {
+      "slot": "meal",
+      "label": "昼食（ロケ弁）",
+      "start": "12:00",
+      "end": "13:00"
+     },
+     {
+      "s": [
+       "19"
+      ],
+      "dn": "D",
+      "pages": 1,
+      "head": "架空川・河川敷",
+      "synopsis": "標本の鳥が見ていたもの",
+      "cast": [
+       "mio",
+       "sota"
+      ]
+     },
+     {
+      "s": [
+       "20"
+      ],
+      "dn": "D",
+      "pages": 1,
+      "head": "県民の森・丘",
+      "synopsis": "夕景、7年後の約束",
+      "cast": [
+       "mio",
+       "yui",
+       "sota"
+      ],
+      "start": "15:30",
+      "end": "16:30"
+     }
+    ],
+    "calls": [
+     {
+      "who": [
+       "kiryu"
+      ],
+      "time": "08:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "mio"
+      ],
+      "time": "07:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "nagisa"
+      ],
+      "time": "08:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "sota"
+      ],
+      "time": "08:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "yui"
+      ],
+      "time": "08:00",
+      "place": "station"
+     }
+    ]
+   },
+   {
+    "file": "day6-final.pdf",
+    "originPath": "current/DEMO/F03_プリプロダクション/架空/day6-final.pdf",
+    "stamp": "決",
+    "state": "fixed",
+    "date": "2026-12-12",
+    "weekday": "土",
+    "weather": "晴れ",
+    "sunrise": "06:43",
+    "sunset": "16:30",
+    "crew": "本隊",
+    "departure": "7:00 架空中央駅北口発",
+    "notes": [
+     "展示室は来館者エキストラ 20名。受付 8:30"
+    ],
+    "rows": [
+     {
+      "s": [
+       "22"
+      ],
+      "dn": "D",
+      "pages": 2,
+      "head": "博物館・展示室",
+      "synopsis": "真壁の告白",
+      "cast": [
+       "kancho",
+       "mio",
+       "kiryu"
+      ],
+      "start": "09:00"
+     },
+     {
+      "s": [
+       "23"
+      ],
+      "dn": "D",
+      "pages": 1,
+      "head": "博物館・標本室",
+      "synopsis": "新しいラベルを書く澪",
+      "cast": [
+       "mio"
+      ]
+     },
+     {
+      "slot": "meal",
+      "label": "昼食休憩",
+      "start": "12:00",
+      "end": "13:00"
+     },
+     {
+      "s": [
+       "24"
+      ],
+      "dn": "D",
+      "pages": 1.5,
+      "head": "博物館・展示室",
+      "synopsis": "再開した特別展に集まる人々",
+      "cast": [
+       "mio",
+       "yui",
+       "sota",
+       "ex_visitor"
+      ],
+      "end": "16:00"
+     }
+    ],
+    "calls": [
+     {
+      "who": [
+       "kancho"
+      ],
+      "time": "08:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "kiryu"
+      ],
+      "time": "08:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "mio"
+      ],
+      "time": "07:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "sota"
+      ],
+      "time": "08:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "yui"
+      ],
+      "time": "08:00",
+      "place": "station"
+     },
+     {
+      "who": [
+       "ex_visitor"
+      ],
+      "time": "08:30",
+      "place": "museum",
+      "note": "受付で衣装確認"
+     }
+    ]
+   }
+  ]
+ },
+ "props": {
+  "note": "公開デモ用の小道具（架空）。品目・担当はすべて架空。",
+  "work": {
+   "code": "DEMO-W02",
+   "title": "七月の標本室（架空）"
+  },
+  "items": [
+   {
+    "key": "genba-001",
+    "sceneLabel": "#1",
+    "shootOn": "2026-12-07",
+    "place": "博物館・標本室",
+    "name": "鳥の剥製の標本（ラベル付き）",
+    "quantity": "3",
+    "kind": "dressing",
+    "department": "art",
+    "ownerLabel": "美術A",
+    "state": "ready",
+    "source": "both",
+    "scriptNote": "ラベルの字が一枚だけ違う"
+   },
+   {
+    "key": "genba-002",
+    "sceneLabel": "#1",
+    "shootOn": "2026-12-07",
+    "place": "博物館・標本室",
+    "name": "標本ラベル（7年前の筆跡・AIで作成）",
+    "quantity": "1式",
+    "kind": "hand",
+    "department": "direction",
+    "ownerLabel": "演出B",
+    "state": "ready",
+    "source": "both",
+    "scriptNote": "筆跡の違いが分かるように",
+    "memo": "AI で作成。実在の人物の筆跡・写真は使っていない（確認済み）"
+   },
+   {
+    "key": "genba-003",
+    "sceneLabel": "#1",
+    "shootOn": "2026-12-07",
+    "place": "博物館・標本室",
+    "name": "ルーペ",
+    "quantity": "1",
+    "kind": "hand",
+    "department": "art",
+    "ownerLabel": "美術A",
+    "state": "ready",
+    "source": "script"
+   },
+   {
+    "key": "genba-004",
+    "sceneLabel": "#2",
+    "shootOn": "2026-12-07",
+    "place": "博物館・展示室",
+    "name": "来館者のパンフレット",
+    "quantity": "20",
+    "kind": "hand",
+    "department": "production",
+    "ownerLabel": "制作C",
+    "state": "arranging",
+    "source": "meeting",
+    "nextAction": "印刷所へ入稿"
+   },
+   {
+    "key": "genba-005",
+    "sceneLabel": "#5",
+    "shootOn": "2026-12-07",
+    "place": "博物館・館長室",
+    "name": "寄贈記録の台帳（7年前）",
+    "quantity": "1",
+    "kind": "hand",
+    "department": "direction",
+    "ownerLabel": "演出B",
+    "state": "arranging",
+    "source": "script",
+    "scriptNote": "頁をめくると一行だけ消されている",
+    "nextAction": "中身を AI で作る"
+   },
+   {
+    "key": "genba-006",
+    "sceneLabel": "#5",
+    "shootOn": "2026-12-07",
+    "place": "博物館・館長室",
+    "name": "館長の万年筆",
+    "quantity": "1",
+    "kind": "hand",
+    "department": "art",
+    "ownerLabel": "美術A",
+    "state": "ready",
+    "source": "script"
+   },
+   {
+    "key": "genba-007",
+    "sceneLabel": "#6",
+    "shootOn": "2026-12-07",
+    "place": "博物館・標本室",
+    "name": "比べる2枚のラベル（拡大コピー）",
+    "quantity": "2",
+    "kind": "hand",
+    "department": "direction",
+    "ownerLabel": "演出B",
+    "state": "adjust",
+    "source": "meeting",
+    "nextAction": "寄りの画で読める大きさか監督に確認"
+   },
+   {
+    "key": "genba-008",
+    "sceneLabel": "#12",
+    "shootOn": "2026-12-07",
+    "place": "博物館・収蔵庫",
+    "name": "古い木箱（リボン入り）",
+    "quantity": "1",
+    "kind": "dressing",
+    "department": "art",
+    "ownerLabel": "美術A",
+    "state": "arranging",
+    "source": "both",
+    "scriptNote": "埃をかぶった木箱",
+    "nextAction": "汚しを入れる"
+   },
+   {
+    "key": "genba-009",
+    "sceneLabel": "#12",
+    "shootOn": "2026-12-07",
+    "place": "博物館・収蔵庫",
+    "name": "懐中電灯",
+    "quantity": "2",
+    "kind": "hand",
+    "department": "production",
+    "ownerLabel": "制作C",
+    "state": "ready",
+    "source": "script"
+   },
+   {
+    "key": "genba-010",
+    "sceneLabel": "#3",
+    "shootOn": "2026-12-08",
+    "place": "警察署・捜査一課",
+    "name": "7年前の捜査資料（ファイル）",
+    "quantity": "1式",
+    "kind": "hand",
+    "department": "direction",
+    "ownerLabel": "演出B",
+    "state": "ready",
+    "source": "both",
+    "scriptNote": "資料をめくる",
+    "memo": "AI で作成。人物写真は架空の合成で、実在の俳優・人物の画像は使っていない"
+   },
+   {
+    "key": "genba-011",
+    "sceneLabel": "#3",
+    "shootOn": "2026-12-08",
+    "place": "警察署・捜査一課",
+    "name": "失踪した少女の写真（AIで合成）",
+    "quantity": "1",
+    "kind": "hand",
+    "department": "direction",
+    "ownerLabel": "演出B",
+    "state": "adjust",
+    "source": "both",
+    "nextAction": "使用の可否を事務所と確認中",
+    "memo": "ネットの画像を元にしない。確認が済むまで使わない"
+   },
+   {
+    "key": "genba-012",
+    "sceneLabel": "#8",
+    "shootOn": "2026-12-08",
+    "place": "警察署・取調室",
+    "name": "湯呑み・お茶",
+    "quantity": "2",
+    "kind": "consumable",
+    "department": "production",
+    "ownerLabel": "制作C",
+    "state": "ready",
+    "source": "meeting"
+   },
+   {
+    "key": "genba-013",
+    "sceneLabel": "#9",
+    "shootOn": "2026-12-08",
+    "place": "警察署・捜査一課",
+    "name": "地図（A3を貼り合わせる）と赤ペン",
+    "quantity": "1",
+    "kind": "hand",
+    "department": "direction",
+    "ownerLabel": "演出B",
+    "state": "ready",
+    "source": "both",
+    "scriptNote": "赤い円を描く"
+   },
+   {
+    "key": "genba-014",
+    "sceneLabel": "#10",
+    "shootOn": "2026-12-08",
+    "place": "警察署・捜査一課",
+    "name": "レンタカーの貸出履歴（AIで作成）",
+    "quantity": "1式",
+    "kind": "hand",
+    "department": "direction",
+    "ownerLabel": "演出B",
+    "state": "arranging",
+    "source": "both",
+    "nextAction": "頁数を決める",
+    "memo": "社名・人名は架空"
+   },
+   {
+    "key": "genba-015",
+    "sceneLabel": "#21",
+    "shootOn": "2026-12-08",
+    "place": "警察署・非常階段",
+    "name": "報告書（黒バインダー）",
+    "quantity": "1",
+    "kind": "hand",
+    "state": "unassigned",
+    "source": "script"
+   },
+   {
+    "key": "genba-016",
+    "sceneLabel": "#4",
+    "shootOn": "2026-12-09",
+    "place": "汐見家・リビング（朝）",
+    "name": "朝食（トースト・サラダ）",
+    "quantity": "2人分",
+    "kind": "consumable",
+    "department": "production",
+    "ownerLabel": "制作C",
+    "state": "arranging",
+    "source": "both",
+    "nextAction": "当日朝に購入"
+   },
+   {
+    "key": "genba-017",
+    "sceneLabel": "#11",
+    "shootOn": "2026-12-09",
+    "place": "汐見家・リビング",
+    "name": "渚の写真立て",
+    "quantity": "1",
+    "kind": "dressing",
+    "department": "art",
+    "ownerLabel": "美術A",
+    "state": "adjust",
+    "source": "both",
+    "nextAction": "写真の人物を決める（架空の合成か、出演者の撮り下ろし）"
+   },
+   {
+    "key": "genba-018",
+    "sceneLabel": "#13",
+    "shootOn": "2026-12-09",
+    "place": "汐見家・渚の部屋",
+    "name": "夏休みのノート",
+    "quantity": "1",
+    "kind": "hand",
+    "department": "art",
+    "ownerLabel": "美術A",
+    "state": "arranging",
+    "source": "script",
+    "scriptNote": "最後の頁に地図"
+   },
+   {
+    "key": "genba-019",
+    "sceneLabel": "#13",
+    "shootOn": "2026-12-09",
+    "place": "汐見家・渚の部屋",
+    "name": "ランドセル（赤）",
+    "quantity": "1",
+    "kind": "hand",
+    "department": "costume",
+    "ownerLabel": "衣装D",
+    "state": "ready",
+    "source": "script"
+   },
+   {
+    "key": "genba-020",
+    "sceneLabel": "#15",
+    "shootOn": "2026-12-09",
+    "place": "汐見家・玄関（夜）",
+    "name": "玄関の靴（家族分）",
+    "quantity": "5足",
+    "kind": "dressing",
+    "department": "production",
+    "ownerLabel": "制作C",
+    "state": "ready",
+    "source": "meeting"
+   },
+   {
+    "key": "genba-021",
+    "sceneLabel": "#16",
+    "shootOn": "2026-12-11",
+    "place": "県民の森・キャンプ場",
+    "name": "テント・タープ",
+    "quantity": "1式",
+    "kind": "dressing",
+    "department": "art",
+    "ownerLabel": "美術A",
+    "state": "arranging",
+    "source": "both",
+    "nextAction": "レンタル店へ予約"
+   },
+   {
+    "key": "genba-022",
+    "sceneLabel": "#16",
+    "shootOn": "2026-12-11",
+    "place": "県民の森・キャンプ場",
+    "name": "ホットサンドの材料",
+    "quantity": "4人分",
+    "kind": "consumable",
+    "department": "production",
+    "ownerLabel": "制作C",
+    "state": "adjust",
+    "source": "meeting",
+    "nextAction": "焼き上がり用と食べる用を分ける"
+   },
+   {
+    "key": "genba-023",
+    "sceneLabel": "#17",
+    "shootOn": "2026-12-11",
+    "place": "県民の森・観察小屋",
+    "name": "色あせたリボン",
+    "quantity": "1",
+    "kind": "hand",
+    "department": "costume",
+    "ownerLabel": "衣装D",
+    "state": "arranging",
+    "source": "script",
+    "scriptNote": "7年分の色あせ"
+   },
+   {
+    "key": "genba-024",
+    "sceneLabel": "#17",
+    "shootOn": "2026-12-11",
+    "place": "県民の森・観察小屋",
+    "name": "古びた備品（小屋の中）",
+    "quantity": "1式",
+    "kind": "dressing",
+    "state": "unassigned",
+    "source": "meeting",
+    "nextAction": "現地の備品で足りるか下見で確認"
+   },
+   {
+    "key": "genba-025",
+    "sceneLabel": "#18",
+    "shootOn": "2026-12-11",
+    "place": "県民の森・観察小屋",
+    "name": "暗幕・ブルーシート（遮蔽）",
+    "quantity": "1式",
+    "kind": "other",
+    "department": "production",
+    "ownerLabel": "制作C",
+    "state": "ready",
+    "source": "meeting"
+   },
+   {
+    "key": "genba-026",
+    "sceneLabel": "#19",
+    "shootOn": "2026-12-11",
+    "place": "架空川・河川敷",
+    "name": "双眼鏡",
+    "quantity": "1",
+    "kind": "hand",
+    "department": "art",
+    "ownerLabel": "美術A",
+    "state": "ready",
+    "source": "script"
+   },
+   {
+    "key": "genba-027",
+    "sceneLabel": "#20",
+    "shootOn": "2026-12-11",
+    "place": "県民の森・丘",
+    "name": "タイムカプセル（お菓子の缶）とスコップ",
+    "quantity": "1",
+    "kind": "hand",
+    "department": "art",
+    "ownerLabel": "美術A",
+    "state": "arranging",
+    "source": "both",
+    "nextAction": "汚し用と新品の2つ"
+   },
+   {
+    "key": "genba-028",
+    "sceneLabel": "#22",
+    "shootOn": "2026-12-12",
+    "place": "博物館・展示室",
+    "name": "特別展のポスター",
+    "quantity": "3",
+    "kind": "dressing",
+    "department": "art",
+    "ownerLabel": "美術A",
+    "state": "arranging",
+    "source": "meeting",
+    "nextAction": "デザインを AI で作り、監督確認"
+   },
+   {
+    "key": "genba-029",
+    "sceneLabel": "#23",
+    "shootOn": "2026-12-12",
+    "place": "博物館・標本室",
+    "name": "新しい標本ラベル",
+    "quantity": "1",
+    "kind": "hand",
+    "state": "unassigned",
+    "source": "script"
+   },
+   {
+    "key": "genba-030",
+    "sceneLabel": "#24",
+    "shootOn": "2026-12-12",
+    "place": "博物館・展示室",
+    "name": "来館者の手荷物",
+    "quantity": "20",
+    "kind": "hand",
+    "department": "production",
+    "ownerLabel": "制作C",
+    "state": "unneeded",
+    "source": "meeting",
+    "memo": "エキストラの私物で足りる"
+   }
+  ]
+ },
+ "permits": {
+  "note": "公開デモ用の許可申請（架空）。提出先・場所はすべて架空。",
+  "offices": [
+   {
+    "name": "架空中央警察署",
+    "leadBusinessDays": 3,
+    "maxSpanDays": 7,
+    "note": "道路使用。窓口は交通課"
+   },
+   {
+    "name": "架空北警察署",
+    "leadBusinessDays": 3,
+    "maxSpanDays": 7
+   },
+   {
+    "name": "架空県 県民の森管理事務所",
+    "leadBusinessDays": 5,
+    "maxSpanDays": 3,
+    "note": "公園の使用"
+   },
+   {
+    "name": "架空市 河川管理課",
+    "leadBusinessDays": 7,
+    "maxSpanDays": 5
+   },
+   {
+    "name": "架空市立自然史博物館 総務課",
+    "leadBusinessDays": 10,
+    "maxSpanDays": 14,
+    "note": "施設の撮影"
+   }
+  ],
+  "applications": [
+   {
+    "office": "架空中央警察署",
+    "kind": "road",
+    "place": "架空市森の台1丁目 博物館前の歩道（機材車の停車）",
+    "startsOn": "2026-12-07",
+    "state": "permitted",
+    "appliedOn": "2026-11-27",
+    "pickupOn": "2026-12-02",
+    "receivedOn": "2026-12-02",
+    "feeYen": 2100
+   },
+   {
+    "office": "架空中央警察署",
+    "kind": "road",
+    "place": "架空市森の台1丁目 交差点付近（来館者の歩く画）",
+    "startsOn": "2026-12-12",
+    "state": "submitted",
+    "appliedOn": "2026-12-01",
+    "pickupOn": "2026-12-08",
+    "feeYen": 2100
+   },
+   {
+    "office": "架空北警察署",
+    "kind": "road",
+    "place": "架空市緑ヶ丘5丁目 汐見家前の道路",
+    "startsOn": "2026-12-09",
+    "state": "permitted",
+    "appliedOn": "2026-11-30",
+    "pickupOn": "2026-12-04",
+    "receivedOn": "2026-12-04",
+    "feeYen": 2100
+   },
+   {
+    "office": "架空県 県民の森管理事務所",
+    "kind": "park",
+    "place": "県民の森 キャンプ場・観察小屋",
+    "startsOn": "2026-12-11",
+    "state": "permitted",
+    "appliedOn": "2026-11-20",
+    "pickupOn": "2026-11-27",
+    "receivedOn": "2026-11-28"
+   },
+   {
+    "office": "架空県 県民の森管理事務所",
+    "kind": "park",
+    "place": "県民の森 丘の上（夕景）",
+    "startsOn": "2026-12-11",
+    "state": "returned",
+    "appliedOn": "2026-11-20",
+    "note": "火気の使用は不可。焚き火の場面は差し替え"
+   },
+   {
+    "office": "架空市 河川管理課",
+    "kind": "park",
+    "place": "架空川 河川敷（架空橋下）",
+    "startsOn": "2026-12-11",
+    "state": "submitted",
+    "appliedOn": "2026-11-28",
+    "pickupOn": "2026-12-09"
+   },
+   {
+    "office": "架空市立自然史博物館 総務課",
+    "kind": "facility",
+    "place": "博物館 標本室・展示室・館長室",
+    "startsOn": "2026-12-07",
+    "endsOn": "2026-12-12",
+    "state": "permitted",
+    "appliedOn": "2026-11-10",
+    "pickupOn": "2026-11-24",
+    "receivedOn": "2026-11-24",
+    "feeYen": 30000
+   },
+   {
+    "office": "架空市立自然史博物館 総務課",
+    "kind": "facility",
+    "place": "博物館 地下収蔵庫（閉館後）",
+    "startsOn": "2026-12-07",
+    "state": "draft",
+    "note": "閉館後の入室は学芸員の立ち会いが条件"
+   }
+  ]
+ }
+}

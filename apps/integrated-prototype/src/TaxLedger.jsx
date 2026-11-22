@@ -517,7 +517,6 @@ export default function TaxLedger({data, request: requestProp, onNavigate}) {
           </div>
           <div className="bl-actions">
             <button type="button" onClick={() => navigate?.('請求・入金')}>請求・入金で請求を作成</button>
-            <button type="button" className="secondary" onClick={() => navigate?.('設計キャンバス')}>概念・ER・画面の対応を見る</button>
           </div>
         </header>
         <section className="on-conditions" aria-label="条件">

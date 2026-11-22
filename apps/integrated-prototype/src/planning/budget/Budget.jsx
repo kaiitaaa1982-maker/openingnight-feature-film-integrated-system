@@ -8,7 +8,7 @@ import './budget.css';
 
 const yen = (value) => (value == null ? '—' : Number(value).toLocaleString('ja-JP'));
 const signed = (value) => (value == null || value === 0 ? '' : `${value > 0 ? '+' : '−'}${Math.abs(value).toLocaleString('ja-JP')}`);
-const STATE_TAG = {done: ['確定', 'ok'], in_progress: ['下書き', 'warn'], needs_review: ['例外', 'bad'], not_started: ['未着手', '']};
+const STATE_TAG = {done: ['確定', 'ok'], in_progress: ['下書き', 'warn'], needs_review: ['例外', 'bad'], notice: ['要確認', 'warn'], not_started: ['未着手', '']};
 const CHECK_LABEL = {total: '総合計', estimate: '見積り', tax: '消費税', total_inc_tax: '税込', direct: '直接制作費', subtotal_with_fee: '直接＋管理費',
   uncategorized: '区分なし', unknown_category: '区分違い', without_value: '値なし', fractional_yen: '円未満の端数'};
 const BREAKDOWN_REASON = {outside_range: 'SUMIF の範囲の外に内訳の行がある', mismatch: '行の額と内訳の和が違う', missing_sheet: '内訳のシートが無い', unsupported_formula: '読めない式'};
@@ -77,7 +77,7 @@ function BudgetBooks({request}) {
                 <td>{row.fixedVersionNo ? `rev${row.fixedVersionNo}` : '—'}</td>
                 <td>{row.latestVersionNo && row.latestVersionNo !== row.fixedVersionNo ? `rev${row.latestVersionNo}` : '—'}</td>
                 <td className="n">{yen(row.fixedTotalExTaxYen)}</td>
-                <td><Tag state={row.state.state} /></td>
+                <td><Tag state={row.state.notice ? 'notice' : row.state.state} /></td>
               </tr>
             ))}
           </tbody>
@@ -142,6 +142,7 @@ function BudgetBook({request, projectId, onBack}) {
           <span>{v.fixed ? '✓ 確定' : '下書き'} rev{v.versionNo}</span>
           {v.template && <span className="bd-chip">型 {v.template.name} v{v.template.versionNo}</span>}
           {failed.length > 0 && <span className="bad">! 例外 {failed.length}</span>}
+          {v.notices.some((n) => n.kind === 'total_unread') && <span className="bd-chip" data-notice="total_unread">総合計を読めなかった</span>}
           {v.check && <span className="bd-chip">検査 {v.check.passed}/{v.check.passed + v.check.failed}</span>}
           <select aria-label="版" value={v.versionNo} onChange={(e) => { const no = Number(e.target.value); setVersionNo(no); load(no); }}>
             {data.versions.map((row) => <option key={row.versionNo} value={row.versionNo}>rev{row.versionNo}{row.fixed ? ' ✓' : ''}</option>)}

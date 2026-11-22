@@ -495,7 +495,11 @@ for (const from of [...new Set(['0011_cloud_analytics.sql', realFiles.at(-2)])])
     const result = await migrateDatabase({ client: db.client });
     assert.equal(result.state, 'applied');
     assert.equal(result.reconcile_equal, true);
-    assert.deepEqual(result.new_tables, result.expected_new_tables);
+    // 行の数が移行から決まらない新しい表（INSERT … SELECT で既存の行から作る。移行 0067 の予算書の読み取りの定義の初期値）は、
+    // 道具も数を確かめない（null）。表の顔ぶれは同じで、数の決まる表だけを数で比べる
+    assert.deepEqual(Object.keys(result.new_tables).sort(), Object.keys(result.expected_new_tables).sort());
+    const known = Object.entries(result.expected_new_tables).filter(([, rows]) => rows !== null);
+    assert.deepEqual(Object.fromEntries(known.map(([table]) => [table, result.new_tables[table]])), Object.fromEntries(known));
     const full = await openPgClient({ applySchema: true });
     t.after(() => full.close());
     assert.deepEqual(definitionDiff(await snapshot(full), await snapshot(db)), []);

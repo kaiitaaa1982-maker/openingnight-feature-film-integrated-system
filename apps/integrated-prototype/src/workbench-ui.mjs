@@ -1,6 +1,7 @@
 import {optionsOf, labelOf, columnLabel} from './ui/labels.mjs';
 import {int as formatInt, decimal as formatDecimal, month as formatMonth, dateTimeJst} from './ui/format.mjs';
 import {parseYen, parseInteger, parseDate, parseMonth} from './ui/parse-input.mjs';
+import {show, sourceKey, rowNumbers, clearCells as sheetClearCells, fillDown as sheetFillDown, pasteCells as sheetPasteCells} from './ui/edit-sheet-model.mjs';
 export const OPS={select:'列を選択',rename:'列名を変更',type:'型を変換',filter:'行を絞り込み',replace:'値を置換',split:'列を分割',concat:'列を結合',calculate:'計算列',sort:'並べ替え',join:'参照表を結合',append:'表を追加',dedupe:'重複を除く',group:'集計',pivot:'ピボット',unpivot:'ピボット解除'};
 export const FALLBACK=[{key:'works',label:'作品マスタ'},{key:'products',label:'商品マスタ'},{key:'partners',label:'取引先マスタ'},{key:'sales_import',label:'売上取込（下書き）'}];
 export const SALES_SAMPLE={report_key:'sample-2026-09',kind:'digital',partner_id:'',product_id:'',period_from:'2026-09-01',period_to:'2026-09-30',sales_period_from:'2026-09-01',sales_period_to:'2026-09-30',recognition_basis_id:'',sales_month:'2026-09',report_received_on:'2026-10-05',contract_start_on:'',license_start_on:'',broadcast_on:'',basis_reason:'月次販売報告',accounting_month:'2026-09',description:'',quantity:'1',amount_ex_tax:'0',tax_amount:'0',amount_inc_tax:'0',supersedes_id:''};
@@ -9,11 +10,10 @@ export const step=operation=>({step_id:`step_${Date.now()}_${Math.random().toStr
 export function editableStep(s){const p=structuredClone(s.parameters||{});if(s.operation==='rename'&&p.mapping){const pair=Object.entries(p.mapping)[0]||[];p.from=pair[0]||'';p.to=pair[1]||'';delete p.mapping}if(s.operation==='sort'&&Array.isArray(p.by)){p.column=p.by[0]?.column||'';p.direction=p.by[0]?.direction||'asc';delete p.by}if(s.operation==='group'&&Array.isArray(p.aggregates)){const a=p.aggregates[0]||{};p.aggregateColumn=a.column||'';p.aggregate=a.operation||'sum';p.into=a.into||'';delete p.aggregates}if(s.operation==='filter'&&p.valueType==null)p.valueType=typeof p.value==='number'?'number':typeof p.value==='boolean'?'boolean':'string';if(s.operation==='replace'&&p.valueType==null)p.valueType=typeof p.from==='number'?'number':typeof p.from==='boolean'?'boolean':'string';return {...s,parameters:p}}
 const typed=(v,t)=>t==='number'?Number(v):t==='boolean'?String(v)==='true':v;
 export function normalize(s){const p=s.parameters||{},o=s.operation,q={...p};if(['select','concat','calculate','dedupe','join'].includes(o))q.columns=lists(p.columns);if(o==='split')q.into=lists(p.into);if(o==='rename'&&!p.mapping){q.mapping=p.from?{[p.from]:p.to}:{};delete q.from;delete q.to}if(o==='sort'&&!Array.isArray(p.by)){q.by=[{column:p.column,direction:p.direction||'asc'}];delete q.column;delete q.direction}if(o==='group'){q.by=lists(p.by);if(!Array.isArray(p.aggregates)){q.aggregates=[{column:p.aggregateColumn||null,operation:p.aggregate||'sum',into:p.into}];delete q.aggregateColumn;delete q.aggregate;delete q.into}}if(o==='pivot')q.by=lists(p.by);if(o==='unpivot'){q.fixed=lists(p.fixed);q.columns=lists(p.columns)}if(o==='filter'){q.value=typed(p.value,p.valueType);delete q.valueType}if(o==='replace'){q.from=typed(p.from,p.valueType);q.to=typed(p.to,p.valueType);delete q.valueType}return {...s,parameters:q}}
-export const show=v=>v==null?'':typeof v==='object'?JSON.stringify(v):String(v);
-export function rectangle(a,b=a){if(!a||!b)return null;return {r1:Math.min(a.r,b.r),r2:Math.max(a.r,b.r),c1:Math.min(a.c,b.c),c2:Math.max(a.c,b.c)}}
-export const inRectangle=(r,c,x)=>!!x&&r>=x.r1&&r<=x.r2&&c>=x.c1&&c<=x.c2;
-export function tsvFor(rows,cols,rect){if(!rect)return '';return rows.slice(rect.r1,rect.r2+1).map(row=>cols.slice(rect.c1,rect.c2+1).map(c=>show(row[c.key]).replace(/\t/g,' ').replace(/[\r\n]+/g,' ')).join('\t')).join('\n')}
-export const sourceKey=(r,i)=>String(r?._source?.key??r?.id??`row:${i}`);
+// 表の共通の操作（選択・キー操作・貼付・消去・下への複写・元に戻す）は ui/edit-sheet-model.mjs に置き、ここから再 export する。
+// 貼付・消去・下への複写は、この画面の「直せるセル」（cellEditable）と値の直し方（normalizeCellInput）を渡して使う。
+export {show, rectangle, inRectangle, tsvFor, sourceKey, ensureRowKeys, rowNumbers, applyEdits, setCells, insertRow, deleteRowsByKeys,
+  parseClipboard, gridKeyAction, moveSelection, selectedRowKeys} from './ui/edit-sheet-model.mjs';
 export function pasteVisible(allRows,visibleKeys,cols,start,text){const matrix=String(text).replace(/\r/g,'').split('\n').filter((x,i,a)=>x!==''||i<a.length-1).map(x=>x.split('\t'));if(start.r+matrix.length>visibleKeys.length||matrix.some(x=>start.c+x.length>cols.length))throw new Error('貼り付け範囲が表示中の表を超えています');const out=structuredClone(allRows),byKey=new Map(out.map((r,i)=>[sourceKey(r,i),i]));for(let y=0;y<matrix.length;y++){const ai=byKey.get(visibleKeys[start.r+y]);if(ai==null)continue;for(let x=0;x<matrix[y].length;x++){const col=cols[start.c+x];if(col.editable!==false)out[ai][col.key]=matrix[y][x]}}return out}
 export function updateVisible(allRows,visibleKey,key,value){return allRows.map((r,i)=>sourceKey(r,i)===visibleKey?{...r,[key]:value}:r)}
 export function diffRows(base,now){const before=new Map(base.map((r,i)=>[sourceKey(r,i),r])),after=new Map(now.map((r,i)=>[sourceKey(r,i),r])),out=[];for(const [k,row] of after){const old=before.get(k);if(!old)out.push({key:k,kind:'追加',before:null,after:row});else if(JSON.stringify(old)!==JSON.stringify(row))out.push({key:k,kind:'変更',before:old,after:row})}for(const [k,row] of before)if(!after.has(k))out.push({key:k,kind:'削除',before:row,after:null});return out}
@@ -278,270 +278,24 @@ export function newSalesRow(previous, key) {
   return {...deriveSalesValues(row), _source: {key}};
 }
 
-// ── 行の識別・元に戻す（セル確定単位の差分） ────────────────────────────────
+// ── 範囲の操作（共通の操作に、この画面の「直せるセル」と値の直し方を渡す） ──────────
 
-// 識別子（_source.key か id）が無い行に、位置に依存しない識別子を付ける。付けた行だけ新しいオブジェクトにする。
-export function ensureRowKeys(rows = [], makeKey = (index) => `row:${index}`) {
-  return rows.map((row, index) => (row?._source?.key != null || row?.id != null ? row : {...row, _source: {...(row?._source || {}), key: makeKey(index)}}));
-}
-
-export function rowNumbers(rows = []) {
-  return new Map(rows.map((row, index) => [sourceKey(row, index), index + 1]));
-}
-
-function keyIndex(rows) {
-  return new Map(rows.map((row, index) => [sourceKey(row, index), index]));
-}
-
-function assignField(row, field, value) {
-  const next = {...row};
-  if (value === undefined) delete next[field];
-  else next[field] = value;
-  return next;
-}
-
-// edits: [{type:'cell',key,field,before,after} | {type:'insert',index,key,row} | {type:'delete',index,key,row}]
-export function applyEdits(rows, edits = [], direction = 'forward') {
-  let out = rows.slice();
-  let index = null;
-  const forward = direction === 'forward';
-  for (const edit of forward ? edits : [...edits].reverse()) {
-    if (edit.type === 'cell') {
-      if (!index) index = keyIndex(out);
-      const at = index.get(edit.key);
-      if (at !== undefined) out[at] = assignField(out[at], edit.field, forward ? edit.after : edit.before);
-      continue;
-    }
-    index = null;
-    const adding = (edit.type === 'insert') === forward;
-    if (adding) out.splice(Math.max(0, Math.min(out.length, edit.index)), 0, edit.row);
-    else {
-      const at = out.findIndex((row, i) => sourceKey(row, i) === edit.key);
-      if (at >= 0) out.splice(at, 1);
-    }
-  }
-  return out;
-}
-
-// changes: [{key, field, value}]。同じ値は記録しない。derive(row, 変わった列) で派生値も計算し直して記録する。
-export function setCells(rows, changes = [], {derive} = {}) {
-  const out = rows.slice();
-  const index = keyIndex(out);
-  const edits = [];
-  const touched = new Map();
-  for (const {key, field, value} of changes) {
-    const at = index.get(key);
-    if (at === undefined || sameValue(out[at][field], value)) continue;
-    edits.push({type: 'cell', key, field, before: out[at][field], after: value});
-    out[at] = {...out[at], [field]: value};
-    if (!touched.has(key)) touched.set(key, new Set());
-    touched.get(key).add(field);
-  }
-  if (derive) {
-    for (const [key, fields] of touched) {
-      const at = index.get(key);
-      const next = derive(out[at], [...fields]);
-      for (const field of Object.keys(next)) {
-        if (!sameValue(out[at][field], next[field])) edits.push({type: 'cell', key, field, before: out[at][field], after: next[field]});
-      }
-      out[at] = next;
-    }
-  }
-  return {rows: out, edits};
-}
-
-function rectCells(rows, visibleKeys, columns, rect, pick) {
-  const changes = [];
-  let skipped = 0;
-  if (!rect) return {changes, skipped};
-  const byKey = new Map(rows.map((row, index) => [sourceKey(row, index), row]));
-  for (let r = rect.r1; r <= Math.min(rect.r2, visibleKeys.length - 1); r++) {
-    for (let c = rect.c1; c <= Math.min(rect.c2, columns.length - 1); c++) {
-      const column = columns[c];
-      if (!cellEditable(column, byKey.get(visibleKeys[r]))) {
-        skipped++;
-        continue;
-      }
-      const value = pick(r, c, column);
-      if (value !== undefined) changes.push({key: visibleKeys[r], field: column.key, value});
-    }
-  }
-  return {changes, skipped};
-}
+const readCell = (column, text) => ({ok: true, value: normalizeCellInput(column, text)});
 
 // Delete: 選択範囲の編集できるセルを空にする。
 export function clearCells(rows, visibleKeys, columns, rect, {derive} = {}) {
-  const {changes, skipped} = rectCells(rows, visibleKeys, columns, rect, () => '');
-  return {...setCells(rows, changes, {derive}), skipped};
+  return sheetClearCells(rows, visibleKeys, columns, rect, {derive, canEdit: cellEditable});
 }
 
 // Ctrl+D: 範囲の先頭行を下の行へ写す。1行だけ選んでいるときは、すぐ上の行の値を写す（Excel と同じ）。
 export function fillDown(rows, visibleKeys, columns, rect, {derive} = {}) {
-  if (!rect) return {rows, edits: [], skipped: 0};
-  const sourceRow = rect.r1 === rect.r2 ? rect.r1 - 1 : rect.r1;
-  if (sourceRow < 0) return {rows, edits: [], skipped: 0};
-  const byKey = new Map(rows.map((row, index) => [sourceKey(row, index), row]));
-  const source = byKey.get(visibleKeys[sourceRow]) || {};
-  const targets = {...rect, r1: rect.r1 === rect.r2 ? rect.r1 : rect.r1 + 1};
-  const {changes, skipped} = rectCells(rows, visibleKeys, columns, targets, (r, c, column) => source[column.key] ?? '');
-  return {...setCells(rows, changes, {derive}), skipped};
-}
-
-// 選択範囲の行を消す（売上取込だけ）。戻すときは元の位置へ戻る。
-export function deleteRowsByKeys(rows, keys = []) {
-  const wanted = new Set(keys);
-  const edits = [];
-  let out = rows.slice();
-  for (let at = 0; at < out.length;) {
-    const key = sourceKey(out[at], at);
-    if (wanted.has(key)) {
-      edits.push({type: 'delete', index: at, key, row: out[at]});
-      out = [...out.slice(0, at), ...out.slice(at + 1)];
-    } else at++;
-  }
-  return {rows: out, edits};
-}
-
-export function insertRow(rows, row, index = rows.length) {
-  const at = Math.max(0, Math.min(rows.length, index));
-  const edit = {type: 'insert', index: at, key: sourceKey(row, at), row};
-  return {rows: applyEdits(rows, [edit]), edits: [edit]};
-}
-
-// Excel からコピーした範囲（タブ区切り）を行×列にする。末尾の改行は無視する。
-export function parseClipboard(text) {
-  const lines = String(text ?? '').replace(/\r\n?/g, '\n').split('\n');
-  if (lines.length > 1 && lines.at(-1) === '') lines.pop();
-  return lines.map((line) => line.split('\t'));
+  return sheetFillDown(rows, visibleKeys, columns, rect, {derive, canEdit: cellEditable});
 }
 
 // 貼付。選択の左上から展開し、1セルだけコピーしたときは選択範囲全体へ同じ値を入れる。
 // 表示行を超えるとき: allowAppend（売上取込）なら makeRow(i, 直前の行) で行を足し、そうでなければ何も変えずに理由を返す。
 export function pasteCells(rows, visibleKeys, columns, selection, text, {allowAppend = false, makeRow, derive, appendHint} = {}) {
-  const matrix = parseClipboard(text);
-  const rect = rectangle(selection?.anchor, selection?.focus) || {r1: 0, r2: 0, c1: 0, c2: 0};
-  const single = matrix.length === 1 && matrix[0].length === 1;
-  const height = single ? rect.r2 - rect.r1 + 1 : matrix.length;
-  const width = single ? rect.c2 - rect.c1 + 1 : Math.max(...matrix.map((line) => line.length));
-  const cell = (y, x) => (single ? matrix[0][0] : matrix[y]?.[x] ?? '');
-  const overColumns = rect.c1 + width - columns.length;
-  if (overColumns > 0) {
-    return {ok: false, reason: 'columns', rows, edits: [], message: `コピーした範囲が表の右端を${overColumns}列超えています。貼り付ける位置を左へずらしてください`};
-  }
-  const overflow = Math.max(0, rect.r1 + height - visibleKeys.length);
-  if (overflow > 0 && (!allowAppend || typeof makeRow !== 'function')) {
-    return {
-      ok: false, reason: 'rows', overflow, rows, edits: [],
-      message: `コピーした範囲が表示中の行を${overflow}行超えています。${appendHint || '行の追加はExcel一括登録で行ってください'}`,
-    };
-  }
-  const changes = [];
-  const appendedValues = Array.from({length: overflow}, () => ({}));
-  const byKey = new Map(rows.map((row, index) => [sourceKey(row, index), row]));
-  let skipped = 0;
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const column = columns[rect.c1 + x];
-      const target = rect.r1 + y < visibleKeys.length ? byKey.get(visibleKeys[rect.r1 + y]) : null;
-      if (target ? !cellEditable(column, target) : !column.editable) {
-        skipped++;
-        continue;
-      }
-      const value = normalizeCellInput(column, cell(y, x));
-      const r = rect.r1 + y;
-      if (r < visibleKeys.length) changes.push({key: visibleKeys[r], field: column.key, value});
-      else appendedValues[r - visibleKeys.length][column.key] = value;
-    }
-  }
-  const result = setCells(rows, changes, {derive});
-  let out = result.rows;
-  const edits = [...result.edits];
-  appendedValues.forEach((values, i) => {
-    const template = makeRow(i, out.at(-1) || null);
-    const merged = {...template, ...values};
-    const row = derive ? derive(merged, Object.keys(values)) : merged;
-    const inserted = insertRow(out, row);
-    out = inserted.rows;
-    edits.push(...inserted.edits);
-  });
-  return {ok: true, rows: out, edits, appended: overflow, skipped};
-}
-
-// ── キー操作（閲覧モード／編集モード） ─────────────────────────────────────
-
-// 閲覧モード: 矢印・Tab で移動、Enter・F2・文字入力で編集、Delete で範囲を空に、Ctrl+Z/Y/D/C/V。
-// 編集モード: Esc で取消、Enter で確定して下へ（Shift で上へ）、Tab で確定して右へ。矢印はセル内のカーソル移動。
-export function gridKeyAction(event, {editing = false, readOnly = false} = {}) {
-  if (!event || event.isComposing || event.keyCode === 229) return {type: 'none'};
-  const key = event.key || '';
-  const lower = key.toLowerCase();
-  const command = event.ctrlKey || event.metaKey;
-  if (editing) {
-    if (key === 'Escape') return {type: 'cancel'};
-    if (key === 'Enter' && !event.altKey && !command) return {type: 'commit', dr: event.shiftKey ? -1 : 1, dc: 0};
-    if (key === 'Tab') return {type: 'commit', dr: 0, dc: event.shiftKey ? -1 : 1};
-    return {type: 'none'};
-  }
-  const blocked = {type: 'readonly'};
-  if (command && !event.altKey) {
-    if (lower === 'c') return {type: 'copy'};
-    if (lower === 'v') return readOnly ? blocked : {type: 'paste'};
-    if (lower === 'z') return readOnly ? blocked : {type: event.shiftKey ? 'redo' : 'undo'};
-    if (lower === 'y') return readOnly ? blocked : {type: 'redo'};
-    if (lower === 'd') return readOnly ? blocked : {type: 'fillDown'};
-    if (lower === 'a') return {type: 'selectAll'};
-    if (key === 'Home') return {type: 'moveTo', r: 0, c: 0, extend: Boolean(event.shiftKey)};
-    if (key === 'End') return {type: 'moveTo', r: 'last', c: 'last', extend: Boolean(event.shiftKey)};
-    return {type: 'none'};
-  }
-  switch (key) {
-    case 'ArrowUp': return {type: 'move', dr: -1, dc: 0, extend: Boolean(event.shiftKey)};
-    case 'ArrowDown': return {type: 'move', dr: 1, dc: 0, extend: Boolean(event.shiftKey)};
-    case 'ArrowLeft': return {type: 'move', dr: 0, dc: -1, extend: Boolean(event.shiftKey)};
-    case 'ArrowRight': return {type: 'move', dr: 0, dc: 1, extend: Boolean(event.shiftKey)};
-    case 'Tab': return {type: 'move', dr: 0, dc: event.shiftKey ? -1 : 1, extend: false};
-    case 'Home': return {type: 'moveTo', c: 0, extend: Boolean(event.shiftKey)};
-    case 'End': return {type: 'moveTo', c: 'last', extend: Boolean(event.shiftKey)};
-    case 'Enter':
-    case 'F2': return readOnly ? blocked : {type: 'edit', keep: true};
-    case 'Delete':
-    case 'Backspace': return readOnly ? blocked : {type: 'clear'};
-    case 'Escape': return {type: 'collapse'};
-    default: break;
-  }
-  if (key.length === 1 && !event.altKey) return readOnly ? blocked : {type: 'edit', keep: false, text: key};
-  return {type: 'none'};
-}
-
-const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
-
-// 選択を動かす。extend（Shift）なら起点を残して範囲を広げる。rows・cols は表示中の行数・列数。
-export function moveSelection(selection, action, {rows, cols}) {
-  if (!rows || !cols) return selection || null;
-  if (action.type === 'selectAll') return {anchor: {r: 0, c: 0}, focus: {r: rows - 1, c: cols - 1}};
-  const focus = selection?.focus || {r: 0, c: 0};
-  let r = focus.r;
-  let c = focus.c;
-  if (action.type === 'move' || action.type === 'commit') {
-    r += action.dr || 0;
-    c += action.dc || 0;
-  } else if (action.type === 'moveTo') {
-    if (action.r !== undefined) r = action.r === 'last' ? rows - 1 : action.r;
-    if (action.c !== undefined) c = action.c === 'last' ? cols - 1 : action.c;
-  } else if (action.type === 'collapse') {
-    return {anchor: {...focus}, focus: {...focus}};
-  }
-  r = clamp(r, 0, rows - 1);
-  c = clamp(c, 0, cols - 1);
-  const extend = action.extend && selection?.anchor;
-  return {anchor: extend ? selection.anchor : {r, c}, focus: {r, c}};
-}
-
-// 選択範囲に含まれる行の識別子（「選択行を削除」用）。
-export function selectedRowKeys(visibleKeys, selection) {
-  const rect = rectangle(selection?.anchor, selection?.focus);
-  if (!rect) return [];
-  return visibleKeys.slice(rect.r1, Math.min(rect.r2, visibleKeys.length - 1) + 1);
+  return sheetPasteCells(rows, visibleKeys, columns, selection, text, {allowAppend, makeRow, derive, appendHint, canEdit: cellEditable, read: readCell});
 }
 
 // ── 検証エラーの行・セルへの対応付け ────────────────────────────────────────

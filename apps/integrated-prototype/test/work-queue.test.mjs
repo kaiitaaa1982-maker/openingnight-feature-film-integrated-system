@@ -22,7 +22,7 @@ test('home work queue shows role-appropriate items with counts and links', async
   assert.equal(byId['mg-unverified'].count, 0);
   assert.ok(byId['workbench-approvals'], 'admin sees approval queues');
   const production = await get(await login('production@openingnight.invalid'));
-  assert.deepEqual(production.items.map((item) => item.id), ['prep-tasks', 'unassigned-scenes'], 'production sees no finance items');
+  assert.deepEqual(production.items.map((item) => item.id), ['prep-tasks', 'unassigned-scenes', 'leftover-scenes', 'scene-reads-pending'], 'production sees no finance items');
   const scenes = byId['unassigned-scenes'];
   assert.equal(scenes.page, '制作');
   assert.deepEqual(scenes.params, {tab: 'day'});
@@ -47,4 +47,32 @@ test('unassigned scenes: only works with shooting days, not shot, and not on any
   assert.ok(labels.includes('S#Q1・架空の駅'));
   assert.ok(labels.includes('S#Q3'));
   assert.ok(!labels.some((label) => label.startsWith('S#Q2')), 'shot scenes are not listed');
+});
+
+test('FR-PROD-SCHED-098 撮り残したシーン: 過ぎた撮影日の撮り残しを全役割に要対応で出し、見てよい作品だけ・割り当てていないシーンとは二重に出さない', async (t) => {
+  const db = await openTestDb({t});
+  const app = createApp({db, mode: 'local'});
+  // 架空の作品1に、過ぎた撮影日（2026-09-20）・今日より後の撮影日（2026-09-30）と、シーン4つ（撮り残し・撮影完了・これから撮る・未割当）
+  for (const [id, no, location] of [[961, 'L1', '架空の河原'], [962, 'L2', null], [963, 'L3', null], [964, 'L4', null]]) {
+    await db.run('INSERT INTO scenes(id,org_id,project_id,work_id,scene_no,location,synopsis) VALUES(?,1,1,1,?,?,?)', [id, no, location, '架空']);
+  }
+  await db.run("INSERT INTO shooting_days(id,org_id,project_id,work_id,shoot_date,unit,label,created_by) VALUES(851,1,1,1,'2026-09-20','A班','架空1日目',1),(852,1,1,1,'2026-09-30','A班','架空2日目',1)");
+  await db.run('INSERT INTO day_scene_assignments(org_id,work_id,shooting_day_id,scene_id,sequence_order) VALUES(1,1,851,961,1),(1,1,851,962,2),(1,1,852,963,1)');
+  await db.run("INSERT INTO shooting_scene_results(org_id,project_id,work_id,shooting_day_id,scene_id,seq,result,created_by) VALUES(1,1,1,851,962,1,'shot',1)");
+  const login = async (email) => (await app.request('/api/local/login', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({email})})).headers.get('set-cookie').split(';')[0];
+  const queue = async (email) => Object.fromEntries((await (await app.request('/api/work-queue?today=2026-09-24', {headers: {cookie: await login(email)}})).json()).items.map((item) => [item.id, item]));
+  for (const email of ['admin@openingnight.invalid', 'editor@openingnight.invalid', 'production@openingnight.invalid']) {
+    const items = await queue(email);
+    const leftover = items['leftover-scenes'];
+    assert.deepEqual({id: leftover.id, title: leftover.title, page: leftover.page, params: leftover.params, tone: leftover.tone, count: leftover.count},
+      {id: 'leftover-scenes', title: '撮り残したシーン', page: '撮影の記録', params: {view: 'leftover'}, tone: 'bad', count: 1}, email);
+    assert.deepEqual(leftover.rows, [{label: 'S#L1・架空の河原', detail: '風のあとさき・結果なし・2026/09/20', workId: 1}], email);
+    // 未割当のシーン（L4）は「撮影日に割り当てていないシーン」にだけ出る
+    assert.deepEqual(items['unassigned-scenes'].rows.map((row) => row.label), ['S#L4'], email);
+  }
+  // 別の組織の利用者には、組織1の撮り残しを出さない
+  assert.equal((await queue('outsider@other.invalid'))['leftover-scenes'].count, 0);
+  // 撮り残しを欠番にすると消える
+  await db.run("INSERT INTO shooting_scene_results(org_id,project_id,work_id,shooting_day_id,scene_id,seq,result,created_by) VALUES(1,1,1,851,961,1,'dropped',1)");
+  assert.equal((await queue('production@openingnight.invalid'))['leftover-scenes'].count, 0);
 });

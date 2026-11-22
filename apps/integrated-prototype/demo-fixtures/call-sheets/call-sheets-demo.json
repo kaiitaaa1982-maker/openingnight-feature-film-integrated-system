@@ -1,0 +1,59 @@
+{
+  "note": "台本の無い作品の日々スケ（撮影スケジュール）の架空データ。題名・人物・場所・俳優名はすべて架空で、実在の作品・人物・団体とは関係ない。同じ日の仮と決、別の日の仮の3枚。",
+  "work": {"projectCode": "DEMO-CS", "projectTitle": "架空の野外フェス映画（架空）", "workCode": "DEMO-CS-1", "workTitle": "夜明けのステージ（架空）", "unit": "本隊"},
+  "characters": [
+    {"key": "aoi", "name": "葵", "short": "葵", "actor": "架空 一花"},
+    {"key": "ren", "name": "蓮", "short": "蓮", "actor": "架空 二郎"},
+    {"key": "kaede", "name": "楓", "short": "楓", "actor": null, "group": "架空バンド"},
+    {"key": "sora", "name": "空", "short": "空", "actor": null, "group": "架空バンド"},
+    {"key": "ex_crowd", "name": "観客（EX）", "short": "観客", "actor": null, "extra": true}
+  ],
+  "groups": {"架空バンド": ["kaede", "sora"]},
+  "locations": [
+    {"key": "park", "name": "架空海浜公園", "address": "架空県架空市海辺町1-2-3", "green_room": "支度テント"},
+    {"key": "station", "name": "架空中央駅 東口", "note": "集合場所"}
+  ],
+  "sheets": [
+    {
+      "file": "day1-draft.pdf", "originPath": "current/ORG/F03_プリプロダクション/架空/day1-draft.pdf", "stamp": "仮", "state": "review",
+      "date": "2026-11-02", "weekday": "月", "weather": "晴れ", "sunrise": "06:05", "sunset": "16:40", "crew": "本隊", "departure": "6:30 架空駅前発",
+      "notes": ["撮りこぼしは予備日へ"],
+      "rows": [
+        {"s": ["1"], "dn": "D", "pages": 1.5, "head": "控えテント", "synopsis": "5年ぶりの再会", "start": "09:00", "cast": ["aoi", "@架空バンド"]},
+        {"slot": "meal", "label": "昼食休憩", "start": "12:00", "end": "13:00"},
+        {"s": ["2", "3"], "dn": "N", "dnLabel": "作りD", "pages": 2, "head": "ステージ/客席", "synopsis": "幕が上がる", "end": "17:00", "cast": ["aoi", "ren", "ex_crowd"]}
+      ],
+      "calls": [
+        {"who": ["@架空バンド"], "label": "架空バンド全員", "time": "08:30", "ready": true, "place": "park", "placeNote": "支度テント", "note": "メイク支度済み"},
+        {"who": ["aoi"], "time": "08:00", "place": "station"}
+      ]
+    },
+    {
+      "file": "day1-final.pdf", "originPath": "current/ORG/F03_プリプロダクション/架空/day1-final.pdf", "stamp": "決", "state": "fixed",
+      "date": "2026-11-02", "weekday": "月", "weather": "晴れ", "sunrise": "06:05", "sunset": "16:40", "crew": "本隊", "departure": "6:15 架空駅前発",
+      "notes": ["撮りこぼしは予備日へ"],
+      "rows": [
+        {"s": ["1"], "dn": "D", "pages": 1.5, "head": "控えテント", "synopsis": "6年ぶりの再会", "start": "09:00", "end": "10:30", "cast": ["aoi", "@架空バンド"]},
+        {"slot": "meal", "label": "昼食休憩", "start": "12:00", "end": "13:00"},
+        {"s": ["2", "3"], "dn": "N", "dnLabel": "作りD", "pages": 2, "head": "ステージ/客席", "synopsis": "幕が上がる", "end": "17:00", "cast": ["aoi", "ren", "ex_crowd"]}
+      ],
+      "calls": [
+        {"who": ["@架空バンド"], "label": "架空バンド全員", "time": "08:30", "ready": true, "place": "park", "placeNote": "支度テント", "note": "メイク支度済み"},
+        {"who": ["aoi"], "time": "07:45", "place": "station"}
+      ]
+    },
+    {
+      "file": "day2-draft.pdf", "originPath": "current/ORG/F03_プリプロダクション/架空/day2-draft.pdf", "stamp": "仮", "state": "review",
+      "date": "2026-11-04", "weekday": "水", "weather": "曇り", "sunrise": "06:07", "sunset": "16:38", "crew": "先発", "departure": "6:45 架空駅前発",
+      "rows": [
+        {"s": ["4"], "dn": "D", "pages": 1, "head": "客席", "synopsis": "入場する人々", "start": "13:00", "end": "13:30", "cast": ["ex_crowd"], "team": "ドローン班"},
+        {"s": ["1"], "again": true, "start": "15:00", "end": "15:15", "cast": ["ren"], "team": "本隊", "label": "S#1 再会の入れ込み（本隊）"},
+        {"s": ["5"], "dn": null, "pages": null, "head": null, "synopsis": "走り続ける蓮", "cast": ["ren"], "note": "追加S#5"}
+      ],
+      "calls": [
+        {"who": ["ren"], "time": "12:00", "place": "station"},
+        {"who": ["ex_crowd"], "time": null, "place": "park", "note": "開場から"}
+      ]
+    }
+  ]
+}

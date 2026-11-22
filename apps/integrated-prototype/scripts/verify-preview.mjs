@@ -367,23 +367,13 @@ export async function verifyPreview(options, log = console.log) {
     check(`売上集計シート（単独の画面・${recordedYear - 1}年度）: 表が出る`, (await gridRows()) > 1 && !sheetText.includes(PREVIEW_MISSING_MESSAGE), `行 ${await gridRows()}`);
     await shot('12-sales-sheet');
 
-    // 依頼5: 全表の定義が記録され、既存表・追加表とも定義の列と型を画面で読める。
+    // 依頼5: 全表の定義と売上の追加列の応答が記録されている（データ一覧の画面は 2026-11-02 に外した）。
     const recordedMap = new Map(Object.entries(recorded));
     const required = requiredPreviewApiUrls(recordedMap);
     const missingRequired = required.filter((href) => recorded[snapshotKey('GET', href)]?.status !== 200);
     check('全表の定義と売上の追加列の必要な応答が記録されている',
       recorded['GET /api/admin/tables']?.body?.tables?.length > 0 && missingRequired.length === 0,
       `${required.length}件・欠落 ${missingRequired.length}件 ${missingRequired.slice(0, 3).join('、')}`);
-    for (const [table, column] of [['works', 'code'], ['work_master_profile_versions', 'production_category']]) {
-      await page.goto(`${home}?p=data&table=${table}`, {waitUntil: 'load'});
-      const definition = page.getByRole('region', {name: `表 ${table}`, exact: true});
-      await definition.locator('th[data-key="type"]').waitFor({timeout: 15000}).catch(() => {});
-      const text = await definition.innerText().catch(() => '');
-      check(`データ一覧: ${table} を開くと表の定義が出る`,
-        await definition.getByRole('button', {name: '表の定義', exact: true}).getAttribute('aria-pressed').catch(() => '') === 'true'
-        && text.includes(column) && text.includes('TEXT') && text.includes('外部キー') && !text.includes(PREVIEW_MISSING_MESSAGE));
-    }
-    await shot('12b-table-definition');
 
     // 既定年度と最新年度の両方で、実際に列セットのボタンを選ぶ。
     const {fiscalStartMonth} = fiscalSettingFrom(recorded['GET /api/settings/fiscal']?.body);

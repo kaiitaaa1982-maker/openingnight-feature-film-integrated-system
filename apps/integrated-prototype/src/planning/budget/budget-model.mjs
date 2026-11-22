@@ -178,13 +178,25 @@ export function referenceDiffs(totalExTaxYen, references = {}) {
     over: key === 'productionCost' ? totalExTaxYen !== references[key] : totalExTaxYen > references[key]}));
 }
 
-// 作品画面の進み具合（全業務共通の folderStatusForWork。予算書は作品から案件をたどって返す。会社ルートの計画の約束10）
-export function budgetFolderState({versions = [], fixes = [], latestVerdict = null} = {}) {
+// 知らせ（判定と確定を止めない。代表の決定 2026-11-14・FR-PLAN-BUDGET-043）: xlsx から読んだ版で、原本の総合計を読めなかった（総合計の照合を飛ばした）。
+// 保存した検査の結果（checks_json）から読むたびに導く。検査の回の JSON の形は変えないので、過去の回にも同じ線で出る。総合計の照合を持たない回は知らせない。
+// 線は総合計（total）だけ。見積り・消費税・税込・制作管理費だけが無い原本には出さない。画面で作った版（原本が無い）には出さない
+export const TOTAL_UNREAD = 'total_unread';
+export function budgetReadNotices({sourceKind, checks} = {}) {
+  if (sourceKind !== 'file' || !Array.isArray(checks)) return [];
+  const total = checks.find((check) => check?.key === 'total');
+  return total && total.ok === null ? [{kind: TOTAL_UNREAD, cell: total.cell ?? null, label: '総合計を読めなかった'}] : [];
+}
+
+// 作品画面の進み具合（全業務共通の folderStatusForWork。予算書は作品から案件をたどって返す。会社ルートの計画の約束10）。
+// 最新の版の知らせ（latestNotices）は「要確認」に数えるが、確定版があれば「完了」のまま（確定を止めない）
+export function budgetFolderState({versions = [], fixes = [], latestVerdict = null, latestNotices = []} = {}) {
   const fixed = currentFixedVersionNo(fixes);
   const latestNo = versions.reduce((max, version) => Math.max(max, version.versionNo), 0);
   if (!latestNo) return {state: 'not_started', done: 0, total: 1, reason: '版なし'};
   if (fixed != null) return {state: 'done', done: 1, total: 1, reason: latestNo > fixed ? `確定 rev${fixed}・下書き rev${latestNo}` : `確定 rev${fixed}`};
   if (latestVerdict?.kind === 'exceptions') return {state: 'needs_review', done: 0, total: 1, reason: `例外 ${latestVerdict.failed}`};
+  if (latestNotices.length) return {state: 'needs_review', done: 0, total: 1, reason: latestNotices.map((notice) => notice.label).join('・'), notice: true};
   return {state: 'in_progress', done: 0, total: 1, reason: `下書き rev${latestNo}`};
 }
 

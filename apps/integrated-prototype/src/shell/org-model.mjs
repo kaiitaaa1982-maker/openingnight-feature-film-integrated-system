@@ -8,6 +8,8 @@
 import {isOrgMismatch} from '../org-header.mjs';
 
 export const ROLE_LABELS = Object.freeze({admin: '管理者', editor: '編集担当', production: '制作担当'});
+// 組織の本番・デモの印（organizations.kind）の札の文字。知らない値・印の無い一覧（古い API）は札を出さない
+export const ORG_KIND_LABELS = Object.freeze({real: '本番', demo: 'デモ'});
 export const ACCESS_LOGOUT_PATH = '/cdn-cgi/access/logout';
 export const ORG_CHANNEL = 'on-org';
 export const ORG_LOAD_FAILED_TITLE = '組織は切り替わりましたが、読み込めませんでした。前の組織の画面は閉じました';
@@ -22,6 +24,10 @@ const positiveId = (value) => {
 export function orgOptionLabel(org) {
   const name = String(org?.name ?? '').trim() || `組織 ${org?.id ?? ''}`.trim();
   return `${name}・${ROLE_LABELS[org?.role] || '役割未確認'}`;
+}
+
+export function orgKindLabel(org) {
+  return Object.hasOwn(ORG_KIND_LABELS, org?.kind) ? ORG_KIND_LABELS[org.kind] : '';
 }
 
 // 選択欄で選んだ組織（draft）へ切り替えるか。今の組織と同じ・値が不正なら null（「切り替える」を押せない）

@@ -396,11 +396,23 @@ function buildManualAccruals(agreements, rnd) {
 }
 
 // ---------- 実行 ----------
+// デモの seed は本番の組織（organizations.kind='real'）に書かない。投入先と同じコードの組織が demo 以外なら、何も書かずに止める。
+// 組織がまだ無いときは通す（createOrganization が kind='demo' を明示して作る）。kind の列が無い DB（移行 0059 の前）は読み取りで落ちて止まる
+export const REAL_ORG_REFUSED = 'real_org_refused';
+export async function assertDemoOrgTarget(db, code = SALES_DEMO.orgCode) {
+  const row = await db.get('SELECT kind FROM organizations WHERE code=?', [code]);
+  if (row && row.kind !== 'demo') {
+    const error = new Error(`組織 ${code} は本番（kind=${row.kind}）です。デモの架空データは書きません（何も書いていません）`);
+    error.code = REAL_ORG_REFUSED;
+    throw error;
+  }
+}
+
 // 制作の架空データ（scripts/seed-kouban-demo.mjs）も同じ組織を使う
 export async function createOrganization(db) {
   const orgId = Number((await db.get('SELECT COALESCE(MAX(id),0)+1 AS id FROM organizations')).id);
   await db.batch([
-    {sql: 'INSERT INTO organizations(id,code,name) VALUES(?,?,?)', params: [orgId, SALES_DEMO.orgCode, SALES_DEMO.orgName]},
+    {sql: "INSERT INTO organizations(id,code,name,kind) VALUES(?,?,?,'demo')", params: [orgId, SALES_DEMO.orgCode, SALES_DEMO.orgName]},
     {sql: 'INSERT INTO schema_meta(org_id,version) VALUES(?,1) ON CONFLICT(org_id) DO NOTHING', params: [orgId]},
     {sql: 'INSERT INTO users(email,display_name) VALUES(?,?) ON CONFLICT(email) DO NOTHING', params: [SALES_DEMO.adminEmail, SALES_DEMO.adminName]},
     {sql: "INSERT INTO memberships(org_id,user_id,role) SELECT ?,id,'admin' FROM users WHERE email=? ON CONFLICT(org_id,user_id) DO NOTHING", params: [orgId, SALES_DEMO.adminEmail]},
@@ -411,6 +423,7 @@ export async function createOrganization(db) {
 
 // legacyDistribution: true は試験用。2026-09-25 に本番へ入れたときと同じく、流通の分類を旧区分（精算方式は未確認）で入れる
 export async function seedSalesDemo(db, {asOf = SALES_DEMO.asOf, log = () => {}, legacyDistribution = false} = {}) {
+  await assertDemoOrgTarget(db);
   const found = await db.get('SELECT id FROM organizations WHERE code=?', [SALES_DEMO.orgCode]);
   // 売上の作品（DEMO-W01）で投入済みかを見る（制作の架空データだけが先に入っていても売上は入れる）
   if (found && await db.get("SELECT 1 FROM works WHERE org_id=? AND code='DEMO-W01'", [found.id])) return {skipped: true, orgId: found.id};

@@ -199,3 +199,8 @@ export async function insertPayment(db, {orgId, userId, paymentId, contract, ter
       params: [orgId, userId, reversesPaymentId ? 'reverse' : 'create', 'acq_mg_payment', String(paymentId), JSON.stringify({contractId: contract.id, kind: input.kind, amountYen: input.amountYen, paidOn: input.paidOn, reversesPaymentId})]},
   ]);
 }
+// 原本の置き場から辿る契約。結び付きの行数を契約ごとに数える。
+export const readAcqSourceLinks = (db, orgId) => db.all(`SELECT d.source_document_id AS document_id,
+  c.id AS target_id,c.title AS name,COUNT(*) AS n FROM acq_mg_documents d
+  JOIN acq_mg_contracts c ON c.org_id=d.org_id AND c.id=d.contract_id
+  WHERE d.org_id=? GROUP BY d.source_document_id,c.id,c.title ORDER BY c.title,c.id`, [orgId]);

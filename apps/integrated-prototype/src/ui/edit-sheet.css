@@ -1,0 +1,81 @@
+/* 編集できる表（EditSheet）。見た目の決まり: core の docs/design/integrated-system-visual.md §1〜§5・§7。
+   UI指針: docs/design/ui-guidelines.md。色は下の7つだけ、角丸0・影なし。トークンはこの部品の中だけに置く。 */
+.es{--ink:#111111;--paper:#ffffff;--soft:#f3f1ec;--sub:#5e5850;--faint:#6b655c;--rule:#cfc8ba;--red:#b3261e;
+  --jp:"Noto Sans JP","Yu Gothic","Hiragino Sans","Meiryo",sans-serif;
+  position:relative;display:flex;flex-direction:column;min-width:0;color:var(--ink);background:var(--paper);font-family:var(--jp);font-size:14px;line-height:1.4}
+.es *{box-sizing:border-box;border-radius:0;box-shadow:none}
+.es button{min-height:44px;min-width:44px;padding:0 12px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);font:inherit;cursor:pointer}
+.es button:hover{background:var(--soft);color:var(--ink)}
+.es button:disabled{opacity:1;border-color:var(--rule);background:var(--paper);color:var(--faint);cursor:default}
+.es :focus-visible{outline:2px solid var(--ink);outline-offset:1px}
+
+/* 札（1〜4字）。止まっている印だけ赤 */
+.es-tag{display:inline-flex;align-items:center;height:22px;padding:0 6px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);font-size:12px;line-height:1;white-space:nowrap}
+.es-tag.is-weak{border-color:var(--rule);color:var(--sub)}
+.es-tag.is-stop{border-color:var(--red);color:var(--red);font-weight:700}
+
+/* 選んだセルの名前と中身・道具 */
+.es-fx{display:flex;align-items:stretch;min-height:44px;border:1px solid var(--ink);border-bottom:0}
+.es-name{flex:0 0 120px;display:flex;align-items:center;padding:0 10px;border-right:1px solid var(--rule);color:var(--sub);font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden}
+.es-value{flex:1;min-width:0;display:flex;align-items:center;padding:0 10px;white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
+.es-tools{display:flex}
+.es-tools button{border-width:0 0 0 1px;border-color:var(--rule)}
+
+/* 表 */
+.es-wrap{position:relative;overflow:auto;max-height:70vh;border:1px solid var(--ink);outline:none}
+.es-wrap:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
+.es-grid{border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:14px;font-variant-numeric:tabular-nums}
+.es-grid th,.es-grid td{height:36px;padding:0 8px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);background:var(--paper);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;user-select:none;-webkit-user-select:none}
+.es-grid thead th{position:sticky;top:0;z-index:2;height:44px;padding:0 0 0 8px;background:var(--soft);border-bottom:1px solid var(--ink);color:var(--sub);font-size:12px;font-weight:700;text-align:left}
+.es-grid .es-rh{position:sticky;left:0;z-index:1;padding:0 6px;background:var(--soft);color:var(--faint);font-size:12px;font-weight:400;text-align:right;cursor:pointer}
+.es-grid .is-first{position:sticky;left:44px;z-index:1}
+.es-grid thead .es-rh,.es-grid thead .is-first{z-index:3}
+.es-hd{display:flex;align-items:center;gap:4px;height:44px}
+.es-lb{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.es .es-fbtn{flex:0 0 44px;margin-left:auto;padding:0;border-width:0 0 0 1px;border-color:var(--rule);background:var(--soft);color:var(--sub);font-size:11px}
+.es-grid th.is-hl{background:var(--rule);color:var(--ink)}
+.es-grid td{position:relative;cursor:cell}
+.es-grid tbody tr:last-child td{border-bottom:1px solid var(--rule)}
+.es-grid td.is-num{text-align:right}
+.es-grid td.is-ro{background:var(--soft);color:var(--sub)}
+.es-grid td.is-range{background:var(--soft)}
+.es-grid td.is-ro.is-range{background:var(--rule);color:var(--ink)}
+.es-grid td.is-active{outline:2px solid var(--ink);outline-offset:-2px}
+.es-grid td.is-bad{outline:1px solid var(--red);outline-offset:-1px}
+.es-grid td.is-pick.is-active{padding-right:24px}
+.es-grid td.is-pick.is-active::after{content:"▼";position:absolute;right:7px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--sub)}
+.es-grid tr.is-new td{background:var(--paper)}
+.es-grid tfoot th,.es-grid tfoot td{position:sticky;bottom:0;z-index:2;background:var(--soft);border-top:1px solid var(--ink);color:var(--ink);font-weight:700}
+.es-grid tfoot .es-rh,.es-grid tfoot .is-first{z-index:3}
+
+/* 直している入力欄。型に合わないときは赤の細い枠のまま残す */
+.es-ed{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0 7px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);font:inherit;outline:none;text-align:inherit}
+.es-ed[aria-invalid="true"]{border:1px solid var(--red)}
+
+/* 候補と、列の並べ替え・絞り込み */
+.es-dd,.es-menu{position:absolute;z-index:20;background:var(--paper);border:1px solid var(--ink);overflow-y:auto}
+.es-dd{max-height:264px;min-width:160px}
+.es-dd button,.es-menu>button{display:block;width:100%;border-width:0 0 1px;border-color:var(--rule);text-align:left;white-space:nowrap}
+.es-dd button[aria-selected="true"],.es-dd button[aria-selected="true"]:hover,.es-tabs button[aria-pressed="true"]:hover{background:var(--ink);color:var(--paper)}
+.es-dd .es-new{font-weight:700}
+.es-menu{width:240px;max-height:70vh}
+.es-mv{max-height:264px;overflow-y:auto;border-bottom:1px solid var(--ink)}
+.es-mv label{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-bottom:1px solid var(--rule);color:var(--ink);font-size:14px;font-weight:400;cursor:pointer}
+.es-mv input{appearance:none;-webkit-appearance:none;flex:0 0 18px;width:18px;height:18px;min-height:0;margin:0;border:1px solid var(--ink);background:var(--paper)}
+.es-mv input:checked{background:var(--ink)}
+
+/* シートのタブと、選んだ範囲の集計 */
+.es-foot{display:flex;flex-wrap:wrap;align-items:stretch;gap:0 12px}
+.es-tabs{display:flex;gap:0}
+.es-tabs button{min-width:72px;border-top:0}
+.es-tabs button+button{border-left:0}
+.es-tabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper);font-weight:700}
+.es-stat{margin-left:auto;display:flex;flex-wrap:wrap;align-items:center;gap:4px 16px;min-height:44px;color:var(--sub);font-size:13px;font-variant-numeric:tabular-nums}
+.es-stat b{color:var(--ink)}
+.es-stop{color:var(--red);font-weight:700}
+
+/* 指で触る端末: セルも押せる大きさ（7mm 以上。44px） */
+@media (pointer: coarse){
+  .es-grid th,.es-grid td{height:44px}
+  .es-ed{font-size:16px}
+}

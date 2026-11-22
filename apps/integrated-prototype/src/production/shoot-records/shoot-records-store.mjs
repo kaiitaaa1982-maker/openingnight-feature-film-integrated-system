@@ -42,6 +42,20 @@ export async function readResults(db, orgId, workId) {
     FROM shooting_scene_results WHERE org_id=? AND work_id=? ORDER BY shooting_day_id,scene_id,seq`, [orgId, workId]);
 }
 
+// 未解決の引き算（leftover-model.mjs）に使う行。workId を渡せばその作品だけ、渡さなければ組織のすべての作品を4文で読む
+// （ホームの作業キューは作品ごとに SQL を回さない。見てよい作品は呼ぶ側が絞る）
+export async function readLeftoverSources(db, orgId, workId = null) {
+  const scope = workId == null ? '' : ' AND work_id=?';
+  const params = workId == null ? [orgId] : [orgId, workId];
+  const [scenes, days, assignments, results] = await Promise.all([
+    db.all(`SELECT id,work_id,scene_no,location,status FROM scenes WHERE org_id=?${scope} ORDER BY work_id,scene_no,id`, params),
+    db.all(`SELECT id,work_id,shoot_date,unit,label FROM shooting_days WHERE org_id=?${scope} ORDER BY shoot_date,unit,id`, params),
+    db.all(`SELECT shooting_day_id,scene_id,outcome FROM day_scene_assignments WHERE org_id=?${scope}`, params),
+    db.all(`SELECT id,shooting_day_id,scene_id,seq,result,postponed_to_day_id,created_at FROM shooting_scene_results WHERE org_id=?${scope}`, params),
+  ]);
+  return {scenes, days, assignments, results};
+}
+
 // 原本の名前・形式・大きさは共通の原本の表から読む（中身は一覧では読まない）
 export async function readRecords(db, orgId, workId) {
   return db.all(`SELECT r.id,r.shooting_day_id,r.kind,r.seq,r.status,r.source_document_id,d.file_name,d.media_type AS mime_type,d.byte_length AS size_bytes,

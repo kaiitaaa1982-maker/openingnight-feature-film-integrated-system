@@ -1,0 +1,67 @@
+/* 小道具の画面。docs/design/integrated-system-visual.md のトークン（色7つ・角丸0・影なし・書体2つ） */
+.prp{--ink:#111111;--paper:#ffffff;--soft:#f3f1ec;--sub:#5e5850;--faint:#6b655c;--rule:#cfc8ba;--red:#b3261e;
+  --jp:"Noto Sans JP","Yu Gothic","Hiragino Sans","Meiryo",sans-serif;
+  font-family:var(--jp);color:var(--ink);background:var(--paper);padding:4px 0 40px}
+.prp *{border-radius:0;box-shadow:none}
+.prp-alert{background:var(--red);color:var(--paper);font-weight:700;padding:2px 10px}
+.prp-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.prp-chips{display:flex;gap:4px;flex-wrap:wrap}
+.prp-fill{flex:1}
+.prp button{min-height:0;font-family:var(--jp);font-size:13px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);padding:3px 10px;cursor:pointer}
+.prp button.on{background:var(--ink);color:var(--paper)}
+/* 共通の styles.css の hover（青）を打ち消す */
+.prp button:hover:not(:disabled),.prp button:focus-visible{background:var(--soft);color:var(--ink);border-color:var(--ink)}
+.prp button.on:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+.prp input,.prp select{font-family:var(--jp);font-size:13px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);padding:3px 6px;min-width:80px;min-height:0;height:28px;width:auto;box-sizing:border-box;flex:none}
+.prp-form label.prp-wide input{width:100%}
+.prp-split{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+.prp-scroll{overflow-x:auto}
+.prp table{border-collapse:collapse;width:100%;font-size:13px}
+.prp th{background:var(--soft);text-align:left;font-weight:700;padding:5px 6px;border-bottom:1px solid var(--ink);white-space:nowrap}
+.prp th,.prp td{white-space:normal}
+.prp td{padding:5px 6px;border-bottom:1px solid var(--rule);vertical-align:top}
+.prp tbody tr{cursor:pointer}
+.prp tbody tr:hover td{background:var(--soft)}
+.prp tr.prp-day td{background:var(--soft);font-weight:800;border-bottom:1px solid var(--ink);cursor:default}
+.prp tr.prp-sel td{background:var(--soft);border-bottom:1px solid var(--ink)}
+.prp tr.prp-sel td:first-child{box-shadow:none;border-left:3px solid var(--ink)}
+.prp-num{text-align:right;font-variant-numeric:tabular-nums}
+.prp-tag{display:inline-block;border:1px solid var(--ink);font-size:11px;padding:0 6px;white-space:nowrap}
+.prp-sub{color:var(--sub);font-size:12px}
+.prp-stop{color:var(--red);font-size:12px}
+.prp-panel,.prp-card{border:1px solid var(--ink);padding:12px;background:var(--paper)}
+.prp-name{font-weight:800;font-size:15px;margin:2px 0 6px}
+.prp-big{font-size:20px}
+.prp-script{background:var(--soft);padding:6px 8px;font-size:12px;margin:6px 0}
+.prp-form{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px 12px;margin:8px 0}
+.prp-new{border:1px solid var(--ink);padding:10px;background:var(--soft)}
+.prp-form label{display:flex;flex-direction:column;font-size:11px;font-weight:400;color:var(--sub);gap:2px}
+.prp-form label.prp-wide{flex:1 1 220px}
+.prp-act{display:flex;gap:6px;align-items:center;width:100%;flex-wrap:wrap;margin-top:6px}
+.prp-hist{list-style:none;margin:10px 0 0;padding:8px 0 0;border-top:1px solid var(--rule);font-size:12px;color:var(--faint)}
+.prp-deps{border:1px solid var(--rule);padding:4px 8px;display:flex;gap:10px;flex-wrap:wrap}
+.prp-deps legend{font-size:11px;color:var(--sub)}
+.prp label.prp-check{flex-direction:row;align-items:center;gap:4px;font-size:13px;color:var(--ink)}
+.prp label.prp-check input{min-width:0}
+.prp-meet{display:grid;grid-template-columns:260px minmax(0,1fr) 300px;gap:16px;align-items:start}
+.prp-queue{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink);max-height:70vh;overflow-y:auto}
+.prp-queue li{border-bottom:1px solid var(--rule)}
+.prp .prp-queue button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;border:0;border-left:3px solid transparent;text-align:left;padding:6px 6px;background:var(--paper)}
+.prp .prp-queue li.on button{border-left-color:var(--ink);font-weight:700}
+.prp-h{font-size:14px;font-weight:800;margin:0 0 8px;padding-bottom:4px;border-bottom:2px solid var(--ink)}
+.prp-decided{list-style:none;margin:0;padding:0}
+.prp-decided li{border-bottom:1px solid var(--rule);padding:6px 0;font-size:13px}
+/* 看板（PropsBoard.jsx）。上に担当ごとの件数、下に5状態の列。狭い幅では列を縦に積み、横にはみ出さない */
+.prb{display:flex;flex-direction:column;gap:12px;min-width:0}
+.prb-sum{min-width:520px}
+.prp .prb-sum th.prp-num{text-align:right}
+.prp .prb-link{border:0;background:transparent;padding:0;text-align:left;text-decoration:underline}
+.prp .prb-link:hover:not(:disabled),.prp .prb-link:focus-visible{background:transparent}
+.prb-board{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:1px solid var(--ink)}
+.prb-col{border-right:1px solid var(--ink);padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.prb-col:last-child{border-right:0}
+.prb-col h3{font-size:13px;font-weight:800;margin:0 0 2px;padding-bottom:4px;border-bottom:2px solid var(--ink);display:flex;justify-content:space-between}
+.prb-card{border:1px solid var(--ink);background:var(--paper);padding:6px 8px;display:flex;flex-direction:column;gap:3px;font-size:13px;overflow-wrap:anywhere}
+.prb-card.prb-off{border-color:var(--rule);color:var(--faint)}
+.prp .prb-card select{width:100%;height:32px}
+@media(max-width:800px){.prb-board{grid-template-columns:1fr}.prb-col{border-right:0;border-bottom:1px solid var(--ink)}.prb-col:last-child{border-bottom:0}}

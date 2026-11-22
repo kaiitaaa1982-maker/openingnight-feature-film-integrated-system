@@ -1,0 +1,27 @@
+/* 制作の実費の画面。見た目の決まり: core の docs/design/integrated-system-visual.md（色7つ・赤の面は「! 未確認 N」だけ・角丸0・影なし）。
+   表は共通の表（EditSheet。src/ui/edit-sheet.css）。トークンはこの画面の中だけに置く */
+.al{--ink:#111111;--paper:#ffffff;--soft:#f3f1ec;--sub:#5e5850;--faint:#6b655c;--rule:#cfc8ba;--red:#b3261e;
+  --jp:"Noto Sans JP","Yu Gothic","Hiragino Sans","Meiryo",sans-serif;
+  display:grid;gap:10px;min-width:0;color:var(--ink);background:var(--paper);font-family:var(--jp);font-size:15px}
+.al *{border-radius:0;box-shadow:none}
+.al-mute{color:var(--faint)}
+.al-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding-bottom:8px;border-bottom:2px solid var(--ink)}
+.al-alert{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;background:var(--red);color:var(--paper);font-weight:800;font-size:18px;font-variant-numeric:tabular-nums}
+.al-alert.is-done{background:var(--paper);color:var(--ink);border:1px solid var(--ink)}
+.al-sum{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;font-variant-numeric:tabular-nums}
+.al-sum b{font-size:24px;font-weight:800}
+.al-sum.is-today b{font-size:18px}
+.al-k{color:var(--sub);font-size:13px;font-weight:700}
+.al-u{color:var(--faint);font-size:13px}
+.al-sum small{flex-basis:100%;color:var(--faint);font-size:12px}
+.al-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.al-tools button{min-height:44px;min-width:44px;padding:0 14px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);font:inherit;cursor:pointer}
+.al-tools button:hover{background:var(--soft);color:var(--ink)}
+.al-tools button.al-primary{background:var(--ink);color:var(--paper);font-weight:800}
+.al-tools button:disabled{border-color:var(--rule);background:var(--paper);color:var(--faint);cursor:default}
+.al-check{display:inline-flex;align-items:center;gap:8px}
+.al-n{color:var(--sub);font-size:13px;font-variant-numeric:tabular-nums}
+.al-void{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.al-void input{min-height:44px;min-width:0;width:16em;max-width:100%;padding:0 8px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);font:inherit}
+.al-fail{margin:0;padding:8px 12px;border:1px solid var(--red);color:var(--red);font-weight:700}
+.al-sheet{min-width:0}

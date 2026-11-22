@@ -1,0 +1,26 @@
+/* 全案件。黒・白・灰＋赤1色、角丸0・影なし。赤は「! 要確認」と、香盤へ確定していない台本の札だけ */
+.aw {
+  --ink: #111111; --paper: #ffffff; --soft: #f3f1ec; --sub: #5e5850; --faint: #6b655c; --rule: #cfc8ba; --red: #b3261e;
+  --jp: "Noto Sans JP", "Yu Gothic", "Hiragino Sans", "Meiryo", sans-serif;
+  color: var(--ink); background: var(--paper); font-family: var(--jp); font-size: 14px; line-height: 1.6;
+}
+.aw * { border-radius: 0; box-shadow: none; box-sizing: border-box; }
+.aw .aw-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+.aw .aw-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.aw .aw-chip { border: 1px solid var(--ink); background: var(--paper); color: var(--ink); padding: 4px 10px; font: inherit; cursor: pointer; }
+.aw .aw-chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.aw .aw-alert { margin-left: auto; background: var(--red); color: var(--paper); padding: 4px 10px; font-weight: 800; white-space: nowrap; }
+.aw .aw-scroll { overflow-x: auto; }
+.aw .aw-table { border-collapse: collapse; width: 100%; }
+.aw .aw-table th, .aw .aw-table td { border-bottom: 1px solid var(--rule); padding: 6px 8px; text-align: left; vertical-align: top; }
+.aw .aw-table th { background: var(--soft); font-weight: 700; border-bottom: 1px solid var(--ink); white-space: nowrap; }
+.aw .aw-table tbody tr { cursor: pointer; }
+.aw .aw-table tbody tr:hover { background: var(--soft); }
+.aw .aw-date { white-space: nowrap; color: var(--faint); font-variant-numeric: tabular-nums; }
+.aw .aw-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.aw .aw-open { border: 0; background: none; color: inherit; font: inherit; line-height: inherit; padding: 0; margin: 0; min-height: 0; text-align: left; cursor: pointer; }
+.aw .aw-open:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.aw .aw-tag { display: inline-block; border: 1px solid var(--ink); padding: 0 6px; font-size: 12px; white-space: nowrap; }
+.aw .aw-tag.is-attention { border-color: var(--red); color: var(--red); font-weight: 700; }
+.aw .aw-empty, .aw .aw-faint { color: var(--faint); }
+.aw .aw-more { border: 1px solid var(--ink); background: var(--paper); color: var(--ink); padding: 4px 12px; font: inherit; cursor: pointer; margin-top: 8px; }

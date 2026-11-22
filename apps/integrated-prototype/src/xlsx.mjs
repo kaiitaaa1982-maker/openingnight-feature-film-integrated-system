@@ -29,7 +29,7 @@ export function encodeXlsx(sheets){
 }
 export function downloadXlsx(filename,sheets){const bytes=encodeXlsx(sheets),url=URL.createObjectURL(new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));const a=document.createElement('a');a.href=url;a.download=filename.endsWith('.xlsx')?filename:filename+'.xlsx';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 
-// options.formulas: 'reject'（既定。数式のセルがあればブック全体を拒否）| 'sheet'（数式のあるシートだけを {rows:[], error} にして他のシートは読む）
+// options.formulas: 'reject'（既定。数式のセルがあればブック全体を拒否）| 'sheet'（数式のあるシートだけを {rows:[], error} にして他のシートは読む）| 'cached'（数式のセルは Excel が保存した計算結果の値で読む。式は使わない。結果が保存されていなければ空）
 // options.percent: 'number'（既定。パーセント書式の数は保存された数のまま。50% は 0.5）| 'text'（「50%」の文字にする。料率の列を%の数で読む取込で使う）
 export function decodeXlsx(input,options={}){
  const bytes=input instanceof Uint8Array?input:new Uint8Array(input);if(bytes.length>20*1024*1024)throw Error('Excelは20MB以下にしてください');
@@ -55,7 +55,7 @@ export function decodeXlsx(input,options={}){
   for(const row of list(content.sheetData?.row)){
    const r=Number(row['@r'])-1;if(!Number.isInteger(r)||r<0||r>=10000)throw Error('取込は1シート10,000行までです');const values=[];
    for(const c of list(row.c)){
-    if(c.f!=null)throw Error(`${sheet['@name']} ${c['@r']}: 数式を値にしてから取り込んでください`);
+    if(c.f!=null&&options.formulas!=='cached')throw Error(`${sheet['@name']} ${c['@r']}: 数式を値にしてから取り込んでください`);
     const m=String(c['@r']).match(/^([A-Z]+)\d+$/);if(!m)throw Error('セル位置が不正です');let col=0;for(const x of m[1])col=col*26+x.charCodeAt(0)-64;if(col>256)throw Error('取込は256列までです');
     const t=c['@t'];let value=c.v??null;if(t==='inlineStr')value=rich(c.is);else if(t==='s'){value=shared[Number(c.v)];if(value===undefined)throw Error('文字列参照が不正です')}else if(t==='b')value=c.v==='1'?'true':'false';else if(t==='e')throw Error(`${c['@r']}: Excelエラーを修正してください`);else if(value!==null&&t!=='str'){value=Number(value);if(!Number.isFinite(value))throw Error('数値が不正です');if(formats[Number(c['@s']||0)]){if(value===60)throw Error('存在しないExcel日付です');value=new Date(Date.UTC(1899,11,30)+value*86400000).toISOString().slice(0,10)}else if(options.percent==='text'&&percents[Number(c['@s']||0)])value=percentText(value)}
     values[col-1]=value;

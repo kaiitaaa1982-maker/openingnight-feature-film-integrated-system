@@ -253,6 +253,18 @@ test('OrgSelector renders a select plus a separate submit button, and shows a li
   assert.match(failedWithList, /組織の一覧を読み込めませんでした/);
 });
 
+test('OrgSelector は選択欄で選んでいる組織の本番・デモを、選択欄の横に文字の札で出す（印の無い一覧では出さない）', async () => {
+  const render = await renderOrgSelector();
+  const orgs = [{id: 1, name: '架空の本番組織', role: 'admin', kind: 'real'}, {id: 3, name: '架空データ（デモ）', role: 'admin', kind: 'demo'}];
+  assert.match(render({orgs, currentOrgId: 1, onSwitch: async () => true}), /<\/select><\/label><span class="app-org-kind">本番<\/span><button/);
+  assert.match(render({orgs, currentOrgId: 3, onSwitch: async () => true}), /<span class="app-org-kind">デモ<\/span>/);
+  // 札は1つだけ（選択肢の文字には足さない）
+  assert.equal(render({orgs, currentOrgId: 1, onSwitch: async () => true}).match(/app-org-kind/g).length, 1);
+  assert.match(render({orgs, currentOrgId: 1, onSwitch: async () => true}), /<option value="3">架空データ（デモ）・管理者<\/option>/);
+  const unmarked = orgs.map(({kind, ...org}) => org);
+  assert.doesNotMatch(render({orgs: unmarked, currentOrgId: 1, onSwitch: async () => true}), /app-org-kind/);
+});
+
 test('openOrgChannel tells other tabs about a switch but not the tab that sent it', () => {
   const instances = [];
   class FakeChannel {

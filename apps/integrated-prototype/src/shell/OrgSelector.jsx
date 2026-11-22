@@ -1,8 +1,9 @@
 // 上部の「組織」。所属が2つ以上あるときだけ出す（1つなら何も描かない）。一覧を読めなかったときは、その旨と再試行を出す。
+// 選択欄の横の札（本番・デモ）は、選択欄でいま選んでいる組織の印。切り替える前に、行き先が本番かデモかが読める。
 // 選択欄で選ぶだけでは切り替えず、「切り替える」を押したときだけ切り替える（Windows では閉じた選択欄で矢印キーを押すと
 // change が起きるため、選択肢を見ただけで組織が変わりホームへ飛ぶのを防ぐ。WCAG 3.2.2）。CSS は AppShell が読む shell.css。
 import React, {useEffect, useState} from 'react';
-import {ORG_LIST_FAILED_MESSAGE, orgOptionLabel, orgSwitchTarget} from './org-model.mjs';
+import {ORG_LIST_FAILED_MESSAGE, orgKindLabel, orgOptionLabel, orgSwitchTarget} from './org-model.mjs';
 
 export function OrgSelector({orgs = [], currentOrgId, onSwitch, busy = false, error = '', listError = null, onRetryList}) {
   const [draft, setDraft] = useState(String(currentOrgId ?? ''));
@@ -16,6 +17,7 @@ export function OrgSelector({orgs = [], currentOrgId, onSwitch, busy = false, er
   ) : null;
   if (list.length < 2 || typeof onSwitch !== 'function') return listNotice ? <div className="app-org">{listNotice}</div> : null;
   const target = orgSwitchTarget(draft, currentOrgId);
+  const kind = orgKindLabel(list.find((org) => String(org.id) === draft));
   const submit = async (event) => {
     event.preventDefault();
     if (target === null || busy) return;
@@ -31,6 +33,7 @@ export function OrgSelector({orgs = [], currentOrgId, onSwitch, busy = false, er
             {list.map((org) => <option key={org.id} value={String(org.id)}>{orgOptionLabel(org)}</option>)}
           </select>
         </label>
+        {kind && <span className="app-org-kind">{kind}</span>}
         <button type="submit" className="secondary app-org-apply" disabled={busy || target === null}>切り替える</button>
       </div>
       {busy && <small className="app-org-status" role="status">切り替えています…</small>}

@@ -42,11 +42,11 @@ export async function readBudgetSummaries(db, orgId, projectIds) {
   if (!projectIds.length) return {versions: [], fixes: [], runs: []};
   const marks = projectIds.map(() => '?').join(',');
   const [versions, fixes, runs] = await Promise.all([
-    db.all(`SELECT id,project_id,version_no,management_fee_yen,contingency_yen,tax_rate_bps,created_at FROM budget_versions
+    db.all(`SELECT id,project_id,version_no,source_kind,management_fee_yen,contingency_yen,tax_rate_bps,created_at FROM budget_versions
       WHERE org_id=? AND project_id IN (${marks}) ORDER BY project_id,version_no`, [orgId, ...projectIds]),
     db.all(`SELECT f.project_id,f.seq,f.action,f.version_id,v.version_no FROM budget_fixes f JOIN budget_versions v ON v.org_id=f.org_id AND v.id=f.version_id
       WHERE f.org_id=? AND f.project_id IN (${marks}) ORDER BY f.project_id,f.seq`, [orgId, ...projectIds]),
-    db.all(`SELECT r.project_id,r.version_id,r.verdict,r.failed FROM budget_check_runs r WHERE r.org_id=? AND r.project_id IN (${marks})
+    db.all(`SELECT r.project_id,r.version_id,r.verdict,r.failed,r.checks_json FROM budget_check_runs r WHERE r.org_id=? AND r.project_id IN (${marks})
       AND r.run_no=(SELECT MAX(x.run_no) FROM budget_check_runs x WHERE x.org_id=r.org_id AND x.version_id=r.version_id)`, [orgId, ...projectIds]),
   ]);
   return {versions, fixes, runs};
@@ -78,9 +78,14 @@ export async function addBudgetVersion(db, orgId, projectId, version, {createdBy
         item.unitPriceYen ?? null, item.amountExTaxYen, item.castingRef ?? null, item.sourceCell ?? null, item.note ?? null]}))),
     ...(version.templateVersionId ? [{sql: `INSERT INTO budget_version_templates(org_id,project_id,version_id,template_version_id) VALUES(?,?,${VERSION_ID},?)`,
       params: [orgId, projectId, orgId, projectId, version.versionNo, version.templateVersionId]}] : []),
+    // 予算書 xlsx から読んだ版は、読んだ定義の版を結び付ける（承認していない版は DB のトリガー budget_version_reads_approved が断る）
+    ...(version.readVersionId ? [{sql: `INSERT INTO budget_version_reads(org_id,project_id,version_id,read_version_id) VALUES(?,?,${VERSION_ID},?)`,
+      params: [orgId, projectId, orgId, projectId, version.versionNo, version.readVersionId]}] : []),
     checkRunStatement(orgId, projectId, version.versionNo, 1, version.check, createdBy),
     {sql: AUDIT_INSERT, params: [orgId, createdBy, 'append', 'budget_version', `${projectId}:${version.versionNo}`,
-      JSON.stringify({projectId, versionNo: version.versionNo, sourceKind: version.sourceKind, lineCount: version.lines.length})]},
+      JSON.stringify({projectId, versionNo: version.versionNo, sourceKind: version.sourceKind, lineCount: version.lines.length,
+        ...(version.readVersionId ? {readVersionId: version.readVersionId} : {}),
+        ...(version.skippedDefinitions?.length ? {skippedDefinitions: version.skippedDefinitions.map(({name, versionNo, readVersionId}) => ({name, versionNo, readVersionId}))} : {})})]},
   ];
   await db.batch(statements);
   return version.versionNo;
@@ -135,6 +140,9 @@ export async function readTemplateItems(db, orgId, templateVersionId) {
     WHERE org_id=? AND template_version_id=? ORDER BY category_code,line_no`, [orgId, templateVersionId]);
 }
 
+// 型を xlsx から作るときに飛ばした読み取りの定義（名前と版だけ。定義の中身は残さない）
+const skippedOf = (source) => (source.skippedDefinitions?.length ? {skippedDefinitions: source.skippedDefinitions.map(({name, versionNo, readVersionId}) => ({name, versionNo, readVersionId}))} : {});
+
 const TEMPLATE_VERSION_ID = '(SELECT v.id FROM budget_template_versions v WHERE v.org_id=? AND v.template_id=? AND v.version_no=?)';
 
 function templateItemStatements(orgId, templateId, versionNo, items) {
@@ -155,7 +163,7 @@ export async function addBudgetTemplate(db, orgId, {name, source, items, reason}
       VALUES(?,(SELECT v.id FROM budget_template_versions v WHERE v.org_id=? AND v.version_no=1 AND v.template_id=${templateId}),?,?,?,?,?,?,?,?)`,
     params: [orgId, orgId, name, item.categoryCode, item.lineNo, item.name, item.unit ?? null, item.unitPriceYen ?? null, item.qtyMilli ?? null, item.breakdownSheet ?? null, item.note ?? null]})),
     {sql: 'INSERT INTO audit_log(org_id,user_id,action,entity_type,entity_id,detail_json) VALUES(?,?,?,?,?,?)',
-      params: [orgId, createdBy, 'append', 'budget_template', name, JSON.stringify({itemCount: items.length, source: source.kind})]},
+      params: [orgId, createdBy, 'append', 'budget_template', name, JSON.stringify({itemCount: items.length, source: source.kind, ...skippedOf(source)})]},
   ]);
   return Number((await db.get('SELECT id FROM budget_templates WHERE org_id=? AND name=?', [orgId, name])).id);
 }
@@ -166,6 +174,42 @@ export async function addTemplateVersion(db, orgId, templateId, {versionNo, sour
       VALUES(?,?,?,?,?,?,?,?,?)`, params: [orgId, templateId, versionNo, source.kind, source.fileName ?? null, source.projectId ?? null, source.budgetVersionId ?? null, reason, createdBy]},
     ...templateItemStatements(orgId, templateId, versionNo, items),
     {sql: 'INSERT INTO audit_log(org_id,user_id,action,entity_type,entity_id,detail_json) VALUES(?,?,?,?,?,?)',
-      params: [orgId, createdBy, 'append', 'budget_template_version', `${templateId}:${versionNo}`, JSON.stringify({templateId, versionNo, itemCount: items.length, source: source.kind})]},
+      params: [orgId, createdBy, 'append', 'budget_template_version', `${templateId}:${versionNo}`, JSON.stringify({templateId, versionNo, itemCount: items.length, source: source.kind, ...skippedOf(source)})]},
   ]);
+}
+
+// ---- 読み取りの定義（移行 0066・0067。要件 FR-PLAN-BUDGET-035〜041）----
+
+// 組織の定義の版をすべて、版ごとの最後の判定（承認・差し戻し。無ければ NULL）と一緒に読む。使用中の版を選ぶのは budget-read-model.mjs の inUseReadVersions
+export async function readBudgetReadVersions(db, orgId) {
+  return db.all(`SELECT p.id AS profile_id,p.name AS profile_name,v.id AS version_id,v.version_no,v.definition_json,v.definition_hash,
+      (SELECT a.action FROM budget_read_approvals a WHERE a.org_id=v.org_id AND a.version_id=v.id ORDER BY a.seq DESC LIMIT 1) AS latest_action
+    FROM budget_read_profiles p JOIN budget_read_versions v ON v.org_id=p.org_id AND v.profile_id=p.id
+    WHERE p.org_id=? ORDER BY p.id,v.version_no`, [orgId]);
+}
+
+// 定義の初期値（種）を組織に入れる。定義・版1・初期値の承認を、移行 0067 と同じ文で1回の batch に入れる（同じ名前の定義・版・判定があれば入れない）。
+// seeds は [{name, reason, definitionJson, definitionHash}]（受け口が budget-read-seeds.mjs から作る）。
+// 変更の記録 audit_log に、入れるきっかけになった利用者で1行残す（組織と件数だけ。定義の中身は残さない）
+export async function addBudgetReadSeeds(db, orgId, seeds, {createdBy}) {
+  await db.batch([...seeds.flatMap((seed) => [
+    {sql: `INSERT INTO budget_read_profiles(org_id,name,source) SELECT o.id,?,'seed' FROM organizations o
+      WHERE o.id=? AND NOT EXISTS(SELECT 1 FROM budget_read_profiles p WHERE p.org_id=o.id AND p.name=?)`, params: [seed.name, orgId, seed.name]},
+    {sql: `INSERT INTO budget_read_versions(org_id,profile_id,version_no,definition_json,definition_hash,source,reason)
+      SELECT p.org_id,p.id,1,?,?,'seed',? FROM budget_read_profiles p
+      WHERE p.org_id=? AND p.name=? AND p.source='seed' AND NOT EXISTS(SELECT 1 FROM budget_read_versions v WHERE v.org_id=p.org_id AND v.profile_id=p.id)`,
+    params: [seed.definitionJson, seed.definitionHash, seed.reason, orgId, seed.name]},
+    {sql: `INSERT INTO budget_read_approvals(org_id,version_id,seq,action,source,reason)
+      SELECT v.org_id,v.id,1,'approve','seed',? FROM budget_read_versions v JOIN budget_read_profiles p ON p.org_id=v.org_id AND p.id=v.profile_id
+      WHERE v.org_id=? AND p.name=? AND v.version_no=1 AND v.source='seed' AND NOT EXISTS(SELECT 1 FROM budget_read_approvals a WHERE a.org_id=v.org_id AND a.version_id=v.id)`,
+    params: [SEED_APPROVAL_REASON, orgId, seed.name]},
+  ]), {sql: AUDIT_INSERT, params: [orgId, createdBy, 'append', 'budget_read_seed', String(orgId), JSON.stringify({orgId, definitionCount: seeds.length})]}]);
+}
+export const SEED_APPROVAL_REASON = '初期値: コードに直書きしていた書式を写したもの（人の承認ではない）';
+
+// 予算書の版を読んだ定義の版（名前・版の番号・指紋）。xlsx から読んでいない版は null
+export async function readVersionReadDefinition(db, orgId, versionId) {
+  return db.get(`SELECT p.name,rv.version_no,rv.definition_hash FROM budget_version_reads r
+    JOIN budget_read_versions rv ON rv.org_id=r.org_id AND rv.id=r.read_version_id JOIN budget_read_profiles p ON p.org_id=rv.org_id AND p.id=rv.profile_id
+    WHERE r.org_id=? AND r.version_id=?`, [orgId, versionId]);
 }

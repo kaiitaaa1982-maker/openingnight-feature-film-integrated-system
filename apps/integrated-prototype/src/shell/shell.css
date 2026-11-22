@@ -61,13 +61,13 @@
 .app-org{display:flex;flex-direction:column;gap:2px;min-width:0;margin:0}
 .app-org-row{display:flex;align-items:center;gap:8px;min-width:0}
 .app-org-apply{min-height:36px;white-space:nowrap}
+.app-org-kind{flex:none;padding:1px 6px;border:1px solid var(--line);border-radius:0;color:var(--ink-2);font-size:11px;line-height:1.5;white-space:nowrap}
 .app-org-error .text{margin-left:6px;font-size:12px}
 .app-topbar .app-org-field{display:flex;align-items:center;gap:8px;white-space:nowrap}
 .app-org-field select{min-height:36px;width:auto;max-width:260px;padding:4px 8px}
 .app-org-status{color:var(--ink-3);font-size:12px}
 .app-org-error{color:var(--bad);font-size:12px}
 .app-menu-button{display:none}
-.app-admin-entry{flex-shrink:0;white-space:nowrap;min-height:36px}
 .app-nav-shared h2.app-nav-group-head{margin:0 0 6px;color:var(--ink-2)}
 .app-page-title h1:focus{outline:none}
 .app-page-title h1:focus-visible{outline:3px solid var(--accent);outline-offset:4px;border-radius:0}
@@ -83,6 +83,10 @@
   .app-shell.is-drawer-open>.app-side{transform:none}
   .app-scrim{display:block;position:fixed;inset:0;z-index:30;min-height:0;border:0;border-radius:0;background:var(--ink);opacity:.35;padding:0}
   .app-menu-button{display:inline-flex;align-items:center}
+  /* 引き出しを開いている間は、後ろのページを動かさない（指でなぞると裏が流れていた） */
+  html:has(.app-shell.is-drawer-open){overflow:hidden}
+  .app-shell>.app-side{overscroll-behavior:contain}
+  .app-scrim{touch-action:none}
   .app-topbar{position:sticky}
 }
 @media (max-width:640px){

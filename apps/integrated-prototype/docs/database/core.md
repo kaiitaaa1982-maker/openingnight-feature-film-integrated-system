@@ -203,6 +203,7 @@ erDiagram
 | 1 | id | INTEGER | 行のID | 不可 | - | PK |
 | 2 | code | TEXT | 組織コード（一意） | 不可 | - | Unique |
 | 3 | name | TEXT | 組織の名前 | 不可 | - | - |
+| 4 | kind | TEXT（列挙） | 本番（real）かデモ（demo）か。既定は demo で、本番の組織は1つずつ明示して real にする。デモの組織だけを丸ごと消せる | 不可 | demo | 値: real / demo |
 
 ## project_memberships
 

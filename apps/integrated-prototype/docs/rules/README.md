@@ -16,6 +16,7 @@ title: 開発ルールの索引と書き方
 | `money.md` | 金額・率・外貨を持つ・計算する・読む・表示する | `test/money-rules.test.mjs` |
 | `dialect.md` | SQL・移行・DB を呼ぶコードを書く（D1 と PostgreSQL の両方で動く形） | `test/dialect-rules.test.mjs` |
 | `review.md` | PR を出す前・レビュー。開発の流れ（8ステップ）とループ（/goal）の対応を確かめるとき | 無し（レビュー役が読む） |
+| `three-ai-loop.md` | Issue から作業を選ぶ・PR に検証を頼む・Cursor の指摘を直す・マージする・代表の判断を仰ぐ | 無し（3つの AI が読む） |
 | `parallel-work.md` | 複数の業務が同じ日に PR を出す・移行の番号をもらう・共通のファイルやナビに足す・CI を流す | `test/database-rules.test.mjs`・`test/shell-folder-nav.test.mjs`・CI の節の台帳の見張り |
 
 ## 読み込ませ方

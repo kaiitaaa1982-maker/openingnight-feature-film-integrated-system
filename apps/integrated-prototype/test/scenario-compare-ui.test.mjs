@@ -391,9 +391,9 @@ test('右の前提パネル: カスタムの行動と市場の前提のスライ
   assert.equal(count(html, /<tr data-opportunity=/g) >= response.opportunityList.length, true);
 });
 
-test('入口: 全表示の売上基幹（計上）に出て、代表モードの11画面は増えない。制作担当には出さない。URL の slug で開ける', () => {
+test('入口: 全表示の売上基幹（計上）に出て、代表モードの画面（K-18 の11画面と全案件）は増えない。制作担当には出さない。URL の slug で開ける', () => {
   assert.ok(SALES_PAGES.includes('シナリオの比較'));
-  assert.equal(REPRESENTATIVE_PAGES.length, 11);
+  assert.equal(REPRESENTATIVE_PAGES.length, 12);
   assert.ok(!REPRESENTATIVE_PAGES.includes('シナリオの比較'));
   assert.ok(viewModeHiddenPages('representative').has('シナリオの比較'), '代表モードのメニューから外れる');
   assert.ok(!viewModeHiddenPages('all').has('シナリオの比較'));

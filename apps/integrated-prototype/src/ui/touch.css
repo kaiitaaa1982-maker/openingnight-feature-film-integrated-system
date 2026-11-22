@@ -1,0 +1,30 @@
+/* 指で触る端末（iPad・スマホ。pointer: coarse）だけに効かせる共通の調整。机の PC の見た目は変えない。
+   会社ルートの plans/2026-11-09-upload-from-any-device.md の手順11（iPad 第9世代 810×1080・1080×810 の棚卸し）。
+   - 押す場所は高さ 44px 以上（Apple の目安）。いまは多くが 34〜42px
+   - 入力の字は 16px（16px 未満だと Safari が触るたびに画面を拡大する。香盤で 1421個・経費で 53個あった）
+   画面ごとの CSS より後に効かせるため !important を付ける。ここ以外では使わない */
+@media (pointer: coarse) {
+  button, summary, select, [role="button"], [role="tab"], aside a, nav a, .app-nav-item,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="color"]) { min-height: 44px !important; }
+  input, select, textarea { font-size: 16px !important; }
+  input[type="checkbox"], input[type="radio"] { width: 22px; height: 22px; }
+  label:has(> input[type="checkbox"]), label:has(> input[type="radio"]) { min-height: 44px; display: inline-flex; align-items: center; gap: 8px; }
+
+  /* 手順11b: 小さすぎる字（11px・10px）は 12px に上げる。棚卸しで見た画面の札・番号・欄の名前 */
+  .pm-tag, .pm-form label, .pp-tag, .pp-src, .pp-form label, .kh-tag, button.folders-cell small,
+  .app-nav-caret, .app-folder-number, .app-org-kind, .kk-tag, .kk-l, .kk-tile .no, .kk-tile .dots, .kk-lab { font-size: 12px !important; }
+
+  /* 手順11b: 横に続きがある表は、右の端に黒い線を出す（iPad は横のスクロールバーが出ない）。
+     白い帯は中身と一緒に動き、右の端まで送ると黒い線に重なって消える。続きが無い表では最初から重なる */
+  .table-wrap, .production-table-wrap, .pm-scroll, .kh-scroll, .kk-scroll, .sr-wrap {
+    background-image: linear-gradient(var(--paper, #ffffff), var(--paper, #ffffff)), linear-gradient(var(--ink, #111111), var(--ink, #111111));
+    background-position: right center, right center;
+    background-size: 3px 100%, 3px 100%;
+    background-repeat: no-repeat;
+    background-attachment: local, scroll;
+  }
+
+  /* 手順11b: 許可申請の作品の札は、折り返さず1段で横に送る（作品が多いと画面の上半分を埋めていた） */
+  .pm-chips { flex-wrap: nowrap !important; overflow-x: auto; max-width: 100%; min-width: 0; }
+  .pm-chips > button { flex: 0 0 auto; }
+}

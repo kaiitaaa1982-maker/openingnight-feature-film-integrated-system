@@ -39,11 +39,18 @@ test('FR-PROD-SCHED-008 FR-PROD-SCHED-010 FR-PROD-SCHED-015 FR-PROD-SCHED-016 sc
   assert.equal((await db.get('SELECT COUNT(1) n FROM workflow_script_commit_days')).n,1);
 });
 
-test('schedule conflict cannot commit and report selection labels rules honestly',async(t)=>{
+test('FR-PROD-SCHED-023 未割当が残る日程案も確定でき、未割当のシーンは撮影日に入れずに登録して理由を確定記録に結ぶ。報告の候補は規則の出どころを正直に示す',async(t)=>{
   const {db,req}=await fixture({t});
   const script=await req('/workflow/artifacts/extract',{kind:'script',workId:1,name:'conflict.txt',base64:Buffer.from('unique conflict').toString('base64')});
   const review=await req(`/workflow/scripts/${script.data.artifactId}/review`,{scenes:[{sceneNo:'WF-C1',location:'港',dayNight:'D',synopsis:'',cast:['A'],estimatedMinutes:60}]});
-  const preview=await req(`/workflow/scripts/${script.data.artifactId}/schedule-preview`,{reviewId:review.data.reviewId,unit:'A班',dates:[{date:'2026-10-01',budgetMinutes:60}],availability:{cast:{A:[]},locations:{港:['2026-10-01']}}});assert.equal(preview.data.proposal.commitAllowed,false);assert.equal((await req(`/workflow/scripts/${script.data.artifactId}/commit`,{token:preview.data.token,confirmed:true})).status,409);
+  const preview=await req(`/workflow/scripts/${script.data.artifactId}/schedule-preview`,{reviewId:review.data.reviewId,unit:'A班',dates:[{date:'2026-10-01',budgetMinutes:60}],availability:{cast:{A:[]},locations:{港:['2026-10-01']}}});assert.equal(preview.data.proposal.commitAllowed,true);assert.deepEqual(preview.data.proposal.unassigned.map(x=>x.sceneNo),['WF-C1']);
+  const done=await req(`/workflow/scripts/${script.data.artifactId}/commit`,{token:preview.data.token,confirmed:true});assert.equal(done.status,201);
+  assert.deepEqual(done.data.unassigned,[{sceneNo:'WF-C1',reason:'時間予算・出演者・場所の候補日を同時に満たす日がありません'}]);
+  const scene=await db.get("SELECT id FROM scenes WHERE org_id=1 AND scene_no='WF-C1'");assert.ok(scene,'未割当のシーンも登録する');
+  assert.equal(Number((await db.get('SELECT COUNT(*) AS n FROM day_scene_assignments WHERE org_id=1 AND scene_id=?',[scene.id])).n),0,'撮影日には割り当てない');
+  const commit=await db.get('SELECT c.id,p.proposal_json FROM workflow_script_commits c JOIN workflow_schedule_previews p ON p.token=c.preview_token WHERE c.org_id=1 AND c.artifact_id=?',[script.data.artifactId]);
+  assert.deepEqual(JSON.parse(commit.proposal_json).unassigned.map(x=>x.sceneNo),['WF-C1'],'未割当の理由を確定記録（の控え）に結ぶ');
+  assert.equal(JSON.parse((await db.get("SELECT detail_json FROM audit_log WHERE entity_type='workflow_script_commit' AND entity_id=?",[String(commit.id)])).detail_json).unassignedCount,1);
   const report=await req('/workflow/artifacts/extract',{kind:'sales_report',workId:1,name:'raw.csv',base64:Buffer.from('unique report').toString('base64')});
   assert.equal((await req(`/workflow/reports/${report.data.artifactId}/selection`,{sheetName:'CSV',headerRow:1,useConfiguredAi:true})).status,503);
   const selection=await req(`/workflow/reports/${report.data.artifactId}/selection`,{sheetName:'CSV',headerRow:1});assert.equal(selection.status,201);assert.equal(selection.data.suggestionSource,'rule-based');assert.equal(selection.data.actualAiUsed,false);
@@ -67,7 +74,7 @@ test('FR-PROD-SCHED-004 FR-PROD-SCHED-007 FR-PROD-SCHED-011 FR-PROD-SCHED-014 2�
   assert.equal((await db.get('SELECT COUNT(1) n FROM shooting_days')).n,1);
   assert.deepEqual((await db.all('SELECT s.scene_no,a.sequence_order FROM day_scene_assignments a JOIN scenes s ON s.id=a.scene_id ORDER BY a.sequence_order')).map(r=>[r.scene_no,r.sequence_order]),[['7-1',1],['8-1',2],['8-2',3]]);
   // 残りの無い日には入らない
-  const full=await plan('ep9.txt',[scene('9-1',10)]);assert.equal(full.preview.data.proposal.commitAllowed,false);
+  const full=await plan('ep9.txt',[scene('9-1',10)]);assert.deepEqual(full.preview.data.proposal.unassigned.map(x=>x.sceneNo),['9-1']);assert.deepEqual(full.preview.data.proposal.days[0].scenes,[]);
   // 日程案を作ったあとに撮影日が変わったら確定しない
   const later=await plan('ep9b.txt',[scene('9-2',10)],200);assert.equal(later.preview.data.proposal.commitAllowed,true);
   await db.run('UPDATE shooting_days SET version=version+1');

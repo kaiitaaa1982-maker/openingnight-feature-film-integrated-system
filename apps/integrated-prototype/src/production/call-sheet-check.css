@@ -1,0 +1,15 @@
+/* 日々スケの確かめと食事の数。色は黒・白・灰と赤の1色、角丸0・影なし（core docs/design/integrated-system-visual.md） */
+.csc{margin-top:16px;padding-top:12px;border-top:1px solid var(--ink)}
+.csc h4{margin:12px 0 6px}
+.csc-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.csc-head h4{margin:0}
+.csc-alert{display:inline-block;padding:2px 8px;background:var(--red);color:#ffffff;font-weight:700}
+.csc-tag{display:inline-block;padding:2px 8px;border:1px solid var(--ink);color:var(--ink)}
+.csc-crew{display:inline-flex;align-items:center;gap:6px;margin-left:auto}
+.csc-crew input{width:72px;border-radius:0}
+.csc-table{width:100%;border-collapse:collapse;margin:4px 0}
+.csc-table th,.csc-table td{padding:4px 8px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+.csc-table th{background:var(--soft);font-weight:600}
+.csc-table td.csc-total{font-weight:700}
+.csc-red{color:var(--red)}
+@media(max-width:760px){.csc-crew{margin-left:0}.csc-table{font-size:13px}}

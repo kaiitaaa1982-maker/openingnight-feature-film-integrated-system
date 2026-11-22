@@ -3,7 +3,7 @@
 
 統合システムの DB（本番は Cloudflare D1、手元とテストは SQLite）の全表を、領域ごとに説明する。型・NULL・既定値・制約・索引・トリガーは空の DB から読み、表の領域・論理名・説明は辞書（`dictionary.json`）に書く。説明の末尾が「（推測）」のものは、コードの使われ方から読み取った推測で、確かめを待っている。
 
-- 表 389・列 3,953・参照 952・索引 256・トリガー 912
+- 表 412・列 4,171・参照 1,008・索引 298・トリガー 978
 - 説明のうち推測: 2 件
 - Excel 版は `node scripts/build-db-docs.mjs --xlsx` で `docs/database/_build/` に書き出す（git の対象外）
 
@@ -40,17 +40,24 @@
 | 1.26 | 2026-10-25 | Claude（代表の依頼） | 移行0054で、プリプロのプリプロの保管庫の置き場の1表を足した |
 | 1.27 | 2026-10-25 | Claude（代表の依頼） | 移行0055で、プリプロの連絡帳の3表（スペース・連絡・既読と了解）を足した |
 | 1.28 | 2026-10-25 | Codex（代表の依頼） | 移行0056で、原本の場所の移動を追加のみの履歴として記録する表を足した |
+| 1.29 | 2026-10-28 | Grok Bot（代表の依頼） | 移行0057で、制作部の業務ひな型（フォルダ・ひな型・版・Office の原本・フォルダの直し・移動）の6表を足した |
+| 1.30 | 2026-11-06 | Claude（代表の依頼） | 移行0059で、組織に本番・デモの印（organizations.kind）を足した |
+| 1.31 | 2026-11-06 | Claude（代表の依頼） | 移行0060で、撮影の許可申請（提出先・提出先の設定の版・申請・申請の版・原本の結び付き）の5表を足した |
+| 1.32 | 2026-11-09 | Claude（代表の依頼） | 移行0061で、小道具（持ち道具・消え物など）の品目・品目の版・打ち合わせの3表を足した |
+| 1.33 | 2026-11-13 | Claude（代表の依頼） | 移行0066で、予算書の読み取りの定義・定義の版・版の判定（承認・差し戻し）・予算書の版が読まれた定義の版の4表を足した（0067 は既存の組織に初期値の定義を入れる） |
+| 1.34 | 2026-11-20 | Claude（代表の依頼） | 移行0068（番号は仮）で、制作の実費の行・その取消・確認の3表を足した |
+| 1.35 | 2026-11-20 | Claude（代表の依頼） | 移行0069（番号は仮）で、香盤の読みの記録と、撮影の結果の行と読みの束の結びの2表を足した |
 
 ## 目次
 
 | 領域 | ページ | 表の数 |
 |---|---|---|
-| 企画 | [planning.md](planning.md) | 68 |
-| 制作 | [production.md](production.md) | 37 |
+| 企画 | [planning.md](planning.md) | 72 |
+| 制作 | [production.md](production.md) | 53 |
 | 営業 | [sales.md](sales.md) | 50 |
 | 宣伝 | [publicity.md](publicity.md) | 3 |
 | 売上 | [revenue.md](revenue.md) | 65 |
-| 経費 | [expenses.md](expenses.md) | 42 |
+| 経費 | [expenses.md](expenses.md) | 45 |
 | 精算 | [settlement.md](settlement.md) | 60 |
 | 会計 | [accounting.md](accounting.md) | 15 |
 | 台帳 | [ledger.md](ledger.md) | 20 |
@@ -103,12 +110,12 @@
 
 ```mermaid
 flowchart LR
-  planning["企画<br/>68 表"]
-  production["制作<br/>37 表"]
+  planning["企画<br/>72 表"]
+  production["制作<br/>53 表"]
   sales["営業<br/>50 表"]
   publicity["宣伝<br/>3 表"]
   revenue["売上<br/>65 表"]
-  expenses["経費<br/>42 表"]
+  expenses["経費<br/>45 表"]
   settlement["精算<br/>60 表"]
   accounting["会計<br/>15 表"]
   ledger["台帳<br/>20 表"]
@@ -122,8 +129,10 @@ flowchart LR
   admin -->|4| core
   core -->|2| planning
   expenses -->|1| accounting
-  expenses -->|8| ledger
-  expenses -->|4| planning
+  expenses -->|1| core
+  expenses -->|9| ledger
+  expenses -->|5| planning
+  expenses -->|1| production
   expenses -->|2| revenue
   expenses -->|1| settlement
   ledger -->|1| core
@@ -135,9 +144,9 @@ flowchart LR
   planning -->|1| revenue
   planning -->|1| sales
   planning -->|2| settlement
-  production -->|2| core
+  production -->|5| core
   production -->|1| ledger
-  production -->|19| planning
+  production -->|23| planning
   production -->|1| sales
   production -->|1| settlement
   publicity -->|1| admin

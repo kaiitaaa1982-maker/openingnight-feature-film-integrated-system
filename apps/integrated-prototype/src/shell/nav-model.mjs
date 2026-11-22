@@ -1,8 +1,8 @@
 // ページのメタデータ。表示するフォルダの所属は folder-nav.mjs にある。
 // 旧 area・sub とその関数は、権限・既存の呼び出しとの互換のために残す（外枠にタブは出さない）。
 // ページID（src/navigation.mjs の名前）は変えずに、表示名・グループ・1行説明・URL の slug を与える。
-// ページIDは試験・設計キャンバス・保存済みの状態と互換にするため固定。表示名だけを業務の言葉にする。
-import {WORK_PAGES, EIGYO_PAGES, SALES_PAGES, SHARED_PAGES, normalizePage} from '../navigation.mjs';
+// ページIDは試験・保存済みの状態と互換にするため固定。表示名だけを業務の言葉にする。
+import {WORK_PAGES, EIGYO_PAGES, SALES_PAGES, normalizePage} from '../navigation.mjs';
 
 // scope: 'work' = 対象作品を選んで使う画面、'company' = 会社全体（閲覧権限内）、'none' = 作品に依存しない管理画面
 // hidden: ナビに出さない（URL では開ける）。redirect: 開いたときに別の画面へ移す。
@@ -10,8 +10,11 @@ import {WORK_PAGES, EIGYO_PAGES, SALES_PAGES, SHARED_PAGES, normalizePage} from 
 export const NAV_GROUPS = Object.freeze({
   work: [
     {id: 'start', label: 'はじめに', items: [
+      {page: '原本の置き場', label: '原本の置き場', slug: 'source-tree', description: '原本と参照先', scope: 'company'},
       {page: 'フォルダ一覧', label: 'フォルダ一覧', slug: 'folder-home', description: '全フォルダと画面の入口', scope: 'none'},
       {page: 'ホーム', label: 'ホーム', slug: 'home', description: '選んだ作品の概要と、次に確かめること'},
+      // 全案件（会社ルートの plans/2026-11-06-real-demo-split.md の手順7）。作品を選ばずに全作品の行を1つの表で見る。左メニューではフォルダ一覧の次に出す（folder-nav.mjs の ENTRY_LINK_PAGES）
+      {page: '全案件', label: '全案件', slug: 'all-works', description: '全作品の日々スケ・経費・台本を1つの表で', scope: 'company'},
     ]},
     // 調達（フォルダ台帳 F19。最上位。会社ルートの plans/2026-10-24-folder-chotatsu.md）。MG を払わない販売権の調達を、希望から製造へ渡すまで
     {id: 'chotatsu', label: '調達', items: [
@@ -31,12 +34,20 @@ export const NAV_GROUPS = Object.freeze({
     {id: 'seisaku', label: '制作', items: [
       // プリプロダクション（フォルダ原案 F03）。要対応・子フォルダの帯と、オールスタッフ／美術打ち合わせの資料（root plans/2026-10-22-folder-preprod.md）
       {page: 'プリプロ', label: 'プリプロ', slug: 'preprod', description: '撮影の前に揃えるものと、オールスタッフ・美術打ち合わせの資料'},
+      // 撮影の許可申請（道路・公園・施設。移行 0060。会社ルートの plans/2026-11-06-real-demo-split.md の手順8）。全案件を1行1件で
+      {page: '許可申請', label: '許可申請', slug: 'permits', description: '道路・公園・施設の使用許可の申請を全案件で1行1件に', scope: 'company'},
+      // 小道具（持ち道具・消え物）の一覧と打ち合わせ（移行 0061。会社ルートの plans/2026-11-09-props-meeting.md）
+      {page: '小道具', label: '小道具', slug: 'props', description: '持ち道具・消え物を撮影日ごとに並べ、打ち合わせで担当と次の行動を決める', scope: 'company'},
       {page: '制作', label: '香盤・日々スケ', slug: 'production', description: 'シーン・役・衣装・撮影日・ロケ地と香盤'},
       {page: '台本・香盤', label: '台本の取込', slug: 'script', description: '台本の原本からシーンを読み取り、確認して登録'},
       // ポストプロダクション（フォルダ原案 F05。移行 0025）。調整役の許可でこの PR が足す
       {page: 'ポスプロ', label: 'ポスプロ', slug: 'post', description: '工程ごとのタスクの済・未、動画を止めて残す指示、契約の納品物のチェック'},
       // プロダクションの撮影の記録（フォルダ原案 F04。移行 0051）。調整役の許可で足す
+      // 制作部の業務のひな型（業務の種類のフォルダ→ひな型→版・Office の原本。移行 0057）。所属は共通。F01〜F20 の全フォルダのメニューにも同じ画面へのリンクを出す（folder-nav.mjs の FOLDER_LINK_PAGES）
+      {page: '業務ひな型', label: '業務ひな型', slug: 'work-templates', description: '制作部の業務の種類ごとに、文・チェックリスト・表のひな型と Word・Excel・PowerPoint の原本を版つきで置く', scope: 'company'},
       {page: '撮影の記録', label: '撮影の記録', slug: 'shoot-records', description: '撮影日ごとの日々スケ・部署の日報・スクリプター記録の揃いと、撮影の結果'},
+      // 制作の実費の行の画面（フォルダ原案 F04。会社ルートの plans/2026-11-20-genba-inbox.md の手順 14b。受け口は制作担当に 403 を返すので PRODUCTION_HIDDEN_WORK_PAGES に入れる）
+      {page: '実費', label: '実費', slug: 'actual-lines', description: '作品の実費の明細と合計（日別・支払先別・費目別）、未確認の確認'},
     ]},
     {id: 'rights', label: '権利・宣伝', items: [
       {page: '調達・権利', label: '権利の調達', slug: 'rights-intake', description: '製作委員会・単独保有・権利受託の調達条件'},
@@ -46,6 +57,13 @@ export const NAV_GROUPS = Object.freeze({
     ]},
     {id: 'bulk', label: '表の一括編集', items: [
       {page: '業務データ編集', label: 'マスタの表編集', slug: 'work-data', description: '作品・商品・取引先を表で直し、承認して反映'},
+      // 共通の表（EditSheet）の見本。localOnly は mode local のメニューだけ。代表モードの REPRESENTATIVE_PAGES には入れない
+      {page: '表の見本', label: '表の見本', slug: 'sheet-sample', description: 'Excel の操作感の表の見本', scope: 'company', localOnly: true},
+    ]},
+    // 管理者だけが開く画面（ADMIN_ONLY_PAGES）。外枠では「共通」の欄に並ぶ（folder-nav.mjs の COMMON_GROUP）
+    {id: 'admin', label: '管理', items: [
+      {page: 'チーム', label: 'チーム', slug: 'team', description: 'メンバーの招待と役割', scope: 'none'},
+      {page: '取込履歴', label: '取込履歴', slug: 'import-history', description: '売上報告の取込とExcel一括登録の記録（管理者）', scope: 'none'},
     ]},
   ],
   // 営業基幹（2026-09-25）。業務基幹の「営業」グループをここへ移した（ページIDと slug は変えない）。取引先リストは新しい画面
@@ -118,22 +136,11 @@ export const NAV_GROUPS = Object.freeze({
       {page: 'デモ資料', label: 'デモ資料', slug: 'demo', description: '架空の報告書・契約書・台本のサンプルと、香盤のデモへの入口'},
     ]},
   ],
-  shared: [
-    {id: 'admin', label: '管理・設計', items: [
-      {page: '設計・定義', label: '設計・定義', slug: 'definitions', description: '業務の用語・区分・計算の定義', scope: 'none'},
-      {page: '設計キャンバス', label: '設計キャンバス', slug: 'design-canvas', description: '概念・ER・実画面を切り替えて確かめる', scope: 'none'},
-      {page: 'ER', label: '表の構造', slug: 'er', description: '業務のデータがどの表に入り、どうつながるか（読み取り専用）', scope: 'none'},
-      {page: '拡張項目', label: '拡張項目', slug: 'extensions', description: '宣伝指標などの追加項目の提案と採用', scope: 'none'},
-      {page: 'チーム', label: 'チーム', slug: 'team', description: 'メンバーの招待と役割', scope: 'none'},
-      {page: 'データ一覧', label: 'データ一覧', slug: 'data', description: '表・列・型・意味・関係を確認。行の中身とExcel出力は管理者のみ', scope: 'none'},
-      {page: '取込履歴', label: '取込履歴', slug: 'import-history', description: '売上報告の取込とExcel一括登録の記録（管理者）', scope: 'none'},
-    ]},
-  ],
 });
 
-export const AREA_LABELS = Object.freeze({work: '業務基幹', eigyo: '営業基幹', sales: '売上基幹', shared: '管理・設計'});
+export const AREA_LABELS = Object.freeze({work: '業務基幹', eigyo: '営業基幹', sales: '売上基幹'});
 export const AREA_HOME = Object.freeze({work: 'ホーム', eigyo: '全作品のウィンドウ', sales: '帳票センター'});
-// 上段のタブ（業務基幹｜営業基幹｜売上基幹）。管理・設計は左メニューの下に常に出す
+// 上段のタブ（業務基幹｜営業基幹｜売上基幹）
 export const TOP_AREAS = Object.freeze(['work', 'eigyo', 'sales']);
 // 見える画面が1つも無い領域（上段のタブを押せない）の説明
 export const AREA_LOCK_NOTES = Object.freeze({eigyo: '取引・販売の情報は担当範囲外です', sales: '財務情報は担当範囲外です'});
@@ -153,7 +160,7 @@ const ITEMS = Object.freeze(Object.entries(NAV_GROUPS).flatMap(([area, groups]) 
 const BY_PAGE = new Map(ITEMS.map((item) => [item.page, item]));
 const BY_SLUG = new Map(ITEMS.map((item) => [item.slug, item]));
 
-export const ALL_PAGES = Object.freeze([...WORK_PAGES, ...EIGYO_PAGES, ...SALES_PAGES, ...SHARED_PAGES]);
+export const ALL_PAGES = Object.freeze([...WORK_PAGES, ...EIGYO_PAGES, ...SALES_PAGES]);
 
 export function navItems() {
   return ITEMS;
@@ -280,7 +287,7 @@ export function rememberedPage(storage, sub) {
 // 管理者だけが使う画面
 export const ADMIN_ONLY_PAGES = Object.freeze(['チーム', '取込履歴']);
 // 制作担当に出さない業務基幹の画面（財務・取引の情報を含む）。営業基幹・売上基幹の画面は EIGYO_PAGES・SALES_PAGES から全部隠すので、ここには書かない
-export const PRODUCTION_HIDDEN_WORK_PAGES = Object.freeze(['業務データ編集', '取引先', '調達・権利', '予算書', '製造', '企画', '調達']);
+export const PRODUCTION_HIDDEN_WORK_PAGES = Object.freeze(['業務データ編集', '表の見本', '取引先', '調達・権利', '予算書', '製造', '企画', '調達', '原本の置き場', '実費']);
 
 // 役割ごとに左メニューから隠し、URL で開いても表示しない画面。権限の判定そのものはサーバーが行う
 export function hiddenPagesForRole(role) {
@@ -291,7 +298,7 @@ export function hiddenPagesForRole(role) {
 
 // ---- 表示モード（フェーズ1 #9・K-3）----
 
-// 代表モードは、左メニューに出す画面を K-18 の11画面に絞る。画面のコードは消さず、URL（?p=<slug>）と上部の「管理・設計」ボタンからは全画面を開ける。
+// 代表モードは、左メニューに出す画面を K-18 の11画面と全案件に絞る。画面のコードは消さず、URL（?p=<slug>）からは全画面を開ける。
 // 既定は全表示。選んだモードは localStorage に覚える（保存できない環境では覚えず、全表示で始める）
 export const VIEW_MODES = Object.freeze([
   Object.freeze({id: 'all', label: '全表示'}),
@@ -300,9 +307,9 @@ export const VIEW_MODES = Object.freeze([
 export const DEFAULT_VIEW_MODE = 'all';
 export const VIEW_MODE_KEY = 'on-view-mode';
 
-// 代表モードで左メニューに出す11画面（ページID。順は K-18）。新しい画面は、ここに足すまで代表モードに出ない
+// 代表モードで左メニューに出す12画面（ページID。順は K-18 の11画面に、全案件（2026-11-10 代表）を足した）。新しい画面は、ここに足すまで代表モードに出ない
 export const REPRESENTATIVE_PAGES = Object.freeze([
-  'ホーム', '企画・作品', '作品・商品マスタ', '商品・営業', '売上', '請求・入金', '月別消込', '経費', '収支', 'PL・BS', '帳票センター',
+  'ホーム', '全案件', '企画・作品', '作品・商品マスタ', '商品・営業', '売上', '請求・入金', '月別消込', '経費', '収支', 'PL・BS', '帳票センター',
 ]);
 const REPRESENTATIVE_SET = new Set(REPRESENTATIVE_PAGES);
 const VIEW_MODE_IDS = new Set(VIEW_MODES.map((mode) => mode.id));
@@ -311,7 +318,7 @@ export function isViewMode(mode) {
   return VIEW_MODE_IDS.has(mode);
 }
 
-// 代表モードで左メニューから外す画面（11画面以外の全部）。全表示と、知らないモードは何も外さない
+// 代表モードで左メニューから外す画面（REPRESENTATIVE_PAGES 以外の全部）。全表示と、知らないモードは何も外さない
 export function viewModeHiddenPages(mode) {
   if (mode !== 'representative') return new Set();
   return new Set(ALL_PAGES.filter((page) => !REPRESENTATIVE_SET.has(page)));

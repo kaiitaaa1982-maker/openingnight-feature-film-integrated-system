@@ -116,3 +116,103 @@ export function fictionalBudgetSheets(options = {}) {
   const receipts = [{ref: 'A1', value: '●仮払い'}, {ref: 'A2', value: 'スタッフ名'}, {ref: 'B2', value: '交通費'}, {ref: 'A3', value: '架空スタッフ'}, {ref: 'B3', value: 1200}];
   return [{name: '予算', cells}, {name: '領収書まとめ', cells: receipts}];
 }
+
+// 費目名に架空の人名・会社名・作品名を混ぜた版（scripts/ops/budget-split.mjs の仮名化の試験の種）。額・区分・セルの位置は fictionalBudgetSheets と同じで、名前だけが違う。
+// 名前はどれも「架空」「仮名」「カクウ」「Kakuu」で始まる作り物。同じ人（架空太郎）を A と D の2か所に置き、同じコードになることを確かめられるようにする。
+// 作品名「夜行列車（仮）」は H のロケ地の行にも書く（--title で案件コードに置き換わる）。キャストの別表（T〜W 列）にも名前を置く（読み取りは取り込まない）
+export const FICTIONAL_NAMED_ITEMS = Object.freeze({
+  B12: '脚本料 架空太郎',
+  B14: '主演 仮名花子',
+  B15: '助演・架空次郎/架空三郎',
+  B20: '監督料 架空太郎',
+  B21: '撮影（架空映像スタジオ）',
+  B22: '助監督 カクウ一郎',
+  J11: '機材レンタル 架空機材株式会社',
+  J13: '美術費 株式会社 架空美術',
+  J15: 'ロケ地 夜行列車',
+  J23: '試写会場代 Kakuu Studio',
+});
+// 上の名前の一覧（試験が「AI の読むファイルに出ていない」を確かめるのに使う）
+export const FICTIONAL_NAMES = Object.freeze(['架空太郎', '仮名花子', '架空次郎', '架空三郎', '架空映像スタジオ', 'カクウ一郎', '架空機材株式会社', '架空美術', 'Kakuu', '夜行列車']);
+
+// ひらがなの名・1字ずつの漢字の名・日付・電話番号の形を費目名に置いた差し替え（options.items に渡す。仮名化の取りこぼしの試験の種）。どれも作り物
+export const FICTIONAL_LOOSE_ITEMS = Object.freeze({
+  B11: '企画開発費 かくうの森',
+  B12: '脚本料 架空 ひな',
+  B14: '主演 李 華',
+  B15: '助演 2026/11/03 分',
+  B18: 'プロデューサー 連絡先 03-0000-0000',
+});
+export const FICTIONAL_LOOSE_NAMES = Object.freeze(['かくうの森', 'かくう', 'ひな', '李', '華', '2026/11/03', '11/03', '03-0000-0000', 'かくうさくら', 'ななし']);
+
+// options.items: セル位置→費目名（既定は FICTIONAL_NAMED_ITEMS）。options.sheetNames: [予算のシート名, 2枚目のシート名]
+export function fictionalNamedBudgetSheets(options = {}) {
+  const items = options.items ?? FICTIONAL_NAMED_ITEMS;
+  const [budget, ...rest] = fictionalBudgetSheets(options);
+  const cells = budget.cells.map((cell) => (Object.hasOwn(items, cell.ref) ? {...cell, value: items[cell.ref]} : cell));
+  cells.push({ref: 'T11', value: '主人公'}, {ref: 'U11', value: '仮名花子'}, {ref: 'V11', value: '架空プロ'}, {ref: 'W11', value: 300000});
+  const names = options.sheetNames ?? [];
+  return [{...budget, cells}, ...rest].map((sheet, i) => (names[i] ? {...sheet, name: names[i]} : sheet));
+}
+
+// 架空の予算書「Code・Detail・Description の書式」（見出し Code / Detail / Description / 数 / 単価 / 合計(税抜)、1区画）。
+// 節（準備・撮影・制作管理費・総合計）は Code の列、区分の小計は Detail の列に名前と SUM(F…:F…) の式。名前・額はどれも作り物。
+// 監督費とスタッフ費（どちらも D）、ロケーション費(1)(2)（どちらも H）は1つの区分にまとまる。名前の無い小計は明細の名前（劇伴）から I を補う。
+// 「謎の費目」は額0で明細も無い空の小計（取り込まない）。「未分類の部」は区分の分からない小計に明細が1行ある（options.noUnknown で書かない）
+export function fictionalCodeDetailSheets(options = {}) {
+  const cells = [];
+  const put = (ref, value, extra = {}) => cells.push({ref, value, ...extra});
+  const row = (r, {code, detail, description, qty, price, yellow = false}) => {
+    if (code != null) put(`A${r}`, code);
+    if (detail != null) put(`B${r}`, detail, yellow ? {style: 'yellow'} : {});
+    if (description != null) put(`C${r}`, description);
+    if (qty != null) put(`D${r}`, qty);
+    if (price != null) put(`E${r}`, price);
+    put(`F${r}`, (qty ?? 0) * (price ?? 0), {formula: `SUM(D${r}*E${r})`});
+  };
+  const subtotal = (r, label, from, to, value, short = false) => {
+    if (label != null) put(`B${r}`, label);
+    put(`F${r}`, value, {formula: short ? `SUM(F${from})` : `SUM(F${from}:F${to})`});
+  };
+  put('A1', '「架空作品」予算案');
+  put('B2', '*撮影日数: 3日');
+  ['Code', 'Detail', 'Description', '数', '単価', '合計(税抜)'].forEach((name, i) => put(`${'ABCDEF'[i]}3`, name));
+  put('A4', 'PRE-PRODUCTION');
+  row(5, {code: 100, detail: '脚本料', description: '架空太郎', qty: 1, price: 300000});
+  row(6, {code: 101, detail: '企画開発費', qty: 1, price: 50000});
+  subtotal(7, '企画費 Development', 5, 6, 350000);
+  row(8, {code: 110, detail: '監督料', description: '架空次郎', qty: 1, price: 500000});
+  subtotal(9, '監督費 Director', 8, 8, 500000, true);
+  put('A10', 'PRE-PRODUCTION TOTAL'); put('F10', 850000, {formula: 'SUM(F9,F7)'});
+  put('A11', 'PRODUCTION');
+  row(12, {code: 200, detail: 'ロケハン', description: 'レンタカー代', qty: 2, price: 10000});
+  row(13, {code: 201, description: 'ガソリン代', qty: 1, price: 5000});
+  subtotal(14, '準備費 Pre-production', 12, 13, 25000);
+  row(15, {code: 210, detail: '撮影技師', description: 'カクウ三郎', qty: 3, price: 40000});
+  row(16, {code: 211, detail: '撮影助手'});
+  subtotal(17, 'スタッフ費 Staff', 15, 16, 120000);
+  row(18, {code: 220, detail: '会場費', qty: 1, price: 80000});
+  subtotal(19, 'ロケーション費(1) Location', 18, 18, 80000);
+  row(20, {code: 230, detail: '会場費', qty: 1, price: 20000});
+  subtotal(21, 'ロケーション(2) Location', 20, 20, 20000);
+  row(22, {code: 240});
+  subtotal(23, '謎の費目', 22, 22, 0);
+  row(24, {code: 250, detail: '劇伴', description: '仮名花子', qty: 1, price: 60000, yellow: true});
+  subtotal(25, ' ', 24, 24, 60000);
+  const unknown = !options.noUnknown;
+  if (unknown) {
+    row(26, {code: 260, detail: '架空費目X', qty: 1, price: 7000});
+    subtotal(27, '未分類の部 Unknown', 26, 26, 7000);
+  }
+  const production = 25000 + 120000 + 80000 + 20000 + 0 + 60000 + (unknown ? 7000 : 0);
+  put('A28', 'PRODUCTION TOTAL'); put('F28', production, {formula: `SUM(F14,F17,F19,F21,F23,F25${unknown ? ',F27' : ''})`});
+  row(29, {code: 900, detail: '制作管理/Production fee', qty: 1, price: 100000});
+  subtotal(30, '制作管理/Production fee', 29, 29, 100000);
+  row(31, {code: 910, detail: '予備', qty: 1, price: 50000});
+  subtotal(32, '制作予備費 Contingency', 31, 31, 50000, true);
+  put('A33', 'PRODUCTION FEE TOTAL'); put('F33', 150000, {formula: 'SUM(F32,F30)'});
+  put('A34', 'GRAND TOTAL'); put('F34', 850000 + production + 150000, {formula: 'SUM(F10+F28+F33)'});
+  // 右の別表（費目の内訳の下書き。見出しが無いので読まない）
+  put('J3', '監督料'); put('K3', '内訳の下書き'); put('L3', 1); put('M3', 500000); put('N3', 500000, {formula: 'L3*M3'});
+  return [{name: 'Budget', cells}];
+}

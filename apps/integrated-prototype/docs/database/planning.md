@@ -99,6 +99,19 @@ erDiagram
     TEXT category_code FK "行の区分（A〜K）"
     INTEGER line_no FK "行の区分の中の行番号"
   }
+  budget_read_approvals {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER version_id FK "判定した定義の版（budget_read_versions）"
+  }
+  budget_read_profiles {
+    INTEGER id PK "行のID"
+  }
+  budget_read_versions {
+    INTEGER id PK "行のID"
+    INTEGER org_id FK "組織（organizations）。データの持ち主"
+    INTEGER profile_id FK "定義（budget_read_profiles）"
+  }
   budget_template_items {
     INTEGER id PK "行のID"
     INTEGER org_id FK "組織（organizations）。データの持ち主"
@@ -120,6 +133,12 @@ erDiagram
     INTEGER project_id FK "案件（版と同じ）"
     INTEGER version_id FK "版（budget_versions）"
     INTEGER work_id FK "作品（任意。案件の作品だけ）"
+  }
+  budget_version_reads {
+    INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
+    INTEGER project_id FK "案件（版と同じ）"
+    INTEGER version_id PK, FK "予算書の版（budget_versions）"
+    INTEGER read_version_id FK "読んだ定義の版（budget_read_versions）"
   }
   budget_version_templates {
     INTEGER org_id PK, FK "組織（organizations）。データの持ち主"
@@ -419,11 +438,15 @@ erDiagram
   budget_fixes }o--|| budget_versions : "project_id,version_id"
   budget_line_items }o--|| budget_version_lines : "version_id,category_code,line_no"
   budget_line_items }o--|| budget_versions : "project_id,version_id"
+  budget_read_approvals }o--|| budget_read_versions : "version_id"
+  budget_read_versions }o--|| budget_read_profiles : "profile_id"
   budget_template_items }o--|| budget_template_versions : "template_version_id"
   budget_template_versions }o--o| budget_versions : "source_project_id,source_budget_version_id"
   budget_template_versions }o--|| budget_templates : "template_id"
   budget_version_lines }o--o| works : "project_id,work_id"
   budget_version_lines }o--|| budget_versions : "project_id,version_id"
+  budget_version_reads }o--|| budget_read_versions : "read_version_id"
+  budget_version_reads }o--|| budget_versions : "project_id,version_id"
   budget_version_templates }o--|| budget_template_versions : "template_version_id"
   budget_version_templates }o--|| budget_versions : "project_id,version_id"
   budget_versions }o--o| budget_versions : "project_id,previous_version_id"
@@ -520,10 +543,14 @@ erDiagram
 | [budget_check_runs](#budget_check_runs) | 予算書の検査の結果（回） | 予算書の版の検査の結果を回ごとに残す（追記だけ）。最新の回が例外ありの版は確定できない |
 | [budget_fixes](#budget_fixes) | 予算書の確定の記録 | 予算書の版の確定と取り消しの記録（追記だけ）。いまの確定版は最後の行から導く（fix ならその版、void なら確定版なし）。確定は最新の検査が例外なしの版だけ、取り消しはいまの確定版だけ |
 | [budget_line_items](#budget_line_items) | 予算書の行の内訳 | 予算書の行の内訳（キャストリストの役ごとなど。追記だけ。確定した版には足せない）。行の金額は内訳の和。役者名・事務所名は持たず、キャスト一覧を参照で指す |
+| [budget_read_approvals](#budget_read_approvals) | 予算書の読み取りの定義の判定 | 定義の版ごとの判定（承認・差し戻し）。版ごとの連番で追記だけ。いまの判定は最後の行。承認した版だけが取り込みに使われる |
+| [budget_read_profiles](#budget_read_profiles) | 予算書の読み取りの定義 | 予算書 xlsx の読み取りの定義（組織ごと・名前で区別。書き換えない）。中身は版（budget_read_versions）に持つ |
+| [budget_read_versions](#budget_read_versions) | 予算書の読み取りの定義（版） | 読み取りの定義の版（定義ごとの連番で追記だけ）。見出しの語・合計の行の名前・区分の語と、コードが持つ読み方の選択を JSON で持つ。正規表現は持たない |
 | [budget_template_items](#budget_template_items) | 予算書の型の費目 | 予算書の型の版の費目（追記だけ）。区分は A〜K。額は持たず、単価・数量・単位と、内訳を持つ費目の内訳のシートの名前を持つ |
 | [budget_template_versions](#budget_template_versions) | 予算書の型（版） | 予算書の型の版（追記だけ。型ごとの連番）。費目は版ごとに持ち、前の版は残る |
 | [budget_templates](#budget_templates) | 予算書の型 | 予算書の型（テンプレ。追記だけ）。組織ごとに名前で区別し、名前は変えない。費目は型の版が持つ |
 | [budget_version_lines](#budget_version_lines) | 予算書の行 | 予算書の版の明細の行（追記だけ。確定した版には足せない）。区分は A〜K の11区分（実費の行と同じコード）。個人名・事務所名は持たない |
+| [budget_version_reads](#budget_version_reads) | 予算書の版を読んだ定義 | 予算書の版（xlsx から読んだもの）がどの読み取りの定義の版で読まれたか（追記だけ。1つの版に1つまで。承認していない定義の版は結び付けられない） |
 | [budget_version_templates](#budget_version_templates) | 予算書の版の型 | 予算書の版がどの型の版から作られたか（追記だけ。1つの版に1つまで） |
 | [budget_versions](#budget_versions) | 予算書（版） | 案件の予算書の版（追記だけ。変更・削除・同じ番号の入れ直しは DB が断る）。案件ごとの連番。合計の列は持たず、行と制作管理費・予備費（計画）・税率から読むたびに導く。理由は必須 |
 | [cashflow_categories](#cashflow_categories) | 入出金の区分 | 案件の入金・出金の区分マスタ（入金4・出金5）。入出金と「売上の元になるか」を区分で決め、金額は正で持って符号は区分で決める。出金は売上の元にならない。移行では行を入れず、組織ごとに種かアプリで足す。入出金と売上の元は足したあと変えない |
@@ -1014,6 +1041,88 @@ erDiagram
 - トリガー budget_line_items_no_delete: 削除の前
 - トリガー budget_line_items_no_update: 更新の前
 
+## budget_read_approvals
+
+**予算書の読み取りの定義の判定** — 定義の版ごとの判定（承認・差し戻し）。版ごとの連番で追記だけ。いまの判定は最後の行。承認した版だけが取り込みに使われる
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | version_id | INTEGER | 判定した定義の版（budget_read_versions） | 不可 | - | FK（複合）→ budget_read_versions |
+| 4 | seq | INTEGER | 版の中の判定の連番（1から） | 不可 | - | CHECK: typeof(seq)='integer' AND seq>0 |
+| 5 | action | TEXT（列挙） | 判定（approve＝承認・reject＝差し戻し） | 不可 | - | 値: approve / reject |
+| 6 | source | TEXT（列挙） | 出どころ（seed＝初期値の承認・member＝人の判定） | 不可 | - | 値: seed / member |
+| 7 | reason | TEXT | 判定の理由 | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 1000 |
+| 8 | created_by | INTEGER | 判定した利用者（初期値は持たない） | 可 | - | FK（複合）→ memberships |
+| 9 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, version_id, seq)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, version_id) → budget_read_versions(org_id, id)
+- CHECK: (source='seed' AND created_by IS NULL AND action='approve') OR (source='member' AND created_by IS NOT NULL)
+- 索引 budget_read_approvals_author_idx: (org_id, created_by)
+- トリガー budget_read_approvals_no_delete: 削除の前
+- トリガー budget_read_approvals_no_update: 更新の前
+- トリガー budget_read_approvals_seed_only_seed: 追加の前
+- トリガー budget_read_approvals_sequence: 追加の前
+
+## budget_read_profiles
+
+**予算書の読み取りの定義** — 予算書 xlsx の読み取りの定義（組織ごと・名前で区別。書き換えない）。中身は版（budget_read_versions）に持つ
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | name | TEXT | 定義の名前（組織の中で一意） | 不可 | - | CHECK: length(trim(name)) BETWEEN 1 AND 100 |
+| 4 | source | TEXT（列挙） | 出どころ（seed＝初期値・member＝組織の人が足した） | 不可 | - | 値: seed / member |
+| 5 | created_by | INTEGER | 足した利用者（初期値は持たない） | 可 | - | FK（複合）→ memberships |
+| 6 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, name)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- CHECK: (source='seed' AND created_by IS NULL) OR (source='member' AND created_by IS NOT NULL)
+- 索引 budget_read_profiles_author_idx: (org_id, created_by)
+- トリガー budget_read_profiles_no_delete: 削除の前
+- トリガー budget_read_profiles_no_update: 更新の前
+
+## budget_read_versions
+
+**予算書の読み取りの定義（版）** — 読み取りの定義の版（定義ごとの連番で追記だけ）。見出しの語・合計の行の名前・区分の語と、コードが持つ読み方の選択を JSON で持つ。正規表現は持たない
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | id | INTEGER | 行のID | 不可 | - | PK |
+| 2 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | - |
+| 3 | profile_id | INTEGER | 定義（budget_read_profiles） | 不可 | - | FK（複合）→ budget_read_profiles |
+| 4 | version_no | INTEGER | 定義の中の版の番号（1から連番） | 不可 | - | CHECK: typeof(version_no)='integer' AND version_no>0 |
+| 5 | definition_json | TEXT | 定義の中身（JSON。形はアプリが検査する） | 不可 | - | CHECK: length(definition_json) BETWEEN 2 AND 32768 AND json_valid(definition_json) AND json_type(definition_json)='object' AND json_extract(definition_json,'$.kind')='budget' |
+| 6 | definition_hash | TEXT | 定義の中身の SHA-256（16進64字） | 不可 | - | CHECK: length(definition_hash)=64 AND ltrim(definition_hash,'0123456789abcdef')='' |
+| 7 | source | TEXT（列挙） | 出どころ（seed＝初期値・member＝組織の人が足した） | 不可 | - | 値: seed / member |
+| 8 | reason | TEXT | 版を足した理由 | 不可 | - | CHECK: length(trim(reason)) BETWEEN 1 AND 1000 |
+| 9 | created_by | INTEGER | 足した利用者（初期値は持たない） | 可 | - | FK（複合）→ memberships |
+| 10 | created_at | TEXT | 作成日時 | 不可 | 現在時刻 | - |
+
+表の制約:
+
+- 複合の一意: (org_id, id)
+- 複合の一意: (org_id, profile_id, version_no)
+- 複合の参照: (org_id, created_by) → memberships(org_id, user_id)
+- 複合の参照: (org_id, profile_id) → budget_read_profiles(org_id, id)
+- CHECK: (source='seed' AND created_by IS NULL) OR (source='member' AND created_by IS NOT NULL)
+- 索引 budget_read_versions_author_idx: (org_id, created_by)
+- トリガー budget_read_versions_no_delete: 削除の前
+- トリガー budget_read_versions_no_update: 更新の前
+- トリガー budget_read_versions_seed_only_seed: 追加の前
+- トリガー budget_read_versions_sequence: 追加の前
+
 ## budget_template_items
 
 **予算書の型の費目** — 予算書の型の版の費目（追記だけ）。区分は A〜K。額は持たず、単価・数量・単位と、内訳を持つ費目の内訳のシートの名前を持つ
@@ -1130,6 +1239,27 @@ erDiagram
 - トリガー budget_version_lines_fixed: 追加の前
 - トリガー budget_version_lines_no_delete: 削除の前
 - トリガー budget_version_lines_no_update: 更新の前
+
+## budget_version_reads
+
+**予算書の版を読んだ定義** — 予算書の版（xlsx から読んだもの）がどの読み取りの定義の版で読まれたか（追記だけ。1つの版に1つまで。承認していない定義の版は結び付けられない）
+
+| No | カラム名 | データ型 | 説明 | NULL | デフォルト値 | 制約 |
+|---|---|---|---|---|---|---|
+| 1 | org_id | INTEGER | 組織（organizations）。データの持ち主 | 不可 | - | PK（複合） |
+| 2 | project_id | INTEGER | 案件（版と同じ） | 不可 | - | FK（複合）→ budget_versions |
+| 3 | version_id | INTEGER | 予算書の版（budget_versions） | 不可 | - | PK（複合）、FK（複合）→ budget_versions |
+| 4 | read_version_id | INTEGER | 読んだ定義の版（budget_read_versions） | 不可 | - | FK（複合）→ budget_read_versions |
+
+表の制約:
+
+- 複合の主キー: (org_id, version_id)
+- 複合の参照: (org_id, read_version_id) → budget_read_versions(org_id, id)
+- 複合の参照: (org_id, project_id, version_id) → budget_versions(org_id, project_id, id)
+- 索引 budget_version_reads_read_idx: (org_id, read_version_id)
+- トリガー budget_version_reads_approved: 追加の前
+- トリガー budget_version_reads_no_delete: 削除の前
+- トリガー budget_version_reads_no_update: 更新の前
 
 ## budget_version_templates
 

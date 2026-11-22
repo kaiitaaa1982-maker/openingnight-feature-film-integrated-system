@@ -76,13 +76,29 @@ const MERGED = new Map([
   ['0054_preprod_document_placements.sql', '16b9c2f9dd65141b81782ce289d896b9be34fcd4d032ae3efef11924d618b492'],
   ['0055_notebook.sql', '6e37e585010b9973255c30d4962b6b7708b9cef539294c91fec9271546c8c5cf'],
   ['0056_source_document_moves.sql', '2bd2b460282c212ef9aec09e7936b0169a1364d65a8f164d29c4787fe301febe'],
+  ['0057_work_templates.sql', 'd8490c99aa7eb7b0446163a49af1b5eae6bb05444a63fdffd1cbde8a004f3a22'],
+  ['0058_production_wrap_crew.sql', 'd40a920f86dd824b12dc8aea746cefb670b452aeb5811a6c3bfdc78e7a63797a'],
+  // 組織の本番・デモの印（会社ルートの plans/2026-11-06-real-demo-split.md の手順2）
+  ['0059_organization_kind.sql', 'cc75f12761f69b31bd404b6aeee2b89e5eaf018845410aeda5181bfff835d354'],
+  // 撮影の許可申請（会社ルートの plans/2026-11-06-real-demo-split.md の手順8）
+  ['0060_permit_applications.sql', 'a24e886b573b1d5dd3ffd613cf1a86b948b36ac7c5cad6a59a3328d0fa6adc76'],
+  // 小道具の品目と打ち合わせ（会社ルートの plans/2026-11-09-props-meeting.md）
+  ['0061_prop_items.sql', 'e6e4041daec768b819d6e5e2c10ac8fa9f66a99708621fd8ace21d5af6debc3a'],
+  // 予算書の読み取りの定義と、既存の組織への初期値（会社ルートの plans/2026-11-12-ingest-definitions.md の手順4。番号は仮）
+  ['0066_budget_read_definitions.sql', '53a4b734622d304c1115f8ae25e82b59f981db511da48da7110be4ed8c26c4b2'],
+  ['0067_budget_read_seeds.sql', 'e9c7b7cf8f655ce319eb0abd0e8cad8ac100cad7a7e0200938027f66256092d3'],
+  // 制作の実費の行と取消・確認（会社ルートの plans/2026-11-20-genba-inbox.md の手順8。番号は仮）
+  ['0068_production_actual_lines.sql', 'a75a3a3a3aea6086945dc118478f82e99a01186b4746d9939acec6736c595434'],
+  // 香盤の読みの記録と、撮影の結果の行と読みの束の結び（会社ルートの plans/2026-11-20-genba-inbox.md の手順7。番号は仮）
+  ['0069_shooting_scene_reads.sql', '82f67e5fd200bbd09f9fa3b29531caa45e4619f8407d6e1a03f520ed785dee53'],
 ]);
 
 const fingerprint = text => createHash('sha256').update(text.replace(/\r\n/g, '\n')).digest('hex');
 
 // #145 が別枝で 0022 を使う。この枝にそのファイルが無いときだけ、22 を飛ばして次の番号を連番とみなす。
 // 0029〜0040 と 0042〜0048 は 2026-10-24 の波で先に入る別の枝（C:/ONwt/MIGRATION-ORDER.md）。main に寄せたら消す。
-const RESERVED_MISSING = new Set([22, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]);
+// 62・64・65 はキャストの枝（作品の役目・キャスト一覧・NG 日）、63 は香盤の版（#266）の予約。予算書の読み取りの定義（0066・0067。番号は仮）は、この枝に無いときだけ飛ばす。
+const RESERVED_MISSING = new Set([22, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 62, 63, 64, 65]);
 
 export function numberingProblems(names) {
   const problems = [];

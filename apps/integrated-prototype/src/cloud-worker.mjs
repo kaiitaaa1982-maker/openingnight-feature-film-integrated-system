@@ -6,10 +6,11 @@ import { WorkersAiAdapter } from './ai-adapter.mjs';
 import { createCloudRuntime } from './cloud-runtime.mjs';
 import { registerCloudAnalyticsRoutes } from './cloud-analytics.mjs';
 import { respondToMediaRange } from './cloud-media.mjs';
-import { cloudConfig as config, isSafeCloudRequest as isSafeRequest, verifyAccessToken } from './cloud-security.mjs';
+import { cloudConfig as config, isSafeCloudRequest as isSafeRequest, verifyAccessToken, serviceTokenEmail, accessVia } from './cloud-security.mjs';
 import { CloudDatabaseConfigError, CloudDatabaseUnavailableError, DATABASE_UNAVAILABLE_MESSAGE, releaseCloudDatabase, setCloudDatabaseSession } from './data-platform/cloud-db.mjs';
 import { HEALTH_DB_PATH, respondDatabaseHealth } from './data-platform/cloud-health.mjs';
 import { runScheduledPgExport } from './data-platform/cloud-pg-export.mjs';
+import { businessDataPorts } from './source-documents/business-data-bucket.mjs';
 export { WorkbenchExtractContainer } from './cloud-container.mjs';
 
 // pg は DATABASE_ENGINE が postgres の要求で、最初の問い合わせのときにだけ読み込む（d1 の道では評価しない）
@@ -22,15 +23,19 @@ const securityHeaders = {
 
 async function authenticateAccess(request, db, env, cfg) {
   // JWT（発行者・AUD・RS256・exp・メール）の検証は cloud-security.mjs の verifyAccessToken
-  const payload=await verifyAccessToken(request,cfg);if(!payload)return null;
-  const email=payload.email.trim().toLowerCase();
+  // サービストークンは ACCESS_SERVICE_TOKENS の表にあるものだけ、決めたメンバーとして扱う（cloud-security.mjs の serviceTokenEmail）
+  const payload=await verifyAccessToken(request,cfg,{requireEmail:false});if(!payload)return null;
+  const email=typeof payload.email==='string'?payload.email.trim().toLowerCase():serviceTokenEmail(payload,env.ACCESS_SERVICE_TOKENS);
+  if(!email)return null;
   // 所属は Cookie on_org で本人が選んだ組織（所属を確かめ、無効なら org_id が最小の組織。
   // 既定へ戻したとき・画面の組織（X-On-Org）と食い違うときは、/api/session 系のほかは app.mjs が 409 にする）。
   // DB の失敗は前と同じく null にせず投げる（postgres で接続できなければ fetch が 503 にする）
   // postgres では行単位の権限（pg/rls.sql）に利用者を渡す。利用者の照会は確かめたメールだけで行い、引けたら利用者 ID に替えてから所属を読む
   // （FR-CORE-DATA-053。d1 では何もしない）
   setCloudDatabaseSession(db,{loginEmail:email});
-  return identityForEmail(db,email,request.headers.get('cookie'),Date.now(),{onUser:user=>setCloudDatabaseSession(db,{userId:user.user_id})});
+  const identity=await identityForEmail(db,email,request.headers.get('cookie'),Date.now(),{onUser:user=>setCloudDatabaseSession(db,{userId:user.user_id})});
+  // 呼び出しの経路の印（FR-CORE-DATA-066）。権限の判定には使わず、AI の呼び出しと人の操作を経路で見分けたい受け口だけが読む
+  return identity?{...identity,via:accessVia(payload)}:identity;
 }
 
 export default {
@@ -61,7 +66,9 @@ async function handle(request, env, cfg, {db,extractDocument,extractWorkbenchFil
       const result=await restartWorkbenchRuntime({db,identity,request,destroy:()=>getContainer(env.WORKBENCH_CONTAINER,'workbench-extractor-v1').destroy()});
       return Response.json(result.body,{status:result.status,headers:securityHeaders});
     }
-    const app=createApp({db,mode:'worker',authenticate:async()=>identity,extractDocument,extractWorkbenchFile,ai:aiAdapter,suggestMappings:aiAdapter.enabled?request=>aiAdapter.suggestMappings(request):undefined});
+    // 業務データの置き場（BUSINESS_DATA）は、読む口と「無ければ置く」口だけを渡す。上書き・delete・list は渡さない（brain D-043 改め 2026-11-09。business-data-bucket.mjs）
+    const {readBusinessObject,addBusinessObject}=businessDataPorts(env.BUSINESS_DATA);
+    const app=createApp({db,mode:'worker',authenticate:async()=>identity,extractDocument,extractWorkbenchFile,readBusinessObject,addBusinessObject,ai:aiAdapter,suggestMappings:aiAdapter.enabled?request=>aiAdapter.suggestMappings(request):undefined});
     // 分析の写しも入口（db）の読み取りの一括で読む。D1 の束ねを直接渡さない（FR-CORE-DATA-010。R2BackedD1Database の readBatch が D1 の素の batch を1回呼ぶ）
     registerCloudAnalyticsRoutes(app,{db,bucket:env.PRIVATE_ARTIFACTS,registrationId:env.CLOUD_ANALYTICS_REGISTRATION_ID,definitionVersion:env.CLOUD_ANALYTICS_DEFINITION_VERSION,containerBuild});
     const url=new URL(request.url);let response;

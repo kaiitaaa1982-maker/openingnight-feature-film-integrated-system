@@ -62,6 +62,8 @@
 .kk-drop { display: block; border: 1px dashed var(--ink); padding: 10px; text-align: center; color: var(--sub); cursor: pointer; margin: 8px 0; }
 .kk-file { display: flex; gap: 8px; align-items: center; margin: 4px 0; border-bottom: 1px solid var(--rule); padding-bottom: 4px; }
 .kk-link { background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; color: inherit; }
+.kk-open { background: var(--paper); color: var(--ink); cursor: pointer; line-height: 18px; }
+.kk-open:hover { background: var(--ink); color: var(--paper); }
 .kk-picker { border-top: 1px solid var(--rule); padding: 8px 0; }
 .kk-picker select { display: block; width: 100%; max-width: 100%; }
 .kk-picker input, .kk-picker select { border: 1px solid var(--ink); border-radius: 0; box-shadow: none; background: var(--paper); color: var(--ink); }

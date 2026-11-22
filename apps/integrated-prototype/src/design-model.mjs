@@ -23,7 +23,7 @@ export const objects = [
  {id:'pl_bs',label:'PL・BS（管理会計の試算）',meaning:'作品別と会社のPL・BSを、売上明細・経費・ロイヤリティの発生額・製作委員会の月次収支（自社の取り分だけ）から毎回計算します。システムに無い全社費用・営業外・特別・法人税等・期首残高・借入金・資本金は勘定科目×月の手入力で補い、経費の出金日と委員会への出資の払込日で現預金と未払を出します。複式の仕訳は持たず、最後に説明のつかない差額を必ず出します。決算書ではありません。',tables:['org_profile_versions','gl_accounts','gl_manual_amounts','expense_payments','committee_investment_payments','fiscal_settings','expenses','committee_term_investments'],screens:['PL・BS','経費']},
  {id:'royalty',label:'ロイヤリティ（監督料・脚本料・音楽・原作料）',meaning:'作品×権利者×種別の契約に、条件（料率・基礎・対象流通・前払金・下限）とサイクル（締め方・報告と支払の期限）を版で持ちます。売上は計上月で発生させ、締め月ごとに権利者の報告書（確定版）へまとめます。報告後の修正は差額で次の報告書へ入れ、イレギュラー・実額・報告と支払は取消の行で直します。',tables:['royalty_agreements','royalty_term_versions','royalty_term_channels','royalty_term_expense_categories','royalty_schedule_versions','royalty_schedule_phases','royalty_manual_accruals','royalty_irregular_entries','royalty_statements','royalty_statement_voids','royalty_statement_lines','royalty_statement_events','royalty_statement_calculation_parts'],screens:['ロイヤリティ作成','ロイヤリティ集計','ロイヤリティ報告書','ロイヤリティ契約']},
  {id:'bulk',label:'Excel一括登録',meaning:'取引先・案件・作品・商品・経費をExcelでまとめて登録します。新しい行は確かめてから追加し、既存の作品・商品・取引先の変更は表編集の変更セット（承認申請）として起票します。同じ行の二重登録は照合値で止めます。',tables:['bulk_import_batches','bulk_import_previews'],screens:['作品・商品マスタ','取引先','企画・作品','経費']},
- {id:'publicity',label:'宣伝・追加項目',meaning:'作品ごとの宣伝施策・露出と、指標の観測値を記録します。記録したい指標は日本語の提案から型・単位・集計方法を決め、管理者が採用すると宣伝の入力・取込・分析で使えるようになります。観測は売上との因果を確定しません。',tables:['campaigns','exposures','observations','metric_definitions','change_proposals','schema_meta'],screens:['宣伝','拡張項目']},
+ {id:'publicity',label:'宣伝・追加項目',meaning:'作品ごとの宣伝施策・露出と、指標の観測値を記録します。記録したい指標は日本語の提案から型・単位・集計方法を決め、管理者が採用すると宣伝の入力・取込・分析で使えるようになります。観測は売上との因果を確定しません。',tables:['campaigns','exposures','observations','metric_definitions','change_proposals','schema_meta'],screens:['宣伝']},
  {id:'team',label:'チーム・権限',meaning:'利用者の組織への所属と、案件ごとの閲覧・編集の権限、招待を持ちます。制作担当は金額を見ず、編集担当は権限のある案件だけを扱います。試作の招待は架空のメールだけで、外部へ送りません。',tables:['users','memberships','project_memberships','invitations'],screens:['チーム']},
 ];
 export const relations=[
@@ -64,91 +64,11 @@ export const relations=[
  {from:'work',to:'publicity',label:'作品ごとの施策・露出・指標'},
  {from:'team',to:'work',label:'案件ごとの閲覧・編集の権限'},
 ];
-// 画面ごとのコード。先頭が画面の本体、続きがその画面で使う部品・取込の道具（設計キャンバスの「この画面のコード」に出す）。
-const SCREEN_FILES={
- 'ホーム':['HomeQueue.jsx'],
- '作品・商品マスタ':['WorkCatalog.jsx','bulk/BulkImportPanel.jsx','work/ProposalProfileForm.jsx','master-extensions/WorkMasterFields.jsx','master-extensions/ProductMasterFields.jsx','master-extensions/MasterVersionForm.jsx'],
- '取引先':['partners/PartnersPage.jsx','main.jsx'],
- '企画・作品':['main.jsx','bulk/BulkImportPanel.jsx'],
- '商品・営業':['sales-ops/PipelineBoard.jsx','main.jsx'],
- '番販・放送':['BroadcastWorkspace.jsx','broadcast/BroadcastHistory.jsx','broadcast/AvailsListPanel.jsx','broadcast/WindowProposals.jsx','broadcast/BroadcastTerms.jsx','broadcast/BroadcastApprovals.jsx','broadcast/BroadcastExcel.jsx','sales-ops/ReleaseWindowGrid.jsx','broadcast/broadcast-history-model.mjs','broadcast/window-proposal-model.mjs','broadcast/avails-list-model.mjs','broadcast/broadcast-windows-routes.mjs'],
- '全作品のウィンドウ':['sales-ops/ReleaseWindowsPage.jsx','sales-ops/ReleaseWindowGrid.jsx','sales-ops/release-window-model.mjs','sales-ops/release-window-routes.mjs'],
- '提案資料':['sales-ops/ProposalsPage.jsx','sales-ops/release-proposal-model.mjs','sales-ops/release-proposal-routes.mjs','work/ProposalProfileForm.jsx'],
- '取引先別リスト':['sales-ops/PartnerListsPage.jsx','sales-ops/partner-list-model.mjs','sales-ops/partner-list-routes.mjs'],
- '営業作品一覧':['ReportCenter.jsx','sales/ReleaseMonthView.jsx'],
- '営業資料':['SalesMaterials.jsx'],
- '制作':['ProductionWorkspace.jsx','FieldOperations.jsx'],
- '台本・香盤':['Workflow.jsx'],
- '調達・権利':['RightsIntake.jsx'],
- '宣伝':['main.jsx'],
- '業務データ編集':['Workbench.jsx'],
- '売上':['sales/SalesPage.jsx','main.jsx','sales-sheet/SalesSheet.jsx'],
- '原本取り込み':['import/SalesImportWizard.jsx'],
- '売上データ編集':['Workbench.jsx'],
- '報告書マッピング':['ReportMapping.jsx'],
- '請求・入金':['Billing.jsx','billing/ReceiptForm.jsx'],
- '月別消込':['ReportCenter.jsx','billing/ReceiptForm.jsx'],
- '税ルール・台帳':['TaxLedger.jsx'],
- '経費集計シート':['expense-sheet/ExpenseSheet.jsx','expense-sheet/sheet-model.mjs','expense-sheet/sheet-routes.mjs'],
- '売上集計シート':['sales-sheet/SalesSheet.jsx','sales-sheet/sheet-view-model.mjs','sales-sheet/sales-sheet-routes.mjs'],
- '帳票センター':['reports/ReportCatalog.jsx','reports/AnnualDashboard.jsx','reports/WorkPnlReport.jsx','reports/IssuePanel.jsx','reports/ProgressMatrix.jsx','sales-sheet/SalesSheet.jsx'],
- '収支':['IncomeDashboard.jsx','main.jsx'],
- 'PL・BS':['pl-bs/PlBsPage.jsx','pl-bs/PlBsManual.jsx','pl-bs/ExpensePayments.jsx','pl-bs/pl-bs-view.mjs','reports/pl-bs-model.mjs','pl-bs/pl-bs-routes.mjs','pl-bs/pl-bs-data.mjs'],
- '分析・Lightdash':['AnalyticsWorkspace.jsx'],
- 'MG契約・台帳':['MgLedger.jsx','mg-ledger-import.mjs'],
- 'MG 買付':['acquisition/AcqMgBuy.jsx','acquisition/acq-mg-routes.mjs','acquisition/acq-mg-recoup.mjs'],
- '権利先・MG帳票':['RightsReports.jsx'],
- '権利・分配':['Settlement.jsx'],
- '製作委員会':['Committee.jsx','JointCommittee.jsx'],
- 'ロイヤリティ作成':['royalty/RoyaltyPeriodsPage.jsx','royalty/royalty-routes.mjs'],
- 'ロイヤリティ集計':['royalty/RoyaltyLedgerPage.jsx','royalty/royalty-routes.mjs'],
- 'ロイヤリティ報告書':['royalty/RoyaltyStatementsPage.jsx','royalty/royalty-routes.mjs'],
- 'ロイヤリティ契約':['royalty/RoyaltyAgreementsPage.jsx','royalty/royalty-routes.mjs'],
- '委員会月次収支':['committee/CommitteeMonthlyPage.jsx','committee/committee-monthly-routes.mjs'],
- '経費':['main.jsx','bulk/BulkImportPanel.jsx','work/ExpensesPage.jsx','pl-bs/ExpensePayments.jsx'],
- 'デモ資料':['DemoSamples.jsx'],
- '設計・定義':['Definitions.jsx'],
- '設計キャンバス':['DesignCanvas.jsx','design-model.mjs'],
- 'ER':['admin/ErPage.jsx'],
- '拡張項目':['admin/ExtensionsPage.jsx'],
- 'チーム':['admin/TeamPage.jsx'],
- 'データ一覧':['admin/DataBrowser.jsx'],
- '取込履歴':['admin/ImportHistory.jsx'],
-};
-export const screenFiles=Object.freeze(Object.fromEntries(Object.entries(SCREEN_FILES).map(([page,files])=>[page,Object.freeze(files.map(file=>`src/${file}`))])));
-export const screenSources=Object.fromEntries(Object.entries(screenFiles).map(([page,files])=>[page,files[0]]));
-export function selectObject(state,id,allowed=objects){
- const object=allowed.find(o=>o.id===id);if(!object)return state;
- return {objectId:id,table:object.tables.includes(state.table)?state.table:object.tables[0],page:object.screens.includes(state.page)?state.page:object.screens[0],notice:''};
-}
-export function selectTable(state,table,allowed=objects){
- const object=allowed.find(o=>o.id===state.objectId&&o.tables.includes(table))||allowed.find(o=>o.tables.includes(table));
- if(!object)return {objectId:null,table,page:null,notice:'この表はDBにありますが、業務のまとまり・画面との対応は未定義です。'};
- return {...selectObject(state,object.id,allowed),table,notice:state.objectId!==object.id?`「${object.label}」の表へ移りました。`:''};
-}
-export function selectScreen(state,page,allowed=objects){
- const object=allowed.find(o=>o.id===state.objectId&&o.screens.includes(page))||allowed.find(o=>o.screens.includes(page));
- if(!object)return state;
- return {...selectObject(state,object.id,allowed),page,notice:state.objectId!==object.id?`この画面に対応する「${object.label}」を選びました。`:''};
-}
 export function foreignKeys(tables){
  return tables.flatMap(table=>{
   const groups=new Map();for(const fk of table.foreignKeys||[]){const key=`${table.name}:${fk.id}`;if(!groups.has(key))groups.set(key,{key,from:table.name,to:fk.table,columns:[]});groups.get(key).columns.push(fk)}
   return [...groups.values()].map(edge=>({...edge,columns:edge.columns.sort((a,b)=>a.seq-b.seq)}));
  });
-}
-// The correspondence is explicit. Neither a shared name nor an FK invents a business meaning.
-export function impactForObject(id,allowed=objects){
- const object=allowed.find(item=>item.id===id);
- if(!object)return {tables:[],screens:[]};
- return {tables:[...object.tables],screens:[...object.screens]};
-}
-export function canvasTableScope(tables,edges,selectedTable,objectTables=[],scope='core'){
- const existing=new Set(tables.map(table=>table.name));
- if(scope==='all')return tables;
- const direct=new Set([selectedTable,...edges.filter(edge=>edge.from===selectedTable||edge.to===selectedTable).flatMap(edge=>[edge.from,edge.to])]);
- const wanted=scope==='related'?direct:new Set([selectedTable,...objectTables]);
- return tables.filter(table=>existing.has(table.name)&&wanted.has(table.name));
 }
 export function validateModel(model,tables,screens){
  const issues=[],ids=new Set(),names=new Set(tables.map(t=>t.name));
@@ -156,7 +76,7 @@ export function validateModel(model,tables,screens){
   if(ids.has(object.id))issues.push(`重複ID ${object.id}`);ids.add(object.id);
   if(!object.tables.length||!object.screens.length)issues.push(`対応なし ${object.id}`);
   for(const name of object.tables)if(!names.has(name))issues.push(`表なし ${object.id}:${name}`);
-  for(const page of object.screens)if(!screens.includes(page)||!screenSources[page])issues.push(`画面なし ${object.id}:${page}`);
+  for(const page of object.screens)if(!screens.includes(page))issues.push(`画面なし ${object.id}:${page}`);
  }
  return issues;
 }

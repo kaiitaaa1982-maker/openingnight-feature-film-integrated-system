@@ -5,7 +5,7 @@
 .on-field{display:grid;gap:6px;align-content:start;min-width:0}
 .on-field-wide{grid-column:1/-1}
 .on-field-label{display:flex;align-items:center;gap:8px;color:var(--ink-2);font-size:13px;font-weight:650}
-.on-req{display:inline-block;padding:1px 6px;border:1px solid var(--warn);border-radius:6px;color:var(--warn);font-size:11px;font-weight:700;line-height:1.5}
+.on-req{display:inline-block;padding:1px 6px;border:1px solid var(--warn);border-radius:0;color:var(--warn);font-size:12px;font-weight:700;line-height:1.5}
 .on-field-hint{margin:0;color:var(--ink-3);font-size:12px;line-height:1.5}
 .on-field-preview{margin:0;color:var(--accent);font-size:12px}
 .on-field-error{margin:0;color:var(--bad);font-size:12px;font-weight:650}
@@ -57,7 +57,7 @@ input[readonly],textarea[readonly]{background:var(--panel-3);color:var(--ink-2)}
 /* 候補検索 */
 .on-picker{position:relative}
 .on-picker-box{position:relative;display:flex;align-items:center}
-.on-picker-box input{padding-right:40px}
+.on-picker-box input{padding-right:64px;text-overflow:ellipsis}
 .on-picker-clear{position:absolute;right:4px;min-height:32px;padding:0 8px}
 .on-picker-list{position:absolute;z-index:20;top:calc(100% + 4px);left:0;right:0;max-height:320px;margin:0;padding:4px;overflow:auto;list-style:none;border:1px solid var(--line-3);border-radius:var(--radius);background:var(--panel);box-shadow:var(--shadow)}
 .on-picker-option{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--ink)}

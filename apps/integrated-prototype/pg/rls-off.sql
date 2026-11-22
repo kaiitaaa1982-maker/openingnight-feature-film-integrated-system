@@ -1167,3 +1167,72 @@ ALTER TABLE "notebook_receipts" DISABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS rls_org_member ON "source_document_moves";
 ALTER TABLE "source_document_moves" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "work_template_folders";
+ALTER TABLE "work_template_folders" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "work_template_folder_revisions";
+ALTER TABLE "work_template_folder_revisions" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "work_templates";
+ALTER TABLE "work_templates" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "work_template_versions";
+ALTER TABLE "work_template_versions" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "work_template_moves";
+ALTER TABLE "work_template_moves" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "work_template_files";
+ALTER TABLE "work_template_files" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "permit_offices";
+ALTER TABLE "permit_offices" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "permit_office_versions";
+ALTER TABLE "permit_office_versions" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "permit_applications";
+ALTER TABLE "permit_applications" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "permit_application_versions";
+ALTER TABLE "permit_application_versions" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "permit_application_documents";
+ALTER TABLE "permit_application_documents" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "prop_meetings";
+ALTER TABLE "prop_meetings" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "prop_items";
+ALTER TABLE "prop_items" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "prop_item_versions";
+ALTER TABLE "prop_item_versions" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "budget_read_profiles";
+ALTER TABLE "budget_read_profiles" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "budget_read_versions";
+ALTER TABLE "budget_read_versions" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "budget_read_approvals";
+ALTER TABLE "budget_read_approvals" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "budget_version_reads";
+ALTER TABLE "budget_version_reads" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "production_actual_lines";
+ALTER TABLE "production_actual_lines" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "production_actual_line_voids";
+ALTER TABLE "production_actual_line_voids" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "production_actual_line_checks";
+ALTER TABLE "production_actual_line_checks" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "shooting_scene_reads";
+ALTER TABLE "shooting_scene_reads" DISABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS rls_org_member ON "shooting_scene_result_reads";
+ALTER TABLE "shooting_scene_result_reads" DISABLE ROW LEVEL SECURITY;

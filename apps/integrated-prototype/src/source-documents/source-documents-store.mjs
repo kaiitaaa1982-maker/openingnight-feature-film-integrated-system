@@ -60,6 +60,20 @@ export async function findSourceDocumentBySha256(db, orgId, sha256) {
   return row ? {id: Number(row.id)} : null;
 }
 
+// いまの場所（最新の移動先。無ければ最初の場所）がこのキーの原本。画面から足す前に、同じ名前があるかを見る
+export async function findSourceDocumentAtLocation(db, orgId, location) {
+  const row = await db.get(`SELECT id FROM source_documents WHERE org_id=? AND storage='external' AND ${CURRENT_LOCATION}=? ORDER BY id LIMIT 1`, [orgId, location]);
+  return row ? {id: Number(row.id)} : null;
+}
+
+// このフォルダ（その下を含む）に、この組織の原本が1通でも置いてあるか。置き場の一覧は読まず、DB の記録だけで見る
+export async function sourceFolderInUse(db, orgId, folder) {
+  const prefix = `${folder}/`;
+  const row = await db.get(`SELECT id FROM source_documents WHERE org_id=? AND storage='external' AND substr(${CURRENT_LOCATION},1,?)=? ORDER BY id LIMIT 1`,
+    [orgId, [...prefix].length, prefix]);
+  return Boolean(row);
+}
+
 // 目録の重複は組織内で一括照会する。allIn が値を80件ずつに分ける（組織IDを足してもD1の100個以内）。
 export async function findSourceDocumentsBySha256(db, orgId, sha256s) {
   const rows = await allIn(db, `SELECT id, sha256, storage, ${CURRENT_LOCATION} AS external_location

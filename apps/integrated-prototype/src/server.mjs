@@ -10,13 +10,15 @@ import { createApp } from './app.mjs';
 import { extractDocument } from './local-extractor.mjs';
 import {extractWorkbenchFile} from './workbench-extractor-local.mjs';
 import {registerLocalWorkbenchAnalytics} from './workbench-analytics-local.mjs';
+import {localBusinessDataPorts} from './source-documents/business-data-local.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const dbFile = process.env.ON_DB_FILE || resolve(root, 'data/integrated.sqlite');
 const db = new LocalDatabase(dbFile);
 const bundledPython=resolve(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe');
 const pythonPath=process.env.ON_PYTHON||(existsSync(bundledPython)?bundledPython:null);
-const app = createApp({ db, mode: 'local', extractDocument:pythonPath?input=>extractDocument({...input,pythonPath}):undefined,extractWorkbenchFile:pythonPath?input=>extractWorkbenchFile({...input,pythonPath}):undefined });
+// 業務データの置き場の代わり（架空のファイルを置くフォルダ）。渡したときだけ、原本を開く・画面から足すが手元で動く
+const app = createApp({ db, mode: 'local', ...localBusinessDataPorts(process.env.ON_BUSINESS_DATA_DIR), extractDocument:pythonPath?input=>extractDocument({...input,pythonPath}):undefined,extractWorkbenchFile:pythonPath?input=>extractWorkbenchFile({...input,pythonPath}):undefined });
 const analyticsRoot=resolve(root,'../../analytics-poc');
 const sourceKey=createHash('sha256').update(resolve(dbFile).toLowerCase()).digest('hex').slice(0,16);
 registerLocalWorkbenchAnalytics(app,{db,database:dbFile,root:process.env.ON_ANALYTICS_ROOT||resolve(analyticsRoot,'.runtime/workbench-sources',sourceKey),python:resolve(analyticsRoot,'.runtime/venv/Scripts/python.exe'),node:process.execPath,script:resolve(analyticsRoot,'run_workbench_snapshot.py')});

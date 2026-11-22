@@ -173,6 +173,48 @@
       "date": "2026-10-25",
       "author": "Codex（代表の依頼）",
       "note": "移行0056で、原本の場所の移動を追加のみの履歴として記録する表を足した"
+    },
+    {
+      "version": "1.29",
+      "date": "2026-10-28",
+      "author": "Grok Bot（代表の依頼）",
+      "note": "移行0057で、制作部の業務ひな型（フォルダ・ひな型・版・Office の原本・フォルダの直し・移動）の6表を足した"
+    },
+    {
+      "version": "1.30",
+      "date": "2026-11-06",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0059で、組織に本番・デモの印（organizations.kind）を足した"
+    },
+    {
+      "version": "1.31",
+      "date": "2026-11-06",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0060で、撮影の許可申請（提出先・提出先の設定の版・申請・申請の版・原本の結び付き）の5表を足した"
+    },
+    {
+      "version": "1.32",
+      "date": "2026-11-09",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0061で、小道具（持ち道具・消え物など）の品目・品目の版・打ち合わせの3表を足した"
+    },
+    {
+      "version": "1.33",
+      "date": "2026-11-13",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0066で、予算書の読み取りの定義・定義の版・版の判定（承認・差し戻し）・予算書の版が読まれた定義の版の4表を足した（0067 は既存の組織に初期値の定義を入れる）"
+    },
+    {
+      "version": "1.34",
+      "date": "2026-11-20",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0068（番号は仮）で、制作の実費の行・その取消・確認の3表を足した"
+    },
+    {
+      "version": "1.35",
+      "date": "2026-11-20",
+      "author": "Claude（代表の依頼）",
+      "note": "移行0069（番号は仮）で、香盤の読みの記録と、撮影の結果の行と読みの束の結びの2表を足した"
     }
   ],
   "common": {
@@ -2162,7 +2204,8 @@
       "domain_reason": "組織はデータの持ち主で、共通基盤が受け持つため。",
       "columns": {
         "code": "組織コード（一意）",
-        "name": "組織の名前"
+        "name": "組織の名前",
+        "kind": "本番（real）かデモ（demo）か。既定は demo で、本番の組織は1つずつ明示して real にする。デモの組織だけを丸ごと消せる"
       }
     },
     "package_observation_products": {
@@ -2504,7 +2547,7 @@
     "production_calls": {
       "domain": "production",
       "name": "役の入り時間",
-      "description": "撮影日ごとに、役の入り時間と支度完了の時刻を1行ずつ持つ。制作の画面で保存するたびに入れ直す。",
+      "description": "撮影日ごとに、役の入り時間・支度完了・バラしの時刻を1行ずつ持つ。制作の画面で保存するたびに入れ直す。",
       "domain_reason": "制作の画面（日々スケ）で役の入り時間を入れる手順が作る行のため。",
       "columns": {
         "work_id": "作品（works）",
@@ -2512,6 +2555,7 @@
         "character_key": "役（production_characters）",
         "call_time": "入り時間（撮影日か翌日の日時）",
         "ready_time": "支度完了の時刻（撮影日か翌日の日時）",
+        "wrap_time": "バラし（解散）の時刻（撮影日か翌日の日時。入りより後）",
         "note": "備考"
       }
     },
@@ -3658,6 +3702,7 @@
         "unit": "班の名前（同じ日に複数の班がありうる）",
         "label": "撮影日の表示名",
         "notes": "備考",
+        "crew_count": "その日のスタッフの数（食事の数に足す。制作の画面で入れる）",
         "version": "更新のたびに1増える番号（同時更新の検出用）"
       }
     },
@@ -6115,6 +6160,71 @@
         "placed_by": "置いた人"
       }
     },
+    "permit_offices": {
+      "domain": "production",
+      "name": "許可申請の提出先",
+      "description": "道路使用許可・公園や施設の使用許可を出す先（警察署・役所・施設の管理者）。組織の中で名前は一意。書き換えない。",
+      "domain_reason": "プリプロダクション（フォルダ台帳 F03）の業務。撮影の前に済ませる制作部の仕事なので制作の領域に置く（置き場 src/preprod/permits/。会社ルートの plans/2026-11-06-real-demo-split.md の手順8、決まりは brain の wiki/10_manual/road-use-permit.md）。",
+      "columns": {
+        "name": "提出先の名前"
+      }
+    },
+    "permit_office_versions": {
+      "domain": "production",
+      "name": "許可申請の提出先の設定の版",
+      "description": "提出先ごとの受け取りまでの日数（中N日）と、期間でまとめて申請できる上限の日数。提出先ごとの連番で追記だけ。わからない値は NULL。",
+      "domain_reason": "プリプロダクション（フォルダ台帳 F03）の業務。撮影の前に済ませる制作部の仕事なので制作の領域に置く（置き場 src/preprod/permits/。会社ルートの plans/2026-11-06-real-demo-split.md の手順8、決まりは brain の wiki/10_manual/road-use-permit.md）。",
+      "columns": {
+        "office_id": "提出先（permit_offices）",
+        "version_no": "版の番号（提出先ごとの連番）",
+        "lead_business_days": "受け取りまでの日数（中N日。申請の翌日から N 日の窓口の開く日をはさむ）。NULL は未確定",
+        "max_span_days": "期間でまとめて申請できる上限の日数。NULL は未確定",
+        "note": "メモ"
+      }
+    },
+    "permit_applications": {
+      "domain": "production",
+      "name": "許可申請",
+      "description": "撮影の許可申請の1件（作品と種類）。中身は版の表に持つ。書き換えない。",
+      "domain_reason": "プリプロダクション（フォルダ台帳 F03）の業務。撮影の前に済ませる制作部の仕事なので制作の領域に置く（置き場 src/preprod/permits/。会社ルートの plans/2026-11-06-real-demo-split.md の手順8、決まりは brain の wiki/10_manual/road-use-permit.md）。",
+      "columns": {
+        "work_id": "作品（works）",
+        "application_key": "申請の識別子（作るときに申請と最初の版を1回で書くための一意の鍵）",
+        "kind": "種類（road 道路・park 公園・facility 施設）"
+      }
+    },
+    "permit_application_versions": {
+      "domain": "production",
+      "name": "許可申請の版",
+      "description": "申請の中身（提出先・場所・使う期間・申請日・受け取り予定日・受け取った日・状態・手数料）。申請ごとの連番で追記だけで、いまの中身は最新の版。状態を変えるときも版を足す。",
+      "domain_reason": "プリプロダクション（フォルダ台帳 F03）の業務。撮影の前に済ませる制作部の仕事なので制作の領域に置く（置き場 src/preprod/permits/。会社ルートの plans/2026-11-06-real-demo-split.md の手順8、決まりは brain の wiki/10_manual/road-use-permit.md）。",
+      "columns": {
+        "application_id": "申請（permit_applications）",
+        "version_no": "版の番号（申請ごとの連番）",
+        "office_id": "提出先（permit_offices）",
+        "place": "場所",
+        "starts_on": "使う期間の始め",
+        "ends_on": "使う期間の終わり",
+        "applied_on": "申請日（窓口に出した日）",
+        "pickup_on": "受け取り予定日",
+        "received_on": "許可証などを受け取った日",
+        "state": "状態（draft 準備・submitted 提出・permitted 許可・returned 差戻・withdrawn 取下・done 済み）",
+        "fee_yen": "手数料（円）。NULL は未確定",
+        "note": "メモ"
+      }
+    },
+    "permit_application_documents": {
+      "domain": "production",
+      "name": "許可申請の原本の結び付き",
+      "description": "申請と共通の原本（source_documents）の結び付き（申請書・略図・地図・許可証・通知書）。同じ原本は1つの申請に1回。追記だけ。",
+      "domain_reason": "プリプロダクション（フォルダ台帳 F03）の業務。撮影の前に済ませる制作部の仕事なので制作の領域に置く（置き場 src/preprod/permits/。会社ルートの plans/2026-11-06-real-demo-split.md の手順8、決まりは brain の wiki/10_manual/road-use-permit.md）。",
+      "columns": {
+        "application_id": "申請（permit_applications）",
+        "document_id": "原本（source_documents）",
+        "role": "書類の種類（application 申請書・sketch 略図・map 地図・permit 許可証・notice 通知書・other その他）",
+        "linked_by": "結び付けた利用者（users）"
+      }
+    },
     "notebook_spaces": {
       "domain": "production",
       "name": "連絡帳のスペース",
@@ -6168,6 +6278,262 @@
         "moved_at": "移動を記録した日時（UTC）",
         "moved_by": "移動を記録した利用者（同じ組織の所属者）",
         "reason": "移動の理由（任意・500字まで）"
+      }
+    },
+    "work_template_folders": {
+      "domain": "production",
+      "name": "業務ひな型のフォルダ",
+      "description": "業務の種類ごとのフォルダ（宿の手配・ロケハン・撮影許可の依頼など。利用者が足していく）。追記だけ。名前・説明は作ったときの値で、直しは work_template_folder_revisions に足す。",
+      "domain_reason": "業務ひな型（制作部が業務の種類ごとに積み上げる型。置き場 src/production/work-templates/。要件 docs/requirements/production/work-templates.md）。撮影日・シーンと同じ制作の領域に置く。",
+      "columns": {
+        "name": "作ったときのフォルダの名前（いまの名前は最新の直しにある。現在の名前どうしは組織の中で重ならない）",
+        "description": "作ったときの説明（任意）"
+      }
+    },
+    "work_templates": {
+      "domain": "production",
+      "name": "業務ひな型",
+      "description": "フォルダの中のひな型1通の本体。中身は版（work_template_versions）に持つ。追記だけ。",
+      "domain_reason": "業務ひな型（制作部が業務の種類ごとに積み上げる型。置き場 src/production/work-templates/。要件 docs/requirements/production/work-templates.md）。撮影日・シーンと同じ制作の領域に置く。",
+      "columns": {
+        "folder_id": "フォルダ（work_template_folders）",
+        "copied_from_template_id": "複製元のひな型（任意）",
+        "copied_from_version_no": "複製元の版"
+      }
+    },
+    "work_template_versions": {
+      "domain": "production",
+      "name": "業務ひな型の版",
+      "description": "ひな型の版ごとの中身（部品の並び・穴の定義・出どころ・Google ドライブの出どころ）。2版目からは理由が要る。追記だけ。",
+      "domain_reason": "業務ひな型（制作部が業務の種類ごとに積み上げる型。置き場 src/production/work-templates/。要件 docs/requirements/production/work-templates.md）。撮影日・シーンと同じ制作の領域に置く。",
+      "columns": {
+        "template_id": "ひな型（work_templates）",
+        "version_no": "版の番号（1から連番）",
+        "name": "ひな型の名前",
+        "purpose": "何のためか",
+        "scene": "使う場面",
+        "blocks_json": "部品の並び（JSON配列。見出し・本文・チェックリスト・項目の表・表。行ごとの条件を持てる）",
+        "variables_json": "穴の定義（JSON配列。キー・名前・種類・必須・選択肢）",
+        "source_json": "出どころ（JSON。種類・名前・メモ。未確認なら unverified）",
+        "drive_ref": "Google ドライブのファイル ID かリンク（任意。取得や同期はしない出どころの印）",
+        "retired": "やめた版か（1=やめた。一覧から外すだけで版は残る）",
+        "reason": "直した理由（2版目から必須）"
+      }
+    },
+    "work_template_files": {
+      "domain": "production",
+      "name": "業務ひな型の原本",
+      "description": "Word・Excel・PowerPoint の原本（共通の原本 source_documents を指す）の置き直しの履歴。置き直すと番号が増え、古い原本も残る。追記だけ。",
+      "domain_reason": "業務ひな型（制作部が業務の種類ごとに積み上げる型。置き場 src/production/work-templates/。要件 docs/requirements/production/work-templates.md）。撮影日・シーンと同じ制作の領域に置く。",
+      "columns": {
+        "template_id": "ひな型（work_templates）",
+        "file_no": "原本の番号（1から連番）",
+        "document_id": "共通の原本（source_documents）",
+        "drive_ref": "Google ドライブのファイル ID かリンク（任意）",
+        "reason": "置き直した理由（2回目から必須）"
+      }
+    },
+    "work_template_folder_revisions": {
+      "domain": "production",
+      "name": "業務ひな型のフォルダの直し",
+      "description": "フォルダの改名・説明の更新・やめる／戻すの履歴。追記だけ。最新の行が現在の値。",
+      "domain_reason": "業務ひな型（制作部が業務の種類ごとに積み上げる型。置き場 src/production/work-templates/。要件 docs/requirements/production/work-templates.md）。撮影日・シーンと同じ制作の領域に置く。",
+      "columns": {
+        "folder_id": "フォルダ（work_template_folders）",
+        "rev_no": "直しの番号（1から連番）",
+        "name": "直したあとの名前（現在の名前どうしは重ならない）",
+        "description": "直したあとの説明（任意）",
+        "retired": "やめたフォルダか（1=やめた。一覧から外すだけで中のひな型は残る）",
+        "reason": "直した理由（任意）"
+      }
+    },
+    "work_template_moves": {
+      "domain": "production",
+      "name": "業務ひな型の移動",
+      "description": "ひな型を別のフォルダへ移した履歴。追記だけ。最新の行が現在のフォルダ（無ければ work_templates.folder_id）。",
+      "domain_reason": "業務ひな型（制作部が業務の種類ごとに積み上げる型。置き場 src/production/work-templates/。要件 docs/requirements/production/work-templates.md）。撮影日・シーンと同じ制作の領域に置く。",
+      "columns": {
+        "template_id": "ひな型（work_templates）",
+        "move_no": "移動の番号（1から連番）",
+        "folder_id": "移した先のフォルダ（work_template_folders）",
+        "reason": "移した理由（任意）"
+      }
+    },
+    "prop_meetings": {
+      "domain": "production",
+      "name": "小道具の打ち合わせ",
+      "description": "小道具の打ち合わせの1回（作品・日付・題・出た部署・メモ）。その回で決めた品目の版がこの行を指す。書き換えない。",
+      "domain_reason": "プリプロダクション（フォルダ台帳 F03）の業務。撮影の前に済ませる制作部・プロデューサー部・演出部の仕事なので制作の領域に置く（置き場 src/preprod/props/。会社ルートの plans/2026-11-09-props-meeting.md）。",
+      "columns": {
+        "work_id": "作品（works）",
+        "held_on": "打ち合わせの日",
+        "title": "題",
+        "departments": "出た部署（production 制作部・producer プロデューサー部・direction 演出部・art 美術・costume 衣装・other その他 をカンマでつないだもの）",
+        "note": "メモ"
+      }
+    },
+    "prop_items": {
+      "domain": "production",
+      "name": "小道具の品目",
+      "description": "小道具の品目の1件（作品と鍵）。中身は版の表に持つ。書き換えない。",
+      "domain_reason": "プリプロダクション（フォルダ台帳 F03）の業務。撮影の前に済ませる制作部・プロデューサー部・演出部の仕事なので制作の領域に置く（置き場 src/preprod/props/。会社ルートの plans/2026-11-09-props-meeting.md）。",
+      "columns": {
+        "work_id": "作品（works）",
+        "item_key": "品目の鍵（作品の中で一意。取込で同じ品目を二重に入れないために使う）"
+      }
+    },
+    "prop_item_versions": {
+      "domain": "production",
+      "name": "小道具の品目の版",
+      "description": "品目の中身（シーン・撮影日・場面・品目・数・種別・部署・担当・状態・次の行動・期限・出典・台本の記述・メモ）。品目ごとの連番で追記だけで、いまの中身は最新の版。打ち合わせで決めた版はその回を指す。",
+      "domain_reason": "プリプロダクション（フォルダ台帳 F03）の業務。撮影の前に済ませる制作部・プロデューサー部・演出部の仕事なので制作の領域に置く（置き場 src/preprod/props/。会社ルートの plans/2026-11-09-props-meeting.md）。",
+      "columns": {
+        "item_id": "品目（prop_items）",
+        "version_no": "版の番号（品目ごとの連番）",
+        "scene_label": "シーン（「#31・#32」のように複数を書ける文字）",
+        "shoot_on": "撮影日",
+        "place": "場面",
+        "name": "品目",
+        "quantity": "数（「1（予備1）」「多めに」のような文字）",
+        "kind": "種別（hand 持ち道具・consumable 消え物・dressing 装飾・costume 衣装・vehicle 車両・other その他）",
+        "department": "担当の部署（production 制作部・producer プロデューサー部・direction 演出部・art 美術・costume 衣装・other その他）。未割当のときは NULL",
+        "owner_label": "担当の人（自由記述）",
+        "state": "状態（unassigned 未割当・adjust 要調整・arranging 手配中・ready 用意済み・unneeded 不要）",
+        "next_action": "次の行動",
+        "due_on": "次の行動の期限",
+        "source": "出典（script 台本・meeting 打ち合わせ・both 両方・callsheet 日々スケ・manual 手入力）",
+        "script_note": "台本の記述の要約",
+        "memo": "メモ",
+        "meeting_id": "この版を決めた打ち合わせ（prop_meetings）。打ち合わせの外で直した版は NULL"
+      }
+    },
+    "budget_read_profiles": {
+      "domain": "planning",
+      "name": "予算書の読み取りの定義",
+      "description": "予算書 xlsx の読み取りの定義（組織ごと・名前で区別。書き換えない）。中身は版（budget_read_versions）に持つ",
+      "domain_reason": "予算書の読み取りの定義は予算書作成（企画の領域）の一部なので企画の領域に置く（置き場 src/planning/budget/。要件 docs/requirements/planning/budget-book.md の FR-PLAN-BUDGET-035〜041）。",
+      "columns": {
+        "name": "定義の名前（組織の中で一意）",
+        "source": "出どころ（seed＝初期値・member＝組織の人が足した）",
+        "created_by": "足した利用者（初期値は持たない）"
+      }
+    },
+    "budget_read_versions": {
+      "domain": "planning",
+      "name": "予算書の読み取りの定義（版）",
+      "description": "読み取りの定義の版（定義ごとの連番で追記だけ）。見出しの語・合計の行の名前・区分の語と、コードが持つ読み方の選択を JSON で持つ。正規表現は持たない",
+      "domain_reason": "予算書の読み取りの定義は予算書作成（企画の領域）の一部なので企画の領域に置く（置き場 src/planning/budget/。要件 docs/requirements/planning/budget-book.md の FR-PLAN-BUDGET-035〜041）。",
+      "columns": {
+        "profile_id": "定義（budget_read_profiles）",
+        "version_no": "定義の中の版の番号（1から連番）",
+        "definition_json": "定義の中身（JSON。形はアプリが検査する）",
+        "definition_hash": "定義の中身の SHA-256（16進64字）",
+        "source": "出どころ（seed＝初期値・member＝組織の人が足した）",
+        "reason": "版を足した理由",
+        "created_by": "足した利用者（初期値は持たない）"
+      }
+    },
+    "budget_read_approvals": {
+      "domain": "planning",
+      "name": "予算書の読み取りの定義の判定",
+      "description": "定義の版ごとの判定（承認・差し戻し）。版ごとの連番で追記だけ。いまの判定は最後の行。承認した版だけが取り込みに使われる",
+      "domain_reason": "予算書の読み取りの定義は予算書作成（企画の領域）の一部なので企画の領域に置く（置き場 src/planning/budget/。要件 docs/requirements/planning/budget-book.md の FR-PLAN-BUDGET-035〜041）。",
+      "columns": {
+        "version_id": "判定した定義の版（budget_read_versions）",
+        "seq": "版の中の判定の連番（1から）",
+        "action": "判定（approve＝承認・reject＝差し戻し）",
+        "source": "出どころ（seed＝初期値の承認・member＝人の判定）",
+        "reason": "判定の理由",
+        "created_by": "判定した利用者（初期値は持たない）"
+      }
+    },
+    "budget_version_reads": {
+      "domain": "planning",
+      "name": "予算書の版を読んだ定義",
+      "description": "予算書の版（xlsx から読んだもの）がどの読み取りの定義の版で読まれたか（追記だけ。1つの版に1つまで。承認していない定義の版は結び付けられない）",
+      "domain_reason": "予算書の読み取りの定義は予算書作成（企画の領域）の一部なので企画の領域に置く（置き場 src/planning/budget/。要件 docs/requirements/planning/budget-book.md の FR-PLAN-BUDGET-035〜041）。",
+      "columns": {
+        "project_id": "案件（版と同じ）",
+        "version_id": "予算書の版（budget_versions）",
+        "read_version_id": "読んだ定義の版（budget_read_versions）"
+      }
+    },
+    "production_actual_lines": {
+      "domain": "expenses",
+      "name": "制作の実費の行",
+      "description": "制作チームが記録する、作品で実際にかかった費用の1行1件（追記だけ。変更・削除は DB が断る。直すときは取消の行と置き換えの行）。費目は予算書の大分類 A〜K。税込は必須で、税抜と税額は分かるときだけ2つそろえて持ち、税込＝税抜＋税額（分からなければ2つとも空で「不明」）。未確認の印は持たず、確認の行が無いことから導く。AI が入れた行は読みの記録を持つ",
+      "domain_reason": "制作費と実費（PCOST）は経費の領域の工程（問いの一覧 Q30）で、読み書きは src/expenses/expenses-store.mjs が持つ（会社ルートの plans/2026-11-20-genba-inbox.md の手順8。要件 docs/requirements/expenses/production-cost.md の FR-EXP-PCOST-009・010・033・043〜047）。",
+      "columns": {
+        "project_id": "案件（作品の案件）",
+        "work_id": "作品（works）",
+        "entry_key": "取り込みの鍵（組織で一意。同じ取り込みを2回入れない。送られなければ受け口が作る）",
+        "spent_on": "支払った日（YYYY-MM-DD）",
+        "category_code": "費目（予算書の大分類 A〜K のコード）",
+        "payee_partner_id": "支払先の取引先（partners。任意）",
+        "payee_name": "領収書に書いてあった支払先の名前",
+        "description": "内容（任意）",
+        "inc_tax_yen": "税込（整数円。必須。0円の行は持たない）",
+        "ex_tax_yen": "税抜（整数円。分かるときだけ。空は不明）",
+        "tax_yen": "税額（整数円。税抜と2つそろえて持つ）",
+        "source_document_id": "証憑の原本（source_documents。任意）",
+        "shooting_day_id": "撮影日（shooting_days。同じ作品の撮影日だけ。任意）",
+        "entry_method": "入れ方（human 人・ai AI）",
+        "ai_read_json": "AI の読みの記録（JSON。model 読んだモデルの名前・readFields 読んだ欄・unreadFields 読めなかった欄。原本の中身や本文は持たない。AI の行だけ）"
+      }
+    },
+    "production_actual_line_voids": {
+      "domain": "expenses",
+      "name": "制作の実費の行の取消",
+      "description": "実費の行の取消（追記だけ。1行に1回まで。理由が必須）。置き換えの行（同じ作品の行）を指せる。取消した行は合計から外れ、置き換えの行が入る",
+      "domain_reason": "制作費と実費（PCOST）は経費の領域の工程（問いの一覧 Q30）で、読み書きは src/expenses/expenses-store.mjs が持つ（会社ルートの plans/2026-11-20-genba-inbox.md の手順8。要件 docs/requirements/expenses/production-cost.md の FR-EXP-PCOST-009・010・033・043〜047）。",
+      "columns": {
+        "work_id": "作品（行と同じ）",
+        "line_id": "取り消した行（production_actual_lines）",
+        "reason": "取消の理由",
+        "replacement_line_id": "置き換えの行（production_actual_lines。同じ作品の行。取消した行は指せない）"
+      }
+    },
+    "production_actual_line_checks": {
+      "domain": "expenses",
+      "name": "制作の実費の行の確認",
+      "description": "実費の行を人が確かめた記録（追記だけ。1行に1回まで。取消した行は確かめない）。この行の無い実費の行が「未確認」",
+      "domain_reason": "制作費と実費（PCOST）は経費の領域の工程（問いの一覧 Q30）で、読み書きは src/expenses/expenses-store.mjs が持つ（会社ルートの plans/2026-11-20-genba-inbox.md の手順8。要件 docs/requirements/expenses/production-cost.md の FR-EXP-PCOST-009・010・033・043〜047）。",
+      "columns": {
+        "work_id": "作品（行と同じ）",
+        "line_id": "確かめた行（production_actual_lines）",
+        "checked_by": "確かめた人（users）",
+        "checked_at": "確かめた日時"
+      }
+    },
+    "shooting_scene_reads": {
+      "domain": "production",
+      "name": "香盤の読みの記録",
+      "description": "AI が香盤の画像を読んだ記録（追記だけ。変更・削除は DB が断る）。1回の取り込み（読みの束）で、撮影日×シーンごとに別のモデルの独立した2回の読みを持つ。2回が一致した（読めず を除く）シーンだけ撮影の結果を足し、割れたシーンは読みの記録だけを残して人に聞く（要確認）",
+      "domain_reason": "撮影の記録は撮影期の工程（フォルダ原案の プロダクション F04）なので制作の領域に置く（置き場 src/production/shoot-records/。会社ルートの plans/2026-11-20-genba-inbox.md の手順7。要件 docs/requirements/production/schedule-commit.md の FR-PROD-SCHED-103〜109）。",
+      "columns": {
+        "project_id": "案件（projects）",
+        "work_id": "作品（works）",
+        "shooting_day_id": "撮影日（shooting_days。1つの束は1つの撮影日だけ）",
+        "scene_id": "シーン（scenes）",
+        "read_key": "読みの束の鍵（同じ1回の取り込み。(鍵, シーン, 何回目) で組織で一意。送られなければ受け口が作る）",
+        "read_no": "何回目の読みか（1・2。2回目は1回目と別のモデルだけ）",
+        "model": "読んだモデルの名前",
+        "reading": "読んだ結果（shot 撮れた／partial 一部／not_shot 撮れず／unreadable 読めず）",
+        "prior_result_seq": "読みを入れたときの、その撮影日×シーンの結果の連番の最大（無ければ 0。読みのあとに人が足した結果の行を見分ける）",
+        "source_document_id": "香盤の原本（source_documents。任意）",
+        "created_by": "入れた利用者（memberships）"
+      }
+    },
+    "shooting_scene_result_reads": {
+      "domain": "production",
+      "name": "撮影の結果と読みの束の結び",
+      "description": "AI が入れた撮影の結果の行と、その根拠の読みの束の結び（追記だけ）。この行がある結果の行が AI の入れた結果。結べるのは、別のモデルの2回の読みが一致し、その読みを読み替えた結果（撮れた→撮影完了・一部→一部・撮れず→移し先の無い順延）の行だけ（DB のトリガーが断る）",
+      "domain_reason": "撮影の記録は撮影期の工程（フォルダ原案の プロダクション F04）なので制作の領域に置く（置き場 src/production/shoot-records/。会社ルートの plans/2026-11-20-genba-inbox.md の手順7。要件 docs/requirements/production/schedule-commit.md の FR-PROD-SCHED-103〜109）。",
+      "columns": {
+        "work_id": "作品（works）",
+        "scene_id": "シーン（scenes。結果の行と同じ）",
+        "result_id": "撮影の結果の行（shooting_scene_results）",
+        "read_key": "読みの束の鍵（shooting_scene_reads。1つの束は1つのシーンに1行まで）"
       }
     }
   }

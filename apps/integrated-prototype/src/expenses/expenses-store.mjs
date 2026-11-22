@@ -96,3 +96,81 @@ export async function addProductionCostVersion(db, orgId, workId, version, {crea
   await db.batch([...guards, ...productionCostVersionStatements(orgId, workId, version, {createdBy})]);
   return version.versionNo;
 }
+
+// ---------- 制作の実費の行（移行 0068。会社ルートの plans/2026-11-20-genba-inbox.md の手順8） ----------
+// 行・取消・確認の3表はどれも追記だけ。いまの行・未確認の印・合計は model（production-actual/actual-lines-model.mjs）が導く。
+// 書き込みは1回の batch で書き、同じ batch で audit_log に1行残す（件数と番号だけで、金額・支払先・内容は残さない）
+
+const ACTUAL_LINE_COLUMNS = `id,entry_key,spent_on,category_code,payee_partner_id,payee_name,description,inc_tax_yen,ex_tax_yen,tax_yen,source_document_id,
+  shooting_day_id,entry_method,ai_read_json,created_by,created_at`;
+const ACTUAL_LINE_INSERT = `INSERT INTO production_actual_lines(org_id,project_id,work_id,entry_key,spent_on,category_code,payee_partner_id,payee_name,description,
+    inc_tax_yen,ex_tax_yen,tax_yen,source_document_id,shooting_day_id,entry_method,ai_read_json,created_by)
+  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id`;
+
+// 作品の実費の行・取消・確認を1つの時点で読む（行は番号の順）
+export async function readActualLineRecords(db, orgId, workId) {
+  const [lines, voids, checks] = await db.readBatch([
+    {sql: `SELECT ${ACTUAL_LINE_COLUMNS} FROM production_actual_lines WHERE org_id=? AND work_id=? ORDER BY id`, params: [orgId, workId]},
+    {sql: 'SELECT line_id,reason,replacement_line_id,created_by,created_at FROM production_actual_line_voids WHERE org_id=? AND work_id=? ORDER BY line_id', params: [orgId, workId]},
+    {sql: 'SELECT line_id,checked_by,checked_at FROM production_actual_line_checks WHERE org_id=? AND work_id=? ORDER BY line_id', params: [orgId, workId]},
+  ]);
+  return {lines, voids, checks};
+}
+
+// 組織の中にもう使われている取り込みの鍵（同じ取り込みの2回目を断る。要件の要確認14）
+export async function readUsedEntryKeys(db, orgId, entryKeys) {
+  const rows = await allIn(db, 'SELECT entry_key FROM production_actual_lines WHERE org_id=? AND entry_key IN (:in)', {before: [orgId], ids: entryKeys});
+  return rows.map((row) => row.entry_key);
+}
+
+// 組織の取引先のうち、渡した番号にあるもの（古い形の表 partners）
+export async function readPartnerIds(db, orgId, partnerIds) {
+  const rows = await allIn(db, 'SELECT id FROM partners WHERE org_id=? AND id IN (:in)', {before: [orgId], ids: partnerIds});
+  return rows.map((row) => Number(row.id));
+}
+
+// 作品の撮影日のうち、渡した番号にあるもの（古い形の表 shooting_days。別の作品の撮影日は返さない）
+export async function readWorkShootingDayIds(db, orgId, workId, dayIds) {
+  const rows = await allIn(db, 'SELECT id FROM shooting_days WHERE org_id=? AND work_id=? AND id IN (:in)', {before: [orgId, workId], ids: dayIds});
+  return rows.map((row) => Number(row.id));
+}
+
+function actualLineInsert(orgId, work, line, {createdBy}) {
+  return {sql: ACTUAL_LINE_INSERT, params: [orgId, work.project_id, work.id, line.entryKey, line.spentOn, line.categoryCode, line.payeePartnerId, line.payeeName,
+    line.description, line.incTaxYen, line.exTaxYen, line.taxYen, line.sourceDocumentId, line.shootingDayId, line.entryMethod, line.aiReadJson, createdBy]};
+}
+
+// 行を足す（1回の batch。行ごとの取り込みの鍵は受け口が決めて渡す）。返り値は足した行の番号（渡した順）
+export async function addActualLines(db, orgId, work, lines, {createdBy}) {
+  const results = await db.batch([
+    ...lines.map((line) => actualLineInsert(orgId, work, line, {createdBy})),
+    {sql: AUDIT_INSERT, params: [orgId, createdBy, 'append', 'production_actual_line', String(work.id),
+      JSON.stringify({workId: work.id, count: lines.length, ai: lines.filter((line) => line.entryMethod === 'ai').length})]},
+  ]);
+  return results.slice(0, lines.length).map((result) => Number(result.rows[0].id));
+}
+
+// 行を取り消す（理由つき）。replacement があれば同じ batch で置き換えの行を足し、取消の行から取り込みの鍵で引いて指す。返り値は置き換えの行の番号か null
+export async function voidActualLine(db, orgId, work, lineId, {reason, replacement = null}, {createdBy}) {
+  const statements = [];
+  if (replacement) statements.push(actualLineInsert(orgId, work, replacement, {createdBy}));
+  statements.push(
+    {sql: `INSERT INTO production_actual_line_voids(org_id,work_id,line_id,reason,replacement_line_id,created_by)
+      VALUES(?,?,?,?,${replacement ? '(SELECT r.id FROM production_actual_lines r WHERE r.org_id=? AND r.entry_key=?)' : 'NULL'},?)`,
+    params: [orgId, work.id, lineId, reason, ...(replacement ? [orgId, replacement.entryKey] : []), createdBy]},
+    {sql: AUDIT_INSERT, params: [orgId, createdBy, 'void', 'production_actual_line', `${work.id}:${lineId}`,
+      JSON.stringify({workId: work.id, lineId, replaced: Boolean(replacement)})]},
+  );
+  const results = await db.batch(statements);
+  return replacement ? Number(results[0].rows[0].id) : null;
+}
+
+// 行をまとめて確かめる（1回の batch）。同じ行の確認が先に入っていれば飛ばす（主キーの衝突は何もしない）。返り値は書いた件数
+export async function checkActualLines(db, orgId, workId, lineIds, {checkedBy}) {
+  const results = await db.batch([
+    ...lineIds.map((lineId) => ({sql: `INSERT INTO production_actual_line_checks(org_id,work_id,line_id,checked_by) VALUES(?,?,?,?)
+      ON CONFLICT(org_id,line_id) DO NOTHING`, params: [orgId, workId, lineId, checkedBy]})),
+    {sql: AUDIT_INSERT, params: [orgId, checkedBy, 'check', 'production_actual_line', String(workId), JSON.stringify({workId, count: lineIds.length})]},
+  ]);
+  return results.slice(0, lineIds.length).reduce((sum, result) => sum + Number(result.changes ?? 0), 0);
+}

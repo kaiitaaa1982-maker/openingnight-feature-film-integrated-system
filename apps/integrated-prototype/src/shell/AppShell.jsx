@@ -2,7 +2,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {ShellProvider} from './context.mjs';
 import {displayLabel, pageScope, navItems, FOLDER_HOME_PAGE, HOME_PAGE, VIEW_MODES, environmentHiddenPages, readViewMode, rememberViewMode} from './nav-model.mjs';
-import {folderNavigation, folderOf, folderEntry} from './folder-nav.mjs';
+import {folderNavigation, folderOfView, folderContextId, folderTarget} from './folder-nav.mjs';
 import {FolderNav, FolderName} from './FolderNav.jsx';
 import {FolderHome} from './FolderHome.jsx';
 import {unsavedMessage} from './unsaved.mjs';
@@ -23,7 +23,7 @@ export function AppShell({
   state, session, bootstrap, screens = {}, hiddenPages = new Set(), onLogout, financeLocked = false,
   orgs = [], onSwitchOrg, orgSwitching = false, orgError = '', orgsError = null, onRetryOrgs, notice = null, mode = null,
 }) {
-  const {page, workId, shell: baseShell, navigate, selectWork, unsaved, pending, confirmPending, cancelPending} = state;
+  const {page, workId, params, shell: baseShell, navigate, selectWork, unsaved, pending, confirmPending, cancelPending} = state;
   const [viewMode, setViewMode] = useState(() => readViewMode(browserStorage()));
   // 画面部品が役割と表示モードに応じて中身を出し分けられるよう、文脈に足す（権限の判定そのものはサーバーが行う）
   const shell = React.useMemo(() => ({...baseShell, role: session?.role || null, viewMode}), [baseShell, session?.role, viewMode]);
@@ -44,7 +44,8 @@ export function AppShell({
   const selectedWork = works.find((work) => Number(work.id) === Number(workId));
   const scope = pageScope(page);
   const label = displayLabel(page);
-  const folder = folderOf(page);
+  const contextId = folderContextId(page, params);
+  const folder = folderOfView(page, params);
   const numberedFolder = folder?.id.startsWith('F') ? folder : null;
   const locked = hiddenPages.has(page) || environmentHiddenPages(mode).has(page);
 
@@ -67,11 +68,11 @@ export function AppShell({
     return navigate(target, params, options);
   };
   const selectFolder = (id) => {
-    const target = folderEntry(id, navigation.folders);
+    const target = folderTarget(id, navigation.folders);
     if (!target || folder?.id === id) return;
     // 狭い画面でも開いたフォルダの画面を選べるようドロワーは残す。未保存で止まれば本文の確認へ。
     focusAfterNav.current = !drawerOpen;
-    if (navigate(target) === false) setDrawerOpen(false);
+    if (navigate(target.page, target.params) === false) setDrawerOpen(false);
   };
   const content = locked
     ? (
@@ -105,13 +106,12 @@ export function AppShell({
           <div className="app-view-mode" role="group" aria-label="メニューの表示">
             {VIEW_MODES.map((mode) => <button key={mode.id} type="button" aria-pressed={viewMode === mode.id} onClick={() => chooseViewMode(mode.id)}>{mode.label}</button>)}
           </div>
-          <FolderNav {...navigation} page={page} onNavigate={go} onSelectFolder={selectFolder} />
+          <FolderNav {...navigation} page={page} contextId={contextId} onNavigate={go} onSelectFolder={selectFolder} />
         </aside>
         {drawerOpen && <button type="button" className="app-scrim" aria-label="メニューを閉じる" onClick={() => setDrawerOpen(false)} />}
         <main className="app-main">
           <header className="topbar app-topbar">
             <button type="button" className="secondary app-menu-button" aria-expanded={drawerOpen} aria-controls="app-nav" onClick={() => setDrawerOpen((value) => !value)}>メニュー</button>
-            <button type="button" className="secondary app-admin-entry" onClick={() => go('設計・定義')}>管理・設計</button>
             {scope === 'work' && works.length > 0 && (
               <WorkSelector works={works} value={workId} onChange={selectWork} label="対象作品" />
             )}

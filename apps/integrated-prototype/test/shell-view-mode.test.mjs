@@ -19,7 +19,9 @@ const K18 = [
   ['作品の月別収支', '収支'], ['PL・BS', 'PL・BS'], ['帳票センター', '帳票センター'],
 ];
 const K18_PAGES = K18.map(([, page]) => page);
-const AREAS = ['work', 'eigyo', 'sales', 'shared'];
+// 代表モードの画面 = K-18 の11画面に、全案件（2026-11-10 代表が足した）を加えた12画面。順はホームの次に全案件
+const REP_PAGES = ['ホーム', '全案件', ...K18_PAGES.slice(1)];
+const AREAS = ['work', 'eigyo', 'sales'];
 
 // 4つの領域の左メニューに出る全画面（売上基幹は2段目の業務をまたいで全部）
 const menuPages = (hidden) => AREAS.flatMap((area) => visibleGroups(area, hidden).flatMap((group) => group.items.map((item) => item.page)));
@@ -31,27 +33,26 @@ function memoryStorage(initial = {}) {
 
 // ---- 表示モードの定義（nav-model.mjs）----
 
-test('代表モードのメニューは K-18 の11項目だけで、計画の語は画面のページIDか表示名と一致する', () => {
+test('代表モードのメニューは K-18 の11項目と全案件だけで、計画の語は画面のページIDか表示名と一致する', () => {
   assert.equal(K18.length, 11);
   for (const [word, page] of K18) assert.ok(word === page || displayLabel(page) === word, `${word} は ${page} のページIDでも表示名でもない`);
-  assert.deepEqual([...REPRESENTATIVE_PAGES], K18_PAGES, 'REPRESENTATIVE_PAGES は K-18 の順');
+  assert.deepEqual([...REPRESENTATIVE_PAGES], REP_PAGES, 'REPRESENTATIVE_PAGES は K-18 の順（ホームの次に全案件）');
   const shown = menuPages(viewModeHiddenPages('representative'));
-  assert.equal(shown.length, 11);
-  assert.deepEqual([...shown].sort(), [...K18_PAGES].sort());
-  // 領域ごとの内訳: 業務基幹3・営業基幹1・売上基幹7（全部が計上の中）。管理・設計は出ない
+  assert.equal(shown.length, 12);
+  assert.deepEqual([...shown].sort(), [...REP_PAGES].sort());
+  // 領域ごとの内訳: 業務基幹4・営業基幹1・売上基幹7（全部が計上の中）
   const byArea = Object.fromEntries(AREAS.map((area) => [area, visibleGroups(area, viewModeHiddenPages('representative')).flatMap((group) => group.items.map((item) => item.page)).sort()]));
-  assert.deepEqual(byArea.work, ['ホーム', '作品・商品マスタ', '企画・作品'].sort());
+  assert.deepEqual(byArea.work, ['ホーム', '全案件', '作品・商品マスタ', '企画・作品'].sort());
   assert.deepEqual(byArea.eigyo, ['商品・営業']);
   assert.deepEqual(byArea.sales, ['PL・BS', '売上', '帳票センター', '月別消込', '経費', '請求・入金', '収支'].sort());
-  assert.deepEqual(byArea.shared, []);
 });
 
-test('代表モードで外す画面は11画面以外の全部で、新しい画面は足すまで代表モードに出ない', () => {
+test('代表モードで外す画面は12画面以外の全部で、新しい画面は足すまで代表モードに出ない', () => {
   const hidden = viewModeHiddenPages('representative');
-  assert.equal(hidden.size, ALL_PAGES.length - 11);
-  for (const page of K18_PAGES) assert.ok(!hidden.has(page), page);
-  assert.deepEqual([...hidden, ...K18_PAGES].sort(), [...ALL_PAGES].sort(), '外す画面と11画面で全画面になる（重ならない）');
-  for (const page of ['全作品のウィンドウ', '売上集計シート', 'MG契約・台帳', '制作', '設計・定義', 'チーム']) assert.ok(hidden.has(page), page);
+  assert.equal(hidden.size, ALL_PAGES.length - 12);
+  for (const page of REP_PAGES) assert.ok(!hidden.has(page), page);
+  assert.deepEqual([...hidden, ...REP_PAGES].sort(), [...ALL_PAGES].sort(), '外す画面と12画面で全画面になる（重ならない）');
+  for (const page of ['全作品のウィンドウ', '売上集計シート', 'MG契約・台帳', '制作', 'チーム', '取込履歴']) assert.ok(hidden.has(page), page);
 });
 
 test('既定は全表示で、全表示は何も外さず既存のメニューを変えない。不明な値も全表示として扱う', () => {
@@ -65,16 +66,16 @@ test('既定は全表示で、全表示は何も外さず既存のメニュー�
   const hidden = new Set(['チーム']);
   assert.equal(menuHiddenPages('all', hidden), hidden, '全表示は役割で隠す集合をそのまま返す');
   assert.equal(menuPages(viewModeHiddenPages('all')).length, ALL_PAGES.length);
-  for (const area of ['work', 'eigyo', 'shared']) assert.deepEqual(visibleGroups(area, menuHiddenPages('all')), visibleGroups(area), area);
+  for (const area of ['work', 'eigyo']) assert.deepEqual(visibleGroups(area, menuHiddenPages('all')), visibleGroups(area), area);
   for (const sub of SUB_AREAS) assert.deepEqual(menuGroups('sales', sub.id, menuHiddenPages('all')), menuGroups('sales', sub.id), sub.id);
-  assert.deepEqual(Object.keys(NAV_GROUPS), ['work', 'eigyo', 'sales', 'shared'], '既存のメニュー定義に領域を足していない');
+  assert.deepEqual(Object.keys(NAV_GROUPS), ['work', 'eigyo', 'sales'], '既存のメニュー定義に領域を足していない（管理・設計は 2026-11-02 に外した）');
 });
 
-test('役割で隠す画面と代表モードは重ねて効く（制作担当は11画面のうち業務基幹の3つだけ）', () => {
+test('役割で隠す画面と代表モードは重ねて効く（制作担当は12画面のうち業務基幹の4つだけ）', () => {
   const merged = (role) => menuHiddenPages('representative', hiddenPagesForRole(role));
-  assert.deepEqual(menuPages(merged('production')).sort(), ['ホーム', '作品・商品マスタ', '企画・作品'].sort());
-  assert.deepEqual(menuPages(merged('editor')).sort(), [...K18_PAGES].sort());
-  assert.deepEqual(menuPages(merged('admin')).sort(), [...K18_PAGES].sort());
+  assert.deepEqual(menuPages(merged('production')).sort(), ['ホーム', '全案件', '作品・商品マスタ', '企画・作品'].sort());
+  assert.deepEqual(menuPages(merged('editor')).sort(), [...REP_PAGES].sort());
+  assert.deepEqual(menuPages(merged('admin')).sort(), [...REP_PAGES].sort());
   // 代表モードの集合は役割の集合を壊さない
   const role = hiddenPagesForRole('production');
   const before = [...role];
@@ -171,6 +172,7 @@ const output = await build({stdin: {contents: "export {AppShell} from './src/she
 }}]});
 const {AppShell} = await import(`data:text/javascript;base64,${Buffer.from(output.outputFiles[0].text).toString('base64')}`);
 
+const nodesText = (node) => nodes(node.props.children).filter((n) => typeof n === 'string').join('');
 function nodes(tree) {
   if (tree === null || tree === undefined || typeof tree === 'boolean') return [];
   if (Array.isArray(tree)) return tree.flatMap(nodes);
@@ -180,7 +182,7 @@ function nodes(tree) {
 }
 
 // 外枠を描き、遷移を反映する。block=true は未保存で移動が止まる場合。
-function mount({page = 'フォルダ一覧', role = 'admin', storage, mode = null, block = false, works = []} = {}) {
+function mount({page = 'フォルダ一覧', params = {}, role = 'admin', storage, mode = null, block = false, works = []} = {}) {
   const destinations = [];
   const previous = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
   if (storage === undefined) delete globalThis.localStorage;
@@ -189,10 +191,11 @@ function mount({page = 'フォルダ一覧', role = 'admin', storage, mode = nul
   const h = {slots: [], cursor: 0, pending: [], dirty: false, tree: null, destinations};
   const baseShell = {getParam: (_key, fallback) => fallback, request: async () => ({}), navigate() {}};
   const props = {session: {role, orgId: 1}, mode, bootstrap: {works}, hiddenPages: hiddenPagesForRole(role),
-    state: {page, shell: baseShell, navigate: (target, params, options) => {
-      destinations.push(target); h.lastOptions = options;
+    state: {page, params, shell: baseShell, navigate: (target, params, options) => {
+      destinations.push(target); h.lastOptions = options; h.lastParams = params;
       if (h.block) return false;
       props.state.page = target;
+      props.state.params = params || {};
       if (options?.workId) props.state.workId = options.workId;
       return true;
     }}, screens: {[page]: `${page}（架空）`}};
@@ -229,20 +232,23 @@ function mount({page = 'フォルダ一覧', role = 'admin', storage, mode = nul
   return h;
 }
 
-test('AppShell: 全フォルダと共通・管理が並び、旧区分のタブは出ない', () => {
+test('AppShell: 全フォルダと共通が並び、管理・設計の欄と旧区分のタブは出ない', () => {
   const h = mount({page: 'ホーム', storage: memoryStorage(), mode: 'local'});
   try {
     assert.deepEqual(h.modeButtons().map((button) => button.props.children), ['全表示', '代表モード']);
     assert.equal(h.pressedMode(), '全表示');
     assert.equal(h.folderButtons().length, 20);
     assert.deepEqual(h.openFolders(), []);
-    assert.deepEqual(h.all().filter((n) => n?.type === 'nav').map((n) => n.props['aria-label']), ['フォルダ', '共通', '管理・設計']);
+    assert.deepEqual(h.all().filter((n) => n?.type === 'nav').map((n) => n.props['aria-label']), ['フォルダ', '共通']);
     assert.equal(h.all().filter((n) => n?.props?.role === 'tablist').length, 0);
     // 代表 2026-10-25「フォルダ一覧が、左側の一番上がいい」
     assert.equal(h.allMenuLinks()[0].props.href, '?p=folder-home');
     assert.equal(h.text(h.allMenuLinks()[0]), 'フォルダ一覧');
-    assert.deepEqual(h.menuSlugs(), ['partners', 'work-data', 'demo', 'definitions', 'design-canvas', 'er', 'extensions', 'team', 'data', 'import-history', 'folders']);
-    assert.deepEqual(h.folderButtons().filter((n) => n.props.disabled).map((n) => h.text(n).slice(0, 3)), ['F16', 'F17']);
+    // 全案件はフォルダ一覧の次（代表 2026-11-06「全ての案件が表示される前提で UI を整えてほしい」）
+    assert.equal(h.text(h.allMenuLinks()[1]), '全案件');
+    assert.deepEqual(h.menuSlugs(), ['all-works', 'partners', 'work-data', 'work-templates', 'demo', 'source-tree', 'team', 'import-history', 'folders', 'sheet-sample']);
+    // 業務ひな型は全フォルダから開けるので、空の F16・F17 も押せる
+    assert.deepEqual(h.folderButtons().filter((n) => n.props.disabled).map((n) => h.text(n).slice(0, 3)), []);
   } finally { h.close(); }
 });
 
@@ -257,8 +263,59 @@ test('AppShell: フォルダを押すと最初の画面を開き、開くフォ�
     h.chooseFolder('F01');
     assert.deepEqual(h.openFolders(), ['F01']);
     assert.equal(h.destinations.at(-1), '企画');
+    // 固有の画面が無い F16 は、共通の業務ひな型へ元のフォルダ付きで入る
     h.chooseFolder('F16');
-    assert.equal(h.destinations.length, 2);
+    assert.equal(h.destinations.length, 3);
+    assert.equal(h.destinations.at(-1), '業務ひな型');
+    assert.deepEqual(h.lastParams, {folder: 'F16'});
+    assert.deepEqual(h.openFolders(), ['F16']);
+  } finally { h.close(); }
+});
+
+test('FR-PROD-TMPL-014 AppShell: 全フォルダのメニューに業務ひな型が入り、開いた元のフォルダ（F04 など）が開いたまま示される', () => {
+  const h = mount({page: 'ホーム', mode: 'local'});
+  try {
+    for (const id of ['F01', 'F04', 'F09', 'F16', 'F20']) {
+      h.chooseFolder(id);
+      assert.deepEqual(h.openFolders(), [id], id);
+      const link = h.menuLinks().find((n) => n.props.href === `?p=work-templates&folder=${id}`);
+      assert.ok(link, `${id} のメニューに業務ひな型が無い`);
+    }
+    // F04 のリンクを押すと、同じ画面へ元のフォルダ付きで移る
+    h.chooseFolder('F04');
+    const link = h.menuLinks().find((n) => n.props.href === '?p=work-templates&folder=F04');
+    link.props.onClick({preventDefault() {}, button: 0});
+    h.render();
+    assert.equal(h.destinations.at(-1), '業務ひな型');
+    assert.deepEqual(h.lastParams, {folder: 'F04'});
+    assert.deepEqual(h.openFolders(), ['F04']);
+    // 選択中の印は F04 のリンクだけ。共通の同じ画面のリンクには付かない
+    const current = h.menuLinks().filter((n) => n.props['aria-current'] === 'page').map((n) => n.props.href);
+    assert.deepEqual(current, ['?p=work-templates&folder=F04']);
+    // 画面の見出しの上のフォルダ名は F04 になる
+    assert.ok(h.withClass('div', 'app-folder-title').some((n) => nodesText(n).startsWith('F04')));
+  } finally { h.close(); }
+});
+
+test('FR-PROD-TMPL-014 AppShell: 業務ひな型を共通から開くとフォルダは開かず、フォルダ指定が不正なら共通扱い', () => {
+  for (const params of [{}, {folder: 'F99'}]) {
+    const h = mount({page: '業務ひな型', params, mode: 'local'});
+    try {
+      assert.deepEqual(h.openFolders(), []);
+      assert.deepEqual(h.menuLinks().filter((n) => n.props['aria-current'] === 'page').map((n) => n.props.href), ['?p=work-templates']);
+      assert.equal(h.withClass('div', 'app-folder-title').length, 0);
+    } finally { h.close(); }
+  }
+});
+
+test('FR-PROD-TMPL-014 AppShell: フォルダ一覧のカードにも業務ひな型が入り、代表モードでは出ない', () => {
+  const h = mount({page: 'フォルダ一覧', mode: 'local', storage: memoryStorage()});
+  try {
+    const hrefs = h.withClass('section', 'app-folder-card').map((card) => nodes(card).filter((n) => n?.type === 'a').map((a) => a.props.href));
+    assert.equal(hrefs.length, 20);
+    hrefs.forEach((list, index) => assert.ok(list.includes(`?p=work-templates&folder=F${String(index + 1).padStart(2, '0')}`), `F${index + 1}`));
+    h.click('代表モード');
+    assert.equal(h.menuSlugs().includes('work-templates'), false);
   } finally { h.close(); }
 });
 
@@ -295,7 +352,7 @@ test('AppShell: 全表示・代表モードとも一覧に20フォルダがあ�
     h.click('代表モード');
     assert.equal(h.pressedMode(), '代表モード');
     assert.equal(h.withClass('section', 'app-folder-card').length, 20);
-    assert.deepEqual(h.menuSlugs().sort(), K18_PAGES.filter((p) => p !== 'ホーム').map(slugOf).sort());
+    assert.deepEqual(h.menuSlugs().sort(), REP_PAGES.filter((p) => p !== 'ホーム').map(slugOf).sort());
     assert.equal(h.all().filter((n) => n?.type === 'nav').length, 1);
     assert.equal(h.folderButton('F09').props.disabled, true);
     h.chooseFolder('F06');
@@ -307,11 +364,11 @@ test('AppShell: 代表モードで対象外の画面をURLで開いても閲覧�
   const h = mount({page: 'MG契約・台帳', storage: memoryStorage({'on-view-mode': 'representative'})});
   try {
     assert.equal(h.folderButton('F10').props.disabled, true);
-    assert.deepEqual(h.menuSlugs(), []);
+    assert.deepEqual(h.menuSlugs(), ['all-works'], '全案件は先頭の入口として、どのフォルダでも出る');
     assert.ok(h.all().includes('MG契約・台帳（架空）'));
     h.chooseFolder('F12');
     assert.deepEqual(h.openFolders(), ['F12']);
-    assert.deepEqual(h.menuSlugs(), ['expenses']);
+    assert.deepEqual(h.menuSlugs(), ['all-works', 'expenses']);
   } finally { h.close(); }
 });
 
@@ -322,7 +379,7 @@ test('AppShell: 表示モードを保存し、切り替えても現在ページ�
     const before = h.menuSlugs();
     h.click('代表モード');
     assert.equal(storage.getItem('on-view-mode'), 'representative');
-    assert.deepEqual(h.menuSlugs(), ['expenses']);
+    assert.deepEqual(h.menuSlugs(), ['all-works', 'expenses']);
     assert.deepEqual(h.openFolders(), ['F12']);
     h.click('全表示');
     assert.equal(storage.getItem('on-view-mode'), 'all');
@@ -338,7 +395,7 @@ test('AppShell: localStorageが無い・壊れている・読み書き不能で�
       assert.equal(h.pressedMode(), '全表示');
       h.click('代表モード');
       assert.equal(h.pressedMode(), '代表モード');
-      assert.deepEqual(h.menuSlugs().sort(), ['catalog', 'planning']);
+      assert.deepEqual(h.menuSlugs().sort(), ['all-works', 'catalog', 'planning']);
     } finally { h.close(); }
   }
 });
@@ -348,12 +405,13 @@ test('AppShell: 制作担当には財務のリンクが出ず、URLでも本文�
     const h = mount({page: '経費', role: 'production', storage: memoryStorage({'on-view-mode': viewMode})});
     try {
       assert.equal(h.folderButtons().length, 20);
-      assert.equal(h.folderButton('F12').props.disabled, true);
+      // 財務の画面は出ないが、業務ひな型へのリンクだけは残るので押せる（代表モードはリンクも出ない）
+      assert.equal(h.folderButton('F12').props.disabled, viewMode === 'representative');
       assert.ok(!h.menuSlugs().includes('expenses'));
       assert.ok(h.all().includes('この役割では表示しません'));
       assert.ok(!h.all().includes('経費（架空）'));
       h.chooseFolder('F02');
-      if (viewMode === 'representative') assert.deepEqual(h.menuSlugs().sort(), ['catalog', 'planning']);
+      if (viewMode === 'representative') assert.deepEqual(h.menuSlugs().sort(), ['all-works', 'catalog', 'planning']);
     } finally { h.close(); }
   }
 });

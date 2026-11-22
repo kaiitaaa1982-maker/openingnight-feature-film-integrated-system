@@ -1,9 +1,13 @@
 // 撮影の記録の画面（会社ルートの plans/2026-10-22-folder-prod.md の問い1〜7 はすべて A。見た目は docs/design/integrated-system-visual.md）。
 // 作品: 撮影日×記録の種類のマス目（札は 済み・要確認・未・遅れ・不要）と全シーンの進み。撮影日: 上から縦に、判定の1行 → 置く → 予定と実績 →
 // 撮りこぼし → 部署の申し送り。スマホの幅でも使え、写真はその場で撮って置ける（大きい写真は長い辺 2560px の JPEG に縮めてから送る）
+// 上の切り替え「記録」「未解決」（URL の view。ホームの「撮り残したシーン」は view=leftover で開く）。未解決は LeftoverSheet.jsx（共通の表）
 import React, {useCallback, useEffect, useState} from 'react';
 import {Notice} from '../../ui/Notice.jsx';
+import {useShell} from '../../shell/context.mjs';
 import {CELL_LABELS, DEPARTMENTS, ITEM_LABELS, ITEM_TYPES, KIND_LABELS, RECORD_KINDS, RESULT_LABELS, RESULTS} from './shoot-records-model.mjs';
+import {SHOOT_VIEWS, viewOf} from './leftover-sheet-model.mjs';
+import LeftoverSheet from './LeftoverSheet.jsx';
 import './shoot-records.css';
 
 const TONE = {done: 'ok', review: 'stop', open: 'wait', late: 'stop', none: 'none'};
@@ -43,10 +47,22 @@ async function shrinkImage(file) {
 }
 
 export default function ShootRecords({request, workId}) {
+  const shell = useShell();
+  const view = viewOf(shell.getParam('view'));
   const [dayId, setDayId] = useState(null);
   if (!workId) return <section className="sr"><p className="sr-mute">作品が未選択</p></section>;
-  if (dayId != null) return <ShootDay request={request} dayId={dayId} onBack={() => setDayId(null)} onOpen={setDayId} />;
-  return <ShootMatrix request={request} workId={workId} onOpen={setDayId} />;
+  const pick = (next) => {
+    setDayId(null);
+    shell.setParam('view', next === 'leftover' ? 'leftover' : null);
+  };
+  const tabs = (
+    <div className="sr sr-views" role="group" aria-label="撮影の記録">
+      {SHOOT_VIEWS.map((item) => <button key={item.id} type="button" aria-pressed={view === item.id} onClick={() => pick(item.id)}>{item.label}</button>)}
+    </div>
+  );
+  if (view === 'leftover') return <>{tabs}<LeftoverSheet request={request} workId={workId} /></>;
+  if (dayId != null) return <>{tabs}<ShootDay request={request} dayId={dayId} onBack={() => setDayId(null)} onOpen={setDayId} /></>;
+  return <>{tabs}<ShootMatrix request={request} workId={workId} onOpen={setDayId} /></>;
 }
 
 function ShootMatrix({request, workId, onOpen}) {

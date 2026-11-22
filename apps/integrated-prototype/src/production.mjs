@@ -1,4 +1,5 @@
 import {normalizeLocationPlans} from './production-plans.mjs';
+import {crewCountStatement} from './production/production-store.mjs';
 const integer=(v,label)=>{const n=Number(v);if(!Number.isSafeInteger(n)||n<=0)throw Error(`${label}を確認してください`);return n};
 const optionalInteger=(v,label,max)=>{if(v==null||v==='')return null;const n=Number(v);if(!Number.isSafeInteger(n)||n<0||n>max)throw Error(`${label}を確認してください`);return n};
 const string=(v,label,max=500,required=false)=>{if(v!=null&&typeof v!=='string')throw Error(`${label}を確認してください`);const s=(v||'').trim();if(s.length>max||(required&&!s))throw Error(`${label}を確認してください`);return s||null};
@@ -25,9 +26,12 @@ export function normalizeProduction(input,sceneIds,dayIds){
   distinct(sceneLooks,x=>`${x.scene_id}\u0000${x.look_key}`,'着用シーン');
   const daySlots=list(input.daySlots,'日々スケ項目',1000).map(x=>{const day_id=integer(x.day_id,'撮影日');if(!daySet.has(day_id))throw Error('別作品の撮影日です');const after_scene_order=optionalInteger(x.after_scene_order,'撮影順',10000);if(after_scene_order==null)throw Error('撮影順を確認してください');if(!['move','meal','wrap','prep','other'].includes(x.kind))throw Error('日々スケ項目の種類を確認してください');const row={day_id,key:key(x.key),after_scene_order,kind:x.kind,label:string(x.label,'項目名',160,true),planned_start:clock(x.planned_start,'予定開始'),planned_end:clock(x.planned_end,'予定終了'),actual_start:clock(x.actual_start,'実績開始'),actual_end:clock(x.actual_end,'実績終了'),note:string(x.note,'項目備考',1000)};for(const value of [row.planned_start,row.planned_end,row.actual_start,row.actual_end])onShootOrNext(value,day_id,dayDates);if(row.planned_start&&row.planned_end&&row.planned_end<=row.planned_start)throw Error('予定終了を開始より後にしてください');if(row.actual_start&&row.actual_end&&row.actual_end<=row.actual_start)throw Error('実績終了を開始より後にしてください');return row});
   distinct(daySlots,x=>`${x.day_id}\u0000${x.key}`,'日々スケ項目');
-  const calls=list(input.calls,'入り時間',2000).map(x=>{const day_id=integer(x.day_id,'撮影日'),character_key=key(x.character_key);if(!daySet.has(day_id)||!characterSet.has(character_key))throw Error('入り時間の撮影日または役がありません');const row={day_id,character_key,call_time:clock(x.call_time,'入り時間'),ready_time:clock(x.ready_time,'支度完了'),note:string(x.note,'入り時間備考',500)};onShootOrNext(row.call_time,day_id,dayDates);onShootOrNext(row.ready_time,day_id,dayDates);return row});
+  const calls=list(input.calls,'入り時間',2000).map(x=>{const day_id=integer(x.day_id,'撮影日'),character_key=key(x.character_key);if(!daySet.has(day_id)||!characterSet.has(character_key))throw Error('入り時間の撮影日または役がありません');const row={day_id,character_key,call_time:clock(x.call_time,'入り時間'),ready_time:clock(x.ready_time,'支度完了'),wrap_time:clock(x.wrap_time,'バラし'),note:string(x.note,'入り時間備考',500)};onShootOrNext(row.call_time,day_id,dayDates);onShootOrNext(row.ready_time,day_id,dayDates);onShootOrNext(row.wrap_time,day_id,dayDates);if(row.wrap_time&&row.call_time&&row.wrap_time<=row.call_time)throw Error('バラしは入りより後にしてください');return row});
   distinct(calls,x=>`${x.day_id}\u0000${x.character_key}`,'入り時間');
-  return {characters,locations,locationPlans,sceneDetails:details,appearances,looks,sceneLooks,daySlots,calls};
+  // 撮影日ごとのスタッフの数（食事の数に足す）。送られた撮影日だけを書き、送られない撮影日は今の値のまま
+  const dayCrews=list(input.dayCrews??[],'スタッフの数',1000).map(x=>{const day_id=integer(x.day_id,'撮影日');if(!daySet.has(day_id))throw Error('別作品の撮影日です');return {day_id,crew_count:optionalInteger(x.crew_count,'スタッフの数',9999)}});
+  distinct(dayCrews,x=>x.day_id,'スタッフの数の撮影日');
+  return {characters,locations,locationPlans,sceneDetails:details,appearances,looks,sceneLooks,daySlots,calls,dayCrews};
 }
 
 export function productionPageTotals(scenes,days){const map=new Map(scenes.map(s=>[s.id,s]));return days.map(day=>({dayId:day.id,pageEighths:day.assignments.reduce((n,a)=>n+(map.get(a.scene_id)?.page_eighths||0),0)}))}
@@ -87,7 +91,8 @@ export function registerProductionRoutes(app,{db,bad,body,permittedProjects}){
     add('production_looks',['key','character_key','label','makeup','props','shoes','accessories','note'],normalized.looks);
     add('production_scene_looks',['scene_id','look_key'],normalized.sceneLooks);
     add('production_day_slots',['day_id','key','after_scene_order','kind','label','planned_start','planned_end','actual_start','actual_end','note'],normalized.daySlots);
-    add('production_calls',['day_id','character_key','call_time','ready_time','note'],normalized.calls);
+    add('production_calls',['day_id','character_key','call_time','ready_time','wrap_time','note'],normalized.calls);
+    for(const crew of normalized.dayCrews)statements.push(crewCountStatement(...scope,crew.day_id,crew.crew_count));
     statements.push({sql:'INSERT INTO production_revisions(org_id,work_id,version) VALUES(?,?,?) ON CONFLICT(org_id,work_id) DO UPDATE SET version=excluded.version',params:[...scope,expected+1]},{sql:'INSERT INTO audit_log(org_id,user_id,action,entity_type,entity_id,detail_json) VALUES(?,?,?,?,?,?)',params:[i.org_id,i.user_id,'update','production_workspace',String(workId),JSON.stringify({beforeVersion:expected,afterVersion:expected+1,counts:Object.fromEntries(Object.entries(normalized).map(([k,v])=>[k,v.length]))})]});
     const limit=Number(db.maxBatchStatements);if(Number.isSafeInteger(limit)&&limit>0&&statements.length>limit)return bad(c,productionTooLargeMessage(statements.length,limit),413,{statements:statements.length,limit});
     try{await db.batch(statements)}catch(e){const over=/atomic batch exceeds (\d+)/.exec(String(e?.message||''));if(over)return bad(c,productionTooLargeMessage(statements.length,Number(over[1])),413,{statements:statements.length,limit:Number(over[1])});
